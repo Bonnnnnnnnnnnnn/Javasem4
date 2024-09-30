@@ -19,4 +19,14 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>TestController</display-name>
+    <servlet-name>TestController</servlet-name>
+    <servlet-class>com.businessManage.controller.TestController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TestController</servlet-name>
+    <url-pattern>/TestController</url-pattern>
+  </servlet-mapping>
 </web-app>
