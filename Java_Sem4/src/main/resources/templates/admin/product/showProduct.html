@@ -1,0 +1,164 @@
+<style>
+    .pagination {
+    	display: wrap;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .pagination a {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: black;
+        border: 1px solid #ddd;
+        background-color: #f1f1f1; 
+    }
+
+    .pagination a:hover {
+        background-color: #ddd; 
+    }
+
+    .pagination .active {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+</style>
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:replace="layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Product</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Product</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Product Table</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                      <a th:href="@{/admin/product/showAddProduct}" class="btn btn-success">Add Product</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr class="text-center">
+						<th>Name</th>
+						<th>Images</th>
+						<th>Price</th>
+						<th>Category</th>
+						<th>Brand</th>
+						<th>Unit</th>
+						<th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+				        <tr th:if="${#lists.isEmpty(products)}" class="text-center">
+				            <td colspan="4">No positions found</td>
+				        </tr>
+				        <tr th:each="item: ${products}" class="text-center">
+				            <td th:text="${item.product_name}"></td>
+				            <td>
+						        <img th:if="${item.img != null}"
+						             th:src="@{/uploads/{imageName}(imageName=${item.img})}"
+						             width="60">
+						    </td>
+					        <td>
+					            <span th:text="${item.price}"></span>
+					            <script th:inline="javascript">
+					                var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(/*[[${item.price}]]*/);
+					                document.currentScript.parentElement.innerHTML = formattedPrice;
+					            </script>
+					        </td>
+					        <td th:text="${item.categoryName}"></td>
+					        <td th:text="${item.brandName}"></td>
+					        <td th:text="${item.unitName}"></td>
+				            <td>
+				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-success">Update</a>
+				              <a th:href="@{deleteProduct(id=${item.id}, fileName=${item.img})}" class="btn btn-danger">Delete</a>
+
+				            </td>
+				        </tr>
+			    </tbody>
+                </table>
+                <table style="margin-left:35%">
+				   <tfoot id="paginationFooter">
+				        <tr class="pagination">
+				            <td>
+				                <a th:href="@{/admin/product/showProduct(cp=1)}" title="First page">&laquo;</a>
+				            </td>
+				            <td th:if="${pv.Page_current > 1}">
+				                <a th:href="@{/admin/product/showProduct(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+				            </td>
+				            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+				                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+				                <a th:href="@{/admin/product/showProduct(cp=${i + 1})}"
+				                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+				                    <span th:text="${i + 1}"></span>
+				                </a>
+				            </td>
+				            <td th:if="${pv.Page_current < pv.Total_page}">
+				                <a th:href="@{/admin/product/showProduct(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+				            </td>
+				            <td>
+				                <a th:href="@{/admin/product/showProduct(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+				            </td>
+				        </tr>
+				    </tfoot>
+				</table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+<script>
+function loadPage(pageNumber) {
+    $.ajax({
+        type: "GET",
+        url: "/admin/product/showProduct",
+        data: {
+            cp: pageNumber
+        },
+        success: function(response) {
+            $('#pageContent').html(response); 
+            // Cập nhật phân trang nếu cần
+            updatePagination(response.pv);
+        },
+        error: function(e) {
+            console.log("Error: ", e);
+        }
+    });
+}
+</script>
+<div th:replace="layout/footer_admin"></div>
+</body>
+
