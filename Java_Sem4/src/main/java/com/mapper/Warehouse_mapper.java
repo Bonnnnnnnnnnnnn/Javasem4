@@ -15,6 +15,7 @@ public class Warehouse_mapper implements RowMapper<Warehouse>{
 		item.setName(r.getString(Views.COL_WAREHOUSE_NAME));
 		item.setAddress(r.getString(Views.COL_WAREHOUSE_ADDRESS));
 		item.setWh_type_id(r.getInt(Views.COL_WAREHOUSE_TYPE_WAREHOUSE_ID));
+        item.setTypeName(r.getString("type_name"));
 		return item;
 	}
 

@@ -35,16 +35,17 @@
 			            <label for="images">Image</label>
 			            <input type="file" class="form-control" id="images" name="images" accept="images/*" required>
 			        </div>
-			        <div class="form-group">
-			            <label for="title">Price</label>
-			            <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price" required>
-			        </div>
+					<div class="form-group">
+					    <label for="title">Price</label>
+					    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price" required oninput="formatPrice(this)">
+					</div>
+
 			        <div class="form-group">
 					    <label for="phone">Description</label>
 					    <textarea name="description" class="form-control" placeholder="Enter description" required></textarea>
 					</div>
 			        <div class="form-group">
-			            <label for="exampleInputEmail1">Role</label>
+			            <label for="exampleInputEmail1">Warranty period</label>
 			            <select name="wpe" id="wpe" class="form-control" required>
 			                <option th:value="12" th:text="12">months</option>
 			                <option th:value="24" th:text="24">months</option>
@@ -70,6 +71,7 @@
 			        </div>
 			    </div>
 			    <div class="card-footer">
+			    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
 			        <button type="submit" class="btn btn-primary">Submit</button>
 			    </div>
 				</form>
@@ -81,7 +83,7 @@
         </div>
         <div th:replace="layout/footer_admin"></div>
           <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
-          <script th:src="@{/js/js_index.js}"></script>
+          <script th:src="@{/js/addProduct.js}"></script>
           
 </body>
 
