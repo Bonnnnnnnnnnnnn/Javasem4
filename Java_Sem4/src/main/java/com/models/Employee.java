@@ -7,6 +7,7 @@ public class Employee {
 	private String Phone;
 	private String Password;
 	private int Role_id;
+	private String Role_name;
 	public Employee(int id, String first_name, String last_name, String phone, String password,
 			int role_id) {
 		super();
@@ -55,5 +56,12 @@ public class Employee {
 	public void setRole_id(int role_id) {
 		Role_id = role_id;
 	}
+	public String getRole_name() {
+		return Role_name;
+	}
+	public void setRole_name(String role_name) {
+		Role_name = role_name;
+	}
+	
 	
 }

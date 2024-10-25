@@ -5,6 +5,7 @@ public class Warehouse {
 	private String Name;
 	private String Address;
 	private int Wh_type_id;
+	private String Type_name;
 	public Warehouse(int id, String name, String address, int wh_type_id) {
 		super();
 		Id = id;
@@ -38,4 +39,11 @@ public class Warehouse {
 	public void setWh_type_id(int wh_type_id) {
 		Wh_type_id = wh_type_id;
 	}
+	public String getTypeName() {
+		return Type_name;
+	}
+	public void setTypeName(String type_name) {
+		Type_name = type_name;
+	}
+	
 }

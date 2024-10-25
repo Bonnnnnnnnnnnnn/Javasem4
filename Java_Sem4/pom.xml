@@ -70,11 +70,7 @@
 		  <artifactId>jbcrypt</artifactId>
 		  <version>0.4</version>
 		</dependency>
-		<dependency>
-			<groupId>comvn</groupId>
-			<artifactId>Database_Demo</artifactId>
-			<version>0.0.1</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>

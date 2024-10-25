@@ -21,13 +21,13 @@ public class RoleInterceptor implements HandlerInterceptor {
 //        } else if (roleid == null) {
 //            response.sendRedirect(request.getContextPath() + "/admin/employee/login");
 //            return false;
-//        } else if (roleid == 0 && (requestURI.startsWith("/warehouseManage") || requestURI.startsWith("/businessManage"))) {
+//        } else if (roleid == 1 && (requestURI.startsWith("/warehouseManage") || requestURI.startsWith("/businessManage"))) {
 //            response.sendRedirect(request.getContextPath() + "/admin/employee/login");
 //            return false;
-//        } else if (roleid == 1 && (requestURI.startsWith("/admin") || requestURI.startsWith("/businessManage"))) {
+//        } else if (roleid == 2 && (requestURI.startsWith("/admin") || requestURI.startsWith("/businessManage"))) {
 //            response.sendRedirect(request.getContextPath() + "/admin/employee/login");
 //            return false;
-//        } else if (roleid == 2 && (requestURI.startsWith("/admin") || requestURI.startsWith("/warehouseManage"))) {
+//        } else if (roleid == 3 && (requestURI.startsWith("/admin") || requestURI.startsWith("/warehouseManage"))) {
 //            response.sendRedirect(request.getContextPath() + "/admin/employee/login");
 //            return false;
 //        }

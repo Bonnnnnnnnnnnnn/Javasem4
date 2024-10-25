@@ -1,23 +1,28 @@
 package com.admin.controller;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.admin.repository.ProductRepository;
-import com.models.Brand;
-import com.models.Category_Product;
 import com.models.PageView;
 import com.models.Product;
-import com.models.Unit;
 import com.utils.FileUtils;
+import com.utils.Views;
 
 @Controller
 @RequestMapping("admin/product")
@@ -28,13 +33,24 @@ public class ProductController {
 	public String showProduct(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(10);
 	    List<Product> products = reppro.findAll(pv);
 	    model.addAttribute("products", products);
 	    model.addAttribute("pv", pv);
-
-	    return "admin/product/showProduct";
+	    return Views.PRODUCT_SHOWPRODUCT;
 	}
+	@GetMapping("/showProductDetail")
+	public String showProductDetail(@RequestParam("id") String productId, Model model) {
+		int idpro = Integer.parseInt(productId);
+		Product pro = reppro.findId(idpro);
+		@SuppressWarnings("deprecation")
+		NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        String formattedPrice = formatter.format(pro.getPrice());
+	    model.addAttribute("product", pro);
+	    model.addAttribute("formattedPrice", formattedPrice);
+	    return Views.PRODUCT_SHOWPRODUCTDETAIL;
+	}
+
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
 	    Product prod = new Product();
@@ -42,7 +58,7 @@ public class ProductController {
 		model.addAttribute("brands",reppro.findAllBrand());
 		model.addAttribute("categorys",reppro.findAllCategory());
 	    model.addAttribute("new_item", prod);
-	    return "admin/product/showAddProduct";
+	    return Views.PRODUCT_SHOWADDPRODUCT;
 	}
 	@PostMapping("addProduct")
 	public String addProduct(@RequestParam String proName,
@@ -62,9 +78,7 @@ public class ProductController {
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
 		prod.setImg(FileUtils.uploadFileImage(images,"uploads"));
-		
 		reppro.saveProduct(prod);
-		
 		return "redirect:showProduct";
 	}
 	@GetMapping("deleteProduct")
@@ -76,7 +90,26 @@ public class ProductController {
 	    System.out.println(result);
 	    return "redirect:showProduct";
 	}
+	@PostMapping("/deleteSelected")
+	@ResponseBody
+	public ResponseEntity<String> deleteSelectedProducts(@RequestBody List<Integer> ids) {
+	    if (ids == null || ids.isEmpty()) {
+	        return ResponseEntity.badRequest().body("No product IDs provided.");
+	    }
+	    ids.removeIf(Objects::isNull);
 
+	    try {
+	        for (Integer id : ids) {
+	            String fileName = reppro.getProductImageById(id);
+	            String result = reppro.deleteProduct(id, "uploads", fileName);
+	            System.out.println(result);
+	        }
+	        return ResponseEntity.ok("Products and corresponding images deleted successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete products: " + e.getMessage());
+	    }
+	}
 	@GetMapping("/showUpdateProduct")
 	public String showUpdateProduct(Model model,@RequestParam String id) {
 		int idPro = Integer.parseInt(id);
@@ -84,7 +117,7 @@ public class ProductController {
 		model.addAttribute("units",reppro.findAllUnit());
 		model.addAttribute("brands",reppro.findAllBrand());
 		model.addAttribute("categorys",reppro.findAllCategory());
-		return"admin/product/showUpdateProduct";
+		return Views.PRODUCT_SHOWUPDATEPRODUCT;
 	}
 	@PostMapping("updateProduct")
 	public String updateProduct(@RequestParam("product_name") String proName,
@@ -94,7 +127,7 @@ public class ProductController {
 								@RequestParam("price") double price,
 								@RequestParam("description") String description,
 								@RequestParam("warranty_period") int wpe,
-								@RequestParam("img") MultipartFile images,
+								@RequestParam("img") MultipartFile img,
 								@RequestParam("id") int id) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
@@ -104,13 +137,9 @@ public class ProductController {
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
-		prod.setImg(FileUtils.uploadFileImage(images , "uploads"));
+		prod.setImg(FileUtils.uploadFileImage(img , "uploads"));
 		prod.setId(id);
-		
 		reppro.updateProduct(prod);	
 		return "redirect:showProduct";
 	}
-	
-	
-	
 }
