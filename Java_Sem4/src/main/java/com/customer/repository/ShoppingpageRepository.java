@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,8 @@ import com.utils.Views;
 @Repository
 public class ShoppingpageRepository {
 	
-	private final JdbcTemplate dbpro;
+	@Autowired
+	JdbcTemplate dbpro;
 	
 	public List<Product> findAll(PageView ItemPage) {
         try {
