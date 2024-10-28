@@ -67,6 +67,8 @@ public class WhReceiptAndDetailsController {
 	        }
 		    } else {
 		    }
+	    
+	    
 	    return "redirect:showWhReceipt";
 	}
 	@GetMapping("deleteWhr")

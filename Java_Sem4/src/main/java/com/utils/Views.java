@@ -9,7 +9,6 @@ public final class Views {
 	//2.Conversion
 	public static String TBL_CONVERSION = "Conversion";
 	public static String COL_CONVERSION_ID = "Id";
-	public static String COL_CONVERSION_PRODUCT_ID ="Product_id";
 	public static String COL_CONVERSION_FROM_UNIT_ID = "From_unit_id";
 	public static String COL_CONVERSION_TO_UNIT_ID ="To_unit_id";
 	public static String COL_CONVERSION_RATE = "Conversion_rate";
@@ -34,9 +33,10 @@ public final class Views {
 	public static String COL_PRODUCT_NAME = "Product_name";
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
-	public static String COL_PRODUCT_UNIT_ID = "Unit_Id";
+	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
+	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
 	

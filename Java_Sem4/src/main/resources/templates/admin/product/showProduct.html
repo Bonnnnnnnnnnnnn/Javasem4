@@ -47,7 +47,8 @@
 				            <th>Price</th>
 				            <th>Category</th>
 				            <th>Brand</th>
-				            <th>Unit</th>
+				            <th>Conversion</th>
+				            <th>Status </th>
 				            <th>
 				             	<button class="btn btn-danger" onclick="deleteSelectedProducts()">Delete Selected</button>
 				                <a th:href="@{/admin/product/showAddProduct}" class="btn btn-primary">Add Product</a>
@@ -82,8 +83,12 @@
 				                <span th:text="${item.brandName}"></span>
 				            </td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.unitName}"></span>
+				                <span th:text="${item.conversion_id}"></span>
 				            </td>
+				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+				                <span th:text="${item.status}"></span>
+				            </td>
+				            
 				            <td>
 				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
 				                <a th:href="@{deleteProduct(id=${item.id}, fileName=${item.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>

@@ -54,7 +54,7 @@ public class ProductController {
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
 	    Product prod = new Product();
-		model.addAttribute("units",reppro.findAllUnit());
+		model.addAttribute("conversions",reppro.findAllConv());
 		model.addAttribute("brands",reppro.findAllBrand());
 		model.addAttribute("categorys",reppro.findAllCategory());
 	    model.addAttribute("new_item", prod);
@@ -63,20 +63,22 @@ public class ProductController {
 	@PostMapping("addProduct")
 	public String addProduct(@RequestParam String proName,
 								@RequestParam int cateId,
-								@RequestParam int unitId,
+								@RequestParam int conversionId,
 								@RequestParam int brandId,
 								@RequestParam double price,
 								@RequestParam String description,
 								@RequestParam int wpe,
+								@RequestParam String status,
 								@RequestParam("images") MultipartFile images) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setUnit_id(unitId);
+		prod.setConversion_id(conversionId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
+		prod.setStatus(status);
 		prod.setImg(FileUtils.uploadFileImage(images,"uploads"));
 		reppro.saveProduct(prod);
 		return "redirect:showProduct";
@@ -114,7 +116,7 @@ public class ProductController {
 	public String showUpdateProduct(Model model,@RequestParam String id) {
 		int idPro = Integer.parseInt(id);
 		model.addAttribute("up_item", reppro.findId(idPro));
-		model.addAttribute("units",reppro.findAllUnit());
+		model.addAttribute("conversions",reppro.findAllConv());
 		model.addAttribute("brands",reppro.findAllBrand());
 		model.addAttribute("categorys",reppro.findAllCategory());
 		return Views.PRODUCT_SHOWUPDATEPRODUCT;
@@ -122,21 +124,23 @@ public class ProductController {
 	@PostMapping("updateProduct")
 	public String updateProduct(@RequestParam("product_name") String proName,
 								@RequestParam("cate_id") int cateId,
-								@RequestParam("unit_id") int unitId,
+								@RequestParam("conversion_id") int conversionId,
 								@RequestParam("brand_id") int brandId,
 								@RequestParam("price") double price,
 								@RequestParam("description") String description,
 								@RequestParam("warranty_period") int wpe,
+								@RequestParam("Status") String status,
 								@RequestParam("img") MultipartFile img,
 								@RequestParam("id") int id) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setUnit_id(unitId);
+		prod.setConversion_id(conversionId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
+		prod.setStatus(status);
 		prod.setImg(FileUtils.uploadFileImage(img , "uploads"));
 		prod.setId(id);
 		reppro.updateProduct(prod);	

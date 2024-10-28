@@ -15,7 +15,6 @@ public class Conversion_mapper implements RowMapper<Conversion>{
 		item.setConversion_rate(rs.getInt(Views.COL_CONVERSION_RATE));
 		item.setFrom_unit_id(rs.getInt(Views.COL_CONVERSION_FROM_UNIT_ID));
 		item.setTo_unit_id(rs.getInt(Views.COL_CONVERSION_TO_UNIT_ID));
-		item.setProduct_id(rs.getInt(Views.COL_CONVERSION_PRODUCT_ID));
 		return item;
 	}
 
