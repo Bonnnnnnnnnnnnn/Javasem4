@@ -4,22 +4,20 @@ import java.time.LocalDateTime;
 
 public class Customer {
 	private int Id;
-	private String Uid;
+	private String Email;
 	private LocalDateTime Creation_time;
-	private String Phone;
 	private LocalDateTime BirthDay;
 	private String Password;
 	private String Address;
 	private String First_name;
 	private String Last_name;
 	private String Img_cus;
-	public Customer(int id, String uid, LocalDateTime creation_time, String phone, LocalDateTime birthDay,
+	public Customer(int id, String email, LocalDateTime creation_time, LocalDateTime birthDay,
 			String password, String address, String first_name, String last_name, String img_cus) {
 		super();
 		Id = id;
-		Uid = uid;
+		Email = email;
 		Creation_time = creation_time;
-		Phone = phone;
 		BirthDay = birthDay;
 		Password = password;
 		Address = address;
@@ -36,23 +34,17 @@ public class Customer {
 	public void setId(int id) {
 		Id = id;
 	}
-	public String getUid() {
-		return Uid;
+	public String getEmail() {
+		return Email;
 	}
-	public void setUid(String uid) {
-		Uid = uid;
+	public void setEmail(String email) {
+		Email = email;
 	}
 	public LocalDateTime getCreation_time() {
 		return Creation_time;
 	}
 	public void setCreation_time(LocalDateTime creation_time) {
 		Creation_time = creation_time;
-	}
-	public String getPhone() {
-		return Phone;
-	}
-	public void setPhone(String phone) {
-		Phone = phone;
 	}
 	public LocalDateTime getBirthDay() {
 		return BirthDay;

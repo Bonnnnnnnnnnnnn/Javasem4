@@ -132,8 +132,7 @@ public final class Views {
 	public static String COL_CUSTOMER_LAST_NAME = "Last_name";
 	public static String COL_CUSTOMER_ADDRESS = "Address";
 	public static String COL_CUSTOMER_PASSWORD = "Password";
-	public static String COL_CUSTOMER_PHONE = "Phone";
-	public static String COL_CUSTOMER_UID = "Uid";
+	public static String COL_CUSTOMER_EMAIL = "Email";
 	public static String COL_CUSTOMER_CREATION_TIME = "Creation_time";
 	public static String COL_CUSTOMER_BIRTHOFDATE = "Dob";
 	
@@ -183,5 +182,8 @@ public final class Views {
 	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
 	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";
 	public static String CUS_DETAILPROPAGE = "customer/detailproduct";
-	
+	public static String CUS_CARTPAGE = "customer/cart";
+	public static String CUS_SIGNINPAGE = "customer/signin";
+	public static String CUS_SIGNUPPAGE = "customer/signup";
+	public static String CUS_COFIRMPAGE = "customer/corfirmregister";
 }

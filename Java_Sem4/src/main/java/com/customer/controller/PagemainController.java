@@ -22,10 +22,8 @@ import com.utils.FileUtils;
 import com.utils.Views;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("")
 public class PagemainController {
-	@Autowired
-	private CategoryRepository repca;
 	
 	@Autowired
 	private ShoppingpageRepository reppro;
@@ -36,7 +34,7 @@ public class PagemainController {
 		PageView pv = new PageView();
 	    pv.setPage_current(1);
 	    pv.setPage_size(10);
-		model.addAttribute("categorys", repca.findAll());
+		
 		model.addAttribute("pronewar", reppro.findAllnopaging(pv,"",0,"NewRelease"));
 		return Views.CUS_SHOWPAGEMAIN;
 	}

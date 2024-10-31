@@ -16,16 +16,14 @@ import com.models.Product;
 import com.utils.Views;
 
 @Controller
-@RequestMapping("detailproduct")
-public class DetailproductController {
+@RequestMapping("cart")
+public class CartController {
 	@Autowired
 	private DetailproductRepository reppro;
 	
-	@GetMapping("/product")
+	@GetMapping("/showcart")
 	public String showpage(Model model,@RequestParam String id) {	
-		int idpro = Integer.parseInt(id);
-		Product pro = reppro.findId(idpro);
-	    model.addAttribute("product", pro);
-		return Views.CUS_DETAILPROPAGE;
+		
+		return Views.CUS_CARTPAGE;
 	}
 }

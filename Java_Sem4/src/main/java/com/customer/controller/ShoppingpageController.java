@@ -22,10 +22,8 @@ import com.utils.FileUtils;
 import com.utils.Views;
 
 @Controller
-@RequestMapping("/Shoppingpage")
+@RequestMapping("shoppingpage")
 public class ShoppingpageController {
-	@Autowired
-	private CategoryRepository repca;
 	
 	@Autowired
 	private ShoppingpageRepository reppro;
@@ -36,7 +34,6 @@ public class ShoppingpageController {
 	
 	@GetMapping("")
 	public String showpage(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {	
-		model.addAttribute("categorys", repca.findAll());
 		PageView pv = new PageView();
 	    pv.setPage_current(cp);
 	    pv.setPage_size(12);

@@ -25,8 +25,7 @@ public class Customer_mapper implements RowMapper<Customer> {
         item.setFirst_name(rs.getString(Views.COL_CUSTOMER_FIRST_NAME));
         item.setLast_name(rs.getString(Views.COL_CUSTOMER_LAST_NAME));
         item.setPassword(rs.getString(Views.COL_CUSTOMER_PASSWORD));
-        item.setPhone(rs.getString(Views.COL_CUSTOMER_PHONE));
-        item.setUid(rs.getString(Views.COL_CUSTOMER_UID));
+        item.setEmail(rs.getString(Views.COL_CUSTOMER_EMAIL));
 		return item;
 	}
 
