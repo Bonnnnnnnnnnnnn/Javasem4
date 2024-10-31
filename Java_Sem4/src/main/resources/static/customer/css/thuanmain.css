@@ -1,0 +1,44 @@
+.osearch{
+	position:relative;
+}
+.osearch .searchDropdown{
+	position:absolute;
+	width: 100%;
+	height: 500%;
+	display: block;
+	z-index: 4;
+	top: 100%;
+	background-color: white;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	overflow: auto; 
+	animation: xuathientrenxuong 0.5s;
+	display:none;
+}
+::-webkit-scrollbar {
+    display: none; 
+}
+@keyframes xuathientrenxuong {
+    0% {
+        clip-path: inset(0 0 100% 0); /* Cắt phần tử ở dưới */
+        opacity: 0; /* Độ trong suốt là 0 */
+    }
+    100% {
+        clip-path: inset(0); /* Hiện toàn bộ phần tử */
+        opacity: 1; /* Độ trong suốt là 1 */
+    }
+}
+.searchDropdown .thuandropdown-item{
+	width: 100%;
+	height: 20%;
+	transition: 0.2s;
+	display: flex;
+	align-items: center;
+
+}
+.searchDropdown .thuandropdown-item span{
+	margin-left: 20px;
+}
+.searchDropdown .thuandropdown-item:hover{
+	background-color: rgb(230, 230, 230);
+}

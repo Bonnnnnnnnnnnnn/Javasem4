@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.admin.repository.CategoryRepository;
+import com.admin.repository.ProductRepository;
 import com.customer.repository.PagemainRepository;
+import com.customer.repository.ShoppingpageRepository;
 import com.models.Customer;
+import com.models.PageView;
 import com.utils.FileUtils;
 import com.utils.Views;
 
@@ -24,9 +27,17 @@ public class PagemainController {
 	@Autowired
 	private CategoryRepository repca;
 	
+	@Autowired
+	private ShoppingpageRepository reppro;
+	
+
 	@GetMapping("")
-	public String showpage(Model model) {	
+	public String showpage(Model model) {
+		PageView pv = new PageView();
+	    pv.setPage_current(1);
+	    pv.setPage_size(10);
 		model.addAttribute("categorys", repca.findAll());
+		model.addAttribute("pronewar", reppro.findAllnopaging(pv,"",0,"NewRelease"));
 		return Views.CUS_SHOWPAGEMAIN;
 	}
 }

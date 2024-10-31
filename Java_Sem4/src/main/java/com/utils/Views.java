@@ -34,7 +34,7 @@ public final class Views {
 	public static String COL_PRODUCT_NAME = "Product_name";
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
-	public static String COL_PRODUCT_UNIT_ID = "Unit_Id";
+	public static String COL_PRODUCT_UNIT_ID = "Id_Conversion";
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
@@ -182,4 +182,6 @@ public final class Views {
 	//21.CUSTOMER
 	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
 	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";
+	public static String CUS_DETAILPROPAGE = "customer/detailproduct";
+	
 }

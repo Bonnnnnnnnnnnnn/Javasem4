@@ -22,8 +22,8 @@ import com.utils.FileUtils;
 import com.utils.Views;
 
 @Controller
-@RequestMapping("/Shoppingpage")
-public class ShoppingpageController {
+@RequestMapping("/Detailproduct")
+public class DetailproductController {
 	@Autowired
 	private CategoryRepository repca;
 	
@@ -34,14 +34,9 @@ public class ShoppingpageController {
 	private BrandRepository repbr;
 	
 	
-	@GetMapping("")
-	public String showpage(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {	
-		model.addAttribute("categorys", repca.findAll());
-		PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(12);
-		model.addAttribute("pronewar", reppro.findAllpaging(pv,"",0,""));
-		model.addAttribute("brands", repbr.findAll());
-		return Views.CUS_SHOPPINGPAGE;
+	@GetMapping("/product")
+	public String showpage(Model model) {	
+		
+		return Views.CUS_DETAILPROPAGE;
 	}
 }
