@@ -1,19 +1,19 @@
 package com.models;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Customer {
 	private int Id;
 	private String Email;
-	private LocalDateTime Creation_time;
-	private LocalDateTime BirthDay;
+	private LocalDate Creation_time;
+	private LocalDate BirthDay;
 	private String Password;
 	private String Address;
 	private String First_name;
 	private String Last_name;
-	private String Img_cus;
-	public Customer(int id, String email, LocalDateTime creation_time, LocalDateTime birthDay,
-			String password, String address, String first_name, String last_name, String img_cus) {
+
+	public Customer(int id, String email, LocalDate creation_time, LocalDate birthDay,
+			String password, String address, String first_name, String last_name) {
 		super();
 		Id = id;
 		Email = email;
@@ -23,7 +23,7 @@ public class Customer {
 		Address = address;
 		First_name = first_name;
 		Last_name = last_name;
-		Img_cus = img_cus;
+		
 	}
 	public Customer() {
 
@@ -40,16 +40,16 @@ public class Customer {
 	public void setEmail(String email) {
 		Email = email;
 	}
-	public LocalDateTime getCreation_time() {
+	public LocalDate getCreation_time() {
 		return Creation_time;
 	}
-	public void setCreation_time(LocalDateTime creation_time) {
+	public void setCreation_time(LocalDate creation_time) {
 		Creation_time = creation_time;
 	}
-	public LocalDateTime getBirthDay() {
+	public LocalDate getBirthDay() {
 		return BirthDay;
 	}
-	public void setBirthDay(LocalDateTime birthDay) {
+	public void setBirthDay(LocalDate birthDay) {
 		BirthDay = birthDay;
 	}
 	public String getPassword() {
@@ -75,12 +75,6 @@ public class Customer {
 	}
 	public void setLast_name(String last_name) {
 		Last_name = last_name;
-	}
-	public String getImg_cus() {
-		return Img_cus;
-	}
-	public void setImg_cus(String img_cus) {
-		Img_cus = img_cus;
 	}
 	
 }

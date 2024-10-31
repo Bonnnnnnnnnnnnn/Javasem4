@@ -115,7 +115,7 @@ function loginUser() {
     .then(data => {
         if (data) {
            
-            window.location.href = '/account/dashboard'; 
+            window.location.href = '/'; 
         } else {
             // Xử lý lỗi đăng nhập
             passwordError.innerHTML = "Invalid email or password. Please try again.";

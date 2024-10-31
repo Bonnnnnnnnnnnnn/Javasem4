@@ -5,13 +5,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.interceptor.HeaderIntercepter;
+import com.interceptor.CartInterceptor;
+import com.interceptor.HeaderInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
-    private HeaderIntercepter headerInterceptor;
+    private HeaderInterceptor headerInterceptor;
+    @Autowired
+    private CartInterceptor cartInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -22,5 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
                                  "/detailproduct/**", 
                                  "/account/**", 
                                  "/cart/**"); 
+        registry.addInterceptor(cartInterceptor)
+        .addPathPatterns("/cart/**"); 
     }
 }

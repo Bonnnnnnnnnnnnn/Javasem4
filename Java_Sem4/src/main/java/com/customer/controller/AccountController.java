@@ -3,13 +3,16 @@ package com.customer.controller;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -93,7 +96,7 @@ public class AccountController {
             request.getSession().removeAttribute("tokenregister");
             request.getSession().setAttribute("logined", cus.getId()); 
            
-            return "redirect:/"; 
+            return "redirect:/account/cusinfo"; 
         } else {
           
             System.out.println("Invalid confirmation token or email for email: " + email);
@@ -117,5 +120,43 @@ public class AccountController {
 	    boolean success = customer != null;
 	    return ResponseEntity.ok(success);
 	}
+	@GetMapping("/cusinfo")
+	public String showpagecusinfo(Model model, HttpServletRequest request) {	
+		Customer cus = accrepo.finbyid((int) request.getSession().getAttribute("logined"));
+		model.addAttribute("cusinfo", cus);
+	
+		return Views.CUS_CUSINFOPAGE;
+	}
+	@PostMapping("/saveprofile")
+	public String saveprofile(@ModelAttribute Customer cusinfo, HttpServletRequest request) {	
+	    accrepo.updateAccount(cusinfo);
+	    return "redirect:/account/cusinfo"; 
+	}
+	@GetMapping("/gochangepassword")
+	public String showpagechangepassword(Model model, HttpServletRequest request) {	
+	
+		model.addAttribute("cusid", (int) request.getSession().getAttribute("logined"));
 
+		return Views.CUS_CUSCHANGEPASSWORDPAGE;
+	}
+	@GetMapping("/validateCurrentPassword")
+	@ResponseBody
+	public boolean checcurrentpw(@RequestParam("password") String password, HttpServletRequest request) {
+	    // Retrieve the logged-in user's ID from the session
+	    int customerId = (int) request.getSession().getAttribute("logined");
+	    
+	    // Validate the current password using the accrepo
+	    return accrepo.verifyPassword(customerId, password);
+	}
+	@PostMapping("/changepassword")
+	public String savenewpw(@RequestParam("newPassword") String npw, HttpServletRequest request) {
+		accrepo.updatePassword((int) request.getSession().getAttribute("logined"),npw);
+	    return "redirect:/account/cusinfo"; 
+	}
+	
+	@GetMapping("/logout")
+	public String logout( HttpServletRequest request) {	
+		request.getSession().setAttribute("logined",null);
+		return "redirect:/";
+	}
 }

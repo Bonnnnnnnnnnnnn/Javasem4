@@ -21,6 +21,8 @@ import com.models.PageView;
 import com.utils.FileUtils;
 import com.utils.Views;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("shoppingpage")
 public class ShoppingpageController {
@@ -33,12 +35,50 @@ public class ShoppingpageController {
 	
 	
 	@GetMapping("")
-	public String showpage(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {	
-		PageView pv = new PageView();
+	public String showpage(Model model, 
+	                       @RequestParam(name = "cp", required = false, defaultValue = "1") int cp, 
+	                       HttpServletRequest request) {
+	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
 	    pv.setPage_size(12);
-		model.addAttribute("pronewar", reppro.findAllpaging(pv,"",0,""));
-		model.addAttribute("brands", repbr.findAll());
-		return Views.CUS_SHOPPINGPAGE;
+	    
+	    // Retrieve selected filters from session or initialize them
+	    int[] idCategories = (int[]) request.getSession().getAttribute("selectedCategories");
+	    int[] idBrands = (int[]) request.getSession().getAttribute("selectedBrands");
+	    
+	    // If there are no selected filters in the session, initialize them as empty arrays
+	    if (idCategories == null) {
+	        idCategories = new int[0]; // Initialize as empty array
+	    }
+	    if (idBrands == null) {
+	        idBrands = new int[0]; // Initialize as empty array
+	    }
+
+	    String[] statuses = {"NewRelease","Active","OutOfStock"}; // Example status array
+
+	    // Call the findAllpaging method with the defined arrays
+	    model.addAttribute("pronewar", reppro.findAllpaging(pv, "", idCategories, idBrands, statuses));
+
+	    model.addAttribute("brands", repbr.findAll());
+	    model.addAttribute("pv", pv);
+	    model.addAttribute("selectedBrands", idBrands);
+	    model.addAttribute("selectedCategories", idCategories);
+	    return Views.CUS_SHOPPINGPAGE;
 	}
+
+	
+	@PostMapping("/filter")
+	public String applyFilters(@RequestParam(name = "brands", required = false) int[] brandIds,
+	                           @RequestParam(name = "categories", required = false) int[] categoryIds,
+	                           HttpServletRequest request, // To store filters in the session
+	                           Model model) {
+	    
+	    // Store the selected filters in the session
+	    request.getSession().setAttribute("selectedBrands", brandIds);
+	    request.getSession().setAttribute("selectedCategories", categoryIds);
+	    
+	  
+	    return "redirect:/shoppingpage"; // Redirect to the shopping page or another page
+	}
+
 }

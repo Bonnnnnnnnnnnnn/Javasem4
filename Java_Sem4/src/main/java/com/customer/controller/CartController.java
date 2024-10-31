@@ -22,7 +22,7 @@ public class CartController {
 	private DetailproductRepository reppro;
 	
 	@GetMapping("/showcart")
-	public String showpage(Model model,@RequestParam String id) {	
+	public String showpage(Model model) {	
 		
 		return Views.CUS_CARTPAGE;
 	}

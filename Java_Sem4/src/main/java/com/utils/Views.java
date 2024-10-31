@@ -186,4 +186,7 @@ public final class Views {
 	public static String CUS_SIGNINPAGE = "customer/signin";
 	public static String CUS_SIGNUPPAGE = "customer/signup";
 	public static String CUS_COFIRMPAGE = "customer/corfirmregister";
+	public static String CUS_CUSINFOPAGE = "customer/cusinfo";
+	public static String CUS_CUSCHANGEPASSWORDPAGE = "customer/changepassword";
+
 }

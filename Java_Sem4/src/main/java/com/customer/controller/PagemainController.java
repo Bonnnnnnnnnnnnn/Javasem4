@@ -31,11 +31,12 @@ public class PagemainController {
 
 	@GetMapping("")
 	public String showpage(Model model) {
-		PageView pv = new PageView();
-	    pv.setPage_current(1);
-	    pv.setPage_size(10);
-		
-		model.addAttribute("pronewar", reppro.findAllnopaging(pv,"",0,"NewRelease"));
+	    int[] idCategories = {}; 
+	    int[] idBrands = {}; 
+	    String[] statuses = {"NewRelease"}; 
+
+	    // Call the findAllpaging method with the defined arrays
+	    model.addAttribute("pronewar", reppro.findAllpaging(new PageView(), "", idCategories, idBrands, statuses));
 		return Views.CUS_SHOWPAGEMAIN;
 	}
 }
