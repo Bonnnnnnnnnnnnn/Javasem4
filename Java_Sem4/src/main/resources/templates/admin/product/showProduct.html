@@ -70,7 +70,7 @@
 				                <img th:if="${item.img != null}" th:src="@{/uploads/{imageName}(imageName=${item.img})}" width="60">
 				            </td>
 							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-							    <span th:text="${item.formattedPrice}"></span>
+							    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
 							</td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.categoryName}"></span>

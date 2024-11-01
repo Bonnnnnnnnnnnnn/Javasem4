@@ -1,6 +1,5 @@
 package com.admin.controller;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -36,15 +35,6 @@ public class ProductController {
 	    pv.setPage_current(cp);
 	    pv.setPage_size(10);
 	    List<Product> products = reppro.findAll(pv);
-	    DecimalFormat df = new DecimalFormat("$#,##0.00");
-
-	    for (Product product : products) {
-	        if (product.getPrice() > 0) {
-	            product.setFormattedPrice(df.format(product.getPrice()));
-	        } else {
-	            product.setFormattedPrice("N/A");
-	        }
-	    }
 	    model.addAttribute("products", products);
 	    model.addAttribute("pv", pv);
 	    return Views.PRODUCT_SHOWPRODUCT;
