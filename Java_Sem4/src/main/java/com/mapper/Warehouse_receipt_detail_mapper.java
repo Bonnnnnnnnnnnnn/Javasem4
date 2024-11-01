@@ -14,7 +14,6 @@ public class Warehouse_receipt_detail_mapper implements RowMapper<Warehouse_rece
 		item.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID));
 		item.setQuantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
 		item.setWh_receipt_id(rs.getInt(Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID));
-		item.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
 		item.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
 		return item;
 	}

@@ -1,0 +1,96 @@
+
+<body xmlns:th="http://www.thymeleaf.org" lang="en" >
+<div th:replace="layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Warehouse Receipt and Warehouse Receipt Details</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Details Warehouse Receipt and Warehouse Receipt Details</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+        <section class="content-header">
+      <div class="container-fluid">
+	<div class="row">
+          <div class="col-md-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Details Warehouse Receipt and Warehouse Receipt Details</h3>
+              </div>
+              <form th:object="${whr}">
+			    <div class="card-body row">
+			        <div class="form-group col-md-6">
+			          	<label for="title">Name warehouse receipt</label>
+			            <input type="text" disabled readonly th:value="${whr.name}" class="form-control">
+			        </div>
+			        
+					<div class="form-group col-md-6">
+					    <label for="title">Warehouse name</label>
+					    <input type="text" disabled readonly th:value="${whr.wh_name}" class="form-control">
+					</div>
+
+					<div class="form-group col-md-6">
+					    <label for="phone">Date time</label>
+							<input type="text" disabled readonly th:value="${whr.date}" class="form-control">
+					</div>
+					
+					<div class="form-group col-6 ">
+					    <label for="exampleInputEmail1">Status</label>
+					    <input class="form-control" disabled readonly th:value="${whr.status}">
+					</div>
+					
+			    </div>
+			    <div class="card-footer">
+			    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
+			        <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${whr.id})}" class="btn btn-warning">Update</a>
+			    </div>
+
+				<table class="table table-hover text-nowrap">
+				    <thead>
+				        <tr class="text-center">
+				         	<th>STT</th>
+				            <th>Price</th>
+				            <th>Quantity</th>
+				            <th>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse receipt</a>
+				            </th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <tr th:if="${#lists.isEmpty(details)}" class="text-center">
+				            <td colspan="8">No positions found</td>
+				        </tr>
+				        <tr th:each="item , iterStat: ${details}" class="text-center">
+				        	<td th:text="${iterStat.index + 1}"></td>
+				            <td>
+				                <span th:text="${#numbers.formatCurrency(item.wh_price)}"></span>
+				            </td>
+				            <td>
+				                <span th:text="${item.quantity}"></span>
+				            </td>
+				            <td>
+				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+				</form>
+            </div>
+          </div>
+        </div>
+        </div>
+        </section>
+        </div>
+        <div th:replace="layout/footer_admin"></div>
+          <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+            <script th:src="@{/js/showProduct.js}"></script>
+</body>
+

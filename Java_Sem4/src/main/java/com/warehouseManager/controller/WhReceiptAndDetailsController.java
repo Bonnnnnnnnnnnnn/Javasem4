@@ -1,7 +1,10 @@
 package com.warehouseManager.controller;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +25,9 @@ import com.warehouseManager.repository.WhReceiptAndDetailsRepository;
 public class WhReceiptAndDetailsController {
 	@Autowired
 	private WhReceiptAndDetailsRepository repwd;
+	
+	//Phần Warehouse_receipt 
+	
 	@GetMapping("showWhReceipt")
 	public String showWhReceipt( Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 		 PageView pv = new PageView();
@@ -32,52 +38,78 @@ public class WhReceiptAndDetailsController {
 		    model.addAttribute("pv", pv);
 		return Views.SHOW_WAREHOUSE_RECEIPT;
 	}
-	@GetMapping("showAddWhAndWhDetails")
-	public String showAddWhAndWhDetails(Model model) {
-		Warehouse_receipt_detail whdt = new Warehouse_receipt_detail();
+	@GetMapping("/showWhReceiptDetail")
+	public String showWhReceiptDetail(@RequestParam("id") String WhrId,@RequestParam("id") String WhrdId, Model model) {
+			int idwhr = Integer.parseInt(WhrId);
+			Warehouse_receipt whr = repwd.findId(idwhr);
+			int idwhrs = Integer.parseInt(WhrdId);
+	        List<Warehouse_receipt_detail> details = repwd.findDetailsByReceiptId(idwhrs); 
+	        model.addAttribute("details", details);
+		    model.addAttribute("whr", whr);
+		return Views.SHOW_WAREHOUSE_RECEIPT_DETAILS;
+	}
+	@GetMapping("showAddWhReceipt")
+	public String showAddWhReceipt(Model model) {
 		Warehouse_receipt whr = new Warehouse_receipt();
-		model.addAttribute("new_details",whdt);
 		model.addAttribute("new_item",whr);
 		model.addAttribute("warehouses",repwd.findAllWh());
 		return Views.ADD_WAREHOUSE_RECEIPT;
 	}
-	@PostMapping("addWhReDetail")
-	public String addWhReDetail(@RequestParam String name,
-	                             @RequestParam int wh_id,
-	                             @RequestParam("date") String dateStr,
-	                             @RequestParam int wh_receiptId,
-	                             @RequestParam double wh_price,
-	                             @RequestParam int quantity) {
+	@PostMapping("/addWhReceipt")
+	public String addWhReceipt(
+	        @RequestParam("name") String name,
+	        @RequestParam("wh_id") int wh_id, 
+	        @RequestParam("status") String status,
+	        @RequestParam List<Integer> quantity,
+	        @RequestParam List<Double> wh_price, 
+	        Model model) {
 	    
-	    LocalDateTime date = LocalDateTime.parse(dateStr);
+	    Warehouse_receipt receipt = new Warehouse_receipt();
+	    receipt.setName(name);
+	    receipt.setWh_id(wh_id);
+	    receipt.setStatus(status);
+	    receipt.setDate(LocalDateTime.now()); 
 
-	    Warehouse_receipt whr = new Warehouse_receipt();
-	    whr.setName(name);
-	    whr.setWh_id(wh_id);
-	    whr.setDate(date);
-	    
-	    boolean isReceiptSaved = repwd.saveWhRe(whr);
-	    if (isReceiptSaved) {
-	        Warehouse_receipt_detail whdt = new Warehouse_receipt_detail();
-	        whdt.setWh_receipt_id(wh_receiptId);
-	        whdt.setWh_price(wh_price);
-
- 	        boolean isDetailSaved = repwd.saveWhDetail(whdt);
-	        if (!isDetailSaved) {
-	        }
-		    } else {
-		    }
-	    return "redirect:showWhReceipt";
-	}
-	@GetMapping("deleteWhr")
-	public String deleteWhr(@RequestParam("id") String id) {
-	    int idwhr = Integer.parseInt(id);
-	    boolean success = repwd.deleteWarehouseAndDetails(idwhr);
-	    if (success) {
-	        return "redirect:showWhReceipt";
-	    } else {
-	        return "redirect:showWhReceipt?error=true";
+	    List<Warehouse_receipt_detail> details = new ArrayList<>();
+	    for (int i = 0; i < quantity.size(); i++) {
+	        Warehouse_receipt_detail detail = new Warehouse_receipt_detail();
+	        detail.setQuantity(quantity.get(i));
+	        detail.setWh_price(wh_price.get(i));
+	        details.add(detail);
 	    }
-	}
 
+	    boolean isAdded = repwd.addRequestOrderWithDetails(receipt, details);
+
+	    if (isAdded) {
+	        model.addAttribute("message", "Request Order added successfully!");
+	    } else {
+	        model.addAttribute("message", "Failed to add Request Order.");
+	    }
+	    
+	    return "redirect:showWhReceipt";
+		}
+	
+		@GetMapping("showUpdateWhReceipt")
+		public String showUpdateWhReceipt(@RequestParam String id ,Model model) {
+			int idwhr = Integer.parseInt(id);
+			Warehouse_receipt whr = repwd.findId(idwhr);	
+			model.addAttribute("up_item",whr);
+			model.addAttribute("warehouses",repwd.findAllWh());
+			return Views.UPDATE_WAREHOUSE_RECEIPT;
+		}
+		@PostMapping("updateWhReceipt")
+		public String updateWhReceipt( @RequestParam("name") String name,
+								        @RequestParam("wh_id") int wh_id, 
+								        @RequestParam("status") String status,
+								        @RequestParam("id") int id,Model model) {
+			Warehouse_receipt receipt = new Warehouse_receipt();
+		    receipt.setName(name);
+		    receipt.setWh_id(wh_id);
+		    receipt.setStatus(status);
+		    receipt.setDate(LocalDateTime.now()); 
+		    receipt.setId(id);
+		    
+		    repwd.updateWhRe(receipt);
+			return "redirect:showWhReceipt";
+		}
 }

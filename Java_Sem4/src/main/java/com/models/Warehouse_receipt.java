@@ -8,12 +8,13 @@ public class Warehouse_receipt {
 	private String Name;
 	private int Wh_id;
 	private String Wh_name;
+	private String Status;
     private LocalDateTime Date;
-	public Warehouse_receipt(int id, String name, int wh_id, LocalDateTime date) {
-		super();
+	public Warehouse_receipt(int id, String name, int wh_id, LocalDateTime date,String status) {
 		Id = id;
 		Name = name;
 		Wh_id = wh_id;
+		Status = status;
 		Date = date;
 	}
 	public Warehouse_receipt() {
@@ -47,6 +48,12 @@ public class Warehouse_receipt {
 	}
 	public void setWh_name(String wh_name) {
 		Wh_name = wh_name;
+	}
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		Status = status;
 	}
 	
 }

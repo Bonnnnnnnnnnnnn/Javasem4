@@ -17,8 +17,8 @@ public class Conversion_mapper implements RowMapper<Conversion>{
 		item.setTo_unit_id(rs.getInt(Views.COL_CONVERSION_TO_UNIT_ID));
 		
 		item.setFromUnitName(rs.getString("from_unit_name")); 
-		item.setToUnitName(rs.getString("to_unit_name")); 
-        
+		item.setToUnitName(rs.getString("to_unit_name"));      
+
 		return item;
 	}
 
