@@ -1,15 +1,27 @@
 package com.utils;
 
 public final class Views {
+	
+	//login.employee
+	public static String EMPLOYEE_LOGIN = "admin/employee/EmpLogin";
+	
 	//1.UNIT
+	public static String SHOW_UNIT = "admin/unit/showUnit";
+	public static String ADD_UNIT = "admin/unit/addUnit";
+	public static String UPDATE_UNIT = "admin/unit/updateUnit";
+
 	public static String TBL_UNIT = "Unit";
 	public static String COL_UNIT_ID = "Id";
 	public static String COL_UNIT_NAME = "Name";
 	
 	//2.Conversion
+	public static String ADD_CONVERSION = "admin/conversion/addConversion";
+	public static String UPDATE_CONVERSION = "admin/conversion/updateConversion";
+	public static String SHOW_CONVERSION = "admin/conversion/ShowConversion";
+	
+	
 	public static String TBL_CONVERSION = "Conversion";
 	public static String COL_CONVERSION_ID = "Id";
-	public static String COL_CONVERSION_PRODUCT_ID ="Product_id";
 	public static String COL_CONVERSION_FROM_UNIT_ID = "From_unit_id";
 	public static String COL_CONVERSION_TO_UNIT_ID ="To_unit_id";
 	public static String COL_CONVERSION_RATE = "Conversion_rate";
@@ -36,6 +48,7 @@ public final class Views {
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
 	public static String COL_PRODUCT_UNIT_ID = "Unit_Id";
 	public static String COL_PRODUCT_PRICE = "Price";
+	public static String COL_PRODUCT_ID_CONVERSION = "Id_Conversion";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
@@ -105,15 +118,31 @@ public final class Views {
 	public static String COL_WAREHOUSE_TYPE_NAME = "Name";
 	
 	//12.Warehouse_rn_detail
+	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/releasenotes";
+	public static String ADD_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addReleasenotes";
+	public static String UPDATE_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/updateReleasenotes";
+	public static String SHOW_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/releasenote/releasenoteDetail";
+
+	
 	public static String TBL_WAREHOUSE_RN_DETAIL = "Warehouse_rn_detail";
-	public static String COL_WAREHOUSE_RN_DETAIL_ID = "Id";
+	public static String COL_WAREHOUSE_RN_DETAIL_ID = "id";
+	public static String COL_WAREHOUSE_RN_DETAIL_PRODUCTID = "Id_product";
 	public static String COL_WAREHOUSE_RNOTE_ID = "Wgrn_id";
 	public static String COL_WAREHOUSE_RN_DETAIL_STATUS = "Status";
 	public static String COL_WAREHOUSE_RN_DETAIL_STOCK_ID = "Stock_Id";
 	public static String COL_WAREHOUSE_RN_DETAIL_QUANTITY = "Quantity";
 	
 	//13.Warehouse_releasenote
+	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
+	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
+	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
+	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE = "warehouseManager/orderRequest/showOrderinWarehouse";
+	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showOrderinWarehouseDetail";
+
 	public static String TBL_WAREHOUSE_RELEASENOTE = "Warehouse_releasenote";
+	public static String COL_WAREHOUSE_RELEASENOTE_EMPLOYEEID = "Employee_Id";
+	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOISE_ID = "Warehoise_Id";
 	public static String COL_WAREHOUSE_RELEASENOTE_ID = "Id";
 	public static String COL_WAREHOUSE_RELEASENOTE_NAME = "Name";
 	public static String COL_WAREHOUSE_RELEASENOTE_DATE = "Date";
@@ -165,9 +194,7 @@ public final class Views {
 	public static String EMPLOYEE_SHOWEMP = "admin/employee/showEmp";
 	public static String EMPLOYEE_SHOWREGISTER = "admin/employee/showRegister";
 	public static String EMPLOYEE_SHOWEMPLOYEEDETAIL = "admin/employee/showEmployeeDetail";
-	public static String EMPLOYEE_LOGIN = "login";
 	public static String EMPLOYEE_SHOWUPDATEMPLOYEE = "admin/employee/showUpdateEmployee";
-	
 	public static String TBL_EMPLOYEE = "Employee";
 	public static String COL_EMPLOYEE_ID = "Id";
 	public static String COL_EMPLOYEE_FIRST_NAME = "First_name";

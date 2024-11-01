@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Order Request</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .detail-entry {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .add-detail-btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Update Order Request</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Update Order Request</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Update Order Request</h3>
+                        </div>
+                        
+                        <form th:action="@{/businessManager/updateOrderDetail}" method="post" enctype="multipart/form-data">
+                            <div class="card-body">
+                                <h3>Request Order</h3>
+                                
+                                <input type="hidden" name="id" th:value="${releasenote.id}"/>
+                                
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" id="name" name="name" class="form-control" th:value="${releasenote.name}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="statusWr">Status</label>
+                                    <input type="text" id="statusWr" name="statusWr" class="form-control" th:value="${releasenote.statusWr}" required>
+                                </div>
+
+                                <div >
+                                    <table class="table table-bordered mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th>Product ID</th>
+                                                <th>Quantity</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+										<tbody>
+										    <tr th:each="detail, iterStat : ${details}">
+										        <td>
+										            <input type="hidden" name="id" th:value="${detail.id}" /> <!-- Hidden field for detail ID -->
+										            <input type="number" name="id_product" class="form-control" th:value="${detail.id_product}" required /> 
+										        </td>
+										        <td>
+										            <input type="number" name="quantity" class="form-control" th:value="${detail.quantity}" required />
+										        </td>
+										        <td>
+										            <input type="text" name="status" class="form-control" th:value="${detail.status}" readonly />
+										        </td>
+										        <td>
+										            <button type="button" class="btn btn-danger" onclick="removeDetail(this)">Remove</button>
+										        </td>
+										    </tr>
+										</tbody>
+
+                                    </table>
+                                </div>
+                                <div id="details"></div>
+                                <button type="button" onclick="addDetail()" class="btn btn-primary add-detail-btn">Add Detail</button>
+                                
+                                <div th:if="${message}" class="alert alert-info">
+                                    <span th:text="${message}"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div th:replace="layout/footer_admin"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+let detailIndex = 0;
+
+function addDetail() {
+    detailIndex++;
+    const detailsDiv = document.getElementById('details').getElementsByTagName('tbody')[0];
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <input type="number" name="details[${detailIndex}].id_product" class="form-control" placeholder="Enter Product ID" required>
+        </td>
+        <td>
+            <input type="number" name="details[${detailIndex}].quantity" class="form-control" placeholder="Enter Quantity" required>
+        </td>
+        <td>
+            <input type="text" name="details[${detailIndex}].status" class="form-control" value="Processing" readonly>
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger" onclick="removeDetail(this)">Remove</button>
+        </td>
+    `;
+    detailsDiv.appendChild(newRow);
+}
+
+function removeDetail(button) {
+    const row = button.closest("tr");
+    row.remove();
+}
+</script>
+
+</body>
+</html>
