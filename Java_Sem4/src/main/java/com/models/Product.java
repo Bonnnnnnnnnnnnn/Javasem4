@@ -9,15 +9,17 @@ public class Product {
     private String Brand_name;    
     private int Unit_id;
     private String Unit_name; 
+    private int Id_Conversion;
 	private double Price;
 	private String Img;
 	private String Description;
 	private int Warranty_period;
-	public Product(int id, String product_name, int cate_id, int brand_id, int unit_id, double price, String img,
+	public Product(int id, int id_Conversion, String product_name, int cate_id, int brand_id, int unit_id, double price, String img,
 			String description, int warranty_period) {
 		super();
 		Id = id;
 		Product_name = product_name;
+		Id_Conversion = id_Conversion;
 		Cate_id = cate_id;
 		Brand_id = brand_id;
 		Unit_id = unit_id;
@@ -33,6 +35,12 @@ public class Product {
 	}
 	public void setId(int id) {
 		Id = id;
+	}
+	public int getId_Conversion() {
+		return Id_Conversion;
+	}
+	public void setId_Conversion(int id_conversion) {
+		Id_Conversion = id_conversion;
 	}
 	public String getProduct_name() {
 		return Product_name;

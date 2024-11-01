@@ -1,0 +1,60 @@
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<div th:replace="layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <!-- Content Header (Page header) -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Order Request Table</h3>
+                <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
+                    <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr class="text-center">
+                    	<th></th>
+						<th>Name</th>
+						<th>Date</th>
+						<th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="warehouseTable">
+				        <tr th:if="${#lists.isEmpty(releasenotes)}" class="text-center">
+				            <td colspan="5">No employees found</td>
+				        </tr>
+				        <tr th:each="item : ${releasenotes}" class="text-center" th:if="${item.statusWr == 'Processing' }">
+				            <td></td>
+				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+				                <span th:text="${item.name}"></span>
+				            </td>
+				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+							    <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
+							</td>
+				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+				                <span th:text="${item.statusWr}"></span>
+				            </td>				            
+				        </tr>
+				    </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script th:src="@{/js/OrderRequesRn.js}"></script>
+<div th:replace="layout/footer_admin"></div>
+</body>

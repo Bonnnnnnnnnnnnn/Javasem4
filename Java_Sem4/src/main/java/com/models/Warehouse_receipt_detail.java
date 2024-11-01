@@ -6,6 +6,7 @@ public class Warehouse_receipt_detail {
 	private double Wh_price;
 	private int Product_id;
 	private int Quantity;
+
 	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,int roduct_id) {
 		super();
 		Id = id;
@@ -46,5 +47,7 @@ public class Warehouse_receipt_detail {
 	public void setProduct_id(int product_id) {
 		Product_id = product_id;
 	}
+	
+
 	
 }
