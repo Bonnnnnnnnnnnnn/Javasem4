@@ -6,8 +6,9 @@ public class Warehouse_receipt_detail {
 	private double Wh_price;
 	private int Quantity;
 	private String formattedPrice;
-	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity) {
-		super();
+
+
+	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,int roduct_id) {
 		Id = id;
 		Wh_receipt_id = wh_receipt_id;
 		Wh_price = wh_price;
@@ -15,6 +16,7 @@ public class Warehouse_receipt_detail {
 	}
 	public Warehouse_receipt_detail() {
 	}
+	
 	public int getId() {
 		return Id;
 	}
@@ -45,4 +47,5 @@ public class Warehouse_receipt_detail {
 	public void setFormattedPrice(String formattedPrice) {
 		this.formattedPrice = formattedPrice;
 	}
+
 }

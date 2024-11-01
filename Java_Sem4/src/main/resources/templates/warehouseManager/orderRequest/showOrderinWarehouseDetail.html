@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Request Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .detail-entry {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .table-container {
+            display: flex;
+        }
+        .table-container .table {
+            flex: 1; /* Chiếm 1/2 chiều rộng */
+            margin-right: 20px; /* Khoảng cách giữa hai bảng */
+        }
+        .table.table-sm {
+            font-size: 0.9rem; /* Kích thước chữ nhỏ hơn */
+        }
+        .table.table-sm th, .table.table-sm td {
+            padding: 0.5rem; /* Padding nhỏ hơn */
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="warehouseManager/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Order Request Details</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Order Request Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Order Request Information</h3>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="table-container">
+
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th>Name</th>
+                                            <td th:text="${releasenote.name}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td th:text="${releasenote.statusWr}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                                <table class="table table-bordered table-sm mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Product ID</th>
+                                            <th>Quantity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="detail : ${details}">
+                                            <td>
+                                                <span th:text="${detail.id_product}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${detail.quantity}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${detail.status}"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="/warehouse/showOrderRequestinWarehouse" class="btn btn-primary">Back to List</a>
+                                <div style="display: inline;">
+							        <a th:href="@{/warehouse/addReleasenote}" class="btn btn-primary">receive votes</a>
+							    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div th:replace="warehouseManager/layout/footer_admin"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

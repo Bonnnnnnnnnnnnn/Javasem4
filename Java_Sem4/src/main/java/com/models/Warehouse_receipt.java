@@ -1,7 +1,6 @@
 package com.models;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Warehouse_receipt {
 	private int Id;
