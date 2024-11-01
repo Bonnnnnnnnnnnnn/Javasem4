@@ -15,6 +15,7 @@ public class Warehouse_recript_mapper implements RowMapper<Warehouse_receipt>{
 		item.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_ID));
 		item.setName(rs.getString(Views.COL_WAREHOUSE_RECEIPT_NAME));
 		item.setWh_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_IDWH));
+		item.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_STATUS));
 		item.setWh_name(rs.getString("wh_name"));
 		item.setDate(null);
         Timestamp timestamps = rs.getTimestamp(Views.COL_WAREHOUSE_RECEIPT_DATE);

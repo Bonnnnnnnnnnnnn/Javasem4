@@ -68,19 +68,21 @@ public final class Views {
 	public static String TBL_WAREHOUSE_RECEIPT_DETAIL = "Warehouse_receipt_detail";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_ID = "Id";
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Id_product";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
 	
 	//9.WAREHOUSE_RECEIPT 
-	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhAndWhDetails";
+	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhReceipt";
+	
 	public static String SHOW_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showWhReceipt";
-	public static String UPDATE_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showUpdateWhAndWhDetails";
+	public static String SHOW_WAREHOUSE_RECEIPT_DETAILS = "warehouseManager/warehouseReceipt/showWhReceiptDetail";
+	public static String UPDATE_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showUpdateWhReceipt";
 	
 	public static String TBL_WAREHOUSE_RECEIPT = "Warehouse_receipt";
 	public static String COL_WAREHOUSE_RECEIPT_ID = "Id";
 	public static String COL_WAREHOUSE_RECEIPT_NAME = "Name";
 	public static String COL_WAREHOUSE_RECEIPT_IDWH = "Wh_Id";
+	public static String COL_WAREHOUSE_RECEIPT_STATUS = "Status";
 	public static String COL_WAREHOUSE_RECEIPT_DATE = "Date";
 	
 	//10.WAREHOUSE
@@ -179,5 +181,16 @@ public final class Views {
 	public static String TBL_ROLE = "Role";
 	public static String COL_ROLE_ID = "Id";
 	public static String COL_ROLE_NAME = "Name";
-	
+	//21.Product_Img
+	public static String TBL_PRODUCT_IMG = "product_img";
+	public static String COL_PRODUCT_IMG_ID = "Id";
+	public static String COL_PRODUCT_IMG_URL = "Img_url";
+	public static String COL_PRODUCT_IMG_PRODUCT_ID = "Product_id";
+	public static String COL_PRODUCT_IMG_ID_MAIN_IMG = "Id_main_img";
+	//22.product_spe
+	public static String TBL_PRODUCT_SPE = "product_img";
+	public static String COL_PRODUCT_SPE_ID = "Id";
+	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";
+	public static String COL_PRODUCT_SPE_DES_SPE = "Des_spe";
+	public static String COL_PRODUCT_SPE_PRODUCT_ID = "Product_id"; 
 }

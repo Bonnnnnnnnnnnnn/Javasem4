@@ -26,59 +26,72 @@
                 <h3 class="card-title">Add Product</h3>
               </div>
               <form th:object="${new_item}" action="addProduct" method="post" enctype="multipart/form-data">
-			    <div class="card-body">
-			        <div class="form-group">
+			    <div class="card-body row">
+			    
+			        <div class="form-group col-6">
 			            <label for="title">Product Name</label>
 			            <input type="text" id="proName" name="proName" class="form-control" placeholder="Enter Product Name" required>
 			        </div>
-			        <div class="form-group">
-			            <label for="images">Image</label>
-			            <input type="file" class="form-control" id="images" name="images" accept="images/*" required>
-			        </div>
-					<div class="form-group">
-					    <label for="title">Price</label>
-					    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price" required oninput="formatPrice(this)">
-					</div>
-
-			        <div class="form-group">
+			        
+					<div class="form-group col-6">
+					    <label for="price">Price (USD)</label>
+					    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price in USD" required 
+					           onfocus="removeDollarSign(this)" 
+					           onblur="addDollarSign(this)" step="0.01" min="0">
+					</div>	
+					
+			        <div class="form-group col-6">
 					    <label for="phone">Description</label>
-					    <textarea name="description" class="form-control" placeholder="Enter description" required></textarea>
+					    <textarea name="description" id="description" class="form-control" placeholder="Enter description" required></textarea>
 					</div>
-			        <div class="form-group">
-			            <label for="exampleInputEmail1">Warranty period</label>
-			            <select name="wpe" id="wpe" class="form-control" required>
-			                <option th:value="12" th:text="12">months</option>
-			                <option th:value="24" th:text="24">months</option>
-			            </select>
-			        </div>
-			        <div class="form-group">
+					
+					<div class="form-group col-6">
+					    <label for="images">Image</label>
+					    <input type="file" class="form-control" id="images" name="images" accept="images/*" required onchange="showImage(event)">
+					    <img id="preview" src="#" alt="Image preview" style="display: none; margin-top: 10px; max-width: 100%;heght:200px">
+					</div>
+					
+			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Conversion Id</label>
 			            <select name="conversionId" id="conversionId" class="form-control" required>
 			                <option th:each="item : ${conversions}" th:value="${item.id}" th:text="${item.id}"></option>
 			            </select>
 			        </div>
-			        <div class="form-group">
+			        
+			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Brand</label>
 			            <select name="brandId" id="brandId" class="form-control" required>
 			                <option th:each="item : ${brands}" th:value="${item.id}" th:text="${item.name}"></option>
 			            </select>
 			        </div>
-			        <div class="form-group">
+			        
+			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Category</label>
 			            <select name="cateId" id="cateId" class="form-control" required>
 			                <option th:each="item : ${categorys}" th:value="${item.id}" th:text="${item.name}"></option>
 			            </select>
 			        </div>
-			        <div class="form-group">
+			        
+			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Status</label>
 			            <select name="status" id="status" class="form-control" required>
 			                <option th:value="Active" th:text="Active"></option>
 			                <option th:value="InActive" th:text="InActive"></option>
 			               	<option th:value="OutOfstock" th:text="OutOfstock"></option>
 			                <option th:value="NewRelease" th:text="NewRelease"></option>
-			                
 			            </select>
 			        </div>
+			        
+			        <div class="form-group col-6">
+			            <label for="exampleInputEmail1">Warranty period</label>
+			            <select name="wpe" id="wpe" class="form-control" required>
+			                <option th:value="6" th:text="6 + ' ' + months"></option>
+			                <option th:value="12" th:text="12 + ' ' + months"></option>
+			                <option th:value="18" th:text="18 + ' ' + months"></option>
+			                <option th:value="24" th:text="24 + ' ' + months"></option>
+			            </select>
+			        </div>
+			        
 			    </div>
 			    <div class="card-footer">
 			    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>

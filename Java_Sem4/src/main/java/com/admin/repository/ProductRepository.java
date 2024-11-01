@@ -100,7 +100,7 @@ public class ProductRepository {
                        + "FROM Product p "
                        + "LEFT JOIN Brand b ON p.Brand_id = b.Id "
                        + "LEFT JOIN Product_category c ON p.Cate_id = c.Id "
-                       + "LEFT JOIN Conversion conv ON p.Conversion_id = conv.Id "
+                       + "LEFT JOIN Conversion conv ON p.Id = conv.Id "
                        + "WHERE p.Id = ?";
             
             return dbpro.queryForObject(sql, (rs, rowNum) -> {
@@ -112,7 +112,7 @@ public class ProductRepository {
                 pro.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
                 pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));
                 pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));
-                pro.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE)); // Đảm bảo cột giá có trong truy vấn
+                pro.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE));
                 pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
                 pro.setBrandName(rs.getString("brand_name"));
                 pro.setCategoryName(rs.getString("category_name"));
@@ -121,7 +121,7 @@ public class ProductRepository {
             }, id);
         } catch (DataAccessException e) {
             System.err.println("Error fetching product with ID: " + id + " - " + e.getMessage());
-            return null; // Trả về null nếu có lỗi
+            return null; 
         }
     }
 

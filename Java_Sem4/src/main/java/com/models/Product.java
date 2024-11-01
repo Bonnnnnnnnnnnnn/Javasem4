@@ -13,6 +13,7 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
+	private String formattedPrice;
 	public Product(int id, String product_name, int cate_id, int brand_id, int conversion_id, double price, String img,
 			String description, int warranty_period,String status) {
 		super();
@@ -100,6 +101,12 @@ public class Product {
 	}
 	public void setStatus(String status) {
 		Status = status;
+	}
+	public String getFormattedPrice() {
+		return formattedPrice;
+	}
+	public void setFormattedPrice(String formattedPrice) {
+		this.formattedPrice = formattedPrice;
 	}
 	
 }

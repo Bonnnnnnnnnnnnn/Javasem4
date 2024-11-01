@@ -69,13 +69,9 @@
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <img th:if="${item.img != null}" th:src="@{/uploads/{imageName}(imageName=${item.img})}" width="60">
 				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.price}"></span>
-				                <script th:inline="javascript">
-				                    var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(/*[[${item.price}]]*/);
-				                    document.currentScript.parentElement.innerHTML = formattedPrice;
-				                </script>
-				            </td>
+							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+							    <span th:text="${item.formattedPrice}"></span>
+							</td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.categoryName}"></span>
 				            </td>

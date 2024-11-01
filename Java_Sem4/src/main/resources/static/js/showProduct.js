@@ -8,7 +8,7 @@
 		        var productNameCell = rows[i].getElementsByTagName("td")[1];
 		        var categoryCell = rows[i].getElementsByTagName("td")[4]; 
 		        var brandCell = rows[i].getElementsByTagName("td")[5]; 
-		        var unitCell = rows[i].getElementsByTagName("td")[6]; 
+		        var unitCell = rows[i].getElementsByTagName("td")[7]; 
 		
 		        var productName = productNameCell ? (productNameCell.textContent || productNameCell.innerText) : "";
 		        var categoryName = categoryCell ? (categoryCell.textContent || categoryCell.innerText) : "";

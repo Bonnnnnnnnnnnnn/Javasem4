@@ -1,5 +1,6 @@
 package com.admin.controller;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -35,21 +36,30 @@ public class ProductController {
 	    pv.setPage_current(cp);
 	    pv.setPage_size(10);
 	    List<Product> products = reppro.findAll(pv);
+	    DecimalFormat df = new DecimalFormat("$#,##0.00");
+
+	    for (Product product : products) {
+	        if (product.getPrice() > 0) {
+	            product.setFormattedPrice(df.format(product.getPrice()));
+	        } else {
+	            product.setFormattedPrice("N/A");
+	        }
+	    }
 	    model.addAttribute("products", products);
 	    model.addAttribute("pv", pv);
 	    return Views.PRODUCT_SHOWPRODUCT;
 	}
 	@GetMapping("/showProductDetail")
 	public String showProductDetail(@RequestParam("id") String productId, Model model) {
-		int idpro = Integer.parseInt(productId);
-		Product pro = reppro.findId(idpro);
-		@SuppressWarnings("deprecation")
-		NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        String formattedPrice = formatter.format(pro.getPrice());
+	    int idpro = Integer.parseInt(productId);
+	    Product pro = reppro.findId(idpro);
+	    NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+	    String formattedPrice = formatter.format(pro.getPrice());
 	    model.addAttribute("product", pro);
 	    model.addAttribute("formattedPrice", formattedPrice);
 	    return Views.PRODUCT_SHOWPRODUCTDETAIL;
 	}
+
 
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
@@ -129,7 +139,7 @@ public class ProductController {
 								@RequestParam("price") double price,
 								@RequestParam("description") String description,
 								@RequestParam("warranty_period") int wpe,
-								@RequestParam("Status") String status,
+								@RequestParam("status") String status,
 								@RequestParam("img") MultipartFile img,
 								@RequestParam("id") int id) {
 		Product prod = new Product();

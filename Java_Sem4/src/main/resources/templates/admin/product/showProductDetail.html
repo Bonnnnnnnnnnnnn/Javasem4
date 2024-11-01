@@ -27,6 +27,7 @@
               </div>
               <form th:object="${product}">
 			    <div class="card-body row">
+			    
 			    	<div class="form-group col-md-2">
 						<label for="exampleInputPassword1">Image</label>
 						<img th:if="${product.img != null}"
@@ -35,40 +36,46 @@
                      </div>
 			    	<div class="form-group col-md-4">	
 			        </div>
-
+			        
 			        <div class="form-group col-md-6">
 			          	<label for="title">Product Name</label>
 			            <input type="text" id="proName" disabled readonly th:value="${product.product_name}" class="form-control">
 			        </div>
+			        
 					<div class="form-group col-md-6">
 					    <label for="title">Price</label>
 					    <input type="text" id="price" disabled readonly th:value="${formattedPrice}" class="form-control">
 					</div>
+
 			        <div class="form-group col-md-6">
 					    <label for="phone">Description</label>
 					    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
 					</div>
+					
 					<div class="form-group col-md-6">
 					    <label for="phone">Warranty period</label>
 							<input type="text" disabled readonly th:value="${product.warranty_period} + ' ' + months" class="form-control">
 					</div>
+					
 			        <div class="form-group col-6 ">
 					    <label for="exampleInputEmail1">Conversion</label>
 					    <input class="form-control" disabled readonly th:value="${product.conversion_id}">
 					</div>
+					
 					<div class="form-group col-6 ">
 					    <label for="exampleInputEmail1">Brand</label>
 					    <input class="form-control" disabled readonly th:value="${product.brandName}">
 					</div>
+					
 					<div class="form-group col-6 ">
 					    <label for="exampleInputEmail1">Category</label>
 					    <input class="form-control" disabled readonly th:value="${product.categoryName}">
 					</div>
+					
 					<div class="form-group col-6 ">
 					    <label for="exampleInputEmail1">Status</label>
 					    <input class="form-control" disabled readonly th:value="${product.status}">
 					</div>
-					
 					
 			    </div>
 			    <div class="card-footer">

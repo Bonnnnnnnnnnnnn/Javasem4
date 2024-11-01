@@ -44,10 +44,10 @@
 				            </th>
 				            <th>Name</th>
 				            <th>Warehouse Receipt Note</th>
-				            <th>Output time </th>
+				            <th>Status </th>
 				            <th>
 				             	<button class="btn btn-danger" onclick="deleteSelectedWhrs()">Delete Selected</button>
-				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhAndWhDetails}" class="btn btn-primary">Add Warehouse receipt</a>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse receipt</a>
 				            </th>
 				        </tr>
 				    </thead>
@@ -66,11 +66,10 @@
 				                <span th:text="${item.wh_name}"></span>
 				            </td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.date}"></span>
+				                <span th:text="${item.status}"></span>
 				            </td>
 				            <td>
-				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
-				                <a th:href="@{deleteWhr(id=${item.id})}" class="btn btn-danger" onclick="return confirmDeleteWhr();">Delete</a>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${item.id})}" class="btn btn-warning">Update</a>
 				            </td>
 				        </tr>
 				    </tbody>
