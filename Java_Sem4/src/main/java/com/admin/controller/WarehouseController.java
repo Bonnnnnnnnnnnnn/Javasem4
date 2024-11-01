@@ -20,7 +20,7 @@ import com.models.Warehouse;
 import com.utils.Views;
 
 @Controller
-@RequestMapping("admin/warehouse")
+@RequestMapping("warehouse")
 public class WarehouseController {
 
 	@Autowired

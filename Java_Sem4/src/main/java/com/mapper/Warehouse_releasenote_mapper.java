@@ -15,7 +15,11 @@ public class Warehouse_releasenote_mapper implements RowMapper<Warehouse_release
 		item.setId(r.getInt(Views.COL_WAREHOUSE_RELEASENOTE_ID));
 		item.setName(r.getString(Views.COL_WAREHOUSE_RELEASENOTE_NAME));
 		item.setOrder_id(r.getInt(Views.COL_WAREHOUSE_RELEASENOTE_ORDER_ID));
+		item.setStatusWr(r.getString(Views.COL_WAREHOUSE_RELEASENOTE_STATUS));
+		item.setEmployee_Id(r.getInt(Views.COL_WAREHOUSE_RELEASENOTE_EMPLOYEEID));
+		item.setWarehoise_id(r.getInt(Views.COL_WAREHOUSE_RELEASENOTE_WAREHOISE_ID));
 		Timestamp ts = r.getTimestamp(Views.COL_WAREHOUSE_RELEASENOTE_DATE);
+		
 		if(ts != null) {
 			item.setDate(ts.toLocalDateTime());
 		}
