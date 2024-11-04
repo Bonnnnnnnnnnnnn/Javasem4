@@ -21,7 +21,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @Repository
 public class AccountRepository {
 	@Autowired
-	JdbcTemplate dbpro;
+	JdbcTemplate db;
 
 	public boolean createAccount(Customer cus) {
 	    try {
@@ -43,7 +43,7 @@ public class AccountRepository {
 	     // Convert to Timestamp
 	     Timestamp creationTimestamp = Timestamp.valueOf(creationDateTime);
 	        // Execute the insert statement and get the number of rows affected
-	        int rowsAffected = dbpro.update(sql, cus.getEmail(), hashedPassword,creationTimestamp);
+	        int rowsAffected = db.update(sql, cus.getEmail(), hashedPassword,creationTimestamp);
 
 	        // Return true if the insert was successful (i.e., at least one row was affected)
 	        return rowsAffected > 0;
@@ -62,7 +62,7 @@ public class AccountRepository {
 	                Views.COL_CUSTOMER_EMAIL);
 
 	        // Execute the query and retrieve the result
-	        List<String> existingEmails = dbpro.queryForList(sql, String.class, email);
+	        List<String> existingEmails = db.queryForList(sql, String.class, email);
 
 	        // If the list is not empty, it means the email is already registered
 	        return !existingEmails.isEmpty(); // Return true if email exists, false otherwise
@@ -83,7 +83,7 @@ public class AccountRepository {
 
 	        // Fetch the customer details
 	        @SuppressWarnings("deprecation")
-			Customer customer = dbpro.queryForObject(sql, new Object[]{email}, new Customer_mapper());
+			Customer customer = db.queryForObject(sql, new Object[]{email}, new Customer_mapper());
 
 	        // Check if the customer exists and verify the password
 	        if (customer != null && BCrypt.checkpw(password, customer.getPassword())) {
@@ -103,7 +103,7 @@ public class AccountRepository {
 
 	        // Fetch the customer details
 	        @SuppressWarnings("deprecation")
-			Customer customer = dbpro.queryForObject(sql, new Object[]{id}, new Customer_mapper());
+			Customer customer = db.queryForObject(sql, new Object[]{id}, new Customer_mapper());
 
 
 	            return customer; 
@@ -127,7 +127,7 @@ public class AccountRepository {
 	                Views.COL_CUSTOMER_ID);
 
 	        // Execute the update statement and get the number of rows affected
-	        int rowsAffected = dbpro.update(sql, 
+	        int rowsAffected = db.update(sql, 
 	                                        cus.getFirst_name(), 
 	                                        cus.getLast_name(), 
 	                                        cus.getAddress(), 
@@ -151,7 +151,7 @@ public class AccountRepository {
 	                Views.COL_CUSTOMER_ID); // Assuming this is the ID column
 
 	        // Execute the query and retrieve the hashed password
-	        String storedHashedPassword = dbpro.queryForObject(sql, String.class, customerId);
+	        String storedHashedPassword = db.queryForObject(sql, String.class, customerId);
 
 	        // Check if the hashed password exists
 	        if (storedHashedPassword != null) {
@@ -177,7 +177,7 @@ public class AccountRepository {
 	                Views.COL_CUSTOMER_PASSWORD);
 
 	        // Execute the update statement and get the number of rows affected
-	        int rowsAffected = dbpro.update(sql, hashedPassword, customerId);
+	        int rowsAffected = db.update(sql, hashedPassword, customerId);
 
 	        // Return true if the update was successful (i.e., at least one row was affected)
 	        return rowsAffected > 0;

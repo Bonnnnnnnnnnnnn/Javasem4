@@ -15,7 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
     private HeaderInterceptor headerInterceptor;
     @Autowired
     private CartInterceptor cartInterceptor;
-
+    
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         
@@ -27,5 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
                                  "/cart/**"); 
         registry.addInterceptor(cartInterceptor)
         .addPathPatterns("/cart/**"); 
+       
     }
 }

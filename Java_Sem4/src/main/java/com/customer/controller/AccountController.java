@@ -1,9 +1,6 @@
 package com.customer.controller;
 
 
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.customer.repository.AccountRepository;
-import com.customer.repository.DetailproductRepository;
+
 import com.customer.repository.EmailService;
 import com.models.Customer;
-import com.models.Product;
+
 import com.utils.Views;
 
 import jakarta.mail.MessagingException;
@@ -34,7 +31,7 @@ public class AccountController {
     EmailService emailService;
 	
 	@Autowired
-	AccountRepository accrepo;
+	AccountRepository rep;
 	
 	@GetMapping("/signin")
 	public String showpagesignin(Model model) {	
@@ -44,7 +41,7 @@ public class AccountController {
 	
 	@GetMapping("/signup")
 	public String showpagesignup(Model model) {	
-		System.out.println(accrepo.isEmailRegistered("bonnguyen11917@gmail.com"));
+		System.out.println(rep.isEmailRegistered("bonnguyen11917@gmail.com"));
 		return Views.CUS_SIGNUPPAGE;
 	}
 	@PostMapping("/goregister")
@@ -87,9 +84,9 @@ public class AccountController {
         		newcus.setEmail(sessionEmail);
         		newcus.setPassword((String) request.getSession().getAttribute("passwordregister")); 
 
-        		accrepo.createAccount(newcus); 
+        		rep.createAccount(newcus); 
             System.out.println("Account created successfully for email: " + email);
-            Customer cus = accrepo.login(email, sessionPw);
+            Customer cus = rep.login(email, sessionPw);
             // Clear session attributes
             request.getSession().removeAttribute("emailregister");
             request.getSession().removeAttribute("passwordregister");
@@ -107,13 +104,13 @@ public class AccountController {
 	@GetMapping("/checkemail")
 	@ResponseBody
 	public boolean checkEmail(@RequestParam("email") String email) {
-	    return accrepo.isEmailRegistered(email);
+	    return rep.isEmailRegistered(email);
 	}
 	
 	@PostMapping("/checklogin")
 	@ResponseBody
 	public ResponseEntity<Boolean> checklogin(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletRequest request) {
-	    Customer customer = accrepo.login(email, password); 
+	    Customer customer = rep.login(email, password); 
 	    if(customer != null) {
 	    	request.getSession().setAttribute("logined", customer.getId()); 
 	    }
@@ -122,14 +119,14 @@ public class AccountController {
 	}
 	@GetMapping("/cusinfo")
 	public String showpagecusinfo(Model model, HttpServletRequest request) {	
-		Customer cus = accrepo.finbyid((int) request.getSession().getAttribute("logined"));
+		Customer cus = rep.finbyid((int) request.getSession().getAttribute("logined"));
 		model.addAttribute("cusinfo", cus);
 	
 		return Views.CUS_CUSINFOPAGE;
 	}
 	@PostMapping("/saveprofile")
 	public String saveprofile(@ModelAttribute Customer cusinfo, HttpServletRequest request) {	
-	    accrepo.updateAccount(cusinfo);
+	    rep.updateAccount(cusinfo);
 	    return "redirect:/account/cusinfo"; 
 	}
 	@GetMapping("/gochangepassword")
@@ -145,12 +142,12 @@ public class AccountController {
 	    // Retrieve the logged-in user's ID from the session
 	    int customerId = (int) request.getSession().getAttribute("logined");
 	    
-	    // Validate the current password using the accrepo
-	    return accrepo.verifyPassword(customerId, password);
+	    // Validate the current password using the rep
+	    return rep.verifyPassword(customerId, password);
 	}
 	@PostMapping("/changepassword")
 	public String savenewpw(@RequestParam("newPassword") String npw, HttpServletRequest request) {
-		accrepo.updatePassword((int) request.getSession().getAttribute("logined"),npw);
+		rep.updatePassword((int) request.getSession().getAttribute("logined"),npw);
 	    return "redirect:/account/cusinfo"; 
 	}
 	

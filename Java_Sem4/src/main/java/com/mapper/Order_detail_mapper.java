@@ -15,6 +15,7 @@ public class Order_detail_mapper implements RowMapper<Order_detail>{
 		item.setOrder_id(rs.getInt(Views.COL_ORDER_DETAIL_ORDER_ID));
 		item.setStatus(rs.getString(Views.COL_ORDER_DETAIL_STATUS));
 		item.setStock_id(rs.getInt(Views.COL_ORDER_DETAIL_STOCK_ID));
+		item.setProduct_Id(rs.getInt(Views.COL_ORDER_DETAIL_PRODUCT_ID));
 		return item;
 	}
 

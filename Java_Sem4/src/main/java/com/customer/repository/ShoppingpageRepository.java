@@ -3,25 +3,27 @@ package com.customer.repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.mapper.Brand_mapper;
 import com.mapper.Product_mapper;
-import com.models.Customer;
+import com.models.Brand;
+
 import com.models.PageView;
 import com.models.Product;
-import com.utils.SecurityUtility;
+
 import com.utils.Views;
 
 @Repository
 public class ShoppingpageRepository {
 	
 	@Autowired
-	JdbcTemplate dbpro;
+	JdbcTemplate db;
 	
 	public List<Product> findAllnopaging(PageView ItemPage, String search, int[] idcate, int[] idbrands, String[] status) {
 		 try {
@@ -93,7 +95,7 @@ public class ShoppingpageRepository {
 		       
 
 		        // Execute the query and return the results
-		        return dbpro.query(str_query.toString(), new Product_mapper(), params.toArray());
+		        return db.query(str_query.toString(), new Product_mapper(), params.toArray());
 
 		    } catch (DataAccessException e) {
 		        System.err.println("Error fetching products: " + e.getMessage());
@@ -187,7 +189,7 @@ public class ShoppingpageRepository {
 	                                           commonConditions.toString());
 
 	        // Execute count query
-	        int count = dbpro.queryForObject(countQuery, Integer.class, params.toArray());
+	        int count = db.queryForObject(countQuery, Integer.class, params.toArray());
 	        int total_page = (int) Math.ceil((double) count / ItemPage.getPage_size());
 	        ItemPage.setTotal_page(total_page);
 
@@ -200,14 +202,22 @@ public class ShoppingpageRepository {
 	        }
 
 	        // Execute the query and return the results
-	        return dbpro.query(str_query.toString(), new Product_mapper(), params.toArray());
+	        return db.query(str_query.toString(), new Product_mapper(), params.toArray());
 
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching products: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
 	}
-
+	public List<Brand> findAll(){
+		try {
+			String sql = "SELECT * FROM Brand";
+			return db.query(sql, new Brand_mapper());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 
 }

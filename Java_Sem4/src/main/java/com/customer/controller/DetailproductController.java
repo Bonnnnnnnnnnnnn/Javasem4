@@ -1,8 +1,6 @@
 package com.customer.controller;
 
 
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,12 +17,12 @@ import com.utils.Views;
 @RequestMapping("detailproduct")
 public class DetailproductController {
 	@Autowired
-	private DetailproductRepository reppro;
+	private DetailproductRepository rep;
 	
 	@GetMapping("/product")
 	public String showpage(Model model,@RequestParam String id) {	
 		int idpro = Integer.parseInt(id);
-		Product pro = reppro.findId(idpro);
+		Product pro = rep.findId(idpro);
 	    model.addAttribute("product", pro);
 		return Views.CUS_DETAILPROPAGE;
 	}

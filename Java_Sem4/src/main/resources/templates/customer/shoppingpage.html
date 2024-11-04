@@ -69,7 +69,9 @@
 					
 					    <!-- Submit Button -->
 					    <div class="text-center">
+					     <a href="/shoppingpage/reset" class="btn btn-primary">Clear</a>
 					        <button type="submit" class="btn btn-primary">Apply Filters</button>
+					        
 					    </div>
 					</form>
 
@@ -82,45 +84,30 @@
 
             <!-- Shop Product Start -->
             <div class="col-lg-9 col-md-8">
+           
                 <div class="row pb-3">
                     <div class="col-12 pb-1">
                         <div class="d-flex align-items-center justify-content-between mb-4">
-                            <!-- <div>
-                                <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
-                                <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
-                            </div>
-                            <div class="ml-2">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#">Latest</a>
-                                        <a class="dropdown-item" href="#">Popularity</a>
-                                        <a class="dropdown-item" href="#">Best Rating</a>
-                                    </div>
-                                </div>
-                                <div class="btn-group ml-2">
-                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#">10</a>
-                                        <a class="dropdown-item" href="#">20</a>
-                                        <a class="dropdown-item" href="#">30</a>
-                                    </div>
-                                </div>
-                            </div> -->
+                         <span th:if="${stringsearch != null}" th:text="'Search for &quot;' + ${stringsearch} + '&quot;'"></span>
                         </div>
                     </div>
+                     <div th:if="${#lists.isEmpty(pronewar)}" class="col-12 text-center">
+        					<h4>No products found</h4>
+    				</div>
                     <div th:each="item : ${pronewar}" class="col-lg-3 col-md-4 col-sm-6 pb-1">
                 <div class="product-item bg-light mb-4">
                     <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100"  th:src="'/uploads/'+${item.Img}" alt="">
-                        <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center py-4">
-                        <a class="h6 text-decoration-none text-truncate" th:href="@{'/detailproduct/product?id=' + ${item.Id}}" th:text="${item.Product_name}"></a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5 th:text=" '$' + ${item.Price}"></h5>
+                        <img class="img-fluid w-100" th:src="'/uploads/' + ${item.Img}" alt="">
+							<div class="product-action">
+							    <a class="btn btn-outline-dark btn-square" th:onclick="'addToCart(' + ${item.Id} + ')'">
+							        <i class="fa fa-shopping-cart"></i>
+							    </a>
+							</div>
+							</div>
+							<div class="text-center py-4">
+							    <a class="h6 text-decoration-none text-truncate" th:href="@{'/detailproduct/product?id=' + ${item.Id}}" th:text="${item.Product_name}"></a>
+							    <div class="d-flex align-items-center justify-content-center mt-2">
+							        <h5 th:text="'$' + ${item.Price}"></h5>
                             <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
                         </div>
                         <!-- <div class="d-flex align-items-center justify-content-center mb-1">
@@ -184,7 +171,45 @@
 
 
     <!-- Back to Top -->
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+function addToCart(productId) {
+    $.ajax({
+        url: '/cart/addtocart',
+        type: 'POST',
+        data: {
+            id: productId
+        },
+        success: function(response) {
+           
+            try {
+                const jsonResponse = JSON.parse(response); // Phân tích JSON
+                if (jsonResponse.status === "false") {
+                    window.location.href = '/account/signin'; // Chuyển hướng đến trang đăng nhập
+                } else if (jsonResponse.status === "success") {
+                    alert("Product added to cart successfully!");
+                } else if (jsonResponse.status === "failed") {
+                    alert("Failed to add product to cart.");
+                }
+            } catch (e) {
+                console.error("An error occurred while processing the response: ", e);
+                alert("An error occurred while adding product to cart.");
+            }
+        },
+        error: function(xhr) {
+            console.error("Error status: " + xhr.status); // In trạng thái lỗi
+            console.error("Error response: " + xhr.responseText); // In nội dung phản hồi
+            alert("An error occurred while adding product to cart.");
+        }
+    });
+}
+
+
+
+</script>
+
+
 </body>
 
 </html>

@@ -32,7 +32,6 @@
                     
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                   
                     <a href="/cart/showcart" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
@@ -48,24 +47,16 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form th:action="@{/search/gosppws}">
                     <div class="input-group osearch" Onclick="toggleDropdown()">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search for products">
                         <div class="input-group-append">
                             <span class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
                             </span>
                         </div>
                          <div class="searchDropdown">
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
-            			<div class="thuandropdown-item"><span>Product 1</span></div>
+		            			<div class="thuandropdown-item"><a></a></div>
         				</div>
                     </div>
                 </form>
@@ -113,25 +104,31 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="/" class="nav-item nav-link active">Home</a>
-                            <a href="/shoppingpage" class="nav-item nav-link">Shop</a>
-                            <div class="nav-item dropdown">
+	
+	<a href="/" th:class="${currentURI != null && currentURI.equals('/') ? 'nav-item nav-link active' : 'nav-item nav-link'}">Home</a>
+<a href="/shoppingpage/reset" th:class="${currentURI != null && currentURI.equals('/shoppingpage') ? 'nav-item nav-link active' : 'nav-item nav-link'}">Shop</a>
+
+
+
+
+
+
+                            <!-- <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
                                 <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
                                     <a href="cart.html" class="dropdown-item">Shopping Cart</a>
                                     <a href="checkout.html" class="dropdown-item">Checkout</a>
                                 </div>
-                            </div>
+                            </div> -->
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
-                                <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                            </a>
-                            <a href="" class="btn px-0 ml-3">
+                            
+                            <a href="/cart/showcart" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
+                               <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"
+      						th:text="${Cquantity != null ? Cquantity : 0}"></span>
+
                             </a>
                         </div>
                     </div>
@@ -141,3 +138,70 @@
     </div>
     
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+$(document).ready(function() {
+    let typingTimer;  
+    const doneTypingInterval = 500;
+    const searchInput = $('#searchInput');  
+
+    // Khi người dùng gõ phím trong ô tìm kiếm
+    searchInput.on('keyup', function() {
+        clearTimeout(typingTimer);  // Reset lại timer mỗi khi gõ phím
+        typingTimer = setTimeout(doneTyping, doneTypingInterval);  // Bắt đầu timer
+    });
+
+    // Xử lý khi người dùng ngừng gõ sau 0.5 giây
+    function doneTyping() {
+        const searchQuery = searchInput.val();
+
+       
+        if (searchQuery.length > 0) {
+           
+            $.ajax({
+                url: '/search/product',  
+                method: 'GET',
+                data: { stringsearch: searchQuery },
+                success: function(response) {
+                  
+                    renderDropdown(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching products:", error);
+                }
+            });
+        }
+    }
+ // Hàm hiển thị danh sách sản phẩm vào dropdown
+    function renderDropdown(products) {
+        const dropdown = $('.searchDropdown');
+        dropdown.empty();  // Xóa tất cả nội dung cũ của dropdown
+
+        // Kiểm tra nếu không có sản phẩm nào
+        if (products.length === 0) {
+            const noProductDiv = `
+                <div class="thuandropdown-item">
+                    <span style="margin-left:20px;">No products found</span>
+                </div>
+            `;
+            dropdown.append(noProductDiv);  // Thêm dòng "No products found"
+        } else {
+            // Lặp qua danh sách sản phẩm và thêm vào dropdown
+            products.forEach(product => {
+                const productDiv = `
+                    <div class="thuandropdown-item" >
+                    <a href="/detailproduct/product?id=${product.id}">${product.product_name}</a>
+                    </div>
+                `;
+                dropdown.append(productDiv);  // Thêm vào dropdown
+            });
+
+            // Bắt sự kiện khi người dùng chọn sản phẩm trong dropdown
+          
+        }
+    }
+
+   
+});
+
+</script>

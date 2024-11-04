@@ -25,7 +25,7 @@ import com.utils.Views;
 @Repository
 public class DetailproductRepository {
 	@Autowired
-	JdbcTemplate dbpro;
+	JdbcTemplate db;
 
 	public Product findId(int id) {
 	    try {
@@ -45,7 +45,7 @@ public class DetailproductRepository {
 	        );
 
 	     
-	        return dbpro.queryForObject(str_query, new Product_mapper(), id);
+	        return db.queryForObject(str_query, new Product_mapper(), id);
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching product with ID: " + id + " - " + e.getMessage());
 	        return null;

@@ -151,14 +151,27 @@ public final class Views {
 	public static String COL_ORDER_STATUS = "Status";
 	public static String COL_ORDER_EMPLOYEE = "Employee_Id";
 	public static String COL_ORDER_PAYMENT_ID ="Payment_Id";
+	public static String COL_ORDER_CUSNAME = "Cus_Name";
+	public static String COL_ORDER_PHONE = "Phone";
+	public static String COL_ORDER_ADDRESS = "Address";
+	public static String COL_ORDER_PAYSTATUS = "Pay_status";
+	public static String COL_ORDER_DATE = "Date";
+	public static String COL_ORDER_COUPONID = "coupon_id";
+	public static String COL_ORDER_DISCOUNT= "discount";
+	public static String COL_ORDER_TOTALAMOUNT = "totalAmount";
+	public static String COL_ORDER_SHIPPINGFEE = "shippingFee";
+	public static String COL_ORDER_PAYMENTMETHOD= "paymentMethod";
+	public static String COL_ORDER_NOTES = "notes";
+	public static String COL_ORDER_ORDERID = "OrderID";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
 	public static String COL_ORDER_DETAIL_ID = "Id";
 	public static String COL_ORDER_DETAIL_STOCK_ID = "Stock_id";
 	public static String COL_ORDER_DETAIL_ORDER_ID = "order_id";
-	public static String COL_ORDER_DETAIL_PRICE = "Status";
+	public static String COL_ORDER_DETAIL_PRICE = "Price";
 	public static String COL_ORDER_DETAIL_STATUS = "Status";
+	public static String COL_ORDER_DETAIL_PRODUCT_ID = "Product_Id";
 	
 	//19.EMPLOYEE
 	public static String EMPLOYEE_SHOWEMP = "admin/employee/showEmp";
@@ -188,5 +201,5 @@ public final class Views {
 	public static String CUS_COFIRMPAGE = "customer/corfirmregister";
 	public static String CUS_CUSINFOPAGE = "customer/cusinfo";
 	public static String CUS_CUSCHANGEPASSWORDPAGE = "customer/changepassword";
-
+	public static String CUS_CUSCHECKOUTPAGE = "customer/checkout";
 }

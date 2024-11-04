@@ -20,16 +20,27 @@ public class CartInterceptor implements HandlerInterceptor {
   
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (request.getSession().getAttribute("logined") != null) {
-            // User is logged in
-            request.setAttribute("logined", request.getSession().getAttribute("logined"));
-            return true; // Continue processing the request
+        String ajaxHeader = request.getHeader("X-Requested-With");
+        boolean isAjaxRequest = "XMLHttpRequest".equals(ajaxHeader);
+
+        if (isAjaxRequest) {  
+
+                return true; 
+            
         } else {
-            // User is not logged in, redirect to the sign-in page
-            response.sendRedirect(request.getContextPath() + "/account/signin");
-            return false; // Prevent further handling of the request
+            
+            if (request.getSession().getAttribute("logined") != null) {
+               
+                request.setAttribute("logined", request.getSession().getAttribute("logined"));
+                return true; 
+            } else {
+                
+                response.sendRedirect(request.getContextPath() + "/account/signin");
+                return false; 
+            }
         }
     }
+
 
 
     @Override
