@@ -40,39 +40,36 @@
 				    <thead>
 				        <tr class="text-center">
 				            <th>
-				                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+				            STT
 				            </th>
 				            <th>Name</th>
 				            <th>Warehouse Receipt Note</th>
 				            <th>Status </th>
 				            <th>
-				             	<button class="btn btn-danger" onclick="deleteSelectedWhrs()">Delete Selected</button>
 				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse receipt</a>
 				            </th>
 				        </tr>
 				    </thead>
 				    <tbody>
-				        <tr th:if="${#lists.isEmpty(whrs)}" class="text-center">
-				            <td colspan="8">No positions found</td>
-				        </tr>
-				        <tr th:each="item: ${whrs}" class="text-center">
-				            <td>
-				                <input type="checkbox" class="productCheckbox" th:value="${item.id}">
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.name}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.wh_name}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.status}"></span>
-				            </td>
-				            <td>
-				                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${item.id})}" class="btn btn-warning">Update</a>
-				            </td>
-				        </tr>
-				    </tbody>
+					    <tr th:if="${#lists.isEmpty(whrs)}" class="text-center">
+					        <td colspan="8">No positions found</td>
+					    </tr>
+					    <tr th:each="item, iterStat : ${whrs}" class="text-center">
+					        <td th:text="${iterStat.index + 1}"></td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.name}"></span>
+					        </td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.wh_name}"></span>
+					        </td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.status}"></span>
+					        </td>
+					        <td>
+					            <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${item.id})}" class="btn btn-warning">Update</a>
+					        </td>
+					    </tr>
+					</tbody>
 				</table>
       			<table style="margin-left:42%">
 				   <tfoot id="paginationFooter">

@@ -193,4 +193,20 @@ public class WhReceiptAndDetailsRepository {
 			return false;
 		}
 	}
+	public boolean addWhDetail(Warehouse_receipt_detail wrd) {
+	    try {
+	        String sql = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
+	                     Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
+	                     Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
+	                     Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + 
+	                     ") VALUES (?, ?, ?)";
+	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity()};
+			int row = dbwhd.update(sql,params);
+			return row > 0 ;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 }

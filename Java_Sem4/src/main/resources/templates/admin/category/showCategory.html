@@ -41,7 +41,7 @@
                 <table class="table table-hover text-nowrap">
                   <thead>
                     <tr class="text-center">
-                    	<th></th>
+                    	<th>STT</th>
 						<th>CateName</th>
 						<th>
 							<a th:href="@{/admin/category/showAddCategory}" class="btn btn-primary">Add Category</a>
@@ -52,8 +52,8 @@
 				        <tr th:if="${#lists.isEmpty(categorys)}" class="text-center">
 				            <td colspan="5">No employees found</td>
 				        </tr>
-				        <tr th:each="item : ${categorys}" class="text-center">
-				            <td></td>
+				        <tr th:each="item,iterStat : ${categorys}" class="text-center">
+				            <td th:text="${iterStat.index + 1}"></td>
 				            <td>
 				                <span th:text="${item.name}"></span>
 				            </td>

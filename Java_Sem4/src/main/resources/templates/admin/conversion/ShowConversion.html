@@ -41,7 +41,7 @@
                             <table class="table table-hover text-nowrap">
                                 <thead>
                                     <tr class="text-center">
-                                        <th></th>
+                                        <th>STT</th>
                                         <th>From Unit</th>
                                         <th>To Unit</th>
                                         <th>Conversion Rate</th>						
@@ -54,8 +54,8 @@
                                     <tr th:if="${#lists.isEmpty(conversions)}" class="text-center">
                                         <td colspan="5">No conversions found</td>
                                     </tr>
-                                    <tr th:each="item : ${conversions}" class="text-center">
-                                        <td></td>
+                                    <tr th:each="item ,iterStat: ${conversions}" class="text-center">
+                                        <td th:text="${iterStat.index + 1}"></td>
                                         <td>
                                             <span th:text="${item.fromUnitName}"></span>
                                         </td>		

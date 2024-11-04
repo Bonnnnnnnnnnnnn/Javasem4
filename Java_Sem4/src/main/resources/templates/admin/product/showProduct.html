@@ -1,6 +1,6 @@
   <link rel="stylesheet" th:href="@{/css/pagination.css}">
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="layout/header_admin"></div>
+<div th:replace="admin/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <section class="content-header">
       <div class="container-fluid">
@@ -42,6 +42,7 @@
 				            <th>
 				                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
 				            </th>
+				            <th>STT</th>
 				            <th>Name</th>
 				            <th>Images</th>
 				            <th>Price</th>
@@ -57,12 +58,13 @@
 				    </thead>
 				    <tbody>
 				        <tr th:if="${#lists.isEmpty(products)}" class="text-center">
-				            <td colspan="8">No positions found</td>
+				            <td colspan="10">No positions found</td>
 				        </tr>
-				        <tr th:each="item: ${products}" class="text-center">
+				        <tr th:each="item ,iterStat: ${products}" class="text-center">
 				            <td>
 				                <input type="checkbox" class="productCheckbox" th:value="${item.id}">
 				            </td>
+				            <td th:text="${iterStat.index + 1}" style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"></td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.product_name}"></span>
 				            </td>
@@ -78,9 +80,9 @@
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.brandName}"></span>
 				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.conversion_id}"></span>
-				            </td>
+							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+							    <span th:text="${item.fromUnitName} + ' to ' + ${item.toUnitName}"></span>
+							</td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.status}"></span>
 				            </td>
@@ -128,6 +130,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
   <script th:src="@{/js/showProduct.js}"></script>
   
-<div th:replace="layout/footer_admin"></div>
+<div th:replace="admin/layout/footer_admin"></div>
 </body>
 

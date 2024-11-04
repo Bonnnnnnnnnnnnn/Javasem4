@@ -56,6 +56,7 @@
 				          <th>
 				              <input type="checkbox" id="selectAllWarehouses" onclick="toggleSelectAll(this)">
 				          </th>
+				          <th>STT</th>
 				          <th>Name</th>
 				          <th>Address</th>
 				          <th>TypeName</th>
@@ -69,10 +70,11 @@
 				      <tr th:if="${#lists.isEmpty(warehouses)}" class="text-center">
 				          <td colspan="5">No warehouses found</td>
 				      </tr>
-				      <tr th:each="item : ${warehouses}" class="text-center">
+				      <tr th:each="item ,iterStat: ${warehouses}" class="text-center">
 				          <td>
 				              <input type="checkbox" class="warehouseCheckbox" th:value="${item.id}">
 				          </td>
+				          <td th:text="${iterStat.index + 1}"></td>
 				          <td><span th:text="${item.name}"></span></td>
 				          <td><span th:text="${item.address}"></span></td>
 				          <td><span th:text="${item.typeName}"></span></td>

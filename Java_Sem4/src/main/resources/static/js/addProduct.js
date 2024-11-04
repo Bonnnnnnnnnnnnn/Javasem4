@@ -25,3 +25,14 @@ function showImage(event) {
    }
    
    CKEDITOR.replace('description');
+   document.getElementById('searchBrand').addEventListener('input', function() {
+       const filter = this.value.toLowerCase();
+       const options = document.getElementById('brandId').options;
+
+       for (let i = 0; i < options.length; i++) {
+           const optionText = options[i].text.toLowerCase();
+           options[i].style.display = optionText.includes(filter) ? '' : 'none';
+       }
+   });
+
+

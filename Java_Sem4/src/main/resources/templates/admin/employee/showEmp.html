@@ -41,9 +41,9 @@
                 <table class="table table-hover text-nowrap">
                   <thead>
                     <tr class="text-center">
+                    	<th>STT</th>
 						<th>FullName</th>
 						<th>Phone</th>
-						<th>Role</th>
 						<th>
 							<a th:href="@{/admin/employee/showRegister}" class="btn btn-primary">Register Employee</a>
 						</th>
@@ -53,18 +53,16 @@
 				    <tr th:if="${#lists.isEmpty(employees)}" class="text-center">
 				        <td colspan="5">No employees found</td>
 				    </tr>
-				    <tr th:each="item : ${employees}" class="text-center">
+				    <tr th:each="item ,iterStat: ${employees}" class="text-center">
+				    	<td th:text="${iterStat.index + 1}" style="cursor: pointer;" th:onclick="'goToDetailEmploy(' + ${item.id} + ')'"></td>
 				        <td style="cursor: pointer;" th:onclick="'goToDetailEmploy(' + ${item.id} + ')'">
 				        	<span th:text="${item.first_name} + ' ' + ${item.last_name}"></span>
 				        </td>
 				        <td style="cursor: pointer;" th:onclick="'goToDetailEmploy(' + ${item.id} + ')'">
 				        	<span th:text="${item.phone}"></span>
 				        </td>
-				        <td style="cursor: pointer;" th:onclick="'goToDetailEmploy(' + ${item.id} + ')'">
-      				        <span th:text="${item.role_name}"></span>
-				        </td>
 				        <td>
-				            <a th:href="@{showUpdateEmployee(id=${item.id})}" class="btn btn-success">Update</a>
+				            <a th:href="@{showUpdateEmployee(id=${item.id})}" class="btn btn-warning">Update</a>
 				            <a th:href="@{deleteEmployee(id=${item.id})}" onclick="return confirmDeleteEmp();" class="btn btn-danger">Delete</a>
 				        </td>
 				    </tr>

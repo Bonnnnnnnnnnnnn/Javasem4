@@ -112,4 +112,16 @@ public class WhReceiptAndDetailsController {
 		    repwd.updateWhRe(receipt);
 			return "redirect:showWhReceipt";
 		}
+		@PostMapping("addWhReceiptDetail")
+		public String addWhReceiptDetail(@RequestParam("wh_receipt_id") int wh_receipt_id,
+									        @RequestParam("wh_price") double wh_price, 
+									        @RequestParam("quantity") int quantity) {
+			Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
+			wrd.setWh_receipt_id(wh_receipt_id);
+			wrd.setWh_price(wh_price);
+			wrd.setQuantity(quantity);
+			
+			repwd.addWhDetail(wrd);
+			return "redirect:showWhReceiptDetail";
+		}
 }

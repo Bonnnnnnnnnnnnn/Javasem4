@@ -41,7 +41,7 @@
                 <table class="table table-hover text-nowrap" id="warehouseTypeTable">
 				    <thead>
 				        <tr class="text-center">
-				            <th></th>
+				            <th>STT</th>
 				            <th>TypeName</th>
 				            <th>
 				                <a th:href="@{/admin/warehouseType/showAddWhType}" class="btn btn-primary">Add WarehouseType</a>
@@ -52,8 +52,8 @@
 				        <tr th:if="${#lists.isEmpty(whtypes)}" class="text-center">
 				            <td colspan="5">No employees found</td>
 				        </tr>
-				        <tr th:each="item : ${whtypes}" class="text-center">
-				            <td></td>
+				        <tr th:each="item,iterStat : ${whtypes}" class="text-center">
+				            <td th:text="${iterStat.index + 1}"></td>
 				            <td th:onclick="'loadWarehouses(' + ${item.id} + ')'" style="cursor: pointer; color: black;">
 				                <span th:text="${item.name}"></span>
 				            </td>

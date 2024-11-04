@@ -54,16 +54,18 @@
 			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Conversion Id</label>
 			            <select name="conversionId" id="conversionId" class="form-control" required>
-			                <option th:each="item : ${conversions}" th:value="${item.id}" th:text="${item.id}"></option>
+			                <option th:each="item : ${conversions}" th:value="${item.id}" th:text="${item.fromUnitName} + ' to ' + ${item.toUnitName}"></option>
 			            </select>
 			        </div>
 			        
-			        <div class="form-group col-6">
-			            <label for="exampleInputEmail1">Brand</label>
-			            <select name="brandId" id="brandId" class="form-control" required>
-			                <option th:each="item : ${brands}" th:value="${item.id}" th:text="${item.name}"></option>
-			            </select>
-			        </div>
+					<div class="form-group col-6">
+					    <label for="brandId">Brand</label>
+					    <input type="text" id="searchBrand" class="form-control" placeholder="Search Brand">
+					    <select name="brandId" id="brandId" class="form-control" required>
+					        <option th:each="item : ${brands}" th:value="${item.id}" th:text="${item.name}"></option>
+					    </select>
+					</div>
+
 			        
 			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Category</label>
@@ -85,6 +87,7 @@
 			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Warranty period</label>
 			            <select name="wpe" id="wpe" class="form-control" required>
+			            	<option th:value="NoSecurity" th:text="NoSecurityAction"></option>
 			                <option th:value="6" th:text="6 + ' ' + months"></option>
 			                <option th:value="12" th:text="12 + ' ' + months"></option>
 			                <option th:value="18" th:text="18 + ' ' + months"></option>

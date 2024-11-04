@@ -14,6 +14,8 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
+	private String FromUnitName;
+	private String ToUnitName;
 
 	private String formattedPrice;
 	public Product(int id, int id_Conversion, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
@@ -118,5 +120,18 @@ public class Product {
 	public void setFormattedPrice(String formattedPrice) {
 		this.formattedPrice = formattedPrice;
 	}
+	public String getFromUnitName() {
+		return FromUnitName;
+	}
+	public void setFromUnitName(String fromUnitName) {
+		FromUnitName = fromUnitName;
+	}
+	public String getToUnitName() {
+		return ToUnitName;
+	}
+	public void setToUnitName(String toUnitName) {
+		ToUnitName = toUnitName;
+	}
+	
 	
 }

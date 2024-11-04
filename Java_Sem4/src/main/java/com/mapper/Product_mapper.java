@@ -25,6 +25,8 @@ public class Product_mapper implements RowMapper<Product> {
         
         item.setBrandName(rs.getString("brand_name"));
         item.setCategoryName(rs.getString("category_name"));
+        item.setFromUnitName(rs.getString("from_unit_name"));
+        item.setToUnitName(rs.getString("to_unit_name"));
         
         return item;
     }
