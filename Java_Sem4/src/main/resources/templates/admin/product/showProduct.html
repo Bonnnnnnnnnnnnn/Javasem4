@@ -46,9 +46,6 @@
 				            <th>Name</th>
 				            <th>Images</th>
 				            <th>Price</th>
-				            <th>Category</th>
-				            <th>Brand</th>
-				            <th>Conversion</th>
 				            <th>Status </th>
 				            <th>
 				             	<button class="btn btn-danger" onclick="deleteSelectedProducts()">Delete Selected</button>
@@ -73,15 +70,6 @@
 				            </td>
 							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 							    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
-							</td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.categoryName}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.brandName}"></span>
-				            </td>
-							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-							    <span th:text="${item.fromUnitName} + ' to ' + ${item.toUnitName}"></span>
 							</td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.status}"></span>

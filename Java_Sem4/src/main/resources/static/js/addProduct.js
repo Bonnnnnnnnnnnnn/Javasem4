@@ -34,5 +34,7 @@ function showImage(event) {
            options[i].style.display = optionText.includes(filter) ? '' : 'none';
        }
    });
+   
+
 
 

@@ -32,25 +32,32 @@ public class ProductRepository {
 	}
 	public List<Product> findAll(PageView itemPage) {
 	    try {
-	    	 String str_query = String.format(
-	    	            "SELECT p.*, b.%s AS brand_name, c.%s AS category_name, conv.%s AS conversion_rate, " +
-	    	            "fu.name AS from_unit_name, tu.name AS to_unit_name, p.%s AS status " +
-	    	            "FROM %s p " +
-	    	            "INNER JOIN %s b ON p.%s = b.%s " +
-	    	            "INNER JOIN %s c ON p.%s = c.%s " +
-	    	            "LEFT JOIN %s conv ON p.%s = conv.%s " +
-	    	            "LEFT JOIN %s fu ON conv.%s = fu.id " +
-	    	            "LEFT JOIN %s tu ON conv.%s = tu.id " +
-	    	            "ORDER BY p.%s DESC",
-	    	            Views.COL_BRAND_NAME, Views.COL_CATEGORY_NAME, Views.COL_CONVERSION_RATE, Views.COL_PRODUCT_STATUS,
-	    	            Views.TBL_PRODUCT,
-	    	            Views.TBL_BRAND, Views.COL_PRODUCT_BRAND_ID, Views.COL_BRAND_ID,
-	    	            Views.TBL_CATEGORY, Views.COL_PRODUCT_CATE_ID, Views.COL_CATEGORY_ID,
-	    	            Views.TBL_CONVERSION, Views.COL_PRODUCT_ID, Views.COL_CONVERSION_FROM_UNIT_ID,
-	    	            Views.TBL_UNIT, Views.COL_CONVERSION_FROM_UNIT_ID,
-	    	            Views.TBL_UNIT, Views.COL_CONVERSION_TO_UNIT_ID,
-	    	            Views.COL_PRODUCT_ID
-	    	        );
+	        String str_query = String.format(
+	                "SELECT p.*, " +
+	                "b.%s AS brand_name, " +
+	                "c.%s AS category_name, " +
+	                "conv.%s AS conversion_rate, " +
+	                "fu.name AS from_unit_name, " +
+	                "tu.name AS to_unit_name, " +
+	                "p.%s AS status " +
+	                "FROM %s p " +
+	                "INNER JOIN %s b ON p.%s = b.%s " +
+	                "INNER JOIN %s c ON p.%s = c.%s " +
+	                "LEFT JOIN %s conv ON p.%s = conv.%s " +
+	                "LEFT JOIN %s fu ON conv.%s = fu.id " +
+	                "LEFT JOIN %s tu ON conv.%s = tu.id " +
+	                "ORDER BY p.%s DESC",
+	                Views.COL_BRAND_NAME, Views.COL_CATEGORY_NAME, Views.COL_CONVERSION_RATE, Views.COL_PRODUCT_STATUS,
+	                Views.TBL_PRODUCT,
+	                Views.TBL_BRAND, Views.COL_PRODUCT_BRAND_ID, Views.COL_BRAND_ID,
+	                Views.TBL_CATEGORY, Views.COL_PRODUCT_CATE_ID, Views.COL_CATEGORY_ID,
+	                Views.TBL_CONVERSION, Views.COL_PRODUCT_ID, Views.COL_CONVERSION_FROM_UNIT_ID,
+	                Views.TBL_UNIT, Views.COL_CONVERSION_FROM_UNIT_ID,
+	                Views.TBL_UNIT, Views.COL_CONVERSION_TO_UNIT_ID,
+	                Views.COL_PRODUCT_ID
+	        );
+
+	        System.out.println("Generated Query: " + str_query);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = dbpro.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_PRODUCT, Integer.class);
@@ -71,6 +78,7 @@ public class ProductRepository {
 	        return Collections.emptyList();
 	    }
 	}
+
 
 
 	public List<Conversion> findAllConv() {
@@ -110,12 +118,16 @@ public class ProductRepository {
     }
     public Product findId(int id) {
         try {
-            String sql = "SELECT p.*, b.Name AS brand_name, c.Cate_name AS category_name, conv.Conversion_rate AS conversion_rate, p.Status AS status "
-                       + "FROM Product p "
-                       + "LEFT JOIN Brand b ON p.Brand_id = b.Id "
-                       + "LEFT JOIN Product_category c ON p.Cate_id = c.Id "
-                       + "LEFT JOIN Conversion conv ON p.Id = conv.Id "
-                       + "WHERE p.Id = ?";
+        	String sql = "SELECT p.*, b.Name AS brand_name, c.Cate_name AS category_name, "
+                    + "fu.name AS from_unit_name, tu.name AS to_unit_name, p.Status AS status, "
+                    + "p.price AS price "
+                    + "FROM Product p "
+                    + "LEFT JOIN Brand b ON p.Brand_id = b.Id "
+                    + "LEFT JOIN Product_category c ON p.Cate_id = c.Id "
+                    + "LEFT JOIN Conversion conv ON p.Id = conv.Product_id "
+                    + "LEFT JOIN Unit fu ON conv.From_unit_id = fu.Id "
+                    + "LEFT JOIN Unit tu ON conv.To_unit_id = tu.Id "
+                    + "WHERE p.Id = ?";
             
             return dbpro.queryForObject(sql, (rs, rowNum) -> {
                 Product pro = new Product();
@@ -130,14 +142,18 @@ public class ProductRepository {
                 pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
                 pro.setBrandName(rs.getString("brand_name"));
                 pro.setCategoryName(rs.getString("category_name"));
+                pro.setFromUnitName(rs.getString("from_unit_name"));
+                pro.setToUnitName(rs.getString("to_unit_name"));
                 pro.setStatus(rs.getString(Views.COL_PRODUCT_STATUS));
                 return pro;
             }, id);
         } catch (DataAccessException e) {
             System.err.println("Error fetching product with ID: " + id + " - " + e.getMessage());
-            return null; 
+            return null;
         }
     }
+
+
 
 
 

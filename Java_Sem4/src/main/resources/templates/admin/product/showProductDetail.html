@@ -59,7 +59,7 @@
 					
 			        <div class="form-group col-6 ">
 					    <label for="exampleInputEmail1">Conversion</label>
-					    <input class="form-control" disabled readonly th:value="${product.conversion_id}">
+					    <input class="form-control" disabled readonly th:value="${product.fromUnitName} + ' to ' + ${product.toUnitName}">
 					</div>
 					
 					<div class="form-group col-6 ">
