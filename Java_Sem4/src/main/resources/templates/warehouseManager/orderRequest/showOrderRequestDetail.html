@@ -5,7 +5,8 @@
     <title>Order Request Details</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href=@{/css/showOrderInWarehouseDetail.css}>
+    <link rel="stylesheet" th:href=@{/css/showOrderRequestDetail.css}>
+    
 </head>
 <body>
 
@@ -56,9 +57,8 @@
                                 <table class="table table-bordered table-sm mt-3">
                                     <thead>
                                         <tr>
-                                            <th>Product ID</th>
-                                            <th>Quantity requested</th>
-                                            <th>Quantity exported</th>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -71,9 +71,6 @@
                                                 <span th:text="${detail.quantity_requested}"></span>
                                             </td>
                                             <td>
-                                                <span th:text="${detail.quantity_exported}"></span>
-                                            </td>                                            
-                                            <td>
                                                 <span th:text="${detail.status}"></span>
                                             </td>
                                         </tr>
@@ -83,16 +80,11 @@
                         </div>
                         
                         <div class="card-footer">
-                            <a href="/warehouseManager/showOrderRequestinWarehouse" class="btn btn-primary">Back to List</a>
-                                <div style="display: inline;">
-								    <a th:href="@{/warehouseManager/showAddWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId})}" 
-								       class="btn btn-primary">Create slip</a>
-								</div>
-								<div style="display: inline;">
-								    <a th:href="@{/warehouseManager/showAddAllWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId}, name=${request.name})}" 
-   										class="btn btn-primary">Create All slip</a>
-
-								</div>
+                            <a href="/warehouseManager/ShowOrderRequest" class="btn btn-primary">Back to List</a>
+                                <form th:action="@{/warehouseManager/receiveNote}" method="post" style="display: inline;">
+							        <input type="hidden" name="requestId" th:value="${request.id}" />
+							        <button type="submit" class="btn btn-success">receive votes</button>
+							    </form>
                         </div>
                     </div>
                 </div>
@@ -105,5 +97,6 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>

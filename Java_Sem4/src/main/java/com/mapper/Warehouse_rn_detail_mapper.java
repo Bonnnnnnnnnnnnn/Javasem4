@@ -18,7 +18,6 @@ public class Warehouse_rn_detail_mapper implements RowMapper<Warehouse_rn_detail
 		item.setStock_id(s.getInt(Views.COL_WAREHOUSE_RN_DETAIL_STOCK_ID));
 		item.setWgrn_id(s.getInt(Views.COL_WAREHOUSE_RNOTE_ID));
 		
-		item.setProductName(s.getString(Views.COL_PRODUCT_NAME));
 		return item;
 	}
 

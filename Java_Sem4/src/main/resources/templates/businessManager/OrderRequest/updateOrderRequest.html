@@ -51,16 +51,16 @@
                             <div class="card-body">
                                 <h3>Request Order</h3>
                                 
-                                <input type="hidden" name="id" th:value="${releasenote.id}"/>
+                                <input type="hidden" name="id" th:value="${requests.id}"/>
                                 
                                 <div class="form-group">
                                     <label for="name">Name</label>
-                                    <input type="text" id="name" name="name" class="form-control" th:value="${releasenote.name}" required>
+                                    <input type="text" id="name" name="name" class="form-control" th:value="${requests.name}" required>
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="statusWr">Status</label>
-                                    <input type="text" id="statusWr" name="statusWr" class="form-control" th:value="${releasenote.statusWr}" required>
+                                    <label for="statusRequest">Status</label>
+                                    <input type="text" id="statusRequest" name="statusRequest" class="form-control" th:value="${requests.statusRequest}" required>
                                 </div>
 
                                 <div >
@@ -77,10 +77,10 @@
 										    <tr th:each="detail, iterStat : ${details}">
 										        <td>
 										            <input type="hidden" name="id" th:value="${detail.id}" /> <!-- Hidden field for detail ID -->
-										            <input type="number" name="id_product" class="form-control" th:value="${detail.id_product}" required /> 
+										            <input type="number" name="productName" class="form-control" th:value="${detail.productName}" required /> 
 										        </td>
 										        <td>
-										            <input type="number" name="quantity" class="form-control" th:value="${detail.quantity}" required />
+										            <input type="number" name="quantity_requested" class="form-control" th:value="${detail.quantity_requested}" required />
 										        </td>
 										        <td>
 										            <input type="text" name="status" class="form-control" th:value="${detail.status}" readonly />
@@ -129,7 +129,7 @@ function addDetail() {
             <input type="number" name="details[${detailIndex}].id_product" class="form-control" placeholder="Enter Product ID" required>
         </td>
         <td>
-            <input type="number" name="details[${detailIndex}].quantity" class="form-control" placeholder="Enter Quantity" required>
+            <input type="number" name="details[${detailIndex}].quantity_requested" class="form-control" placeholder="Enter Quantity" required>
         </td>
         <td>
             <input type="text" name="details[${detailIndex}].status" class="form-control" value="Processing" readonly>

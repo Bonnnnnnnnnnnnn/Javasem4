@@ -1,3 +1,3 @@
 function goToDetail(id) {
-      window.location.href = '/warehouse/orderRequestdetails?id=' + id;
+      window.location.href = '/warehouseManager/orderRequestdetails?id=' + id;
   }

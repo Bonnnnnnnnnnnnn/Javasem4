@@ -30,21 +30,21 @@
                     </tr>
                   </thead>
                   <tbody id="warehouseTable">
-				        <tr th:if="${#lists.isEmpty(releasenotes)}" class="text-center">
+				        <tr th:if="${#lists.isEmpty(requests)}" class="text-center">
 				            <td colspan="5">No employees found</td>
 				        </tr>
-				        <tr th:each="item : ${releasenotes}" class="text-center" th:if="${item.statusWr == 'Processing' }">
-				            <td></td>
-				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.name}"></span>
-				            </td>
-				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							    <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
-							</td>
-				            <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.statusWr}"></span>
-				            </td>				            
-				        </tr>
+							<tr th:each="item : ${requests}" class="text-center">
+							    <td></td>
+							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+							        <span th:text="${item.name}"></span>
+							    </td>
+							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+							        <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
+							    </td>						    
+							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+							        <span th:text="${item.statusRequest}"></span>
+							    </td>
+							</tr>
 				    </tbody>
                 </table>
               </div>
@@ -55,6 +55,6 @@
     </section>
   </div>
   <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
-  <script th:src="@{/js/OrderRequesRn.js}"></script>
+  <script th:src="@{/js/orderRequesRn.js}"></script>
 <div th:replace="warehouseManager/layout/footer_admin"></div>
 </body>

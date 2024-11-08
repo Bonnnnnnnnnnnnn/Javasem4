@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
-
-import com.mapper.Warehouse_releasenote_mapper;
-
-import com.models.Warehouse_releasenote;
-import com.models.Warehouse_rn_detail;
+import com.mapper.Request_mapper;
+import com.models.Product;
+import com.models.Request;
+import com.models.Request_detail;
+import com.utils.Views;
 
 @Repository
 public class RequestOrderRepository {
@@ -26,28 +26,28 @@ public class RequestOrderRepository {
 
     
     @Transactional
-    public boolean addRequestOrderWithDetails(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
+    public boolean addRequestOrderWithDetails(Request request, List<Request_detail> details) {
         try {
-            String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status) VALUES (?, ?, ?)";
+            String sql1 = "INSERT INTO Request (Name, Date, Status) VALUES (?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int result1 = jdbcTemplate.update(connection -> {
                 var ps = connection.prepareStatement(sql1, new String[] { "Id" });
-                ps.setString(1, releasenote.getName());
-                ps.setDate(2, java.sql.Date.valueOf(releasenote.getDate().toLocalDate()));
-                ps.setString(3, releasenote.getStatusWr());
+                ps.setString(1, request.getName());
+                ps.setDate(2, java.sql.Date.valueOf(request.getDate().toLocalDate()));
+                ps.setString(3, request.getStatusRequest());
                 return ps;
             }, keyHolder);
 
             int generatedId = keyHolder.getKey().intValue();
 
-            String sql2 = "INSERT INTO Warehouse_rn_detail (Wgrn_id, Status, Id_product, Quantity) VALUES ( ?, ?, ?, ?)";
-            for (Warehouse_rn_detail detail : details) {
-                detail.setWgrn_id(generatedId);
+            String sql2 = "INSERT INTO Request_detail (Request_Id, Status, Id_product, Quantity_requested) VALUES ( ?, ?, ?, ?)";
+            for (Request_detail detail : details) {
+                detail.setRequest_id(generatedId);
                 jdbcTemplate.update(sql2,
-                    detail.getWgrn_id(),
+                    detail.getRequest_id(),
                     detail.getStatus(),
                     detail.getId_product(),
-                    detail.getQuantity()
+                    detail.getQuantity_requested()
                 );
             }
 
@@ -59,80 +59,69 @@ public class RequestOrderRepository {
     }
     
     
-    public List<Warehouse_releasenote> findAll() {
-        String sql = "SELECT * FROM Warehouse_releasenote";
-        return jdbcTemplate.query(sql, new Warehouse_releasenote_mapper());
-    }
-    
     
     public void deleteOrderRequest(int releasenoteId) {    	
-        String deleteOrderDetailsSql = "DELETE FROM Warehouse_rn_detail WHERE Wgrn_Id = ?";
+        String deleteOrderDetailsSql = "DELETE FROM Request_detail WHERE Request_Id = ?";
         jdbcTemplate.update(deleteOrderDetailsSql, releasenoteId);
-        String deleteWarehouseReleaseNoteSql = "DELETE FROM Warehouse_releasenote WHERE id = ?";
+        String deleteWarehouseReleaseNoteSql = "DELETE FROM Request WHERE id = ?";
         jdbcTemplate.update(deleteWarehouseReleaseNoteSql, releasenoteId);
     }
     
-
-
-    @Transactional
-    public boolean updateRequestOrderDetail(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
-        try {
-
-            String sqlUpdateReleasenote = "UPDATE Warehouse_releasenote SET Name = ?, Date = ?, Status = ? WHERE Id = ?";
-            int resultUpdateReleasenote = jdbcTemplate.update(
-                sqlUpdateReleasenote,
-                releasenote.getName(),
-                java.sql.Date.valueOf(releasenote.getDate().toLocalDate()),
-                releasenote.getStatusWr(),
-                releasenote.getId()
-            );
-
-            String sqlUpdateDetail = "UPDATE Warehouse_rn_detail SET Status = ?, Id_product = ?, Quantity = ? WHERE id = ? AND Wgrn_Id = ?";
-            for (Warehouse_rn_detail detail : details) {
-                jdbcTemplate.update(
-                    sqlUpdateDetail,
-                    detail.getStatus(),
-                    detail.getId_product(),
-                    detail.getQuantity(),
-                    detail.getId(), 
-                    detail.getWgrn_id()
-                );
-            }
-
-            return resultUpdateReleasenote > 0;
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public List<Request> findAllRequest() {
+        String sql = "SELECT * FROM Request";
+ 
+        return jdbcTemplate.query(sql, new Request_mapper());
     }
 
 
-    public Warehouse_releasenote findReleasenoteById(int id) {
-        String sql = "SELECT * FROM Warehouse_releasenote WHERE Id = ?";
-        List<Warehouse_releasenote> releasenotes = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Warehouse_releasenote releasenote = new Warehouse_releasenote();
-            releasenote.setId(rs.getInt("Id"));
-            releasenote.setName(rs.getString("Name"));
-            releasenote.setDate(rs.getTimestamp("Date").toLocalDateTime());
-            releasenote.setStatusWr(rs.getString("Status"));
-            return releasenote;
+
+
+    public Request findRequestById(int id) {
+        String sql = "SELECT * FROM Request WHERE Id = ?";
+        List<Request> requests = jdbcTemplate.query(sql, (rs, rowNum) -> {
+        	Request request = new Request();
+        	request.setId(rs.getInt(Views.COL_REQUEST_ID));
+        	request.setName(rs.getString(Views.COL_REQUEST_NAME));
+        	request.setDate(rs.getTimestamp(Views.COL_REQUEST_DATE).toLocalDateTime());
+        	request.setStatusRequest(rs.getString(Views.COL_REQUEST_STATUS));
+            return request;
         }, id);
         
-        return releasenotes.stream().findFirst().orElse(null);
+        return requests.stream().findFirst().orElse(null);
     }
 
-    public List<Warehouse_rn_detail> findDetailsByReleasenoteId(int wgrnId) {
-        String sql = "SELECT * FROM Warehouse_rn_detail WHERE Wgrn_id = ?";
+	public List<Request_detail> findDetailsByRequestId(int wgrnId) {
+	    String sql = "SELECT rd.*, p.Product_name AS Product_name " +
+	                 "FROM Request_detail rd " +
+	                 "JOIN Product p ON rd.id_product = p.id " +
+	                 "WHERE rd.Request_Id = ?";
+	    return jdbcTemplate.query(sql, (rs, rowNum) -> {
+	        Request_detail detail = new Request_detail();
+	        detail.setRequest_id(rs.getInt(Views.COL_REQUEST_DETAIL_ID));
+	        detail.setId_product(rs.getInt(Views.COL_REQUEST_DETAIL_ID_PRODUCT));
+	        detail.setQuantity_requested(rs.getInt(Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED));
+	        detail.setStatus(rs.getString(Views.COL_REQUEST_DETAIL_STATUS));
+	        detail.setProductName(rs.getString("Product_name")); 
+	        return detail;
+	    }, wgrnId);
+	}
+
+
+    public List<Request> searchReleaseNotes(String query) {
+        String sql = "SELECT * FROM Request WHERE name LIKE ?";
+        return jdbcTemplate.query(sql, new Request_mapper(), "%" + query + "%");
+    }
+
+
+    public List<Product> findAllProduct() {
+        String sql = "SELECT Id, Product_name FROM Product"; 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Warehouse_rn_detail detail = new Warehouse_rn_detail();
-            detail.setId(rs.getInt("Id"));
-            detail.setWgrn_id(rs.getInt("Wgrn_id"));
-            detail.setId_product(rs.getInt("Id_product"));
-            detail.setQuantity(rs.getInt("Quantity"));
-            detail.setStatus(rs.getString("Status"));
-            return detail;
-        }, wgrnId);
+            Product item = new Product();
+            item.setId(rs.getInt(Views.COL_PRODUCT_ID));
+            item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
+            return item;
+        });
     }
 
-
+    
 }

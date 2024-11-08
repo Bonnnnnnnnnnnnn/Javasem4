@@ -31,19 +31,14 @@ public class LoginEmployee {
 	                    Model model) {
 	    Employee emp = emprep.login(uid, pwd);
 	    System.out.println(emp.getId());
-	    if (emp != null) {
-	        session.setAttribute("loggedInEmployee", emp);
+	    session.setAttribute("loggedInEmployee", emp);
 
 
-	        switch (emp.getRole_id()) {
-	            case 1: return "redirect:/admin/employee/showEmp";            
-	            case 2: return "redirect:/warehouseManager/warehouseReceipt/showWhReceipt";
-	            case 3: return "redirect:/businessManager/warehouseReleasenotes";  
-	            default: return "redirect:/login?error=role";      
-	        }
-	    } else {
-	        model.addAttribute("error", "Wrong login information");
-	        return Views.EMPLOYEE_LOGIN; 
-	    }
+		switch (emp.getRole_id()) {
+		    case 1: return "redirect:/admin/employee/showEmp";            
+		    case 2: return "redirect:/warehouseManager/warehouseReceipt/showWhReceipt";
+		    case 3: return "redirect:/businessManager/showOrderRequest";  
+		    default: return "redirect:/login?error=role";      
+		}
 	}	
 }

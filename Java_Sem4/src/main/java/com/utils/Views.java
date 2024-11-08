@@ -120,38 +120,62 @@ public final class Views {
 	public static String COL_WAREHOUSE_TYPE_ID = "Id";
 	public static String COL_WAREHOUSE_TYPE_NAME = "Name";
 	
-	//12.Warehouse_rn_detail
-	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/releasenotes";
-	public static String ADD_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addReleasenotes";
-	public static String UPDATE_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/updateReleasenotes";
-	public static String SHOW_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/releasenote/releasenoteDetail";
+	//12.Warehouse_rn_detail	
+	public static String SHOW_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/releasenote/WarehouseReleasenoteDetail";
+	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/orderRequest/showOrderRequestDetail";
 
 	
 	public static String TBL_WAREHOUSE_RN_DETAIL = "Warehouse_rn_detail";
 	public static String COL_WAREHOUSE_RN_DETAIL_ID = "id";
 	public static String COL_WAREHOUSE_RN_DETAIL_PRODUCTID = "Id_product";
-	public static String COL_WAREHOUSE_RNOTE_ID = "Wgrn_id";
+	public static String COL_WAREHOUSE_RNOTE_ID = "Wgrn_Id";
 	public static String COL_WAREHOUSE_RN_DETAIL_STATUS = "Status";
 	public static String COL_WAREHOUSE_RN_DETAIL_STOCK_ID = "Stock_Id";
 	public static String COL_WAREHOUSE_RN_DETAIL_QUANTITY = "Quantity";
 	
 	//13.Warehouse_releasenote
-	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
-	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
-	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
-	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+	public static String ADD_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addReleasenotes";
+	public static String UPDATE_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/updateReleasenotes";
+	public static String ADD_ALL_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addAllReleasenotes";
+	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE= "warehouseManager/orderRequest/showOrderRequest";
 	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE = "warehouseManager/orderRequest/showOrderinWarehouse";
-	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showOrderinWarehouseDetail";
-
+	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/WarehouseReleasenote";
+	
 	public static String TBL_WAREHOUSE_RELEASENOTE = "Warehouse_releasenote";
 	public static String COL_WAREHOUSE_RELEASENOTE_EMPLOYEEID = "Employee_Id";
-	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOISE_ID = "Warehoise_Id";
+	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOUSE_ID = "Warehouse_Id";
+	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOUSE_REQUEST_ID = "Request_Id";
 	public static String COL_WAREHOUSE_RELEASENOTE_ID = "Id";
 	public static String COL_WAREHOUSE_RELEASENOTE_NAME = "Name";
 	public static String COL_WAREHOUSE_RELEASENOTE_DATE = "Date";
 	public static String COL_WAREHOUSE_RELEASENOTE_STATUS = "Status";
 	public static String COL_WAREHOUSE_RELEASENOTE_ORDER_ID = "Order_id";
 	
+	// Request
+	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
+	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
+	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
+	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+
+	public static String TBL_REQUEST = "Request";
+	public static String COL_REQUEST_ID = "Id";
+	public static String COL_REQUEST_NAME = "Name";
+	public static String COL_REQUEST_DATE = "Date";
+	public static String COL_REQUEST_STATUS = "Status";
+	public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
+	public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
+	// Request detail
+	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showOrderinWarehouseDetail";
+
+	public static String TBL_REQUEST_DETAIL = "Request_detail";
+	public static String COL_REQUEST_DETAIL_ID = "id";
+	public static String COL_REQUEST_DETAIL_STATUS = "Status";
+	public static String COL_REQUEST_DETAIL_ID_PRODUCT = "Id_product";
+	public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
+	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
+	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
+
 	//14.PAYMENT 
 	public static String TBL_PAYMENT = "Payment";
 	public static String COL_PAYMENT_ID = "Id";

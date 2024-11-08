@@ -23,10 +23,12 @@ public class Product_mapper implements RowMapper<Product> {
         item.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
         item.setId_Conversion(rs.getInt(Views.COL_PRODUCT_ID_CONVERSION));
         
-        item.setBrandName(rs.getString("brand_name"));
-        item.setCategoryName(rs.getString("category_name"));
-        item.setFromUnitName(rs.getString("from_unit_name"));
-        item.setToUnitName(rs.getString("to_unit_name"));
+
+		item.setBrandName(rs.getString("brand_name"));
+		item.setCategoryName(rs.getString("category_name"));
+		item.setFromUnitName(rs.getString("from_unit_name"));
+		item.setToUnitName(rs.getString("to_unit_name"));
+
         
         return item;
     }

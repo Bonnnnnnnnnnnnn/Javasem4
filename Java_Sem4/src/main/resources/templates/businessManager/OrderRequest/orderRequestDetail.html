@@ -25,11 +25,11 @@
                             <div class="card-header">
                                 <h3 class="card-title">Order Request Detail</h3>
                             </div>
-                            <form th:object="${releasenote}">
+                            <form th:object="${requests}">
                                 <div class="card-body row">
                                     <div class="form-group col-md-6">
                                         <label for="name">Name</label>
-                                        <input type="text" id="name" disabled readonly th:value="${releasenote.name}" class="form-control">
+                                        <input type="text" id="name" disabled readonly th:value="${requests.name}" class="form-control">
                                     </div>
                                 </div>
 
@@ -39,15 +39,15 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Product ID</th>
+                                                <th>Product Name</th>
                                                 <th>Quantity</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr th:each="detail : ${releasenote.details}">
-                                                <td th:text="${detail.productId}">Product ID</td>
-                                                <td th:text="${detail.quantity}">Quantity</td>
+                                            <tr th:each="detail : ${requests.details}">
+                                                <td th:text="${detail.productName}">Product Name</td>
+                                                <td th:text="${detail.quantity_requested}">Quantity</td>
                                                 <td th:text="${detail.status}">Status</td>
                                             </tr>
                                         </tbody>
@@ -55,9 +55,8 @@
                                 </div>
 
                                 <div class="card-footer">
-                                    <a th:href="@{/businessManager/warehouseReleasenotes}" class="btn btn-danger">Back to List</a>
-                                    <a th:href="@{/businessManager/showUpdate(id=${releasenote.id})}" class="btn btn-success">Update</a>
-                                    <a th:href="@{/deleteOrderRequest(id=${releasenote.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+                                    <a th:href="@{/businessManager/showOrderRequest}" class="btn btn-danger">Back to List</a>
+                                    <a th:href="@{/deleteOrderRequest(id=${requests.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
                                 </div>
                             </form>
                         </div>
@@ -68,5 +67,4 @@
     </div>
     <div th:replace="businessManager/layout/footer_admin"></div>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script th:src="@{/js/showProduct.js}"></script>
 </body>

@@ -9,16 +9,18 @@ public class Warehouse_releasenote {
 	private LocalDateTime Date;
 	private String Status;
 	private int Order_id;
-	private int EmployeeId;
-	private int Warehoise_Id;
+	private int Employee_Id;
+	private int Warehouse_Id;
+	private int Request_id;
 	
-	public Warehouse_releasenote(int id, int warehoise_id,  int employeeId, String name, String status, LocalDateTime date, int order_id) {
+	public Warehouse_releasenote(int id, int warehouse_id,  int employeeId, String name, String status, LocalDateTime date, int order_id, int request_id) {
 		super();
 		Id = id;
 		Name = name;
-		EmployeeId = employeeId;
-		Warehoise_Id = warehoise_id;
+		Employee_Id = employeeId;
+		Warehouse_Id = warehouse_id;
 		Date = date;
+		Request_id = request_id;
 		Status = status;
 		Order_id = order_id;
 	}
@@ -57,19 +59,25 @@ public class Warehouse_releasenote {
 	}
 	
 	public int getEmployee_Id() {
-		return EmployeeId;
+		return Employee_Id;
 	}
 	public void setEmployee_Id(int employeeid) {
-		Order_id = employeeid;
+		Employee_Id = employeeid;
 	}
 	
-	public int getWarehoise_id() {
-		return Warehoise_Id;
+	public int getWarehouse_id() {
+		return Warehouse_Id;
 	}
 	
-	public void setWarehoise_id(int warehoise_id) {
-		this.Warehoise_Id = warehoise_id;
+	public void setWarehouse_id(int warehoise_id) {
+		this.Warehouse_Id = warehoise_id;
 	}
 	
-    
+	public int getRequest_id() {
+		return Request_id;
+	}
+	
+	public void setRequest_id(int request_id) {
+		this.Request_id = request_id;
+	}
 }

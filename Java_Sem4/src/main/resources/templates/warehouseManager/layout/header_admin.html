@@ -191,24 +191,43 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+               with font-awesome or any other icon font library -->                            
           <li class="nav-item">
               <a href="/warehouseManager/warehouseReceipt/showWhReceipt" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Warehouse receipt</p>
               </a>
           </li>
-            <li class="nav-item">
-              <a href="/warehouseManager/ShowOrderRequest" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Warehouse release note</p>
-              </a>
-          </li>
-           <li class="nav-item">
-              <a href="/warehouseManager/showOrderRequestinWarehouse" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Order Request</p>
-              </a>
+
+          
+                    <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+               		create a delivery note
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview" style="display: none;">
+              <li class="nav-item">
+                <a href="/warehouseManager/ShowOrderRequest" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Order Request</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/warehouseManager/showOrderRequestinWarehouse" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>request received</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/warehouseManager/showWareReleasenote" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>warehouse release note</p>
+                </a>
+              </li>
+            </ul>
           </li>
             </ul>
              
