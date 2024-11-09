@@ -1,6 +1,8 @@
 package com.customer.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,9 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.customer.repository.ShoppingpageRepository;
 import com.models.PageView;
+import com.models.Shopping_cart;
 import com.utils.Views;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -87,5 +91,6 @@ public class ShoppingpageController {
 
 	    return "redirect:/shoppingpage"; // Redirect to the shopping page or another page
 	}
+	
 	
 }

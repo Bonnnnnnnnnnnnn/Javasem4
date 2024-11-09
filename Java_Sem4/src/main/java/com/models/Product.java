@@ -13,18 +13,25 @@ public class Product {
 	private String Img;
 	private String Description;
 	private int Warranty_period;
-	public Product(int id, String product_name, int cate_id, int brand_id, int unit_id, double price, String img,
-			String description, int warranty_period) {
+	private String Status;
+	
+	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
+			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
+			String status) {
 		super();
 		Id = id;
 		Product_name = product_name;
 		Cate_id = cate_id;
+		Category_name = category_name;
 		Brand_id = brand_id;
+		Brand_name = brand_name;
 		Unit_id = unit_id;
+		Unit_name = unit_name;
 		Price = price;
 		Img = img;
 		Description = description;
 		Warranty_period = warranty_period;
+		Status = status;
 	}
 	public Product() {
 	}
@@ -99,6 +106,30 @@ public class Product {
 	}
 	public void setUnitName(String unit_name) {
 		Unit_name = unit_name;
+	}
+	public String getCategory_name() {
+		return Category_name;
+	}
+	public void setCategory_name(String category_name) {
+		Category_name = category_name;
+	}
+	public String getBrand_name() {
+		return Brand_name;
+	}
+	public void setBrand_name(String brand_name) {
+		Brand_name = brand_name;
+	}
+	public String getUnit_name() {
+		return Unit_name;
+	}
+	public void setUnit_name(String unit_name) {
+		Unit_name = unit_name;
+	}
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		Status = status;
 	}
 	
 }

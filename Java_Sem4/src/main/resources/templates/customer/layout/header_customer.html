@@ -20,6 +20,7 @@
 						    <!-- Check if user is logged in -->
 						    <div th:if="${logined != null}">
 						        <a href="/account/cusinfo" class="dropdown-item">Customer Info</a>
+						        <a href="/order/showorder" class="dropdown-item">Ordered</a>
 						        <a href="/account/logout" class="dropdown-item">Logout</a>
 						    </div>
 						    <div th:if="${logined == null}">
@@ -126,7 +127,7 @@
                             
                             <a href="/cart/showcart" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                               <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"
+                               <span class="badge text-secondary border border-secondary rounded-circle" id="numberquantitycart" style="padding-bottom: 2px;"
       						th:text="${Cquantity != null ? Cquantity : 0}"></span>
 
                             </a>

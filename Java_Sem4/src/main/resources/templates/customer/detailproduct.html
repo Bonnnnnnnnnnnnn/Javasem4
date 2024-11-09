@@ -29,7 +29,7 @@
                 <div id="product-carousel" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner bg-light">
                         <div class="carousel-item active">
-                            <img class="w-100 h-100 " th:src="'/uploads/'+${product.Img}" alt="Image">
+                            <img class="w-100 h-100 " th:if="${product != null}" th:src="'/uploads/'+${product.Img}" alt="Image">
                         </div>
                        
                     </div>

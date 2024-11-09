@@ -64,6 +64,7 @@ public class CheckoutController {
 		
 			Order or = new Order();
 			or.setDiscount(BigDecimal.ZERO);
+			or.setShippingFee(BigDecimal.ZERO);
 			or.setCustomer_id(cusinfo.getId());
 			List<Shopping_cart> listc = repcart.findAllCartsByCustomerId(or.getCustomer_id());
 			BigDecimal totalCartValue = calculateTotalCartValue(listc);
@@ -79,7 +80,6 @@ public class CheckoutController {
 			or.setNotes(notes);
 			or.setDate(LocalDate.now());
 			or.setTotalAmount(totalAmount);
-			or.setShippingFee(BigDecimal.ZERO);
 			or.setCoupon_id(0);
 			request.getSession().setAttribute("checkout", or);
 			

@@ -2,7 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{customer/layout/head_customer}"></head>
+<style>
+.out-of-stock{
+	background-color:#cccccc;
+}
+.align-middle .out-of-stock:hover{
+	background-color:#cccccc;
+}
 
+
+
+</style>
 <body>
 
   	<div th:replace="~{customer/layout/header_customer}"></div>
@@ -37,35 +47,65 @@
                             <th>Remove</th>
                         </tr>
                     </thead>
-                    <tbody class="align-middle">
-                    
-                        <tr th:each="item : ${carts}" >
-                          <td class="align-middle" ><img th:src="'/uploads/' + ${item.Img}" alt="" style="width: 50px;"></td>
-                            <td class="align-middle" th:text="${item.product_name}"></td>
-                            <td class="align-middle" th:text="'$' + ${item.Price}" ></td>
-                            <td class="align-middle">
-                                <div class="input-group" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <div th:onclick="'minusFromCart(' +${item.Id} + ')'" class=" btn-sm btn-primary">
-                                            <i class="fa fa-minus"></i>
-                                        </div>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" 
-								       th:value="${item.Quantity}" 
-								       th:attr="data-cart-id=${item.Id}, data-price=${item.Price}" />
+                    <tbody class="align-middle" th:if="${#lists.isEmpty(carts)}">
+					    <tr>
+					        <td colspan="6" class="text-center">
+					            You haven't added anything to the cart yet.
+					        </td>
+					    </tr>
+					</tbody>
+					
+					<tbody class="align-middle" th:unless="${#lists.isEmpty(carts)}">
+						<tr th:each="item : ${carts}" 
+						th:class="${item.Pro_Status == 'OutOfStock' ? 'out-of-stock cart-item' : 'cart-item'}"
+						th:onclick="'godetailpro(' + ${item.Product_id} + ')'" > <!-- Thêm class 'out-of-stock' -->
+						    <td class="align-middle">
+						        <img th:src="'/uploads/' + ${item.Img}" alt="" style="width: 50px;">
+						    </td>
+						    <td class="align-middle" th:text="${item.product_name}"></td>
+						    <td class="align-middle" th:text="'$' + ${item.Price}"></td>
+						    <td class="align-middle">
+						        <div class="input-group" style="width: 100px;">
+						            <div class="input-group-btn">
+						                <div th:if="${item.Pro_Status != 'OutOfStock'}"
+									         th:onclick="'minusFromCart(' + ${item.Id} + ')'" 
+									         class="btn-sm btn-primary"
+									         style="height:30px;">
+									        <i class="fa fa-minus"></i>
+									    </div>
+									    <div th:if="${item.Pro_Status == 'OutOfStock'}" class="btn-sm btn-secondary" style="pointer-events: none; height:30px;">
+									        <i class="fa fa-minus"></i>
+									    </div>
+						            </div>
+						            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
+						                   th:value="${item.Quantity}"
+						                   th:attr="data-cart-id=${item.Id}, data-price=${item.Price}" 
+						                  	style="height:30px;"
+						                  	readonly /> 
+						                 <div class="input-group-btn">
+								            <div style="height:30px;" th:if="${item.Pro_Status != 'OutOfStock'}"
+										         th:onclick="'updateQuantity(' + ${item.Id} + ')'" 
+										         class="btn-sm btn-primary">
+										        <i class="fa fa-plus"></i>
+										    </div>
+										    <div th:if="${item.Pro_Status == 'OutOfStock'}" class="btn-sm btn-secondary" style="pointer-events: none;height:30px;">
+										         <i class="fa fa-plus"></i>
+										    </div>
+								     	</div>
+						        </div>
+						    </td>
+						    <td class="align-middle" th:attr="data-total-id=${item.Id}"
+						        th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
+						    <td class="align-middle">
+						        <div th:onclick="'deleteFromCart(' + ${item.Id} + ')'" class="btn btn-sm btn-danger">
+						            <i class="fa fa-times"></i>
+						        </div>
+						    </td>
+						</tr>
 
-                                        <div th:onclick="'updateQuantity(' +${item.Id} + ')'" class=" btn-sm btn-primary">
-                                            <i class="fa fa-plus"></i>
-                                        </div>
-                                    </div>
-                                
-                            </td>
-	                          <td class="align-middle" th:attr="data-total-id=${item.Id}" 
-    								th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
-    								
-                            <td class="align-middle"><div th:onclick="'deleteFromCart(' +${item.Id} + ')'" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></div></td>
-                        </tr>
-                    </tbody>
+					</tbody>
+
+                    
                 </table>
             </div>
             <div class="col-lg-4">
@@ -94,9 +134,9 @@
                             <h5>Total</h5>
                             <h5 th:text="'$' + ${totalCartValue}"></h5>
                         </div>
-                        <a href="/checkout/showcheckout" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
+                       <a id="checkoutButton" href="/checkout/showcheckout" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
                     </div>
-                </div>
+                </div>	
             </div>
         </div>
     </div>
@@ -193,7 +233,7 @@ function deleteFromCart(cartId) {
             // Phân tích chuỗi JSON từ phản hồi
             const result = JSON.parse(response);
             if (result.status === "success") {
-              
+            	checkCart()
                	window.location.href = "/cart/showcart"
                	
             } else {
@@ -205,8 +245,27 @@ function deleteFromCart(cartId) {
         }
     });
 }
-
-
+function checkCart() {
+    const cartItems = document.querySelectorAll('.cart-item'); // Lấy tất cả các hàng trong giỏ hàng
+    const checkoutButton = document.getElementById('checkoutButton');
+    const itemsoutofstock = document.querySelectorAll('.out-of-stock');
+    if (cartItems.length === 0 && itemsoutofstock.length != 0) {
+        // Nếu giỏ hàng trống
+        checkoutButton.classList.remove('btn-primary'); // Xóa lớp btn-primary
+        checkoutButton.classList.add('btn-secondary'); // Thêm lớp btn-secondary để đổi màu
+        checkoutButton.style.pointerEvents = 'none'; // Vô hiệu hóa nút
+    } else {
+        // Nếu có sản phẩm trong giỏ hàng
+        checkoutButton.classList.remove('btn-secondary'); // Xóa lớp btn-secondary
+        checkoutButton.classList.add('btn-primary'); // Thêm lớp btn-primary để trở lại màu
+        checkoutButton.style.pointerEvents = 'auto'; // Bật lại nút
+    }
+}
+window.onload = checkCart;
+function godetailpro(id) {
+    const encodedId = encodeURIComponent(id);
+    window.location.href = '/detailproduct/product?id=' + encodedId;
+}
 
 </script>
 </html>

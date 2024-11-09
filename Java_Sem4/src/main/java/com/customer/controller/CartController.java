@@ -96,4 +96,15 @@ public class CartController {
 	        return "{\"status\": \"failed\"}"; 
 	    }
 	}
+	
+	@PostMapping("/size")
+	@ResponseBody  
+	public String size(HttpServletRequest request) {
+	    
+	    List<Shopping_cart> listc = rep.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
+	    int size = listc.size();
+	    
+	    return "{\"status\": " + size + "}"; 
+	}
+
 }

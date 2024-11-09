@@ -39,6 +39,7 @@ public final class Views {
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
+	public static String COL_PRODUCT_STATUS ="Status";
 	
 	//5.PRODUCT_CATEGORY
 	public static String CATEGORY_SHOWCATEGORY = "admin/category/showCategory";
@@ -139,11 +140,10 @@ public final class Views {
 	//16.SHOPING CART
 	public static String TBL_SHOPING_CART = "shopping_cart";
 	public static String COL_SHOPING_CART_ID = "Id";
-	public static String COL_SHOPING_CART_STATUS = "Status";
+	public static String COL_SHOPING_CART_STATUS = "cart_status";
 	public static String COL_SHOPING_CART_CUSTOMER_ID = "Customer_Id";
 	public static String COL_SHOPING_CART_PRODUCT_ID = "Product_id";
 	public static String COL_SHOPING_CART_QUANTITY = "Quantity";
-	
 	//17.ORDER
 	public static String TBL_ORDER = "Order";
 	public static String COL_ORDER_ID = "Id";
@@ -168,10 +168,11 @@ public final class Views {
 	public static String TBL_ORDER_DETAIL = "Order_detail";
 	public static String COL_ORDER_DETAIL_ID = "Id";
 	public static String COL_ORDER_DETAIL_STOCK_ID = "Stock_id";
-	public static String COL_ORDER_DETAIL_ORDER_ID = "order_id";
+	public static String COL_ORDER_DETAIL_ORDER_ID = "Order_Id";
 	public static String COL_ORDER_DETAIL_PRICE = "Price";
 	public static String COL_ORDER_DETAIL_STATUS = "Status";
 	public static String COL_ORDER_DETAIL_PRODUCT_ID = "Product_Id";
+	public static String COL_ORDER_DETAIL_QUANTITY = "Quantity";
 	
 	//19.EMPLOYEE
 	public static String EMPLOYEE_SHOWEMP = "admin/employee/showEmp";
@@ -202,4 +203,6 @@ public final class Views {
 	public static String CUS_CUSINFOPAGE = "customer/cusinfo";
 	public static String CUS_CUSCHANGEPASSWORDPAGE = "customer/changepassword";
 	public static String CUS_CUSCHECKOUTPAGE = "customer/checkout";
+	public static String CUS_ORDEREDPAGE = "customer/ordereds";
+	public static String CUS_ORDEREDDETAILPAGE = "customer/orderdetail";
 }

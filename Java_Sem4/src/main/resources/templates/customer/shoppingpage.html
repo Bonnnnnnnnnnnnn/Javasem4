@@ -2,7 +2,40 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{customer/layout/head_customer}"></head>
-
+<style>
+		.notification {
+			display:none;
+		    position: fixed;
+		    top: 20px; /* khoảng cách từ trên */
+		    right: 20px; /* khoảng cách từ bên phải */
+		    background-color: #FFD333; /* màu nền */
+		    color: black; /* màu chữ */
+		    padding: 15px; /* khoảng cách bên trong */
+		    border-radius: 5px; /* bo góc */
+		    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* đổ bóng */
+		    transform: translateX(100%); 
+		    opacity: 0;
+		    z-index: 1000;
+		    animation : slideleft 4s;
+		}
+		@keyframes slideleft{
+			0%{
+			transform: translateX(100%); 
+			opacity: 0;
+			}
+			50%{
+			transform: translateX(0); 
+			opacity: 1;
+			}
+			100%{
+			transform: translateX(100%); 
+			opacity: 0;
+			}
+		}
+		
+		
+		
+</style>
 <body>
   <div th:replace="~{customer/layout/header_customer}"></div>
 
@@ -99,9 +132,10 @@
                     <div class="product-img position-relative overflow-hidden">
                         <img class="img-fluid w-100" th:src="'/uploads/' + ${item.Img}" alt="">
 							<div class="product-action">
-							    <a class="btn btn-outline-dark btn-square" th:onclick="'addToCart(' + ${item.Id} + ')'">
+							    <a class="btn btn-outline-dark btn-square" th:if="${item.status != 'OutOfStock'}" th:onclick="'addToCart(' + ${item.Id} + ')'">
 							        <i class="fa fa-shopping-cart"></i>
 							    </a>
+							    <span th:if="${item.Status == 'OutOfStock'}" class="out-of-stock-message">Out of stock</span>
 							</div>
 							</div>
 							<div class="text-center py-4">
@@ -168,12 +202,28 @@
     <!-- Footer Start -->
    <div th:replace="~{customer/layout/footer_customer}"></div>
     <!-- Footer End -->
+<div id="cartNotification" class="notification" >
+    <p>The product has been added to the cart successfully!</p>
+</div>
 
 
     <!-- Back to Top -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
+function showNotification() {
+	const notification = document.getElementById('cartNotification');
+	// Đặt display thành none để ẩn thông báo
+    notification.style.display = 'none';
+    
+    // Đợi một chút trước khi hiển thị lại thông báo
+    setTimeout(() => {
+        notification.style.display = 'block'; // Thiết lập display thành block
+        notification.classList.add('show'); // Thêm class show để hiển thị animation
+    }, 10); // Thời gian chờ rất ngắn (10ms) để trình duyệt nhận thấy sự thay đổi
+    
+   
+}
 function addToCart(productId) {
     $.ajax({
         url: '/cart/addtocart',
@@ -184,11 +234,12 @@ function addToCart(productId) {
         success: function(response) {
            
             try {
-                const jsonResponse = JSON.parse(response); // Phân tích JSON
+                const jsonResponse = JSON.parse(response); 
                 if (jsonResponse.status === "false") {
-                    window.location.href = '/account/signin'; // Chuyển hướng đến trang đăng nhập
+                    window.location.href = '/account/signin'; 
                 } else if (jsonResponse.status === "success") {
-                    alert("Product added to cart successfully!");
+                	showNotification()
+ 					resetsize()
                 } else if (jsonResponse.status === "failed") {
                     alert("Failed to add product to cart.");
                 }
@@ -204,7 +255,24 @@ function addToCart(productId) {
         }
     });
 }
-
+function resetsize() {
+    $.ajax({
+        url: '/cart/size',
+        type: 'POST',
+        success: function(response) {
+           
+            try {
+                const jsonResponse = JSON.parse(response);
+                const numberquantitycart = document.getElementById('numberquantitycart');
+                numberquantitycart.innerHTML=jsonResponse.status
+               
+            } catch (e) {
+            }
+        },
+        error: function(xhr) {
+        }
+    });
+}
 
 
 </script>

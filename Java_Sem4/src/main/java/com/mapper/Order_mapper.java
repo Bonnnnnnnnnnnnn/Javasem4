@@ -36,7 +36,6 @@ public class Order_mapper implements RowMapper<Order> {
         item.setDiscount(rs.getBigDecimal(Views.COL_ORDER_DISCOUNT));
         item.setTotalAmount(rs.getBigDecimal(Views.COL_ORDER_TOTALAMOUNT));
         item.setShippingFee(rs.getBigDecimal(Views.COL_ORDER_SHIPPINGFEE));
-        item.setPaymentMethod(rs.getString(Views.COL_ORDER_PAYMENTMETHOD));
         item.setNotes(rs.getString(Views.COL_ORDER_NOTES));
         item.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
         

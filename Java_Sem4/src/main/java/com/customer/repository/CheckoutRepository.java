@@ -106,7 +106,7 @@ public class CheckoutRepository {
 	                od.setStatus(null); 
 	                od.setOrder_id(order.getId()); 
 	                od.setProduct_Id(cart.getProduct_id());
-	                
+	                od.setQuantity(cart.getQuantity());
 	                boolean check = repod.insertOrderDetail(od,cart.getId());
 	                
 	                if (!check) {

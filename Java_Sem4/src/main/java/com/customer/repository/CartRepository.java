@@ -177,15 +177,15 @@ public class CartRepository {
 
 	public List<Shopping_cart> findAllCartsByCustomerId(int customerId) {
 	    try {
-	        String str_query = String.format("SELECT sc.*, p.%s , p.%s , p.%s " +
+	        String str_query = String.format("SELECT sc.*, p.%s , p.%s , p.%s, p.%s as cart_status " +
 	                        "FROM %s sc " +
 	                        "INNER JOIN %s p ON sc.%s = p.%s " +
 	                        "INNER JOIN %s c ON sc.%s = c.%s " +
-	                        "WHERE sc.%s = ? " +
-	                        "ORDER BY sc.%s DESC",
+	                        "WHERE sc.%s = ? " ,
 	                Views.COL_PRODUCT_NAME, 
 	                Views.COL_PRODUCT_PRICE, 
-	                Views.COL_PRODUCT_IMG,   
+	                Views.COL_PRODUCT_IMG,
+	                Views.COL_PRODUCT_STATUS,
 	                Views.TBL_SHOPING_CART,
 	                Views.TBL_PRODUCT, 
 	                Views.COL_SHOPING_CART_PRODUCT_ID, 
@@ -193,8 +193,7 @@ public class CartRepository {
 	                Views.TBL_CUSTOMER, 
 	                Views.COL_SHOPING_CART_CUSTOMER_ID, 
 	                Views.COL_CUSTOMER_ID,
-	                Views.COL_SHOPING_CART_CUSTOMER_ID,
-	                Views.COL_SHOPING_CART_ID);
+	                Views.COL_SHOPING_CART_CUSTOMER_ID);
 
 	            return db.query(str_query, new Shopping_cart_mapper(), customerId);
 	        

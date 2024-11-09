@@ -16,8 +16,7 @@ public class Shopping_cart_mapper implements RowMapper<Shopping_cart> {
         item.setCustomer_id(rs.getInt(Views.COL_SHOPING_CART_CUSTOMER_ID));
         item.setProduct_id(rs.getInt(Views.COL_SHOPING_CART_PRODUCT_ID));
         item.setQuantity(rs.getInt(Views.COL_SHOPING_CART_QUANTITY));
-        
-        // Ánh xạ thêm các trường thông tin sản phẩm
+        item.setPro_Status(rs.getString(Views.COL_SHOPING_CART_STATUS)); 
         item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME)); 
         item.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE)); 
         item.setImg(rs.getString(Views.COL_PRODUCT_IMG)); 

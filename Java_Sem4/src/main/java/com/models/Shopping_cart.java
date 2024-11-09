@@ -9,10 +9,12 @@ public class Shopping_cart {
 	private String Product_name;
 	private double Price;
 	private String Img;
+	private String Pro_Status;
 
 	
+	
 	public Shopping_cart(int id, int customer_id, int product_id, int quantity, String product_name, double price,
-			String img) {
+			String img, String pro_Status) {
 		super();
 		Id = id;
 		Customer_id = customer_id;
@@ -21,6 +23,7 @@ public class Shopping_cart {
 		Product_name = product_name;
 		Price = price;
 		Img = img;
+		Pro_Status = pro_Status;
 	}
 	public Shopping_cart() {
 	}
@@ -65,6 +68,12 @@ public class Shopping_cart {
 	}
 	public void setImg(String img) {
 		Img = img;
+	}
+	public String getPro_Status() {
+		return Pro_Status;
+	}
+	public void setPro_Status(String pro_Status) {
+		Pro_Status = pro_Status;
 	}
 	
 }
