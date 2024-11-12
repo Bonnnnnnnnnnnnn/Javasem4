@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.businessManager.repository.RequestOrderRepository;
+import com.models.PageView;
 import com.models.Product;
 import com.models.Request;
 import com.models.Request_detail;
@@ -33,9 +34,14 @@ public class RequestOrderController {
 	private ReleasenoteRepository rele;
 
     @GetMapping("/showOrderRequest")
-    public String showshowOrderRequest(Model model) {
-        List<Request> request = rele.findAllByEmployeeIdIsNull();
+    public String showshowOrderRequest(Model model,
+    		@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+        List<Request> request = rele.findAllByEmployeeIdIsNull(pv);
         model.addAttribute("requests", request);
+		model.addAttribute("pv",pv);
         return Views.SHOW_ORDER_REQUEST; 
     }
     
