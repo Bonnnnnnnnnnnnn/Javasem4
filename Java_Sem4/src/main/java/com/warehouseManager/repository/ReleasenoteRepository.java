@@ -276,6 +276,7 @@ public class ReleasenoteRepository {
 	        detail.setRequest_id(rs.getInt(Views.COL_REQUEST_DETAIL_ID));
 	        detail.setId_product(rs.getInt(Views.COL_REQUEST_DETAIL_ID_PRODUCT));
 	        detail.setQuantity_requested(rs.getInt(Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED));
+	        detail.setQuantity_exported(rs.getInt(Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED));
 	        detail.setStatus(rs.getString(Views.COL_REQUEST_DETAIL_STATUS));
 	        detail.setProductName(rs.getString(Views.COL_PRODUCT_NAME)); 
 	        return detail;
@@ -457,6 +458,19 @@ public class ReleasenoteRepository {
 		  return (totalQuantity != null) ? totalQuantity : 0; 
 	  }
 	  
+		// số lượng request_detail
+	  public int QuantityExported(int requestId) { 
+		  String sql = "SELECT SUM(" +
+		  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ") AS totalQuantity " + "FROM "
+		  + Views.TBL_REQUEST_DETAIL + " " + "WHERE " +
+		  Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ?";
+		  
+		  Integer totalQuantity = jdbcTemplate.queryForObject(sql, Integer.class,
+		  requestId);
+		  
+		  return (totalQuantity != null) ? totalQuantity : 0; 
+	  }
+	  
 	  // so sánh quantity vs request Id đổi status
 	  public boolean isRequestComplete(int ReleaseDetailId, int requestId) {
 		    int totalReleasedQuantity = QuantityByReleaseNoteId(ReleaseDetailId);
@@ -486,5 +500,72 @@ public class ReleasenoteRepository {
 		    }
 		    return false;
 		}
+	  public int updateQuantityExported(int wgrnId, int requestId, int idProduct) {
+		    String sql = "SELECT SUM(" + Views.COL_WAREHOUSE_RN_DETAIL_QUANTITY + ") " +
+		                 "FROM " + Views.TBL_WAREHOUSE_RN_DETAIL + " " +
+		                 "WHERE " + Views.COL_WAREHOUSE_RN_DETAIL_PRODUCTID + " = ? " +
+		                 "AND " + Views.COL_WAREHOUSE_RNOTE_ID + " = ?"; 
+
+		    Integer totalQuantity = jdbcTemplate.queryForObject(sql, Integer.class, idProduct, wgrnId);
+		    if (totalQuantity == null) {
+		        totalQuantity = 0;
+		    }
+
+
+
+		    String updateSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
+                    Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " = COALESCE(" +
+                    Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ", 0) + ? " +
+                    "WHERE " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ? " +
+                    "AND " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ?";
+
+
+		    
+		    jdbcTemplate.update(updateSql, totalQuantity, idProduct, requestId);  
+		    
+		    return totalQuantity;
+		}
+
+	  public int getQuantityRequested(int requestId, int idProduct) {
+		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED + " " +
+		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
+		                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
+		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
+
+		    Integer quantityRequested = jdbcTemplate.queryForObject(sql, Integer.class, requestId, idProduct);
+
+		    return (quantityRequested != null) ? quantityRequested : 0;
+		}
+
+	  public int getQuantityExported(int requestId, int idProduct) {
+		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " " +
+		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
+		                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
+		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
+
+		    Integer quantityExported = jdbcTemplate.queryForObject(sql, Integer.class, requestId, idProduct);
+
+		    return (quantityExported != null) ? quantityExported : 0;
+		}
+
+	  
+	  public int updateStatusRequestDetail(int requestId,int idProduct) {
+		    int totalQuantityRequested = getQuantityRequested(requestId,idProduct);
+		    
+		    int totalQuantityExported = getQuantityExported(requestId,idProduct);
+
+
+		    if (totalQuantityExported >= totalQuantityRequested) {
+		        String updateStatusSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
+		                                 Views.COL_REQUEST_DETAIL_STATUS + " = 'completed' " + 
+		                                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? AND "
+		                                 + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
+		        jdbcTemplate.update(updateStatusSql, requestId,idProduct);
+		    } else {
+		    }
+		    
+		    return totalQuantityRequested;
+		}
+
 
 }

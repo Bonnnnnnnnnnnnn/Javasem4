@@ -3,6 +3,7 @@ package com.warehouseManager.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -242,7 +243,8 @@ public class ReleasenoteController {
 
 	    Request request = rele.findRequestById(requestId); 
 	    List<Request_detail> details = rele.findDetailsByRequestId(requestId);
-
+        String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setName(randomName);
 
 	    model.addAttribute("request", request);
 	    model.addAttribute("details", details);
@@ -273,10 +275,20 @@ public class ReleasenoteController {
 			@RequestParam("employeeId") int employeeId,
 			@RequestParam("requestId") int requestId, 
 			Model model) {
+		
+		Warehouse_releasenote releasenote = new Warehouse_releasenote();
+		Request request = repoder.findRequestById(requestId); 
+	  	List<Request_detail> details = rele.findDetailsByRequestId(requestId);
+	  	
+        String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setName(randomName);
+        
 
+	  	model.addAttribute("request", request); 
+	  	model.addAttribute("details", details);	
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", requestId);
-		model.addAttribute("releasenotes", new Warehouse_releasenote());
+		model.addAttribute("releasenotes", releasenote);
 		return Views.ADD_WAREHOUSE_RELEASENOTE;
 	}
 
@@ -307,7 +319,6 @@ public class ReleasenoteController {
 				detail.setId_product(id_product.get(i));
 				detail.setQuantity(quantity.get(i));
 				detail.setStatus(status.get(i));
-
 				details.add(detail);
 			}
 		}
@@ -317,7 +328,19 @@ public class ReleasenoteController {
 
 	    if (isSaved) {
 	        int releaseNoteId = releasenote.getId(); 
-
+	        
+	        for (int i = 0; i < id_product.size(); i++) {
+	            int idProduct = id_product.get(i); 
+	            int wgrnId = releaseNoteId;
+	            rele.updateQuantityExported(wgrnId,requestId, idProduct);
+	        }
+	        
+	        for (int i = 0; i < id_product.size(); i++) {
+	            int idProduct = id_product.get(i); 
+	            rele.updateStatusRequestDetail(requestId, idProduct); 
+	        }
+	        
+	        
 	        rele.isRequestComplete(releaseNoteId, requestId);
 	    }
 		
@@ -335,7 +358,9 @@ public class ReleasenoteController {
 	    Order order = rele.findOrderById(orderId); 
 	    List<Order_detail> details = rele.findOrderDetail(orderId);
 
-
+        String randomName = "WRO-" + UUID.randomUUID().toString().substring(0, 8);
+        order.setCus_Name(randomName);
+        
 	    model.addAttribute("order", order);
 	    model.addAttribute("details", details);
 	    model.addAttribute("employeeId", employeeId);
@@ -382,6 +407,7 @@ public class ReleasenoteController {
 					
 	    if (isSaved) {
 	        int releaseNoteId = releasenote.getId(); 
+
 	        rele.isOrderComplete(releaseNoteId, orderId);
 	    }
 		

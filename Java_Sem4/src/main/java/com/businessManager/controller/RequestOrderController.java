@@ -4,7 +4,7 @@ package com.businessManager.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,7 +53,10 @@ public class RequestOrderController {
     
     @GetMapping("/addRequestOrder")
     public String showAddRequestOrderForm(Model model) {
-        model.addAttribute("requests", new Request());
+    	Request request = new Request();
+        String randomName = "RO-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setName(randomName);
+        model.addAttribute("request", request);
         return Views.ADD_ORDER_REQUEST; 
     }
     
