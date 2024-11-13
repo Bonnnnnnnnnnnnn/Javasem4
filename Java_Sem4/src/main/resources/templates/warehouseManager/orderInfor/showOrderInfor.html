@@ -9,7 +9,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Order Request Table</h3>
+                <h3 class="card-title">Order Table</h3>
                 <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
                     <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
                     <div class="input-group-append">
@@ -25,25 +25,27 @@
                   <thead>
                     <tr class="text-center">
                     	<th></th>
-						<th>Name</th>
+						<th>Customer Name</th>
 						<th>Date</th>
+						<th>Address</th>						
 						<th>Status</th>
+
                     </tr>
                   </thead>
                   <tbody id="warehouseTable">
-				        <tr th:if="${#lists.isEmpty(requests)}" class="text-center">
-				            <td colspan="5">No employees found</td>
-				        </tr>
-							<tr th:each="item : ${requests}" class="text-center">
+							<tr th:each="item : ${orders}" class="text-center">
 							    <td></td>
 							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${item.name}"></span>
+							        <span th:text="${item.cus_Name}"></span>
 							    </td>
 							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
 							        <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
-							    </td>						    
+							    </td>	
 							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${item.statusRequest}"></span>
+							        <span th:text="${item.address}"></span>
+							    </td>							    					    
+							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
+							        <span th:text="${item.status}"></span>
 							    </td>
 							</tr>
 				    </tbody>
@@ -52,23 +54,23 @@
 				   <tfoot id="paginationFooter">
 				        <tr class="pagination">
 				            <td>
-				                <a th:href="@{/warehouseManager/ShowOrderRequest(cp=1)}" title="First page">&laquo;</a>
+				                <a th:href="@{/warehouseManager/ShowInforOrder(cp=1)}" title="First page">&laquo;</a>
 				            </td>
 				            <td th:if="${pv.Page_current > 1}">
-				                <a th:href="@{/warehouseManager/ShowOrderRequest(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+				                <a th:href="@{/warehouseManager/ShowInforOrder(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
 				            </td>
 				            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
 				                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
-				                <a th:href="@{/warehouseManager/ShowOrderRequest(cp=${i + 1})}"
+				                <a th:href="@{/warehouseManager/ShowInforOrder(cp=${i + 1})}"
 				                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
 				                    <span th:text="${i + 1}"></span>
 				                </a>
 				            </td>
 				            <td th:if="${pv.Page_current < pv.Total_page}">
-				                <a th:href="@{/warehouseManager/ShowOrderRequest(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+				                <a th:href="@{/warehouseManager/ShowInforOrder(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
 				            </td>
 				            <td>
-				                <a th:href="@{/warehouseManager/ShowOrderRequest(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+				                <a th:href="@{/warehouseManager/ShowInforOrder(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
 				            </td>
 				        </tr>
 				    </tfoot>
@@ -81,6 +83,6 @@
     </section>
   </div>
   <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
-  <script th:src="@{/js/orderRequesRn.js}"></script>
+<script th:src="@{/js/showOrderDetail.js}"></script>
 <div th:replace="warehouseManager/layout/footer_admin"></div>
 </html>

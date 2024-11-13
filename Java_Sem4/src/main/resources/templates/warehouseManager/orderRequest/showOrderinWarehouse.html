@@ -1,4 +1,6 @@
-<body xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" th:href="@{/css/pagination.css}">
 <div th:replace="warehouseManager/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <!-- Content Header (Page header) -->
@@ -48,12 +50,39 @@
 				                	<a th:href="@{deleteRequest(id=${item.id})}" 
 						               onclick="return confirmDelete();" 
 						               class="btn btn-danger"
-						               th:classappend="${item.statusRequest == 'complete' ? 'disabled' : ''}"
-       								   th:style="${item.statusRequest == 'complete' ? 'pointer-events: none; opacity: 0.5;' : ''}">Delete</a>
+						               th:classappend="${item.statusRequest == 'Completed' ? 'disabled' : ''}"
+       								   th:style="${item.statusRequest == 'Completed' ? 'pointer-events: none; opacity: 0.5;' : ''}">Delete</a>
 				            	</td>
 							</tr>
 				    </tbody>
                 </table>
+                
+      			<table style="margin-left:42%">
+				   <tfoot id="paginationFooter">
+				        <tr class="pagination">
+				            <td>
+				                <a th:href="@{/warehouseManager/showOrderRequestinWarehouse(cp=1)}" title="First page">&laquo;</a>
+				            </td>
+				            <td th:if="${pv.Page_current > 1}">
+				                <a th:href="@{/warehouseManager/showOrderRequestinWarehouse(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+				            </td>
+				            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+				                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+				                <a th:href="@{/warehouseManager/showOrderRequestinWarehouse(cp=${i + 1})}"
+				                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+				                    <span th:text="${i + 1}"></span>
+				                </a>
+				            </td>
+				            <td th:if="${pv.Page_current < pv.Total_page}">
+				                <a th:href="@{/warehouseManager/showOrderRequestinWarehouse(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+				            </td>
+				            <td>
+				                <a th:href="@{/warehouseManager/showOrderRequestinWarehouse(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+				            </td>
+				        </tr>
+				    </tfoot>
+				</table> 
+
               </div>
             </div>
           </div>
@@ -62,6 +91,6 @@
     </section>
   </div>
   <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
-  <script th:src="@{/js/orderInWarehouseDetail.js}"></script>
+  <script th:src="@{/js/requestInWarehouseDetail.js}"></script>
 <div th:replace="warehouseManager/layout/footer_admin"></div>
-</body>
+</html>

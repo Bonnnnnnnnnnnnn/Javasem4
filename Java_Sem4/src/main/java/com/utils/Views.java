@@ -123,6 +123,7 @@ public final class Views {
 	//12.Warehouse_rn_detail	
 	public static String SHOW_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/releasenote/WarehouseReleasenoteDetail";
 	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE_DETAIL= "warehouseManager/orderRequest/showOrderRequestDetail";
+	public static String SHOW_ORDER_DETAIL= "warehouseManager/orderInfor/OrderDetail";
 
 	
 	public static String TBL_WAREHOUSE_RN_DETAIL = "Warehouse_rn_detail";
@@ -140,6 +141,11 @@ public final class Views {
 	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE= "warehouseManager/orderRequest/showOrderRequest";
 	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE = "warehouseManager/orderRequest/showOrderinWarehouse";
 	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/WarehouseReleasenote";
+	public static String SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInWarehouse";
+	public static String SHOW_ORDER_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInfor";
+	public static String SHOW_ORDER_IN_WAREHOUSE_DETAIL = "warehouseManager/orderInfor/showOrderInWarehouseDetail";
+	public static String ADD_ALL_ORDER_RELEASENOTE= "warehouseManager/releasenote/addAllOrderReleasenotes";
+
 	
 	public static String TBL_WAREHOUSE_RELEASENOTE = "Warehouse_releasenote";
 	public static String COL_WAREHOUSE_RELEASENOTE_EMPLOYEEID = "Employee_Id";
@@ -166,7 +172,7 @@ public final class Views {
 	public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
 	// Request detail
 	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
-	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showOrderinWarehouseDetail";
+	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
 
 	public static String TBL_REQUEST_DETAIL = "Request_detail";
 	public static String COL_REQUEST_DETAIL_ID = "id";
@@ -208,14 +214,28 @@ public final class Views {
 	public static String COL_ORDER_STATUS = "Status";
 	public static String COL_ORDER_EMPLOYEE = "Employee_Id";
 	public static String COL_ORDER_PAYMENT_ID ="Payment_Id";
+	public static String COL_ORDER_CUSNAME = "Cus_Name";
+	public static String COL_ORDER_PHONE = "Phone";
+	public static String COL_ORDER_ADDRESS = "Address";
+	public static String COL_ORDER_PAYSTATUS = "Pay_status";
+	public static String COL_ORDER_DATE = "Date";
+	public static String COL_ORDER_COUPONID = "coupon_id";
+	public static String COL_ORDER_DISCOUNT= "discount";
+	public static String COL_ORDER_TOTALAMOUNT = "totalAmount";
+	public static String COL_ORDER_SHIPPINGFEE = "shippingFee";
+	public static String COL_ORDER_PAYMENTMETHOD= "paymentMethod";
+	public static String COL_ORDER_NOTES = "notes";
+	public static String COL_ORDER_ORDERID = "OrderID";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
 	public static String COL_ORDER_DETAIL_ID = "Id";
 	public static String COL_ORDER_DETAIL_STOCK_ID = "Stock_id";
-	public static String COL_ORDER_DETAIL_ORDER_ID = "order_id";
-	public static String COL_ORDER_DETAIL_PRICE = "Status";
+	public static String COL_ORDER_DETAIL_ORDER_ID = "Order_Id";
+	public static String COL_ORDER_DETAIL_PRICE = "Price";
 	public static String COL_ORDER_DETAIL_STATUS = "Status";
+	public static String COL_ORDER_DETAIL_PRODUCT_ID = "Product_Id";
+	public static String COL_ORDER_DETAIL_QUANTITY = "Quantity";
 	
 	//19.EMPLOYEE
 	public static String EMPLOYEE_SHOWEMP = "admin/employee/showEmp";
@@ -233,6 +253,20 @@ public final class Views {
 	public static String TBL_ROLE = "Role";
 	public static String COL_ROLE_ID = "Id";
 	public static String COL_ROLE_NAME = "Name";
+	
+	//21.CUSTOMER
+	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
+	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";
+	public static String CUS_DETAILPROPAGE = "customer/detailproduct";
+	public static String CUS_CARTPAGE = "customer/cart";
+	public static String CUS_SIGNINPAGE = "customer/signin";
+	public static String CUS_SIGNUPPAGE = "customer/signup";
+	public static String CUS_COFIRMPAGE = "customer/corfirmregister";
+	public static String CUS_CUSINFOPAGE = "customer/cusinfo";
+	public static String CUS_CUSCHANGEPASSWORDPAGE = "customer/changepassword";
+	public static String CUS_CUSCHECKOUTPAGE = "customer/checkout";
+	public static String CUS_ORDEREDPAGE = "customer/ordereds";
+	public static String CUS_ORDEREDDETAILPAGE = "customer/orderdetail";
 	//21.Product_Img
 	public static String TBL_PRODUCT_IMG = "product_img";
 	public static String COL_PRODUCT_IMG_ID = "Id";

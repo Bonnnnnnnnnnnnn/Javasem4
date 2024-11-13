@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.admin.repository.ConversionRepository;
-import com.admin.repository.ProductRepository;
 import com.models.Conversion;
 import com.models.PageView;
 import com.utils.Views;
@@ -24,14 +23,13 @@ public class ConversionController {
 	
 	@Autowired
 	private ConversionRepository con;
-	@Autowired
-	private ProductRepository pro;
+
 	
     @GetMapping("/conversions")
     public String findAllConversions(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(10);
+	    pv.setPage_size(5);
         List<Conversion> conversions = con.findAllConversions(pv);
         model.addAttribute("conversions", conversions);
 	    model.addAttribute("pv", pv);

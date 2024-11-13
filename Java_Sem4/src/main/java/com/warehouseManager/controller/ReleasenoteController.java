@@ -3,6 +3,7 @@ package com.warehouseManager.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.businessManager.repository.RequestOrderRepository;
 import com.models.Employee;
+import com.models.Order;
+import com.models.Order_detail;
+import com.models.PageView;
 import com.models.Product;
 import com.models.Warehouse_releasenote;
 import com.models.Warehouse_rn_detail;
@@ -36,21 +40,49 @@ public class ReleasenoteController {
 	private ReleasenoteRepository rele;
 	
 	@GetMapping("/showWareReleasenote")
-	public String showWareReleasenote(Model model, HttpSession session) {
+	public String showWareReleasenote(Model model, HttpSession session,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
 		if (loggedInEmployee != null) {
 			int employeeId = loggedInEmployee.getId();
 
-			List<Warehouse_releasenote> releasenotes = rele.findWareAllByEmployeeId(employeeId);
+			List<Warehouse_releasenote> releasenotes = rele.findWareAllByEmployeeId(pv,employeeId);
 
 			model.addAttribute("releasenotes", releasenotes);
+			model.addAttribute("pv",pv);
 		} else {
 			model.addAttribute("error", "login");
 		}
 
 		return Views.SHOW_WAREHOUSE_RELEASENOTE;
 	}
+	
+	@GetMapping("/ShowInforOrder")
+	public String ShowInforOrder(Model model,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+		List<Order> orders = rele.findAllOrderByEmployeeIdIsNull(pv);
+		model.addAttribute("orders", orders);
+		model.addAttribute("pv",pv);
+		return Views.SHOW_ORDER_WAREHOUSE_RELEASENOTE;
+	}
+	
+	  @GetMapping("/showOrderDetail") 
+	  public String showOrderDetail(@RequestParam("id") int id, Model model) {
+		  
+	  Order order = rele.findOrderById(id); 
+	  List<Order_detail> details = rele.findOrderDetail(id);
+
+	  model.addAttribute("order", order); 
+	  model.addAttribute("details", details);	 	  
+	  return Views.SHOW_ORDER_DETAIL; 
+	  }
 	
 	  @GetMapping("/warehouseReleasenoteDetail") 
 	  public String warehouseReleasenoteDetail(@RequestParam("id") int id, Model model) {
@@ -64,15 +96,20 @@ public class ReleasenoteController {
 	  }
 
 	@GetMapping("/ShowOrderRequest")
-	public String showRequest(Model model) {
-		List<Request> releasenotes = rele.findAllByEmployeeIdIsNull();
+	public String showRequest(Model model,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+		List<Request> releasenotes = rele.findAllByEmployeeIdIsNull(pv);
 		model.addAttribute("requests", releasenotes);
+		model.addAttribute("pv",pv);
 		return Views.SHOW_REQUEST_WAREHOUSE_RELEASENOTE;
 	}
 
 	
-	  @GetMapping("/orderRequestdetails") public String
-	  showUpdateOrderDetailForm(@RequestParam("id") int id, Model model) {
+	  @GetMapping("/orderRequestdetails") 
+	  public String showUpdateOrderDetailForm(@RequestParam("id") int id, Model model) {
 		  
 	  Request request = repoder.findRequestById(id); 
 	  List<Request_detail> details = rele.findDetailsByRequestId(id);
@@ -96,26 +133,88 @@ public class ReleasenoteController {
 		}
 		return "redirect:/warehouseManager/ShowOrderRequest";
 	}
+	
+	@PostMapping("/receiveInOrder")
+	public String receiveInOrder(@RequestParam("id") int OrderId, HttpSession session) {
 
-	@GetMapping("/showOrderRequestinWarehouse")
-	public String showOrderRequestinWarehouse(Model model, HttpSession session) {
+		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+
+		if (loggedInEmployee != null) {
+			int employeeId = loggedInEmployee.getId();
+			rele.updateEmployeeIdInOrder(OrderId, employeeId);
+			rele.updateStatusInOrder(OrderId);
+			
+		} else {
+			System.out.println("login");
+		}
+		return "redirect:/warehouseManager/ShowInforOrder";
+	}
+	
+	@GetMapping("/showOrderInWarehouse")
+	public String showOrderInWarehouse(Model model, HttpSession session,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
 		if (loggedInEmployee != null) {
 			int employeeId = loggedInEmployee.getId();
 
-			List<Request> requests = rele.findAllByEmployeeId(employeeId);
+	        List<Order> orders = rele.findOrderByEmployeeId(pv, employeeId);
+
+			model.addAttribute("orders", orders);
+			model.addAttribute("pv",pv);
+		} else {
+			model.addAttribute("error", "login");
+		}
+
+		return Views.SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE;
+	}
+	
+	@GetMapping("/orderInWarehouseDetail")
+	public String orderInWarehouseDetail(
+			@RequestParam("id") int id,
+			HttpSession session, Model model) {
+		
+		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		int employeeId = loggedInEmployee.getId();
+			
+		Order order = rele.findOrderByIdEmp(id, employeeId);
+		    
+		List<Order_detail> details = rele.findOrderDetail(id);
+		    
+		model.addAttribute("order", order);
+		model.addAttribute("details", details);
+		model.addAttribute("employeeId", employeeId);
+		model.addAttribute("orderId", id);
+	    return Views.SHOW_ORDER_IN_WAREHOUSE_DETAIL;
+	}
+
+	@GetMapping("/showOrderRequestinWarehouse")
+	public String showOrderRequestinWarehouse(Model model, HttpSession session,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+
+		if (loggedInEmployee != null) {
+			int employeeId = loggedInEmployee.getId();
+
+	        List<Request> requests = rele.findAllByEmployeeId(pv, employeeId);
 
 			model.addAttribute("requests", requests);
+			model.addAttribute("pv",pv);
 		} else {
 			model.addAttribute("error", "login");
 		}
 
 		return Views.SHOW_ORDER_REQUEST_IN_WAREHOUSE;
 	}
-
-	@GetMapping("/orderInWarehouseDetail")
-	public String orderInWarehouseDetail(
+	
+	@GetMapping("/requestInWarehouseDetail")
+	public String requestInWarehouseDetail(
 			@RequestParam("id") int id,
 			HttpSession session, Model model) {
 		
@@ -130,7 +229,7 @@ public class ReleasenoteController {
 		model.addAttribute("details", details);
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", id);
-	    return Views.SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL;
+	    return Views.SHOW_REQUEST_IN_WAREHOUSE_DETAIL;
 	}
 
 	
@@ -144,7 +243,8 @@ public class ReleasenoteController {
 
 	    Request request = rele.findRequestById(requestId); 
 	    List<Request_detail> details = rele.findDetailsByRequestId(requestId);
-
+        String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setName(randomName);
 
 	    model.addAttribute("request", request);
 	    model.addAttribute("details", details);
@@ -163,16 +263,32 @@ public class ReleasenoteController {
     	rele.deleteEmployeeIdByRequestId(requestId);
         return "redirect:showOrderRequestinWarehouse";
     }
+    
+    @GetMapping("/deleteOrder")
+    public String deleteOrder(@RequestParam("id") int orderId) {
+    	rele.deleteEmployeeIdByOrderId(orderId);
+        return "redirect:showOrderInWarehouse";
+    }
 	
 	@GetMapping("/showAddWarehouseRelesenote")
 	public String showAddWarehouseReleasenote(
 			@RequestParam("employeeId") int employeeId,
 			@RequestParam("requestId") int requestId, 
 			Model model) {
+		
+		Warehouse_releasenote releasenote = new Warehouse_releasenote();
+		Request request = repoder.findRequestById(requestId); 
+	  	List<Request_detail> details = rele.findDetailsByRequestId(requestId);
+	  	
+        String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setName(randomName);
+        
 
+	  	model.addAttribute("request", request); 
+	  	model.addAttribute("details", details);	
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", requestId);
-		model.addAttribute("releasenotes", new Warehouse_releasenote());
+		model.addAttribute("releasenotes", releasenote);
 		return Views.ADD_WAREHOUSE_RELEASENOTE;
 	}
 
@@ -203,7 +319,6 @@ public class ReleasenoteController {
 				detail.setId_product(id_product.get(i));
 				detail.setQuantity(quantity.get(i));
 				detail.setStatus(status.get(i));
-
 				details.add(detail);
 			}
 		}
@@ -213,13 +328,93 @@ public class ReleasenoteController {
 
 	    if (isSaved) {
 	        int releaseNoteId = releasenote.getId(); 
-
+	        
+	        for (int i = 0; i < id_product.size(); i++) {
+	            int idProduct = id_product.get(i); 
+	            int wgrnId = releaseNoteId;
+	            rele.updateQuantityExported(wgrnId,requestId, idProduct);
+	        }
+	        
+	        for (int i = 0; i < id_product.size(); i++) {
+	            int idProduct = id_product.get(i); 
+	            rele.updateStatusRequestDetail(requestId, idProduct); 
+	        }
+	        
+	        
 	        rele.isRequestComplete(releaseNoteId, requestId);
 	    }
 		
 		return "redirect:showOrderRequestinWarehouse";
 	}
+	
+	@GetMapping("/showAddAllOrderRelesenote")
+	public String showAddAllOrderRelesenote(
+	        @RequestParam("employeeId") int employeeId,
+	        @RequestParam("orderId") int orderId,
+	        @RequestParam("name") String name, 
+	        
+	        Model model) {
 
+	    Order order = rele.findOrderById(orderId); 
+	    List<Order_detail> details = rele.findOrderDetail(orderId);
+
+        String randomName = "WRO-" + UUID.randomUUID().toString().substring(0, 8);
+        order.setCus_Name(randomName);
+        
+	    model.addAttribute("order", order);
+	    model.addAttribute("details", details);
+	    model.addAttribute("employeeId", employeeId);
+	    model.addAttribute("orderId", orderId);
+	    model.addAttribute("name", name);
+	    
+
+	    return Views.ADD_ALL_ORDER_RELEASENOTE;
+	}
+
+	@PostMapping("/addRelesenoteByOrder")
+	public String addRelesenoteByOrder(
+			@RequestParam("name") String name, 
+			@RequestParam("statusWr") String statusWr,
+			@RequestParam("orderId") int orderId, 
+			@RequestParam("employeeId") int employeeId,
+			@RequestParam(required = false) List<Integer> id_product,
+			@RequestParam(required = false) List<Integer> quantity, 
+			@RequestParam(required = false) List<String> status,
+			Model model) {
+		
+
+		Warehouse_releasenote releasenote = new Warehouse_releasenote();
+		releasenote.setName(name);
+		releasenote.setDate(LocalDateTime.now());
+		releasenote.setStatusWr(statusWr);
+		releasenote.setOrder_id(orderId);
+		releasenote.setEmployee_Id(employeeId);
+
+		List<Warehouse_rn_detail> details = new ArrayList<>();
+		if (id_product != null && !id_product.isEmpty()) {
+			for (int i = 0; i < id_product.size(); i++) {
+
+				Warehouse_rn_detail detail = new Warehouse_rn_detail();
+				detail.setId_product(id_product.get(i));
+				detail.setQuantity(quantity.get(i));
+				detail.setStatus(status.get(i));
+
+				details.add(detail);
+			}
+		}
+
+		boolean isSaved = rele.addWarehouseReleasenoteByOrder(releasenote, details);
+					
+	    if (isSaved) {
+	        int releaseNoteId = releasenote.getId(); 
+
+	        rele.isOrderComplete(releaseNoteId, orderId);
+	    }
+		
+		return "redirect:showOrderInWarehouse";
+	}
+	
+	
 	@GetMapping("/getProducts")
 	@ResponseBody
 	public List<Product> getProducts() {
