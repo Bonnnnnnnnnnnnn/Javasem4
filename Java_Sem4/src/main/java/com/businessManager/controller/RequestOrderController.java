@@ -51,7 +51,7 @@ public class RequestOrderController {
         return repoder.findAllProduct();
     }
     
-    @GetMapping("/addRequestOrder")
+    @GetMapping("/showAddRequestOrder")
     public String showAddRequestOrderForm(Model model) {
     	Request request = new Request();
         String randomName = "RO-" + UUID.randomUUID().toString().substring(0, 8);
@@ -69,6 +69,11 @@ public class RequestOrderController {
             @RequestParam(required = false) List<Integer> quantity_requested,
             @RequestParam(required = false) List<String> status,            
             Model model) {
+    	
+        if (id_product == null || id_product.isEmpty()) {
+            model.addAttribute("error", "No products selected. Please select at least one product.");
+            return "redirect:showAddRequestOrder"; 
+        }
 
         Request request = new Request();
         request.setName(name);

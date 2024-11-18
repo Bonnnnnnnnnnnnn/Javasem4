@@ -28,27 +28,31 @@ public class ReleasenoteRepository {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	//update employee_id bang request
 	public void updateEmployeeId(int requestId, int employeeId) {
 		String sql = "UPDATE Request SET Employee_Id = ? WHERE Id = ?";
 		jdbcTemplate.update(sql, employeeId, requestId);
 	}
 	
+	//update employee_id bang order
 	public void updateEmployeeIdInOrder(int orderId, int employeeId) {
 		String sql = "UPDATE [Order] SET Employee_Id = ? WHERE Id = ?";
 		jdbcTemplate.update(sql, employeeId, orderId);
 	}
 	
+	// update status order
 	public void updateStatusInOrder(int OrderId) {
 		String sql = "UPDATE [Order] SET Status = 'Processing' WHERE Id = ?";
 		jdbcTemplate.update(sql, OrderId);
 	}
 
+	// update status request
 	public void updateStatusToPending(int requestId) {
 		String sql = "UPDATE Request SET Status = 'Processing' WHERE Id = ?";
 		jdbcTemplate.update(sql, requestId);
 	}
 
-
+	//hien thi bang request theo employee_id
 	public List<Request> findAllByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
 	        String sql = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
@@ -77,6 +81,7 @@ public class ReleasenoteRepository {
 	    }
 	}
 	
+	//hien thi bang order theo employee_id
 	public List<Order> findOrderByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
 	        String sql = String.format("SELECT * FROM [%s] WHERE %s = ? ORDER BY %s DESC",
@@ -105,7 +110,7 @@ public class ReleasenoteRepository {
 	    }
 	}
 
-	
+	//hien thi bang warehouse_releasenote theo employee_id
 	public List<Warehouse_releasenote> findWareAllByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
 	    	String sql = String.format ("SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
@@ -136,7 +141,8 @@ public class ReleasenoteRepository {
 		
 		
 	}
-
+	
+	// hien thi bang request khi employee_id = null
 	public List<Request> findAllByEmployeeIdIsNull(PageView itemPage) {
 	    try {
 			String sql =String.format( "SELECT * FROM %s WHERE %s IS NULL ORDER BY %s DESC",
@@ -164,6 +170,7 @@ public class ReleasenoteRepository {
 	    }
 	}
 	
+	// hien thi bang order khi employee_id = null
 	public List<Order> findAllOrderByEmployeeIdIsNull(PageView itemPage) {
 	    try {
 			String sql =String.format( "SELECT * FROM [%s] WHERE %s IS NULL ORDER BY %s DESC",
@@ -190,17 +197,19 @@ public class ReleasenoteRepository {
 	        return Collections.emptyList();
 	    }
 	}
-	
+	//xoa employee_id bang request
 	public void deleteEmployeeIdByRequestId(int id) {
 	    String sql = "UPDATE Request SET Employee_Id = NULL, status = 'canceled' WHERE Id = ?";
 	    jdbcTemplate.update(sql, id);
 	}
 	
+	//xoa employee_id bang order
 	public void deleteEmployeeIdByOrderId(int id) {
 	    String sql = "UPDATE [Order] SET Employee_Id = NULL, status = 'canceled' WHERE Id = ?";
 	    jdbcTemplate.update(sql, id);
 	}
 	
+	//hien thi bang order theo id
 	public Order findOrderById(int id) {
         String sql = "SELECT * FROM [Order] WHERE Id = ?";
         List<Order> orders = jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -214,8 +223,8 @@ public class ReleasenoteRepository {
         
         return orders.stream().findFirst().orElse(null);
 	}
+	
 	// hiển thị bảng Order_detail
-
 	public List<Order_detail> findOrderDetail(int OrderId) {
 	    String sql = "SELECT od.*, p.Product_name AS Product_name " +
 	                 "FROM Order_detail od " +
@@ -232,7 +241,7 @@ public class ReleasenoteRepository {
 	    }, OrderId);
 	}
 
-
+	//hien thi bang warehouse_releate theo id
     public Warehouse_releasenote findWarehouseReleasenoteById(int id) {
         String sql = "SELECT * FROM Warehouse_releasenote WHERE Id = ?";
         List<Warehouse_releasenote> releasenotes = jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -500,6 +509,8 @@ public class ReleasenoteRepository {
 		    }
 		    return false;
 		}
+	  
+	  // update quantity_exported
 	  public int updateQuantityExported(int wgrnId, int requestId, int idProduct) {
 		    String sql = "SELECT SUM(" + Views.COL_WAREHOUSE_RN_DETAIL_QUANTITY + ") " +
 		                 "FROM " + Views.TBL_WAREHOUSE_RN_DETAIL + " " +
@@ -525,7 +536,8 @@ public class ReleasenoteRepository {
 		    
 		    return totalQuantity;
 		}
-
+	  
+	  //total quantity_requested
 	  public int getQuantityRequested(int requestId, int idProduct) {
 		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED + " " +
 		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
@@ -537,6 +549,7 @@ public class ReleasenoteRepository {
 		    return (quantityRequested != null) ? quantityRequested : 0;
 		}
 
+	  //total quantity_exported
 	  public int getQuantityExported(int requestId, int idProduct) {
 		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " " +
 		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
@@ -548,7 +561,7 @@ public class ReleasenoteRepository {
 		    return (quantityExported != null) ? quantityExported : 0;
 		}
 
-	  
+	  //update status request_detail
 	  public int updateStatusRequestDetail(int requestId,int idProduct) {
 		    int totalQuantityRequested = getQuantityRequested(requestId,idProduct);
 		    
@@ -557,7 +570,7 @@ public class ReleasenoteRepository {
 
 		    if (totalQuantityExported >= totalQuantityRequested) {
 		        String updateStatusSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
-		                                 Views.COL_REQUEST_DETAIL_STATUS + " = 'completed' " + 
+		                                 Views.COL_REQUEST_DETAIL_STATUS + " = 'Completed' " + 
 		                                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? AND "
 		                                 + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
 		        jdbcTemplate.update(updateStatusSql, requestId,idProduct);
@@ -565,6 +578,24 @@ public class ReleasenoteRepository {
 		    }
 		    
 		    return totalQuantityRequested;
+		}
+
+	  // update status Request
+	  public void updateStatusRequest(int requestId) {
+		    String checkCompletionSql = "SELECT COUNT(*) " +
+		                                "FROM " + Views.TBL_REQUEST_DETAIL + " " +
+		                                "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
+		                                "AND " + Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " < " +
+		                                Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED;
+
+		    Integer incompleteCount = jdbcTemplate.queryForObject(checkCompletionSql, Integer.class, requestId);
+
+		    if (incompleteCount != null && incompleteCount == 0) {
+		        String updateStatusSql = "UPDATE " + Views.TBL_REQUEST + " SET " +
+		                                 Views.COL_REQUEST_STATUS + " = 'Completed' " +
+		                                 "WHERE " + Views.COL_REQUEST_ID + " = ?";
+		        jdbcTemplate.update(updateStatusSql, requestId);
+		    }
 		}
 
 

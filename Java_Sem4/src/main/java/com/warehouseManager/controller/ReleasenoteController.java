@@ -39,12 +39,13 @@ public class ReleasenoteController {
 	@Autowired
 	private ReleasenoteRepository rele;
 	
+	//show warehouse note in warehouseManager
 	@GetMapping("/showWareReleasenote")
 	public String showWareReleasenote(Model model, HttpSession session,
 			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(8);
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
 		if (loggedInEmployee != null) {
@@ -60,30 +61,8 @@ public class ReleasenoteController {
 
 		return Views.SHOW_WAREHOUSE_RELEASENOTE;
 	}
-	
-	@GetMapping("/ShowInforOrder")
-	public String ShowInforOrder(Model model,
-			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-		List<Order> orders = rele.findAllOrderByEmployeeIdIsNull(pv);
-		model.addAttribute("orders", orders);
-		model.addAttribute("pv",pv);
-		return Views.SHOW_ORDER_WAREHOUSE_RELEASENOTE;
-	}
-	
-	  @GetMapping("/showOrderDetail") 
-	  public String showOrderDetail(@RequestParam("id") int id, Model model) {
-		  
-	  Order order = rele.findOrderById(id); 
-	  List<Order_detail> details = rele.findOrderDetail(id);
+	//show warehouse note detail in warehouseManager
 
-	  model.addAttribute("order", order); 
-	  model.addAttribute("details", details);	 	  
-	  return Views.SHOW_ORDER_DETAIL; 
-	  }
-	
 	  @GetMapping("/warehouseReleasenoteDetail") 
 	  public String warehouseReleasenoteDetail(@RequestParam("id") int id, Model model) {
 		  
@@ -94,20 +73,48 @@ public class ReleasenoteController {
 	  model.addAttribute("details", details);	 	  
 	  return Views.SHOW_WAREHOUSE_RELEASENOTE_DETAIL; 
 	  }
+	
+	//show order in warehouseManager
+	@GetMapping("/ShowInforOrder")
+	public String ShowInforOrder(Model model,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(8);
+		List<Order> orders = rele.findAllOrderByEmployeeIdIsNull(pv);
+		model.addAttribute("orders", orders);
+		model.addAttribute("pv",pv);
+		return Views.SHOW_ORDER_WAREHOUSE_RELEASENOTE;
+	}
+		
+	  //show order_detail in warehouseManager	
+	  @GetMapping("/showOrderDetail") 
+	  public String showOrderDetail(@RequestParam("id") int id, Model model) {
+		  
+	  Order order = rele.findOrderById(id); 
+	  List<Order_detail> details = rele.findOrderDetail(id);
+	
+	  model.addAttribute("order", order); 
+	  model.addAttribute("details", details);	 	  
+	  return Views.SHOW_ORDER_DETAIL; 
+	  }
+	
 
+	  
+	//show request in warehouseManager
 	@GetMapping("/ShowOrderRequest")
 	public String showRequest(Model model,
 			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(8);
 		List<Request> releasenotes = rele.findAllByEmployeeIdIsNull(pv);
 		model.addAttribute("requests", releasenotes);
 		model.addAttribute("pv",pv);
 		return Views.SHOW_REQUEST_WAREHOUSE_RELEASENOTE;
 	}
 
-	
+	  //show request_detail in warehouseManager
 	  @GetMapping("/orderRequestdetails") 
 	  public String showUpdateOrderDetailForm(@RequestParam("id") int id, Model model) {
 		  
@@ -118,7 +125,7 @@ public class ReleasenoteController {
 	  return Views.SHOW_REQUEST_WAREHOUSE_RELEASENOTE_DETAIL; 
 	  }
 	 
-
+	 //receive request by employee
 	@PostMapping("/receiveNote")
 	public String receiveNote(@RequestParam("requestId") int releasenoteId, HttpSession session) {
 
@@ -134,6 +141,7 @@ public class ReleasenoteController {
 		return "redirect:/warehouseManager/ShowOrderRequest";
 	}
 	
+	//receive order by employee
 	@PostMapping("/receiveInOrder")
 	public String receiveInOrder(@RequestParam("id") int OrderId, HttpSession session) {
 
@@ -150,12 +158,13 @@ public class ReleasenoteController {
 		return "redirect:/warehouseManager/ShowInforOrder";
 	}
 	
+	// show order in warehouse note
 	@GetMapping("/showOrderInWarehouse")
 	public String showOrderInWarehouse(Model model, HttpSession session,
 			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(8);
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
 		if (loggedInEmployee != null) {
@@ -172,6 +181,7 @@ public class ReleasenoteController {
 		return Views.SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE;
 	}
 	
+	//show order and order_detail in warehouse note
 	@GetMapping("/orderInWarehouseDetail")
 	public String orderInWarehouseDetail(
 			@RequestParam("id") int id,
@@ -191,12 +201,13 @@ public class ReleasenoteController {
 	    return Views.SHOW_ORDER_IN_WAREHOUSE_DETAIL;
 	}
 
+	//show request in warehouse note
 	@GetMapping("/showOrderRequestinWarehouse")
 	public String showOrderRequestinWarehouse(Model model, HttpSession session,
 			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(8);
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
 		if (loggedInEmployee != null) {
@@ -213,6 +224,7 @@ public class ReleasenoteController {
 		return Views.SHOW_ORDER_REQUEST_IN_WAREHOUSE;
 	}
 	
+	//show request and request_detail in warehouse 
 	@GetMapping("/requestInWarehouseDetail")
 	public String requestInWarehouseDetail(
 			@RequestParam("id") int id,
@@ -232,7 +244,7 @@ public class ReleasenoteController {
 	    return Views.SHOW_REQUEST_IN_WAREHOUSE_DETAIL;
 	}
 
-	
+	//show add all release note by request
 	@GetMapping("/showAddAllWarehouseRelesenote")
 	public String showAddAllWarehouseRelesenote(
 	        @RequestParam("employeeId") int employeeId,
@@ -256,20 +268,8 @@ public class ReleasenoteController {
 	    return Views.ADD_ALL_WAREHOUSE_RELEASENOTE;
 	}
 
-
-	 
-    @GetMapping("/deleteRequest")
-    public String deleteRequest(@RequestParam("id") int requestId) {
-    	rele.deleteEmployeeIdByRequestId(requestId);
-        return "redirect:showOrderRequestinWarehouse";
-    }
-    
-    @GetMapping("/deleteOrder")
-    public String deleteOrder(@RequestParam("id") int orderId) {
-    	rele.deleteEmployeeIdByOrderId(orderId);
-        return "redirect:showOrderInWarehouse";
-    }
 	
+    //show add release note by request
 	@GetMapping("/showAddWarehouseRelesenote")
 	public String showAddWarehouseReleasenote(
 			@RequestParam("employeeId") int employeeId,
@@ -292,6 +292,7 @@ public class ReleasenoteController {
 		return Views.ADD_WAREHOUSE_RELEASENOTE;
 	}
 
+	//add release note by request
 	@PostMapping("/addWarehouseRelesenote")
 	public String addWarehouseReleasenote(
 			@RequestParam("name") String name, 
@@ -341,12 +342,20 @@ public class ReleasenoteController {
 	        }
 	        
 	        
-	        rele.isRequestComplete(releaseNoteId, requestId);
+	        rele.updateStatusRequest(requestId);
 	    }
 		
 		return "redirect:showOrderRequestinWarehouse";
 	}
 	
+	 //delete request
+    @GetMapping("/deleteRequest")
+    public String deleteRequest(@RequestParam("id") int requestId) {
+    	rele.deleteEmployeeIdByRequestId(requestId);
+        return "redirect:showOrderRequestinWarehouse";
+    }
+	
+	// show add all release note by order
 	@GetMapping("/showAddAllOrderRelesenote")
 	public String showAddAllOrderRelesenote(
 	        @RequestParam("employeeId") int employeeId,
@@ -371,6 +380,7 @@ public class ReleasenoteController {
 	    return Views.ADD_ALL_ORDER_RELEASENOTE;
 	}
 
+	//add release note by order
 	@PostMapping("/addRelesenoteByOrder")
 	public String addRelesenoteByOrder(
 			@RequestParam("name") String name, 
@@ -414,7 +424,14 @@ public class ReleasenoteController {
 		return "redirect:showOrderInWarehouse";
 	}
 	
+    // delete order
+    @GetMapping("/deleteOrder")
+    public String deleteOrder(@RequestParam("id") int orderId) {
+    	rele.deleteEmployeeIdByOrderId(orderId);
+        return "redirect:showOrderInWarehouse";
+    }
 	
+	//find name table product
 	@GetMapping("/getProducts")
 	@ResponseBody
 	public List<Product> getProducts() {

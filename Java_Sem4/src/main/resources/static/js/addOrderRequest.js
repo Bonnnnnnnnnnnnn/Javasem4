@@ -1,6 +1,5 @@
 let products = [];
 
-// Lấy dữ liệu sản phẩm từ server
 fetch('/businessManager/getProducts')
     .then(response => {
         if (!response.ok) {
@@ -9,19 +8,21 @@ fetch('/businessManager/getProducts')
         return response.json();
     })
     .then(data => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
             products = data;
-            console.log("Loaded Products:", products);
             document.getElementById('addDetailButton').style.display = 'inline-block'; 
         } else {
-            console.error("Server response is not an array:", data);
-            alert("Failed to load product data.");
+            console.error("No products found.");
+            alert("No product data available. Please check again later.");
+            document.getElementById('addDetailButton').style.display = 'none'; 
         }
     })
     .catch(error => {
         console.error("Error fetching products:", error);
         alert("Failed to load product data.");
+        document.getElementById('addDetailButton').style.display = 'none'; // Ẩn nút nếu gặp lỗi
     });
+
 
 let detailIndex = 0;
 
@@ -57,7 +58,7 @@ function filterProducts(detailIndex) {
     const productList = document.getElementById(`productList${detailIndex}`);
     const filterText = searchInput.value.toLowerCase();
 
-    // Hiển thị sản phẩm nào có tên chứa văn bản tìm kiếm
+    // Lọc sản phẩm dựa trên văn bản nhập
     const filteredProducts = products.filter(product =>
         product.product_name.toLowerCase().includes(filterText)
     );
@@ -73,10 +74,28 @@ function filterProducts(detailIndex) {
             li.onclick = () => selectProduct(product, detailIndex);
             productList.appendChild(li);
         });
+        searchInput.classList.remove('is-invalid'); // Xóa lỗi nếu có sản phẩm hợp lệ
     } else {
         productList.style.display = 'none';
+
+        // Thêm thông báo lỗi "Không tìm thấy sản phẩm nào"
+        const noResult = document.createElement('li');
+        noResult.textContent = 'No products found.';
+        noResult.style.color = 'red';
+        productList.appendChild(noResult);
+        productList.style.display = 'block';
+
+        // Đánh dấu input là không hợp lệ
+        searchInput.classList.add('is-invalid');
     }
+
+
 }
+
+
+
+
+
 
 // Hàm chọn sản phẩm và gán giá trị vào trường id_product
 function selectProduct(product, detailIndex) {

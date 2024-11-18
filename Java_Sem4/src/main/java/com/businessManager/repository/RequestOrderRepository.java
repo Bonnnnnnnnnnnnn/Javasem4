@@ -115,13 +115,27 @@ public class RequestOrderRepository {
 
     public List<Product> findAllProduct() {
         String sql = "SELECT Id, Product_name FROM Product"; 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Product item = new Product();
-            item.setId(rs.getInt(Views.COL_PRODUCT_ID));
-            item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
-            return item;
-        });
+        try {
+            List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                Product item = new Product();
+                item.setId(rs.getInt(Views.COL_PRODUCT_ID));
+                item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
+                return item;
+            });
+            
+
+            if (products.isEmpty()) {
+                throw new RuntimeException("No products found in the database.");
+            }
+            
+            return products;
+        } catch (DataAccessException e) {
+
+            System.err.println("Database query error: " + e.getMessage());
+            throw new RuntimeException("Error fetching products from the database.", e);
+        }
     }
+
 
     
 }

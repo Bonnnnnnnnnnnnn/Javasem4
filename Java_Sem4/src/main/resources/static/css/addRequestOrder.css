@@ -1,4 +1,9 @@
 
+
+.is-invalid {
+    border: 2px solid red;
+    background-color: #fdd;
+}
 .card-secondary {
     margin-top: 1.5rem; 
 }
