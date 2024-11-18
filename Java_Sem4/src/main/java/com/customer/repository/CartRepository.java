@@ -60,7 +60,7 @@ public class CartRepository {
 	public boolean updateProductQuantityInCart(Shopping_cart cart) {
 	    try {
 	        // Câu lệnh SQL để cập nhật tăng thêm 1 cho số lượng sản phẩm trong giỏ hàng
-	        String updateSql = String.format("UPDATE %s SET %s = %s + 1 WHERE %s = ? AND %s = ?",
+	        String updateSql = String.format("UPDATE %s SET %s = %s + ? WHERE %s = ? AND %s = ?",
 	                Views.TBL_SHOPING_CART,  // Tên bảng giỏ hàng
 	                Views.COL_SHOPING_CART_QUANTITY,   // Cột số lượng trong giỏ hàng
 	                Views.COL_SHOPING_CART_QUANTITY,   // Cột số lượng cần cộng thêm
@@ -68,7 +68,7 @@ public class CartRepository {
 	                Views.COL_SHOPING_CART_PRODUCT_ID);  // Cột ID sản phẩm
 
 	        // Thực thi câu lệnh cập nhật với các tham số từ đối tượng Shopping_cart
-	        int rowsAffected = db.update(updateSql, cart.getCustomer_id(), cart.getProduct_id());
+	        int rowsAffected = db.update(updateSql, cart.getQuantity(), cart.getCustomer_id(), cart.getProduct_id());
 
 	        // Trả về true nếu cập nhật thành công (số hàng bị ảnh hưởng > 0)
 	        return rowsAffected > 0;

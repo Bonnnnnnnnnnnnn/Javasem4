@@ -11,9 +11,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.Brand_mapper;
+import com.mapper.Category_mapper;
 import com.mapper.Product_mapper;
 import com.models.Brand;
-
+import com.models.Category_Product;
 import com.models.PageView;
 import com.models.Product;
 
@@ -209,7 +210,7 @@ public class ShoppingpageRepository {
 	        return Collections.emptyList();
 	    }
 	}
-	public List<Brand> findAll(){
+	public List<Brand> findAllBrand(){
 		try {
 			String sql = "SELECT * FROM Brand";
 			return db.query(sql, new Brand_mapper());
@@ -218,6 +219,14 @@ public class ShoppingpageRepository {
 			return null;
 		}
 	}
-
+	public List<Category_Product> findAllCate(){
+		try {
+			String sql = "SELECT * FROM Product_category";
+			return db.query(sql, new Category_mapper());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

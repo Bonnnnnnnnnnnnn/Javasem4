@@ -43,3 +43,9 @@
 .searchDropdown .thuandropdown-item:hover{
 	background-color: rgb(230, 230, 230);
 }
+.menudropdown a{
+	transition:1s;
+}
+.menudropdown a:hover{
+    background-color:#c6c6c6;
+}

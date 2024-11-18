@@ -27,7 +27,8 @@ public class WebConfig implements WebMvcConfigurer {
                                  "/account/**", 
                                  "/cart/**",
                                  "/order/**",
-                                 "/checkout/**"); 
+                                 "/checkout/**",
+                                 "/contact/**"); 
         registry.addInterceptor(cartInterceptor)
         .addPathPatterns("/cart/**"); 
        

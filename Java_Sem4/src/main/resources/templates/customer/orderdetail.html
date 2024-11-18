@@ -73,6 +73,20 @@
 				        <label>Notes</label>
 				        <textarea class="form-control" placeholder="Notes"  readonly th:text="${order.notes}"></textarea>
 				    </div>
+				    <div class="col-md-9 form-group">
+				        
+				    </div>
+				    <div class="col-md-3 form-group">
+				       <a th:if="${order.Status == 'Waiting for cofirmation'}" 
+						   class="btn btn-primary" 
+						   data-toggle="modal" 
+						   data-target="#confirmCancelModal">
+						   Cancel Order
+						</a>
+						<div th:if="${order.Status == 'Canceled'}" style="border-color: #acacac;background-color: #dddddd;" class="btn">Order Canceled</div>
+						<div th:if="${order.Status != 'Waiting for cofirmation' && order.Status != 'Canceled'}" style="border-color: #acacac;background-color: #dddddd;" class="btn">Confirmed - No Cancellation</div>
+
+				    </div>
 				</div>
 
                 </div>
@@ -90,7 +104,7 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle">
-                        <tr th:each="item : ${orderdetail}" >
+                        <tr th:each="item : ${orderdetail}" th:onclick="|godetailor(${item.Product_Id})|">
                           <td class="align-middle" ><img th:src="'/uploads/' + ${item.Img}" alt="" style="width: 50px;"></td>
                             <td class="align-middle" th:text="${item.product_name}"></td>
                             <td class="align-middle" th:text="'$' + ${item.Price}" ></td>
@@ -104,6 +118,25 @@
         </div>
     </div>
     <!-- Cart End -->
+	<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Cancellation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this order?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a id="confirmCancelLink" th:href="@{/order/gocancel/{id}(id=${order.Id})}" class="btn btn-primary">Yes, Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Footer Start -->
    <div th:replace="~{customer/layout/footer_customer}"></div>
@@ -111,5 +144,22 @@
 
    
 </body>
+<script>
+	function godetailor(id){
+	    window.location.href = "/detailproduct/product?id=" + encodeURIComponent(id);
+	}
 
+	  document.addEventListener('DOMContentLoaded', function () {
+	    const confirmCancelModal = document.getElementById('confirmCancelModal');
+	    const confirmCancelLink = document.getElementById('confirmCancelLink');
+
+	    confirmCancelModal.addEventListener('show.bs.modal', function (event) {
+	      // Nút kích hoạt modal
+	      const button = event.relatedTarget;
+	      // Lấy URL từ thuộc tính data-href
+
+	    });
+	  });
+
+</script>
 </html>

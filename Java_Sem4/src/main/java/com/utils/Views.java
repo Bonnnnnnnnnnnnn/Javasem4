@@ -163,6 +163,7 @@ public final class Views {
 	public static String COL_ORDER_PAYMENTMETHOD= "paymentMethod";
 	public static String COL_ORDER_NOTES = "notes";
 	public static String COL_ORDER_ORDERID = "OrderID";
+	public static String COL_ORDER_TRANSMOMOID = "Transaction_id";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
@@ -192,7 +193,23 @@ public final class Views {
 	public static String TBL_ROLE = "Role";
 	public static String COL_ROLE_ID = "Id";
 	public static String COL_ROLE_NAME = "Name";
-	//21.CUSTOMER
+	//21.PRODUCT_CATEGORY
+	public static String TBL_PRODUCT_SPE = "product_specifications";
+	public static String COL_PRODUCT_SPE_ID = "Id";
+	public static String COL_PRODUCT_SPE_NAME = "Name_spe";
+	public static String COL_PRODUCT_SPE_DES = "Des_spe";
+	public static String COL_PRODUCT_SPE_PRODUCTID= "Product_Id";
+	//22.COUPON
+	 public static final String TBL_COUPON = "tbl_coupon";
+	 public static final String COL_COUPON_ID = "Id";
+	 public static final String COL_COUPON_CODE = "Code";
+	 public static final String COL_COUPON_DISCOUNT_PERCENTAGE = "Discount_Percentage";
+	 public static final String COL_COUPON_DISCOUNT_AMOUNT = "Discount_Amount";
+	 public static final String COL_COUPON_EXPIRY_DATE = "Expiry_Date";
+	 public static final String COL_COUPON_MIN_ORDER_VALUE = "Min_Order_Value";
+	 public static final String COL_COUPON_MAX_DISCOUNT_AMOUNT = "Max_Discount_Amount";
+	 public static final String COL_COUPON_STATUS = "Status";
+	//23.CUSTOMER
 	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
 	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";
 	public static String CUS_DETAILPROPAGE = "customer/detailproduct";
@@ -205,4 +222,5 @@ public final class Views {
 	public static String CUS_CUSCHECKOUTPAGE = "customer/checkout";
 	public static String CUS_ORDEREDPAGE = "customer/ordereds";
 	public static String CUS_ORDEREDDETAILPAGE = "customer/orderdetail";
+	public static String CUS_CONTACTPAGE = "customer/contact";
 }

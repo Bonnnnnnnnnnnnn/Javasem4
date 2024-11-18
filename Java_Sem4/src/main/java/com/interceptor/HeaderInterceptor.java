@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.admin.repository.CategoryRepository;
 import com.customer.repository.AccountRepository;
 import com.customer.repository.CartRepository;
+import com.customer.repository.ShoppingpageRepository;
 import com.models.Customer;
 import com.models.Shopping_cart;
 
@@ -22,7 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class HeaderInterceptor implements HandlerInterceptor {
     
     @Autowired
-    private CategoryRepository repca;
+    private ShoppingpageRepository repca;
     @Autowired
     private AccountRepository repacc;
     @Autowired
@@ -30,7 +31,8 @@ public class HeaderInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        request.setAttribute("categorys", repca.findAll());
+        request.setAttribute("categorys", repca.findAllCate());
+        request.setAttribute("brands", repca.findAllBrand());
         if(request.getSession().getAttribute("logined") != null) {
         	int idlogined = (int)request.getSession().getAttribute("logined");
         	 request.setAttribute("logined", idlogined);

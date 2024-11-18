@@ -24,10 +24,14 @@ public class PagemainController {
 	public String showpage(Model model) {
 	    int[] idCategories = {}; 
 	    int[] idBrands = {}; 
-	    String[] statuses = {"NewRelease"}; 
-
+	    String[] statusesnew = {"NewRelease"};
+	    PageView pv = new PageView();
+	    pv.setPage_current(1);
+	    pv.setPage_size(8);
+	    String[] statuses = {"NewRelease","Active","OutOfStock"}; 
 	    // Call the findAllpaging method with the defined arrays
-	    model.addAttribute("pronewar", rep.findAllpaging(new PageView(), "", idCategories, idBrands, statuses));
+	    model.addAttribute("pronewar", rep.findAllnopaging(new PageView(), "", idCategories, idBrands, statusesnew));
+	    model.addAttribute("pro_eightnew", rep.findAllpaging(pv, "", idCategories, idBrands, statuses));
 		return Views.CUS_SHOWPAGEMAIN;
 	}
 }

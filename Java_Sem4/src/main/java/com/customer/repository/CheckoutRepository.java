@@ -54,7 +54,7 @@ public class CheckoutRepository {
 	public boolean Checkout(Order order, List<Shopping_cart> listc) {
 	    try {
 	        
-	        String insertSql = String.format("INSERT INTO [%s] (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	        String insertSql = String.format("INSERT INTO [%s] (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 	        		Views.TBL_ORDER,
 	                Views.COL_ORDER_CUSTOMER_ID,
 	                Views.COL_ORDER_CUSNAME,
@@ -70,8 +70,9 @@ public class CheckoutRepository {
 	                Views.COL_ORDER_TOTALAMOUNT,   
 	                Views.COL_ORDER_SHIPPINGFEE,
 	                Views.COL_ORDER_ORDERID,
-	                Views.COL_ORDER_NOTES);   
-	        order.setOrderID(generateOrderId());
+	                Views.COL_ORDER_NOTES,
+	                Views.COL_ORDER_TRANSMOMOID);   
+
 	        KeyHolder keyHolder = new GeneratedKeyHolder();
 	        int rowsAffected = db.update(connection -> {
 	            PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
@@ -84,12 +85,13 @@ public class CheckoutRepository {
 	            ps.setObject(7, order.getEmployee_id() != 0 ? order.getEmployee_id() : null); 
 	            ps.setInt(8, order.getPayment_id());
 	            ps.setDate(9, Date.valueOf(order.getDate()));
-	            ps.setObject(10, null);  
-	            ps.setBigDecimal(11, order.getDiscount());
-	            ps.setBigDecimal(12, order.getTotalAmount());
-	            ps.setBigDecimal(13, order.getShippingFee());
+	            ps.setObject(10, order.getCoupon_id() != 0 ? order.getCoupon_id() : null);  
+	            ps.setDouble(11, order.getDiscount());
+	            ps.setDouble(12, order.getTotalAmount());
+	            ps.setDouble(13, order.getShippingFee());
 	            ps.setString(14, order.getOrderID());
 	            ps.setString(15, order.getNotes());
+	            ps.setString(16, order.getTransactionId());
 	            return ps;
 	        }, keyHolder);
 
@@ -127,16 +129,6 @@ public class CheckoutRepository {
 
 
 	
-	private String generateOrderId() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder orderId = new StringBuilder(16);
-        SecureRandom random = new SecureRandom();
-        for (int i = 0; i < 16; i++) {
-            int index = random.nextInt(characters.length());
-            orderId.append(characters.charAt(index));
-        }
-        return orderId.toString();
-    }
-
+	
 
 }

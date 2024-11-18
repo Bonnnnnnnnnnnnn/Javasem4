@@ -72,11 +72,11 @@ public class OrderRepository {
 
 	    // Handle pagination
 	    if (pv.isPaginationEnabled()) {
-	    	queryBuilder.append(String.format(" ORDER BY [%s] OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", Views.COL_ORDER_DATE));
+	    	queryBuilder.append(String.format(" ORDER BY [%s] DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", Views.COL_ORDER_ID));
 	        params.add((pv.getPage_current() - 1) * pv.getPage_size());
 	        params.add(pv.getPage_size());
 	    }
-
+	   
 	    try {
 	        
 	        return db.query(queryBuilder.toString(), params.toArray(), new Order_mapper());
@@ -100,7 +100,42 @@ public class OrderRepository {
 	        return null; // Return null in case of an error
 	    }
 	}
+	@SuppressWarnings("deprecation")
+	public boolean updateOrderStatusToCanceled(int orderid,String status) {
+	    StringBuilder queryBuilder = new StringBuilder(String.format("UPDATE [%s] SET [%s] = ? WHERE [%s] = ?",
+	            Views.TBL_ORDER, 
+	            Views.COL_ORDER_STATUS, 
+	            Views.COL_ORDER_ID)); 
 
+	    try {
+	        
+	        int rowsAffected = db.update(queryBuilder.toString(), new Object[]{status, orderid});
+	        
+	        
+	        return rowsAffected > 0; 
+	    } catch (DataAccessException e) {
+	        System.err.println("Error updating status for Order ID " + orderid + ": " + e.getMessage());
+	        return false;
+	    }
+	}
+	@SuppressWarnings("deprecation")
+	public boolean updateOrderpaymentstatus(int orderid,String status) {
+	    StringBuilder queryBuilder = new StringBuilder(String.format("UPDATE [%s] SET [%s] = ? WHERE [%s] = ?",
+	            Views.TBL_ORDER, 
+	            Views.COL_ORDER_PAYSTATUS, 
+	            Views.COL_ORDER_ID)); 
+
+	    try {
+	        
+	        int rowsAffected = db.update(queryBuilder.toString(), new Object[]{status, orderid});
+	        
+	        
+	        return rowsAffected > 0; 
+	    } catch (DataAccessException e) {
+	        System.err.println("Error updating status for Order ID " + orderid + ": " + e.getMessage());
+	        return false;
+	    }
+	}
 
 
 }

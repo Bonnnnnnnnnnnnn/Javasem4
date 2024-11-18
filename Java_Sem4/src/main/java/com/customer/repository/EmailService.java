@@ -57,4 +57,26 @@ public class EmailService {
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
+    
+    public void sendcontact(String name, String email, String Message) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo("anhbon1488@gmail.com");  
+        helper.setSubject("Contact from ES");
+
+        helper.setFrom(email);
+
+        String htmlContent = "<html><body>" +
+                "<h2 style='color: #4CAF50;'>Contact Information</h2>" +
+                "<p><strong>Name:</strong> " + name + "</p>" +
+                "<p><strong>Email:</strong> " + email + "</p>" +
+                "<p><strong>Message:</strong></p>" +
+                "<p style='border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;'>" + Message + "</p>" +
+                "</body></html>";
+
+        helper.setText(htmlContent, true);
+
+        mailSender.send(message);
+    }
 }

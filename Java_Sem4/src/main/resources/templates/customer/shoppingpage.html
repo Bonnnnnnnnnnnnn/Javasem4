@@ -45,9 +45,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                    <span class="breadcrumb-item active">Shop List</span>
+                    <a class="breadcrumb-item text-dark" href="/">Home</a>
+                    <span class="breadcrumb-item active">Shop</span>
                 </nav>
             </div>
         </div>
@@ -135,7 +134,7 @@
 							    <a class="btn btn-outline-dark btn-square" th:if="${item.status != 'OutOfStock'}" th:onclick="'addToCart(' + ${item.Id} + ')'">
 							        <i class="fa fa-shopping-cart"></i>
 							    </a>
-							    <span th:if="${item.Status == 'OutOfStock'}" class="out-of-stock-message">Out of stock</span>
+							    <span th:if="${item.Status == 'OutOfStock'}" style="font-weight:500;color:black;font-size:20;" class="out-of-stock-message">Out of stock</span>
 							</div>
 							</div>
 							<div class="text-center py-4">

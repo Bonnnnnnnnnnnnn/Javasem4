@@ -1,6 +1,5 @@
 package com.models;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Order {
@@ -15,16 +14,19 @@ public class Order {
 	private int Payment_id;
 	private LocalDate Date;
 	private int Coupon_id;
-	private BigDecimal Discount;
-	private BigDecimal TotalAmount;
-	private BigDecimal ShippingFee;
+	private Double Discount;
+	private Double TotalAmount;
+	private Double ShippingFee;
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
+	private String TransactionId;
+	
 	
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
-			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, BigDecimal discount,
-			BigDecimal totalAmount, BigDecimal shippingFee, String paymentMethod, String notes, String orderID) {
+			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
+			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
+			String transactionId) {
 		super();
 		Id = id;
 		Customer_id = customer_id;
@@ -43,6 +45,7 @@ public class Order {
 		PaymentMethod = paymentMethod;
 		Notes = notes;
 		OrderID = orderID;
+		TransactionId = transactionId;
 	}
 	public Order() {
 	}
@@ -112,22 +115,22 @@ public class Order {
 	public void setCoupon_id(int coupon_id) {
 		Coupon_id = coupon_id;
 	}
-	public BigDecimal getDiscount() {
+	public Double getDiscount() {
 		return Discount;
 	}
-	public void setDiscount(BigDecimal discount) {
+	public void setDiscount(Double discount) {
 		Discount = discount;
 	}
-	public BigDecimal getTotalAmount() {
+	public Double getTotalAmount() {
 		return TotalAmount;
 	}
-	public void setTotalAmount(BigDecimal totalAmount) {
+	public void setTotalAmount(Double totalAmount) {
 		TotalAmount = totalAmount;
 	}
-	public BigDecimal getShippingFee() {
+	public Double getShippingFee() {
 		return ShippingFee;
 	}
-	public void setShippingFee(BigDecimal shippingFee) {
+	public void setShippingFee(Double shippingFee) {
 		ShippingFee = shippingFee;
 	}
 	public String getPaymentMethod() {
@@ -147,6 +150,12 @@ public class Order {
 	}
 	public void setOrderID(String orderID) {
 		OrderID = orderID;
+	}
+	public String getTransactionId() {
+		return TransactionId;
+	}
+	public void setTransactionId(String transactionId) {
+		TransactionId = transactionId;
 	}
 	
 }

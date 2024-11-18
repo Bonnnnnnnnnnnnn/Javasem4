@@ -5,7 +5,7 @@ package com.customer.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,23 +15,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.customer.repository.CartRepository;
-
+import com.customer.repository.CouponRepository;
+import com.models.Coupon;
 import com.models.Shopping_cart;
 import com.utils.Views;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("cart")
 public class CartController {
 	@Autowired
 	private CartRepository rep;
-	
+	@Autowired
+    private CouponRepository repcp;
 	@GetMapping("/showcart")
-	public String showpage(Model model, HttpServletRequest request) {	
-		  
+	public String showpage(Model model, HttpServletRequest request,
+	        HttpServletResponse response) {	
+		// Yêu cầu không lưu cache
+	    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	    response.setHeader("Pragma", "no-cache");
+	    response.setDateHeader("Expires", 0);
+		request.getSession().setAttribute("appliedcouponid",null);
+		request.getSession().setAttribute("cameFromCart", true);
 		List<Shopping_cart> listc = rep.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
-		double totalCartValue = 0.0;
+		double totalCartValue = 0.00;
 	    for (Shopping_cart cartItem : listc) {
 	        totalCartValue += cartItem.getPrice() * cartItem.getQuantity(); 
 	    }
@@ -96,6 +105,28 @@ public class CartController {
 	        return "{\"status\": \"failed\"}"; 
 	    }
 	}
+	@PostMapping("/addtocartwq")
+	@ResponseBody  
+	public String addtocartwq(@RequestParam("id") int id,
+            @RequestParam("quantity") int quantity, 
+            HttpServletRequest request) {
+		if (request.getSession().getAttribute("logined") == null) {
+	        return "{\"status\": \"false\"}"; 
+	    }
+
+	    Shopping_cart cart = new Shopping_cart();
+	    cart.setCustomer_id((int) request.getSession().getAttribute("logined"));
+	    cart.setProduct_id(id);
+	    cart.setQuantity(quantity);
+
+	    boolean success = rep.addToCartOrUpdate(cart);
+
+	    if (success) {
+	        return "{\"status\": \"success\"}"; 
+	    } else {
+	        return "{\"status\": \"failed\"}"; 
+	    }
+	}
 	
 	@PostMapping("/size")
 	@ResponseBody  
@@ -105,6 +136,21 @@ public class CartController {
 	    int size = listc.size();
 	    
 	    return "{\"status\": " + size + "}"; 
+	}
+
+
+	@GetMapping("/validatediscount")
+	public ResponseEntity<Coupon> validateCoupon(@RequestParam("code") String code) {
+	    // Tìm coupon bằng mã code
+	    Coupon coupon = repcp.findCouponByCode(code);
+	    
+	    // Nếu coupon không tìm thấy, trả về null
+	    if (coupon == null) {
+	        return ResponseEntity.ok().body(null);  // Trả về null
+	    }
+
+	    // Nếu tìm thấy coupon, trả về đối tượng coupon
+	    return ResponseEntity.ok(coupon);
 	}
 
 }

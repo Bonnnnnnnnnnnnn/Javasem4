@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.Product_mapper;
+import com.mapper.Productspe_mapper;
 import com.mapper.Unit_mapper;
 import com.mapper.Brand_mapper;
 import com.mapper.Category_mapper;
@@ -17,6 +18,7 @@ import com.models.Brand;
 import com.models.Category_Product;
 import com.models.PageView;
 import com.models.Product;
+import com.models.Product_spe;
 import com.models.Unit;
 import com.utils.FileUtils;
 import com.utils.Views;
@@ -52,6 +54,23 @@ public class DetailproductRepository {
 	    }
 	}
 
+	public List<Product_spe> findprospeId(int id) {
+	    try {
+	        
+	        String str_query = String.format(
+	            "SELECT * " +
+	            "FROM %s " +
+	            "WHERE %s = ? ",
+	            Views.TBL_PRODUCT_SPE,
+	            Views.COL_PRODUCT_SPE_PRODUCTID
+	        );
 
+	     
+	        return db.query(str_query, new Productspe_mapper(), id);
+	    } catch (DataAccessException e) {
+	        System.err.println("Error fetching product with ID: " + id + " - " + e.getMessage());
+	        return null;
+	    }
+	}
 
 }

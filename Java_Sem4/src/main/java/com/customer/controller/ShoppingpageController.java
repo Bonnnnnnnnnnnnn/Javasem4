@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,7 +60,7 @@ public class ShoppingpageController {
 
 	    model.addAttribute("pronewar", rep.findAllpaging(pv, stringsearch, idCategories, idBrands, statuses));
 
-	    model.addAttribute("brands", rep.findAll());
+	   
 	    model.addAttribute("pv", pv);
 	    model.addAttribute("selectedBrands", idBrands);
 	    model.addAttribute("selectedCategories", idCategories);
@@ -76,6 +77,28 @@ public class ShoppingpageController {
 	    // Store the selected filters in the session
 	    request.getSession().setAttribute("selectedBrands", brandIds);
 	    request.getSession().setAttribute("selectedCategories", categoryIds);
+	    
+	  
+	    return "redirect:/shoppingpage"; // Redirect to the shopping page or another page
+	}
+	@GetMapping("/setcate/{id}")
+	public String setcate(@PathVariable("id") int id,
+	                           HttpServletRequest request, // To store filters in the session
+	                           Model model) {
+		int[] idCategories = new int[] {id}; 
+		request.getSession().setAttribute("selectedBrands", null);
+	    request.getSession().setAttribute("selectedCategories", idCategories);
+	    
+	  
+	    return "redirect:/shoppingpage"; // Redirect to the shopping page or another page
+	}
+	@GetMapping("/setbrand/{id}")
+	public String setbrand(@PathVariable("id") int id,
+	                           HttpServletRequest request, // To store filters in the session
+	                           Model model) {
+		int[] idCategories = new int[] {id};
+		 request.getSession().setAttribute("selectedCategories", null);
+	    request.getSession().setAttribute("selectedBrands", idCategories);
 	    
 	  
 	    return "redirect:/shoppingpage"; // Redirect to the shopping page or another page
