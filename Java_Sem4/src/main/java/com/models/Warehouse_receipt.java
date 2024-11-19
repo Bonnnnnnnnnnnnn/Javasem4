@@ -9,12 +9,22 @@ public class Warehouse_receipt {
 	private int Wh_id;
 	private String Wh_name;
     private LocalDateTime Date;
-	public Warehouse_receipt(int id, String name, int wh_id, LocalDateTime date) {
+    private Double Shipping_fee;
+	private Double Otder_fee;
+    private Double Total_fee;
+
+	
+	public Warehouse_receipt(int id, String name, int wh_id, String wh_name, LocalDateTime date, Double shipping_fee,
+			Double otder_fee, Double total_fee) {
 		super();
 		Id = id;
 		Name = name;
 		Wh_id = wh_id;
+		Wh_name = wh_name;
 		Date = date;
+		Shipping_fee = shipping_fee;
+		Otder_fee = otder_fee;
+		Total_fee = total_fee;
 	}
 	public Warehouse_receipt() {
 	}
@@ -47,6 +57,24 @@ public class Warehouse_receipt {
 	}
 	public void setWh_name(String wh_name) {
 		Wh_name = wh_name;
+	}
+	public Double getShipping_fee() {
+		return Shipping_fee;
+	}
+	public void setShipping_fee(Double shipping_fee) {
+		Shipping_fee = shipping_fee;
+	}
+	public Double getOtder_fee() {
+		return Otder_fee;
+	}
+	public void setOtder_fee(Double otder_fee) {
+		Otder_fee = otder_fee;
+	}
+	public Double getTotal_fee() {
+		return Total_fee;
+	}
+	public void setTotal_fee(Double total_fee) {
+		Total_fee = total_fee;
 	}
 	
 }

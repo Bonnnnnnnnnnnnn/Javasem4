@@ -9,7 +9,7 @@ public final class Views {
 	//2.Conversion
 	public static String TBL_CONVERSION = "Conversion";
 	public static String COL_CONVERSION_ID = "Id";
-	public static String COL_CONVERSION_PRODUCT_ID ="Product_id";
+	public static String COL_CONVERSION_PRODUCT_ID ="Product_Id";
 	public static String COL_CONVERSION_FROM_UNIT_ID = "From_unit_id";
 	public static String COL_CONVERSION_TO_UNIT_ID ="To_unit_id";
 	public static String COL_CONVERSION_RATE = "Conversion_rate";
@@ -34,7 +34,7 @@ public final class Views {
 	public static String COL_PRODUCT_NAME = "Product_name";
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
-	public static String COL_PRODUCT_UNIT_ID = "Id_Conversion";
+	public static String COL_PRODUCT_UNIT_ID = "Unit_id";
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
@@ -83,6 +83,10 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_NAME = "Name";
 	public static String COL_WAREHOUSE_RECEIPT_IDWH = "Wh_Id";
 	public static String COL_WAREHOUSE_RECEIPT_DATE = "Date";
+	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
+	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Otder_fee";
+	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
+
 	
 	//10.WAREHOUSE
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
@@ -120,7 +124,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RELEASENOTE_DATE = "Date";
 	public static String COL_WAREHOUSE_RELEASENOTE_STATUS = "Status";
 	public static String COL_WAREHOUSE_RELEASENOTE_ORDER_ID = "Order_id";
-	
+	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOUSE_REQUEST_ID = "Request_Id";
 	//14.PAYMENT 
 	public static String TBL_PAYMENT = "Payment";
 	public static String COL_PAYMENT_ID = "Id";
@@ -144,6 +148,7 @@ public final class Views {
 	public static String COL_SHOPING_CART_CUSTOMER_ID = "Customer_Id";
 	public static String COL_SHOPING_CART_PRODUCT_ID = "Product_id";
 	public static String COL_SHOPING_CART_QUANTITY = "Quantity";
+	
 	//17.ORDER
 	public static String TBL_ORDER = "Order";
 	public static String COL_ORDER_ID = "Id";
@@ -209,7 +214,42 @@ public final class Views {
 	 public static final String COL_COUPON_MIN_ORDER_VALUE = "Min_Order_Value";
 	 public static final String COL_COUPON_MAX_DISCOUNT_AMOUNT = "Max_Discount_Amount";
 	 public static final String COL_COUPON_STATUS = "Status";
-	//23.CUSTOMER
+	//23.FEEDBACK
+	public static final String TBL_FEEDBACK = "Feedback";
+	public static final String COL_FEEDBACK_ID = "Id";
+	public static final String COL_FEEDBACK_PROID = "Product_Id";
+	public static final String COL_FEEDBACK_ORDID = "OrderDetail_Id";
+	public static final String COL_FEEDBACK_RATE = "Rating";
+	public static final String COL_FEEDBACK_COMMENT = "Comment";
+	public static final String COL_FEEDBACK_CREATEDATE = "Created_Date";
+	public static final String COL_FEEDBACK_STATUS = "Status";
+	//24.REQUEST
+		public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
+		public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
+		public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
+		public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+
+		public static String TBL_REQUEST = "Request";
+		public static String COL_REQUEST_ID = "Id";
+		public static String COL_REQUEST_NAME = "Name";
+		public static String COL_REQUEST_DATE = "Date";
+		public static String COL_REQUEST_STATUS = "Status";
+		public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
+		public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
+		public static String COL_REQUEST_TYPE = "Type";
+		public static String COL_REQUEST_ORDERID = "Order_Id";
+	//25.REQUEST DETAIL
+		public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+		public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
+
+		public static String TBL_REQUEST_DETAIL = "Request_detail";
+		public static String COL_REQUEST_DETAIL_ID = "id";
+		public static String COL_REQUEST_DETAIL_STATUS = "Status";
+		public static String COL_REQUEST_DETAIL_ID_PRODUCT = "Id_product";
+		public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
+		public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
+		public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
+	//26.CUSTOMER
 	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
 	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";
 	public static String CUS_DETAILPROPAGE = "customer/detailproduct";

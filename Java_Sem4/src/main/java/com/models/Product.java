@@ -1,5 +1,7 @@
 package com.models;
 
+import java.util.List;
+
 public class Product {
 	private int Id;
 	private String Product_name;
@@ -14,7 +16,9 @@ public class Product {
 	private String Description;
 	private int Warranty_period;
 	private String Status;
-	
+	private Double averageRating;
+    private Integer totalFeedbacks;
+    private List<Feedback> feedbacks;
 	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
 			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
 			String status) {
@@ -130,6 +134,24 @@ public class Product {
 	}
 	public void setStatus(String status) {
 		Status = status;
+	}
+	public Double getAverageRating() {
+		return averageRating;
+	}
+	public void setAverageRating(Double averageRating) {
+		this.averageRating = averageRating;
+	}
+	public Integer getTotalFeedbacks() {
+		return totalFeedbacks;
+	}
+	public void setTotalFeedbacks(Integer totalFeedbacks) {
+		this.totalFeedbacks = totalFeedbacks;
+	}
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
 	}
 	
 }

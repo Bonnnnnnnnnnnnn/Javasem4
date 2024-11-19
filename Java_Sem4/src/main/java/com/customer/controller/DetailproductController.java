@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.customer.repository.DetailproductRepository;
 import com.customer.repository.ShoppingpageRepository;
+import com.models.Feedback;
 import com.models.PageView;
 import com.models.Product;
 import com.utils.Views;
@@ -31,7 +32,7 @@ public class DetailproductController {
 	    model.addAttribute("list_procate", repsp.findAllnopaging(new PageView(), "", new int[]{pro.getCate_id()}, new int[]{}, statuses));
 	    model.addAttribute("list_probrands", repsp.findAllnopaging(new PageView(), "", new int[]{}, new int[]{pro.getBrand_id()}, statuses));
 	    model.addAttribute("list_proother", repsp.findAllnopaging(new PageView(), "", new int[]{}, new int[]{}, statuses));
-	    
+
 		return Views.CUS_DETAILPROPAGE;
 	}
 }

@@ -2,7 +2,61 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{customer/layout/head_customer}"></head>
+<style>
+/* Rating Stars */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 5px;
+}
 
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 35px;
+    color: #ddd;
+    transition: color 0.2s ease-in-out;
+}
+
+.rating label:hover,
+.rating label:hover ~ label,
+.rating input:checked ~ label {
+    color: #ffd700;
+}
+
+/* Modal Styling */
+.modal-body {
+    padding: 1.5rem;
+}
+
+.product-info img {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rating-container {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+}
+
+.modal-footer {
+    padding-top: 1rem;
+}
+
+.btn {
+    padding: 0.5rem 1.5rem;
+}</style>
 <body>
 
   	<div th:replace="~{customer/layout/header_customer}"></div>
@@ -101,15 +155,110 @@
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="align-middle">
-                        <tr th:each="item : ${orderdetail}" th:onclick="|godetailor(${item.Product_Id})|">
+                        <tr th:each="item : ${orderdetail}" th:onclick="|godetailor(event,${item.Product_Id})|">
                           <td class="align-middle" ><img th:src="'/uploads/' + ${item.Img}" alt="" style="width: 50px;"></td>
                             <td class="align-middle" th:text="${item.product_name}"></td>
                             <td class="align-middle" th:text="'$' + ${item.Price}" ></td>
                              <td class="align-middle" th:text="${item.Quantity}" ></td>
                              <td class="align-middle" th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
+                             <td onclick="event.stopPropagation()">
+                              <button th:if="${item.status == 'Reviewed'}" 
+							            type="button" 
+							            class="btn btn-sm" style ="background-color:#e9ecef;">
+							        Rated
+							    </button>
+							   
+							    <button th:if="${item.status == null && order.Status == 'Completed'}"
+							            type="button" 
+							            class="btn btn-primary btn-sm"
+							            th:onclick="|showFeedbackModal(${item.Id}, event)|">
+							        Rate
+							    </button>
+							
+							    <!-- Modal Feedback -->
+							    <div class="modal fade" th:id="'feedbackModal' + ${item.Id}" tabindex="-1" role="dialog">
+							        <div class="modal-dialog" role="document">
+							            <div class="modal-content">
+							                <div class="modal-header">
+							                    <h5 class="modal-title">Product Rating</h5>
+							                    <button type="button" 
+							                            class="close" 
+							                            onclick="closeFeedbackModal(event, this)" 
+							                            aria-label="Close">
+							                        <span aria-hidden="true">&times;</span>
+							                    </button>
+							                </div>
+							                
+							                <div class="modal-body">
+							                    <!-- Product Info -->
+							                    <div class="product-info d-flex align-items-center mb-4">
+							                        <img th:src="'/uploads/' + ${item.Img}" 
+							                             class="img-thumbnail mr-3" 
+							                             style="width: 80px; height: 80px; object-fit: cover;">
+							                        <div>
+							                            <h6 class="mb-1" th:text="${item.product_name}"></h6>
+							                            <p class="text-muted mb-0" th:text="'Price: $' + ${item.Price}"></p>
+							                        </div>
+							                    </div>
+							
+							                    <!-- Rating Form -->
+							                    <form th:action="@{/feedback/submit}" method="post" class="rating-form">
+							                        <input type="hidden" name="productId" th:value="${item.Product_Id}">
+							                        <input type="hidden" name="orderdetailId" th:value="${item.Id}">
+							                        <input type="hidden" name="orderId" th:value="${item.Order_id}">
+							                        <!-- Rating Stars -->
+							                        <div class="rating-container text-center mb-4">
+							                            <label class="d-block mb-2">Your Rating</label>
+							                            <div class="rating">
+							                                <input type="radio" th:id="'star5' + ${item.Id}" name="rating" value="5" required/>
+							                                <label th:for="'star5' + ${item.Id}" title="5 stars">★</label>
+							                                
+							                                <input type="radio" th:id="'star4' + ${item.Id}" name="rating" value="4"/>
+							                                <label th:for="'star4' + ${item.Id}" title="4 stars">★</label>
+							                                
+							                                <input type="radio" th:id="'star3' + ${item.Id}" name="rating" value="3"/>
+							                                <label th:for="'star3' + ${item.Id}" title="3 stars">★</label>
+							                                
+							                                <input type="radio" th:id="'star2' + ${item.Id}" name="rating" value="2"/>
+							                                <label th:for="'star2' + ${item.Id}" title="2 stars">★</label>
+							                                
+							                                <input type="radio" th:id="'star1' + ${item.Id}" name="rating" value="1"/>
+							                                <label th:for="'star1' + ${item.Id}" title="1 star">★</label>
+							                            </div>
+							                        </div>
+							
+							                        <!-- Review Text -->
+							                        <div class="form-group">
+							                            <label for="comment">Your Review</label>
+							                            <textarea 
+							                                name="comment" 
+							                                class="form-control" 
+							                                rows="4" 
+							                                placeholder="Write your review here..."
+							                                ></textarea>
+							                            <small class="form-text text-muted">
+							                                Please share your experience with this product
+							                            </small>
+							                        </div>
+							
+							                        <!-- Buttons -->
+							                        <div class="modal-footer border-0 px-0 pb-0">
+							                            <button type="submit" 
+							                                    class="btn btn-primary" 
+							                                    onclick="event.stopPropagation()">
+							                                Submit Review
+							                            </button>
+							                        </div>
+							                    </form>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+							</td>
                         </tr>
                     </tbody>
                 </table>
@@ -117,6 +266,7 @@
             
         </div>
     </div>
+    
     <!-- Cart End -->
 	<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -145,7 +295,8 @@
    
 </body>
 <script>
-	function godetailor(id){
+	function godetailor(event,id){
+		event.stopPropagation();
 	    window.location.href = "/detailproduct/product?id=" + encodeURIComponent(id);
 	}
 
@@ -160,6 +311,19 @@
 
 	    });
 	  });
-
+	  function showFeedbackModal(itemId, event) {
+		    // Ngăn sự kiện click lan ra tr
+		    event.stopPropagation();
+		    
+		    // Hiện modal bằng jQuery
+		    $('#feedbackModal' + itemId).modal('show');
+		    
+		    // Debug
+		    console.log('Showing modal for item:', itemId);
+		}
+	  function closeFeedbackModal(event, button) {
+		    event.stopPropagation();
+		    $('.modal').modal('hide');
+		}
 </script>
 </html>

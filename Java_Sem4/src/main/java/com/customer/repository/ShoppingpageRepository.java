@@ -132,7 +132,6 @@ public class ShoppingpageRepository {
 	            params.add("%" + search + "%");
 	        }
 
-	        // Add condition for category ids if idcate array is provided
 	        if (idcate != null && idcate.length > 0) {
 	            commonConditions.append(" AND p.").append(Views.COL_PRODUCT_CATE_ID).append(" IN (");
 	            for (int i = 0; i < idcate.length; i++) {
