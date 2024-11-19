@@ -72,6 +72,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Id_product";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
+
 	
 	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhAndWhDetails";
@@ -84,7 +85,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_IDWH = "Wh_Id";
 	public static String COL_WAREHOUSE_RECEIPT_DATE = "Date";
 	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
-	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Otder_fee";
+	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
 	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
 
 	
