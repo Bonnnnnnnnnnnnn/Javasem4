@@ -3,6 +3,7 @@ package com.models;
 public class Unit {
 	private int Id;
 	private String Name;
+	private int relatedCount;
 	public Unit(int id, String name) {
 		super();
 		Id = id;
@@ -21,6 +22,12 @@ public class Unit {
 	}
 	public void setName(String name) {
 		Name = name;
+	}
+	public int getRelatedCount() {
+		return relatedCount;
+	}
+	public void setRelatedCount(int relatedCount) {
+		this.relatedCount = relatedCount;
 	}
 	
 }

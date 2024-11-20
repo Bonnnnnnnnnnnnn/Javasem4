@@ -1,4 +1,4 @@
-package com.admin.controller;
+  package com.admin.controller;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -33,24 +33,23 @@ public class ProductController {
 	public String showProduct(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(10);
+	    pv.setPage_size(5);
 	    List<Product> products = reppro.findAll(pv);
 	    model.addAttribute("products", products);
 	    model.addAttribute("pv", pv);
 	    return Views.PRODUCT_SHOWPRODUCT;
 	}
+	
 	@GetMapping("/showProductDetail")
 	public String showProductDetail(@RequestParam("id") String productId, Model model) {
-		int idpro = Integer.parseInt(productId);
-		Product pro = reppro.findId(idpro);
-		@SuppressWarnings("deprecation")
-		NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        String formattedPrice = formatter.format(pro.getPrice());
+	    int idpro = Integer.parseInt(productId);
+	    Product pro = reppro.findId(idpro);
+	    NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+	    String formattedPrice = formatter.format(pro.getPrice());
 	    model.addAttribute("product", pro);
 	    model.addAttribute("formattedPrice", formattedPrice);
 	    return Views.PRODUCT_SHOWPRODUCTDETAIL;
 	}
-
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
 	    Product prod = new Product();
@@ -68,6 +67,7 @@ public class ProductController {
 								@RequestParam double price,
 								@RequestParam String description,
 								@RequestParam int wpe,
+								@RequestParam String status,
 								@RequestParam("images") MultipartFile images) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
@@ -77,6 +77,7 @@ public class ProductController {
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
+		prod.setStatus(status);
 		prod.setImg(FileUtils.uploadFileImage(images,"uploads"));
 		reppro.saveProduct(prod);
 		return "redirect:showProduct";
@@ -113,7 +114,8 @@ public class ProductController {
 	@GetMapping("/showUpdateProduct")
 	public String showUpdateProduct(Model model,@RequestParam String id) {
 		int idPro = Integer.parseInt(id);
-		model.addAttribute("up_item", reppro.findId(idPro));
+		Product product = reppro.findId(idPro);
+		model.addAttribute("up_item", product);
 		model.addAttribute("units",reppro.findAllUnit());
 		model.addAttribute("brands",reppro.findAllBrand());
 		model.addAttribute("categorys",reppro.findAllCategory());
@@ -122,21 +124,23 @@ public class ProductController {
 	@PostMapping("updateProduct")
 	public String updateProduct(@RequestParam("product_name") String proName,
 								@RequestParam("cate_id") int cateId,
-								@RequestParam("unit_id") int unitId,
+								@RequestParam("Unit_id") int UnitId,
 								@RequestParam("brand_id") int brandId,
 								@RequestParam("price") double price,
 								@RequestParam("description") String description,
 								@RequestParam("warranty_period") int wpe,
+								@RequestParam("status") String status,
 								@RequestParam("img") MultipartFile img,
 								@RequestParam("id") int id) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setUnit_id(unitId);
+		prod.setUnit_id(UnitId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
+		prod.setStatus(status);
 		prod.setImg(FileUtils.uploadFileImage(img , "uploads"));
 		prod.setId(id);
 		reppro.updateProduct(prod);	

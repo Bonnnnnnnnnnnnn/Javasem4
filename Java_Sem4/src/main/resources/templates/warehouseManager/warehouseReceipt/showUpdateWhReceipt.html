@@ -1,0 +1,63 @@
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+    <div th:replace="warehouseManager/layout/header_admin"></div>
+    <div class="content-wrapper" style="min-height: 1302.4px;">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Warehouse Receipt and Warehouse Receipt Details</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Edit Warehouse Receipt and Details</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Edit Warehouse Receipt and Details</h3>
+                            </div>
+                            <form th:object="${up_item}" action="updateWhReceipt" method="post">
+                                <div class="card-body row">
+                                    <input type="hidden" th:field="*{id}">
+                                    <div class="form-group col-md-6">
+                                        <label for="name">Name Warehouse Receipt</label>
+                                        <input type="text" disabled th:field="*{name}" class="form-control" placeholder="Enter Name" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="wh_id">Warehouse</label>
+                                        <select name="wh_id" id="wh_id" class="form-control" required>
+                                            <option value="" disabled selected>Select Warehouse</option>
+                                            <option th:each="item : ${warehouses}" th:value="${item.id}" th:text="${item.name}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+									    <label for="exampleInputEmail1">Status</label>
+									    <select th:field="*{status}" class="form-control" required>
+									        <option value="Not completed yet">Not completed yet</option>
+									        <option value="Entered">Entered</option>
+									    </select>
+									</div>
+                                </div>
+                                <div class="card-footer">
+                                    <a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
+                                    <button type="submit" class="btn btn-primary">Edit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div th:replace="warehouseManager/layout/footer_admin"></div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script th:src="@{/js/addWhReceipt.js}"></script>
+</body>

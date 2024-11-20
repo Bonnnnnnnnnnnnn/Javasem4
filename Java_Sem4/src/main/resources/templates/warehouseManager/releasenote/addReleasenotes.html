@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Order Request</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/addWarehouseReleasenote.css}">
+    <link rel="stylesheet" th:href=@{/css/showOrderInWarehouseDetail.css}>
+    
+</head>
+<body>
+
+<div th:replace="warehouseManager/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Order Request Information</h3>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="table-container">
+
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th>Name</th>
+                                            <td th:text="${request.name}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td th:text="${request.statusRequest}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                                <table class="table table-bordered table-sm mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Product ID</th>
+                                            <th>Quantity requested</th>
+                                            <th>Quantity exported</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="detail : ${details}">
+                                            <td>
+                                                <span th:text="${detail.productName}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${detail.quantity_requested}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${detail.quantity_exported}"></span>
+                                            </td>                                            
+                                            <td>
+                                                <span th:text="${detail.status}"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <form th:action="@{/warehouseManager/addWarehouseRelesenote}" method="post" enctype="multipart/form-data" class="w-100">
+                <div class="row">
+                    <div class="col-md-6"> 
+                        <div class="card card-primary" style="margin-top: 30px;">
+                            <div class="card-header">
+                                <h3 class="card-title">Add Warehouse Release note</h3>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr><th colspan="2">Warehouse Release note</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><label for="name">Name</label></td>
+                                            <td><input type="text" id="name" name="name" th:value="${request.name}" class="form-control" placeholder="Enter Name" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label for="statusWr">Status</label></td>
+                                            <td>
+                                                <select id="statusWr" name="statusWr" class="form-control" required>
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Processing">Processing</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    
+                                </table>
+                                <input type="hidden" id="employeeId" name="employeeId" th:value="${employeeId}">
+								<input type="hidden" id="requestId" name="requestId" th:value="${requestId}">
+                                
+                            </div>
+		                    <div class="card-footer">
+		                        <button type="submit" class="btn btn-primary">Submit</button>
+		                    </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card card-secondary" style="margin-top: 30px;"> 
+                            <div class="card-header" style="background-color: #6C75EC;">
+                                <h3 class="card-title" >Warehouse Release note Details</h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="details">
+                                    <table class="table">
+                                        <thead>
+                                            <tr><th colspan="2">Add Details</th></tr>
+                                        </thead>
+                                        <tbody id="detailsBody"></tbody>
+                                    </table>
+                                </div>
+
+                                <button id="addDetailButton" type="button" onclick="addDetail()" class="btn btn-primary add-detail-btn">+</button>
+
+                                <div th:if="${message}" class="alert alert-info">
+                                    <span th:text="${message}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+</div>
+
+<div th:replace="warehouseManager/layout/footer_admin"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script th:src="@{/js/addWarehouseReleasenote.js}"></script>
+
+</body>
+</html>

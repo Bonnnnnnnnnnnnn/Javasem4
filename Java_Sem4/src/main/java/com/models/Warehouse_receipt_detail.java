@@ -4,18 +4,21 @@ public class Warehouse_receipt_detail {
 	private int Id;
 	private int Wh_receipt_id;
 	private double Wh_price;
-	private int Product_id;
 	private int Quantity;
+	private int Product_id;
+	private String Product_name;
+	private String formattedPrice;
+
+
 	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,int roduct_id) {
-		super();
 		Id = id;
 		Wh_receipt_id = wh_receipt_id;
 		Wh_price = wh_price;
-		Product_id = roduct_id;
 		Quantity = quantity;
 	}
 	public Warehouse_receipt_detail() {
 	}
+	
 	public int getId() {
 		return Id;
 	}
@@ -40,11 +43,23 @@ public class Warehouse_receipt_detail {
 	public void setQuantity(int quantity) {
 		Quantity = quantity;
 	}
+	public String getFormattedPrice() {
+		return formattedPrice;
+	}
+	public void setFormattedPrice(String formattedPrice) {
+		this.formattedPrice = formattedPrice;
+	}
 	public int getProduct_id() {
 		return Product_id;
 	}
 	public void setProduct_id(int product_id) {
 		Product_id = product_id;
 	}
-	
+	public String getProduct_name() {
+		return Product_name;
+	}
+	public void setProduct_name(String product_name) {
+		Product_name = product_name;
+	}
+
 }

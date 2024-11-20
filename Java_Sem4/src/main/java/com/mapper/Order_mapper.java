@@ -1,5 +1,6 @@
 package com.mapper;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -41,3 +42,4 @@ public class Order_mapper implements RowMapper<Order> {
         return item;
     }
 }
+

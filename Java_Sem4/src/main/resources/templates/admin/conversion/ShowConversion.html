@@ -1,0 +1,112 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" th:href="@{/css/pagination.css}">
+<div th:replace="admin/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Conversion</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Conversion</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Conversion Table</h3>
+                            <div class="input-group input-group-sm" style="width: 80%; margin-left: 15%;">
+                                <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive p-0">
+                        
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>STT</th>
+                                        <th>From Unit</th>
+                                        <th>To Unit</th>
+                                        <th>Conversion Rate</th>						
+                                        <th>
+                                            <a th:href="@{/admin/addConversion}" class="btn btn-primary">Add Conversion</a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="warehouseTable">
+                                    <tr th:if="${#lists.isEmpty(conversions)}" class="text-center">
+                                        <td colspan="5">No conversions found</td>
+                                    </tr>
+                                    <tr th:each="item ,iterStat: ${conversions}" class="text-center">
+                                        <td th:text="${iterStat.index + 1}"></td>
+                                        <td>
+                                            <span th:text="${item.fromUnitName}"></span>
+                                        </td>		
+                                        <td>
+                                            <span th:text="${item.toUnitName}"></span>
+                                        </td>				            		            
+                                        <td>
+                                            <span th:text="${item.conversion_rate}"></span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{editConversion(id=${item.id})}" class="btn btn-success">Update</a>
+                                            <a th:href="@{deleteConversion(id=${item.id})}" onclick="return confirmDelete();" class="btn btn-danger">Delete</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+			      			<table style="margin-left:42%">
+							   <tfoot id="paginationFooter">
+							        <tr class="pagination">
+							            <td>
+							                <a th:href="@{/admin/conversions(cp=1)}" title="First page">&laquo;</a>
+							            </td>
+							            <td th:if="${pv.Page_current > 1}">
+							                <a th:href="@{/admin/conversions(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+							            </td>
+							            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+							                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+							                <a th:href="@{/admin/conversions(cp=${i + 1})}"
+							                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+							                    <span th:text="${i + 1}"></span>
+							                </a>
+							            </td>
+							            <td th:if="${pv.Page_current < pv.Total_page}">
+							                <a th:href="@{/admin/conversions(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+							            </td>
+							            <td>
+							                <a th:href="@{/admin/conversions(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+							            </td>
+							        </tr>
+							    </tfoot>
+							</table>                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+<script th:src="@{/js/conversion.js}"></script>
+<div th:replace="admin/layout/footer_admin"></div>
+</body>

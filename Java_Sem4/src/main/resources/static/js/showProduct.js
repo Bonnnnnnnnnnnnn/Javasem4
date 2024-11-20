@@ -1,33 +1,18 @@
 		//search text
 		function searchTable() {
-		    var input = document.getElementById("searchInput");
-		    var filter = input.value.toLowerCase();
-		    var table = document.querySelector(".table tbody");
-		    var rows = table.getElementsByTagName("tr");
-		    for (var i = 0; i < rows.length; i++) {
-		        var productNameCell = rows[i].getElementsByTagName("td")[1];
-		        var categoryCell = rows[i].getElementsByTagName("td")[4]; 
-		        var brandCell = rows[i].getElementsByTagName("td")[5]; 
-		        var unitCell = rows[i].getElementsByTagName("td")[6]; 
-		
-		        var productName = productNameCell ? (productNameCell.textContent || productNameCell.innerText) : "";
-		        var categoryName = categoryCell ? (categoryCell.textContent || categoryCell.innerText) : "";
-		        var brandName = brandCell ? (brandCell.textContent || brandCell.innerText) : "";
-		        var unitName = unitCell ? (unitCell.textContent || unitCell.innerText) : "";
-		        if (productName || categoryName || brandName || unitName) {
-		            if (productName.toLowerCase().indexOf(filter) > -1 || 
-		                categoryName.toLowerCase().indexOf(filter) > -1 || 
-		                brandName.toLowerCase().indexOf(filter) > -1 || 
-		                unitName.toLowerCase().indexOf(filter) > -1) {
-		                rows[i].style.display = "";
-		            } else {
-		                rows[i].style.display = "none";
-		            }
+		    var searchTerm = $('#searchInput').val().toLowerCase();
+		    var rows = $('table tbody tr');
+
+		    rows.each(function() {
+		        var rowText = $(this).text().toLowerCase();
+		        if (rowText.indexOf(searchTerm) === -1) {
+		            $(this).hide();
 		        } else {
-		            rows[i].style.display = "none";
-		        }    
-		    }
+		            $(this).show();
+		        }
+		    });
 		}
+
 		//delete thông báo product
 		function confirmDelete() {
 		   return confirm("Are you sure you want to delete this product?");

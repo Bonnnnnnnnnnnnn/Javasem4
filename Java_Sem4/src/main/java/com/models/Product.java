@@ -8,13 +8,15 @@ public class Product {
 	private int Cate_id;
 	private String Category_name;
     private int Brand_id;
-    private String Brand_name;    
     private int Unit_id;
-    private String Unit_name; 
+    private String Unit_name;
+    private String Brand_name;    
 	private double Price;
 	private String Img;
+	private String Status;
 	private String Description;
 	private int Warranty_period;
+
 	private String Status;
 	private Double averageRating;
     private Integer totalFeedbacks;
@@ -22,6 +24,7 @@ public class Product {
 	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
 			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
 			String status) {
+
 		super();
 		Id = id;
 		Product_name = product_name;
@@ -33,6 +36,7 @@ public class Product {
 		Unit_name = unit_name;
 		Price = price;
 		Img = img;
+		Status = status;
 		Description = description;
 		Warranty_period = warranty_period;
 		Status = status;
@@ -62,12 +66,6 @@ public class Product {
 	}
 	public void setBrand_id(int brand_id) {
 		Brand_id = brand_id;
-	}
-	public int getUnit_id() {
-		return Unit_id;
-	}
-	public void setUnit_id(int unit_id) {
-		Unit_id = unit_id;
 	}
 	public double getPrice() {
 		return Price;
@@ -105,10 +103,28 @@ public class Product {
 	public void setBrandName(String brand_name) {
 		Brand_name = brand_name;
 	}
-	public String getUnitName() {
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		Status = status;
+	}
+	public String getFormattedPrice() {
+		return formattedPrice;
+	}
+	public void setFormattedPrice(String formattedPrice) {
+		this.formattedPrice = formattedPrice;
+	}
+	public int getUnit_id() {
+		return Unit_id;
+	}
+	public void setUnit_id(int unit_id) {
+		Unit_id = unit_id;
+	}
+	public String getUnit_name() {
 		return Unit_name;
 	}
-	public void setUnitName(String unit_name) {
+	public void setUnit_name(String unit_name) {
 		Unit_name = unit_name;
 	}
 	public String getCategory_name() {
