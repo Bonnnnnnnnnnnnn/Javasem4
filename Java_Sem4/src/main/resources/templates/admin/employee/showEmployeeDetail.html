@@ -43,16 +43,13 @@
 					    <label for="phone">Phone</label>
 							<input type="text" disabled readonly th:value="${employee.phone}" class="form-control">
 					</div>
-			        <div class="form-group col-6 ">
+			        <div class="form-group col-12 ">
 					    <label for="exampleInputEmail1">Role</label>
 					    <input class="form-control" disabled readonly th:value="${employee.role_name}">
 					</div>
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Password</label>
-					    <input class="form-control" disabled readonly th:value="hahahuhuhihihoho">
-					</div>
 					
 			    </div>
+			    
 			    <div class="card-footer">
 			    	<a th:href="@{/admin/employee/showEmp}" class="btn btn-danger">Back to List</a>
 			        <a th:href="@{/admin/employee/showUpdateEmployee(id=${employee.id})}" class="btn btn-success">Update</a>

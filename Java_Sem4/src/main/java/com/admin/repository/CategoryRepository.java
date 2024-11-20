@@ -1,6 +1,7 @@
 package com.admin.repository;
 
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.mapper.Category_mapper;
 import com.models.Category_Product;
+import com.models.PageView;
 import com.utils.Views;
 
 @Repository
@@ -19,15 +21,27 @@ public class CategoryRepository {
 	public CategoryRepository(JdbcTemplate jdbc) {
 		this.dbcate = jdbc;
 	}
-	public List<Category_Product> findAll(){
-		try {
-			String sql = "SELECT * FROM Product_category";
-			return dbcate.query(sql, new Category_mapper());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	public List<Category_Product> findAll(PageView itemPage) {
+	    try {
+	        String sql = "SELECT * FROM Product_category ORDER BY id";
+
+	        if (itemPage != null && itemPage.isPaginationEnabled()) {
+	            int count = dbcate.queryForObject("SELECT COUNT(*) FROM Product_category", Integer.class);
+	            int total_page = (int) Math.ceil((double) count / itemPage.getPage_size());
+	            itemPage.setTotal_page(total_page);
+	            sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+	            return dbcate.query(sql, new Category_mapper(), 
+	                (itemPage.getPage_current() - 1) * itemPage.getPage_size(), 
+	                itemPage.getPage_size());
+	        } else {
+	            return dbcate.query(sql, new Category_mapper());
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return Collections.emptyList();
+	    }
 	}
+
 	public Category_Product findId(int id) {
 		try {
 			String sql = "SELECT * FROM Product_category WHERE Id=?";
@@ -42,6 +56,16 @@ public class CategoryRepository {
 			return null;
 		}
 	}
+	public int countByCategoryId(int categoryId) {
+	    try {
+	        String sql = "SELECT COUNT(*) FROM Product WHERE cate_id = ?";
+	        return dbcate.queryForObject(sql, Integer.class, categoryId);
+	    } catch (Exception e) {
+	        System.err.println("Error while counting products by category id: " + e.getMessage());
+	        return 0;
+	    }
+	}
+
 	public boolean saveCate(Category_Product ca) {
 		try {
 			String sql = "INSERT INTO Product_category (Cate_name) VALUES (?)";

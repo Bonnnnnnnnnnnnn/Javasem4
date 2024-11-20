@@ -19,7 +19,14 @@ public class UnitRepository {
         String sql = "INSERT INTO Unit (Name) VALUES (?)";
         return jdbcTemplate.update(sql, unit.getName());
     }
-    
+    public int countByUnitId(int brandId) {
+		try {
+			String sql = "SELECT COUNT(*) FROM Conversion WHERE From_unit_id = ?";
+		    return jdbcTemplate.queryForObject(sql, Integer.class, brandId);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
     public List<Unit> getAllUnits() {
         String sql = "SELECT * FROM Unit";
         return jdbcTemplate.query(sql, new Unit_mapper());

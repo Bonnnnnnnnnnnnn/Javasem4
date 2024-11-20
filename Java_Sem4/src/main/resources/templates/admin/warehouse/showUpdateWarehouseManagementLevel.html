@@ -1,0 +1,76 @@
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+  <div th:replace="admin/layout/header_admin"></div>
+  <div class="content-wrapper" style="min-height: 1302.4px;">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Update Warehouse Management Level</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Update Warehouse Management Level</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Update Warehouse Management Level</h3>
+              </div>
+              <form th:object="${warehouse}">
+                <div class="card-body row">
+                  <div class="form-group col-md-6">
+                    <label for="name">Name Warehouse</label>
+                    <input type="text" id="name" disabled readonly th:value="${warehouse.name}" class="form-control">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" disabled readonly th:value="${warehouse.address}" class="form-control">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="typeName">Type name</label>
+                    <input type="text" id="typeName" disabled readonly th:value="${warehouse.typeName}" class="form-control">
+                  </div>
+                  <div class="form-group col-md-6">
+			            <label for="manager">Manager</label>
+						<input type="text" id="manager" th:value="${warehouse.managerFirstName} + ' ' + ${warehouse.managerLastName}" disabled class="form-control">
+			       </div>
+                </div>
+                <div class="card-footer">
+                  <a th:href="@{/admin/warehouse/showWarehouse}" class="btn btn-danger">Back to List</a>
+                </div>
+              </form>
+              <form th:object="${warehouse}" action="updateWarehouseManagementLevel" method="post">
+			    <div class="card-body">
+			        <div class="form-group">
+			            <input type="hidden" id="warehouse_id" name="warehouse_id" th:value="${warehouse.id}">
+			        </div>
+			        <div class="form-group">
+			            <label for="exampleInputEmail1">Select Manager</label>
+			            <select name="employee_id" id="employee_id" required class="form-control">
+			                <option th:each="item : ${employees}" th:value="${item.id}" th:text="${item.first_name} + ' ' + ${item.last_name}"></option>
+			            </select>
+			        </div>
+			    </div>
+				    <div class="card-footer">
+				        <button type="submit" class="btn btn-primary">Submit</button>
+				    </div>
+				</form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div th:replace="admin/layout/footer_admin"></div>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script th:src="@{/js/showWh_type.js}"></script>
+</body>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.admin.repository.WarehouseTypeRepository;
+import com.models.PageView;
 import com.models.Warehouse;
 import com.models.Warehouse_type;
 import com.utils.Views;
@@ -23,9 +24,20 @@ public class WarehouseTypeController {
 	private WarehouseTypeRepository reptype;
 	
 	@GetMapping("showWhType")
-	public String showWhType(Model model) {
-		model.addAttribute("whtypes", reptype.findAll());
-		return Views.WAREHOUSETYPE_SHOWWHTYPE;
+	public String showWhType(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+		PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+
+	    List<Warehouse_type> whtypes = reptype.findAll(pv);
+	    for (Warehouse_type type : whtypes) {
+	        int relatedCount = reptype.countByWarehouseTypeId(type.getId());
+	        type.setRelatedCount(relatedCount);
+	    }
+
+	    model.addAttribute("whtypes", whtypes);
+	    model.addAttribute("pv", pv);
+	    return Views.WAREHOUSETYPE_SHOWWHTYPE;
 	}
 	@GetMapping("/getWarehousesByType")
 	@ResponseBody

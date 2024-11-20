@@ -6,28 +6,25 @@ public class Product {
 	private int Cate_id;
 	private String Category_name;
     private int Brand_id;
+    private int Unit_id;
+    private String Unit_name;
     private String Brand_name;    
-    private int Conversion_id;
-    private int Id_Conversion;
 	private double Price;
 	private String Img;
 	private String Status;
 	private String Description;
 	private int Warranty_period;
-	private String FromUnitName;
-	private String ToUnitName;
 
 	private String formattedPrice;
-	public Product(int id, int id_Conversion, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
+	public Product(int id, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
 			String description, int warranty_period) {
 
 		super();
 		Id = id;
 		Product_name = product_name;
-		Id_Conversion = id_Conversion;
 		Cate_id = cate_id;
 		Brand_id = brand_id;
-		Conversion_id = id_Conversion;
+		Unit_id = unit_id;
 		Price = price;
 		Img = img;
 		Status = status;
@@ -41,12 +38,6 @@ public class Product {
 	}
 	public void setId(int id) {
 		Id = id;
-	}
-	public int getId_Conversion() {
-		return Id_Conversion;
-	}
-	public void setId_Conversion(int id_conversion) {
-		Id_Conversion = id_conversion;
 	}
 	public String getProduct_name() {
 		return Product_name;
@@ -102,12 +93,6 @@ public class Product {
 	public void setBrandName(String brand_name) {
 		Brand_name = brand_name;
 	}
-	public int getConversion_id() {
-		return Conversion_id;
-	}
-	public void setConversion_id(int conversion_id) {
-		Conversion_id = conversion_id;
-	}
 	public String getStatus() {
 		return Status;
 	}
@@ -120,17 +105,17 @@ public class Product {
 	public void setFormattedPrice(String formattedPrice) {
 		this.formattedPrice = formattedPrice;
 	}
-	public String getFromUnitName() {
-		return FromUnitName;
+	public int getUnit_id() {
+		return Unit_id;
 	}
-	public void setFromUnitName(String fromUnitName) {
-		FromUnitName = fromUnitName;
+	public void setUnit_id(int unit_id) {
+		Unit_id = unit_id;
 	}
-	public String getToUnitName() {
-		return ToUnitName;
+	public String getUnit_name() {
+		return Unit_name;
 	}
-	public void setToUnitName(String toUnitName) {
-		ToUnitName = toUnitName;
+	public void setUnit_name(String unit_name) {
+		Unit_name = unit_name;
 	}
 	
 }

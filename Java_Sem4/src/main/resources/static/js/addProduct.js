@@ -4,7 +4,12 @@ function removeDollarSign(input) {
 
 function addDollarSign(input) {
     if (input.value) {
-        input.value = '$' + parseFloat(input.value).toFixed(2);
+        const value = parseFloat(input.value.replace(/[$,]/g, ''));
+        if (!isNaN(value)) {
+            input.value = '$' + value.toFixed(2);
+        } else {
+            input.value = '';
+        }
     }
 }
 function showImage(event) {
