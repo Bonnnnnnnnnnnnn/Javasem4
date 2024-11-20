@@ -6,4 +6,19 @@
 		  function goToDetailEmploy(id) {
 		        window.location.href = '/admin/employee/showEmployeeDetail?id=' + id;
 		    }
+			//search text 
+			function searchTable() {
+			    var searchTerm = $('#searchInput').val().toLowerCase();
+			    var rows = $('table tbody tr');
+
+			    rows.each(function() {
+			        var rowText = $(this).text().toLowerCase();
+			        if (rowText.indexOf(searchTerm) === -1) {
+			            $(this).hide();
+			        } else {
+			            $(this).show();
+			        }
+			    });
+			}
+
   

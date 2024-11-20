@@ -26,13 +26,17 @@ public class EmployeeRepository {
     }
 	public List<Employee> findAll(PageView itemPage) {
 	    try {
-	    	String str_query = String.format("SELECT e.*, r.Name as role_name " +
-	    	        "FROM %s e " +
-	    	        "INNER JOIN %s r ON e.%s = r.%s " +
-	    	        "ORDER BY e.%s DESC",
-	    	        Views.TBL_EMPLOYEE, Views.TBL_ROLE,
-	    	        Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
-	    	        Views.COL_EMPLOYEE_ID);
+	    	String str_query = String.format(
+	    		    "SELECT e.Id, e.First_name, e.Last_name, e.Phone, e.Role_Id, e.Password, r.Name AS role_name " +
+	    		    "FROM %s e " +
+	    		    "INNER JOIN %s r ON e.%s = r.%s " +
+	    		    "WHERE e.%s <> 'admin' " +
+	    		    "ORDER BY e.%s DESC",
+	    		    Views.TBL_EMPLOYEE, Views.TBL_ROLE,
+	    		    Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
+	    		    Views.COL_EMPLOYEE_PHONE,
+	    		    Views.COL_EMPLOYEE_ID
+	    		);
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = empdb.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_EMPLOYEE, Integer.class);
 	            int total_page = (int) Math.ceil((double) count / itemPage.getPage_size());

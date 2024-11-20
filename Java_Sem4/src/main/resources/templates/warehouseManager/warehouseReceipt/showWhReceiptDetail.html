@@ -59,6 +59,7 @@
 				         	<th>STT</th>
 				            <th>Price</th>
 				            <th>Quantity</th>
+				            <th>Product</th>
 				            <th>
 				            </th>
 				        </tr>
@@ -76,7 +77,10 @@
 				                <span th:text="${item.quantity}"></span>
 				            </td>
 				            <td>
-				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
+				                <span th:text="${item.product_name}"></span>
+				            </td>
+				            <td>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhDetail(id=${item.id})}" class="btn btn-warning">Update</a>
 				            </td>
 				        </tr>
 				    </tbody>
@@ -87,14 +91,22 @@
 				        <h3>Warehouse Receipt Details</h3>
 				        <div class="detail-entry row">
 				            <input type="hidden" name="wh_receipt_id" th:value="${whr.id}">
-				            <div class="form-group col-md-6">
+				            <div class="form-group col-md-4">
 				                <label for="quantity">Quantity</label>
 				                <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" required>
 				            </div>
-				            <div class="form-group col-md-6">
+				            <div class="form-group col-md-4">
 				                <label for="wh_price">Warehouse Price</label>
 				                <input type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
 				            </div>
+				            <div class="form-group col-md-4">
+					            <label for="product_id">Product</label>
+					            <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
+					            <select id="product_id" name="product_id" class="form-control" required>
+					                <option value="" disabled selected>Select Product</option>
+					                <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
+					            </select>
+					        </div>
 				        </div>
 				    </div>
 				    <div class="card-footer">

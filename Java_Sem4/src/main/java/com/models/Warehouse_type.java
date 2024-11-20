@@ -3,6 +3,7 @@ package com.models;
 public class Warehouse_type {
 	private int Id;
 	private String Name;
+	private int relatedCount;
 	public Warehouse_type(int id, String name) {
 		super();
 		Id = id;
@@ -21,5 +22,11 @@ public class Warehouse_type {
 	}
 	public void setName(String name) {
 		Name = name;
+	}
+	public int getRelatedCount() {
+		return relatedCount;
+	}
+	public void setRelatedCount(int relatedCount) {
+		this.relatedCount = relatedCount;
 	}
 }

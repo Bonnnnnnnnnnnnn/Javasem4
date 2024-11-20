@@ -46,9 +46,8 @@ public final class Views {
 	public static String COL_PRODUCT_NAME = "Product_name";
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
-	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
+	public static String COL_PRODUCT_UNIT_ID = "Unit_Id";
 	public static String COL_PRODUCT_PRICE = "Price";
-	public static String COL_PRODUCT_ID_CONVERSION = "Id_Conversion";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
@@ -84,6 +83,7 @@ public final class Views {
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
+	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
 	
 	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhReceipt";
@@ -91,6 +91,7 @@ public final class Views {
 	public static String SHOW_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showWhReceipt";
 	public static String SHOW_WAREHOUSE_RECEIPT_DETAILS = "warehouseManager/warehouseReceipt/showWhReceiptDetail";
 	public static String UPDATE_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showUpdateWhReceipt";
+	public static String UPDATE_WAREHOUSE_RECEIPT_DETAIL = "warehouseManager/warehouseReceipt/showUpdateWhDetail";
 	
 	public static String TBL_WAREHOUSE_RECEIPT = "Warehouse_receipt";
 	public static String COL_WAREHOUSE_RECEIPT_ID = "Id";
@@ -103,6 +104,7 @@ public final class Views {
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
 	public static String WAREHOUSE_SHOWADDWAREHOUSE = "admin/warehouse/showAddWarehouse";
 	public static String WAREHOUSE_SHOWUPDATEWAREHOUSE = "admin/warehouse/showUpdateWarehouse";
+	public static String WAREHOUSE_SHOWWAREHOUSEDETAILS = "admin/warehouse/showWarehouseDetails";
 	
 	
 	public static String TBL_WAREHOUSE = "Warehouse";
@@ -279,4 +281,13 @@ public final class Views {
 	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";
 	public static String COL_PRODUCT_SPE_DES_SPE = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCT_ID = "Product_id"; 
+	//23.Employee_warehouse
+	public static String EMPLOYEE_WAREHOUSE_SHOWEMPWARE = "admin/warehouse/showEmpWare";
+	public static String EMPLOYEE_WAREHOUSE_SHOWWAREHOUSEMANAGEMENTLEVEL = "admin/warehouse/showWarehouseManagementLevel";
+	public static String EMPLOYEE_WAREHOUSE_SHOWUPDATEWAREHOUSEMANAGEMENTLEVEL = "admin/warehouse/showUpdateWarehouseManagementLevel";
+	public static String TBL_EMPLOYEE_WAREHOUSE = "employee_warehouse";
+	public static String COL_EMPLOYEE_WAREHOUSE_ID = "Id";
+	public static String COL_EMPLOYEE_WAREHOUS_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID = "Warehouse_Id";	
+	
 }

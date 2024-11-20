@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.models.PageView;
 import com.models.Warehouse;
 import com.models.Warehouse_type;
 import com.utils.Views;
@@ -34,15 +35,37 @@ public class WarehouseTypeRepository {
             return wt;
         }, id);
     }
-	public List<Warehouse_type> findAll() {
-		try {
-			String sql ="SELECT * FROM Warehouse_type";
-			return dbtype.query(sql, new Warehouse_type_mapper());
-		} catch (Exception e) {
-			System.err.print("erro:" + e.getMessage());
-			return Collections.emptyList();
-		}
+	public List<Warehouse_type> findAll(PageView itemPage) {
+	    try {
+	        String sql = "SELECT * FROM Warehouse_type ORDER BY Id DESC";
+
+	        if (itemPage != null && itemPage.isPaginationEnabled()) {
+	            int totalRecords = dbtype.queryForObject("SELECT COUNT(*) FROM Warehouse_type", Integer.class);
+	            itemPage.setTotal_page((int) Math.ceil((double) totalRecords / itemPage.getPage_size()));
+
+	            sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+	            return dbtype.query(sql, new Warehouse_type_mapper(),
+	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
+	                    itemPage.getPage_size());
+	        }
+
+	        return dbtype.query(sql, new Warehouse_type_mapper());
+	    } catch (Exception e) {
+	        System.err.println("Error: " + e.getMessage());
+	        return Collections.emptyList();
+	    }
 	}
+
+	public int countByWarehouseTypeId(int typeId) {
+	    try {
+	        String sql = "SELECT COUNT(*) FROM Warehouse WHERE Wh_type_Id = ?";
+	        return dbtype.queryForObject(sql, Integer.class, typeId);
+	    } catch (Exception e) {
+	        return 0;
+	    }
+	}
+
 	public boolean saveWhType(Warehouse_type whtp) {
 		try {
 			String sql ="INSERT INTO Warehouse_type (Name) VALUES (?)";

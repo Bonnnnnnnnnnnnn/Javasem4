@@ -34,11 +34,10 @@
 			        </div>
 			        
 					<div class="form-group col-6">
-					    <label for="price">Price (USD)</label>
-					    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price in USD" required 
-					           onfocus="removeDollarSign(this)" 
-					           onblur="addDollarSign(this)" step="0.01" min="0">
-					</div>	
+    <label for="price">Price (USD)</label>
+    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price in USD" required >
+</div>
+
 					
 			        <div class="form-group col-6">
 					    <label for="phone">Description</label>
@@ -52,9 +51,9 @@
 					</div>
 					
 			        <div class="form-group col-6">
-			            <label for="exampleInputEmail1">Conversion Id</label>
-			            <select name="conversionId" id="conversionId" class="form-control" required>
-			                <option th:each="item : ${conversions}" th:value="${item.id}" th:text="${item.fromUnitName} + ' to ' + ${item.toUnitName}"></option>
+			            <label for="exampleInputEmail1">Unit</label>
+			            <select name="unitId" id="unitId" class="form-control" required>
+			                <option th:each="item : ${units}" th:value="${item.id}" th:text="${item.name}"></option>
 			            </select>
 			        </div>
 			        

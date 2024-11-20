@@ -7,44 +7,24 @@
 		function confirmDeleteWh(){
 					return confirm("Are you sure you want to delete this warehouse ?");
 		}
-		//search warehouse_type
-		document.getElementById('searchInput').addEventListener('keyup', function() {
-		    let filter = this.value.toUpperCase();
-		    let table = document.getElementById('warehouseTable');
-		    let tr = table.getElementsByTagName('tr');
-		
-		    for (let i = 0; i < tr.length; i++) {
-		        let td = tr[i].getElementsByTagName('td')[1];
-		        if (td) {
-		            let txtValue = td.textContent || td.innerText;
-		            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-		                tr[i].style.display = '';
-		            } else {
-		                tr[i].style.display = 'none';
-		            }
-		        }
+		//click vào xem chi tiết sản phẩm
+		  function goToDetail(id) {
+		        window.location.href = '/admin/warehouse/showWarehouseDetails?id=' + id;
 		    }
-		});
-		//search warehouse
-		document.getElementById("searchInput").addEventListener("keyup", filterTable);
-		
-		    function filterTable() {
-		        const input = document.getElementById("searchInput").value.toLowerCase();
-		        const rows = document.querySelectorAll("#warehouseTable tr");
-		
-		        rows.forEach(row => {
-		            const cells = row.querySelectorAll("td");
-		            let match = false;
-		
-		            cells.forEach(cell => {
-		                if (cell.textContent.toLowerCase().includes(input)) {
-		                    match = true;
-		                }
-		            });
-		
-		            row.style.display = match ? "" : "none";
-		        });
-		    }
+			//search text
+			function searchTable() {
+			    var searchTerm = $('#searchInput').val().toLowerCase();
+			    var rows = $('table tbody tr');
+
+			    rows.each(function() {
+			        var rowText = $(this).text().toLowerCase();
+			        if (rowText.indexOf(searchTerm) === -1) {
+			            $(this).hide();
+			        } else {
+			            $(this).show();
+			        }
+			    });
+			}
 			//xoa all warehuuse
 			function deleteSelectedWarehouses() {
 			    const selectedWarehouseIds = [];

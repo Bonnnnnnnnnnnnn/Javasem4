@@ -36,9 +36,7 @@
 			        
 					<div class="form-group col-6">
 					    <label for="price">Price (USD)</label>
-					    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price in USD" required 
-					           onfocus="removeDollarSign(this)" 
-					           onblur="addDollarSign(this)" step="0.01" min="0">
+					    <input type="text" id="price" th:field="*{price}" class="form-control" placeholder="Enter Price in USD" required >
 					</div>	
 					
 			        <div class="form-group col-6">
@@ -53,9 +51,9 @@
 					</div>
 					
 					<div class="form-group col-6">
-			            <label for="exampleInputEmail1">Conversion</label>
-			            <select th:field="*{conversion_id}" id="conversionId" class="form-control" required>
-			                <option th:each="item : ${conversions}" th:value="${item.id}" th:text="${item.id}"></option>
+			            <label for="exampleInputEmail1">Unit</label>
+			            <select th:field="*{unit_id}" id="unitId" class="form-control" required>
+			                <option th:each="item : ${units}" th:value="${item.id}" th:text="${item.name}"></option>
 			            </select>
 			        </div>
 			        
@@ -86,6 +84,7 @@
 			        <div class="form-group col-6">
 			            <label for="exampleInputEmail1">Warranty period</label>
 			            <select th:field="*{warranty_period}" id="wpe" class="form-control" required>
+			                <option th:value="0" th:text="0 + ' ' + months"></option>
 			                <option th:value="6" th:text="6 + ' ' + months"></option>
 			                <option th:value="12" th:text="12 + ' ' + months"></option>
 			                <option th:value="18" th:text="18 + ' ' + months"></option>

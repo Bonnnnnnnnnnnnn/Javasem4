@@ -1,5 +1,7 @@
 package com.admin.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.admin.repository.BrandRepository;
 import com.models.Brand;
+import com.models.PageView;
 import com.utils.Views;
 
 @Controller
@@ -18,11 +21,22 @@ public class BrandController {
 	@Autowired
 	private BrandRepository repbr;
 	
-	@GetMapping("showBrand")
-	public String showBrand(Model model) {	
-		model.addAttribute("brands", repbr.findAll());
-		return Views.BRAND_SHOWBRAND;
+	@GetMapping("/showBrand")
+	public String showBrand(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+	    List<Brand> brands = repbr.findAll(pv);
+	    for (Brand brand : brands) {
+	        int relatedCount = repbr.countByBrandId(brand.getId());
+	        brand.setRelatedCount(relatedCount);
+	    }
+	    model.addAttribute("brands", brands);
+	    model.addAttribute("pv", pv);
+	    return Views.BRAND_SHOWBRAND;
 	}
+
+
 	@GetMapping("showAddBrand")
 	public String showAddBrand(Model model) {
 		Brand br  = new Brand();
