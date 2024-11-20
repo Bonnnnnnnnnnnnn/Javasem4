@@ -2,9 +2,11 @@ package com.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import com.customer.repository.FeedbackRepository;
 import com.models.Product;
 import com.utils.Views;
 
@@ -20,14 +22,25 @@ public class Product_mapper implements RowMapper<Product> {
         item.setStatus(rs.getString(Views.COL_PRODUCT_STATUS));
         item.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE));
         item.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
-        item.setUnit_id(rs.getInt(Views.COL_PRODUCT_UNIT_ID));
-        
+        item.setStatus(rs.getString(Views.COL_PRODUCT_STATUS));
+        item.setBrandName(rs.getString("brand_name"));
+        item.setUnitName(rs.getString("unit_name"));
+        item.setCategoryName(rs.getString("category_name"));
+        try {
+            FeedbackRepository feedbackRepo = MapperHelper.getFeedbackRepo();
+            if (feedbackRepo != null) {
+                int productId = item.getId();
+                item.setAverageRating(feedbackRepo.calculateAverageRating(productId));
+                item.setFeedbacks(feedbackRepo.getProductFeedbacks(productId));
+                item.setTotalFeedbacks(item.getFeedbacks().size());
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting feedback data: " + e.getMessage());
+            item.setAverageRating(0.0);
+            item.setFeedbacks(new ArrayList<>());
+            item.setTotalFeedbacks(0);
+        }
 
-		item.setBrandName(rs.getString("brand_name"));
-		item.setCategoryName(rs.getString("category_name"));
-		item.setUnit_name(rs.getString("unit_name"));
-
-        
         return item;
     }
 }

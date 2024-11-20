@@ -22,3 +22,4 @@ public class Request_detail_mapper implements RowMapper<Request_detail>{
 	}
 
 }
+
