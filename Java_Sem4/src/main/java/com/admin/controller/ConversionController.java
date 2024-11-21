@@ -29,7 +29,7 @@ public class ConversionController {
     public String findAllConversions(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(8);
         List<Conversion> conversions = con.findAllConversions(pv);
         model.addAttribute("conversions", conversions);
 	    model.addAttribute("pv", pv);
@@ -69,7 +69,6 @@ public class ConversionController {
         model.addAttribute("conversion", conversion);
         return Views.UPDATE_CONVERSION; 
     }
-
 
     @PostMapping("/updateConversion")
     public String updateConversion(Conversion conversion) {

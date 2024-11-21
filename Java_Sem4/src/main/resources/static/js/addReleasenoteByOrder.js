@@ -44,9 +44,13 @@ function addDetail() {
                 <input type="hidden" id="id_product${detailIndex}" name="id_product" class="form-control" required>
                 <span id="selectedProductId${detailIndex}" class="product-id"></span>
             </div>
+			<div class="form-group col-md-6">
+			    <label for="quantity_Ex${detailIndex}">Quantity</label>
+			    <input type="number" id="quantity_Ex${detailIndex}" name="quantity_Ex" class="form-control" placeholder="Enter Quantity" required>
+			</div>
             <div class="form-group col-md-6">
-                <label for="quantity${detailIndex}">Quantity</label>
-                <input type="number" id="quantity${detailIndex}" name="quantity" class="form-control" placeholder="Enter Quantity" required>
+                <label for="quantity_Rq${detailIndex}">Quantity</label>
+                <input type="number" id="quantity_Rq${detailIndex}" name="quantity_Rq" class="form-control" placeholder="Enter Quantity" required>
             </div>
         </div>
         <input type="hidden" id="status${detailIndex}" name="status" value="Processing">
@@ -54,8 +58,6 @@ function addDetail() {
     `;
     detailsDiv.appendChild(newDetail);
 }
-
-
 
 // Lọc sản phẩm dựa trên văn bản tìm kiếm
 function filterProducts(detailIndex) {

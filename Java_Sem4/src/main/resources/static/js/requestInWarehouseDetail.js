@@ -7,7 +7,7 @@ function confirmDelete() {
       // Tìm kiếm dòng chứa ID và lấy giá trị của statusRequest từ ô status
       var status = document.querySelector('tr[data-id="'+id+'"] td:nth-child(4)').innerText.trim();
 
-      if (status !== 'Completed') {
+      if (status !== 'Shipping') {
           window.location.href = '/warehouseManager/requestInWarehouseDetail?id=' + id;
       } else {
           alert("This request is complete and cannot be edited.");

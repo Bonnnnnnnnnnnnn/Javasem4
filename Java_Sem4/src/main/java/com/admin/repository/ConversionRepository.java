@@ -23,15 +23,23 @@ public class ConversionRepository {
     
     public List<Conversion> findAllConversions(PageView ItemPage) {
         try {
-            String str_query = String.format("SELECT c.*, u1.%s as from_unit_name, u2.%s as to_unit_name " +
-                    "FROM %s c " +
-                    "INNER JOIN %s u1 ON c.%s = u1.%s " +
-                    "INNER JOIN %s u2 ON c.%s = u2.%s " +
-                    "ORDER BY c.%s DESC",
-                    Views.COL_UNIT_NAME, Views.COL_UNIT_NAME, Views.TBL_CONVERSION,
-                    Views.TBL_UNIT, Views.COL_CONVERSION_FROM_UNIT_ID, Views.COL_UNIT_ID,
-                    Views.TBL_UNIT, Views.COL_CONVERSION_TO_UNIT_ID, Views.COL_UNIT_ID,
-                    Views.COL_CONVERSION_ID);
+        	String str_query = String.format(
+        		    "SELECT c.*, p.%s as product_name, u1.%s as from_unit_name, u2.%s as to_unit_name " +
+        		    "FROM %s c " +
+        		    "INNER JOIN %s p ON c.%s = p.%s " +
+        		    "INNER JOIN %s u1 ON c.%s = u1.%s " +
+        		    "INNER JOIN %s u2 ON c.%s = u2.%s " +
+        		    "ORDER BY c.%s DESC",
+        		    Views.COL_PRODUCT_NAME, 
+        		    Views.COL_UNIT_NAME,   
+        		    Views.COL_UNIT_NAME,    
+        		    Views.TBL_CONVERSION,   
+        		    Views.TBL_PRODUCT, Views.COL_CONVERSION_PRODUCT_ID, Views.COL_PRODUCT_ID, 
+        		    Views.TBL_UNIT, Views.COL_CONVERSION_FROM_UNIT_ID, Views.COL_UNIT_ID,     
+        		    Views.TBL_UNIT, Views.COL_CONVERSION_TO_UNIT_ID, Views.COL_UNIT_ID,       
+        		    Views.COL_CONVERSION_ID
+        		);
+
 
             if (ItemPage != null && ItemPage.isPaginationEnabled()) {
                 int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_CONVERSION, Integer.class);
@@ -50,6 +58,7 @@ public class ConversionRepository {
             return Collections.emptyList();
         }
     }
+
 
     public List<Unit> findAllUnit(){
     	try {

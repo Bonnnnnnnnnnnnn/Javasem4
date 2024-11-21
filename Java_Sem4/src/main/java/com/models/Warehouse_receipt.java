@@ -1,6 +1,7 @@
 package com.models;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Warehouse_receipt {
 	private int Id;
@@ -9,12 +10,23 @@ public class Warehouse_receipt {
 	private String Wh_name;
 	private String Status;
     private LocalDateTime Date;
-	public Warehouse_receipt(int id, String name, int wh_id, LocalDateTime date,String status) {
+    private Double Shipping_fee;
+	private Double Other_fee;
+    private Double Total_fee;
+
+	
+	public Warehouse_receipt(int id, String name, int wh_id, String wh_name, LocalDateTime date, Double shipping_fee,
+			Double other_fee, Double total_fee, String status) {
+		super();
 		Id = id;
 		Name = name;
 		Wh_id = wh_id;
-		Status = status;
+		Wh_name = wh_name;
 		Date = date;
+		Shipping_fee = shipping_fee;
+		Other_fee = other_fee;
+		Total_fee = total_fee;
+		Status = status;
 	}
 	public Warehouse_receipt() {
 	}
@@ -53,6 +65,24 @@ public class Warehouse_receipt {
 	}
 	public void setStatus(String status) {
 		Status = status;
+	}
+	public Double getShipping_fee() {
+		return Shipping_fee;
+	}
+	public void setShipping_fee(Double shipping_fee) {
+		Shipping_fee = shipping_fee;
+	}
+	public Double getOther_fee() {
+		return Other_fee;
+	}
+	public void setOther_fee(Double otder_fee) {
+		Other_fee = otder_fee;
+	}
+	public Double getTotal_fee() {
+		return Total_fee;
+	}
+	public void setTotal_fee(Double total_fee) {
+		Total_fee = total_fee;
 	}
 	
 }

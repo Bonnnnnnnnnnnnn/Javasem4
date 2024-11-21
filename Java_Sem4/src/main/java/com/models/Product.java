@@ -1,5 +1,7 @@
 package com.models;
 
+import java.util.List;
+
 public class Product {
 	private int Id;
 	private String Product_name;
@@ -7,32 +9,32 @@ public class Product {
 	private String Category_name;
     private int Brand_id;
     private String Brand_name;    
-    private int Conversion_id;
-    private int Id_Conversion;
+    private int Unit_id;
+    private String Unit_name; 
 	private double Price;
 	private String Img;
-	private String Status;
 	private String Description;
 	private int Warranty_period;
-	private String FromUnitName;
-	private String ToUnitName;
-
-	private String formattedPrice;
-	public Product(int id, int id_Conversion, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
-			String description, int warranty_period) {
-
+	private String Status;
+	private Double averageRating;
+    private Integer totalFeedbacks;
+	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
+			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
+			String status) {
 		super();
 		Id = id;
 		Product_name = product_name;
-		Id_Conversion = id_Conversion;
 		Cate_id = cate_id;
+		Category_name = category_name;
 		Brand_id = brand_id;
-		Conversion_id = id_Conversion;
+		Brand_name = brand_name;
+		Unit_id = unit_id;
+		Unit_name = unit_name;
 		Price = price;
 		Img = img;
-		Status = status;
 		Description = description;
 		Warranty_period = warranty_period;
+		Status = status;
 	}
 	public Product() {
 	}
@@ -41,12 +43,6 @@ public class Product {
 	}
 	public void setId(int id) {
 		Id = id;
-	}
-	public int getId_Conversion() {
-		return Id_Conversion;
-	}
-	public void setId_Conversion(int id_conversion) {
-		Id_Conversion = id_conversion;
 	}
 	public String getProduct_name() {
 		return Product_name;
@@ -65,6 +61,12 @@ public class Product {
 	}
 	public void setBrand_id(int brand_id) {
 		Brand_id = brand_id;
+	}
+	public int getUnit_id() {
+		return Unit_id;
+	}
+	public void setUnit_id(int unit_id) {
+		Unit_id = unit_id;
 	}
 	public double getPrice() {
 		return Price;
@@ -102,11 +104,29 @@ public class Product {
 	public void setBrandName(String brand_name) {
 		Brand_name = brand_name;
 	}
-	public int getConversion_id() {
-		return Conversion_id;
+	public String getUnitName() {
+		return Unit_name;
 	}
-	public void setConversion_id(int conversion_id) {
-		Conversion_id = conversion_id;
+	public void setUnitName(String unit_name) {
+		Unit_name = unit_name;
+	}
+	public String getCategory_name() {
+		return Category_name;
+	}
+	public void setCategory_name(String category_name) {
+		Category_name = category_name;
+	}
+	public String getBrand_name() {
+		return Brand_name;
+	}
+	public void setBrand_name(String brand_name) {
+		Brand_name = brand_name;
+	}
+	public String getUnit_name() {
+		return Unit_name;
+	}
+	public void setUnit_name(String unit_name) {
+		Unit_name = unit_name;
 	}
 	public String getStatus() {
 		return Status;
@@ -114,23 +134,18 @@ public class Product {
 	public void setStatus(String status) {
 		Status = status;
 	}
-	public String getFormattedPrice() {
-		return formattedPrice;
+	public Double getAverageRating() {
+		return averageRating;
 	}
-	public void setFormattedPrice(String formattedPrice) {
-		this.formattedPrice = formattedPrice;
+	public void setAverageRating(Double averageRating) {
+		this.averageRating = averageRating;
 	}
-	public String getFromUnitName() {
-		return FromUnitName;
+	public Integer getTotalFeedbacks() {
+		return totalFeedbacks;
 	}
-	public void setFromUnitName(String fromUnitName) {
-		FromUnitName = fromUnitName;
+	public void setTotalFeedbacks(Integer totalFeedbacks) {
+		this.totalFeedbacks = totalFeedbacks;
 	}
-	public String getToUnitName() {
-		return ToUnitName;
-	}
-	public void setToUnitName(String toUnitName) {
-		ToUnitName = toUnitName;
-	}
+
 	
 }

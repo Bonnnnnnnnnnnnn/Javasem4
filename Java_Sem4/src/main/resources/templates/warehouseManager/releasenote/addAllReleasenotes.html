@@ -27,10 +27,12 @@
                                         <tr>
                                             <th>Name</th>
                                         <td><input type="text" name="name" th:value="${request.name}" class="form-control" readonly /></td>
+                                        </tr>                                        <tr>
+                                        	<th>Status</th>
+                                        <td><input type="text" name="statusWr" value="Completed" class="form-control" readonly /></td>
                                         </tr>                                       
                                     </tbody>
                                 </table>
-                                <input type="hidden" id="statusWr" name="statusWr" value="Completed">
                                 <input type="hidden" id="employeeId" name="employeeId" th:value="${employeeId}">
 								<input type="hidden" id="requestId" name="requestId" th:value="${requestId}">
 

@@ -80,11 +80,15 @@
                         
                         <div class="card-footer">
                             <a href="/warehouseManager/showOrderInWarehouse" class="btn btn-primary">Back to List</a>
-							<div style="display: inline;">
-							    <a th:href="@{/warehouseManager/showAddAllOrderRelesenote(employeeId=${employeeId}, orderId=${orderId}, name=${order.cus_Name})}" 
+                                <div style="display: inline;">
+								    <a th:href="@{/warehouseManager/showAddOrderRelesenote(employeeId=${employeeId}, orderId=${orderId})}" 
+								       class="btn btn-primary">Create slip</a>
+								</div>
+								<div style="display: inline;">
+							    	<a th:href="@{/warehouseManager/showAddAllOrderRelesenote(employeeId=${employeeId}, orderId=${orderId}, name=${order.cus_Name}, orderID=${order.orderID})}" 
   										class="btn btn-primary">Create All slip</a>
 
-							</div>	
+								</div>	
                         </div>
                     </div>
                 </div>

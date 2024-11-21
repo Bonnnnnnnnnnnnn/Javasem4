@@ -41,31 +41,35 @@ public class ReleasenoteRepository {
 	}
 	
 	// update status order
-	public void updateStatusInOrder(int OrderId) {
-		String sql = "UPDATE [Order] SET Status = 'Processing' WHERE Id = ?";
-		jdbcTemplate.update(sql, OrderId);
+	public void updateStatusInOrder(int orderId) {
+	    String sql = "UPDATE [Order] SET Status = 'Processing' WHERE Id = ?";
+	    jdbcTemplate.update(sql, orderId);
+
+	    String sql1 = "UPDATE [Order_detail] SET Status = 'Processing' WHERE Order_Id = ?";
+	    jdbcTemplate.update(sql1, orderId); 
 	}
 
+
 	// update status request
-	public void updateStatusToPending(int requestId) {
+	public void updateStatusToProcessing(int requestId) {
 		String sql = "UPDATE Request SET Status = 'Processing' WHERE Id = ?";
 		jdbcTemplate.update(sql, requestId);
 	}
 
-	//hien thi bang request theo employee_id
+	//hien thi bang request theo employee_id and order_id = null
 	public List<Request> findAllByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
-	        String sql = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
-	                Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ID);
+	        String sql = String.format(
+	                "SELECT * FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL ORDER BY %s DESC",
+	                Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ORDERID, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
-
 	            int count = jdbcTemplate.queryForObject(
-	                    String.format("SELECT COUNT(*) FROM %s WHERE %s = ?", Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID),
+	                    String.format("SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL",
+	                            Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ORDERID, Views.COL_REQUEST_TYPE),
 	                    Integer.class, employeeId);
 	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(totalPage);
-
 
 	            return jdbcTemplate.query(sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
 	                    new Request_mapper(),
@@ -80,12 +84,41 @@ public class ReleasenoteRepository {
 	        return Collections.emptyList();
 	    }
 	}
+	//hien thi bang request theo employee_id and Type =?
+	public List<Request> findAllByEmployeeIdAndType(PageView itemPage, int employeeId) {
+	    try {
+	        String sql = String.format(
+	                "SELECT * FROM %s WHERE %s = ? AND (%s = 'Request' OR %s = 'Order') ORDER BY %s DESC",
+	                Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_ID);
+
+	        if (itemPage != null && itemPage.isPaginationEnabled()) {
+	            int count = jdbcTemplate.queryForObject(
+	                    String.format("SELECT COUNT(*) FROM %s WHERE %s = ? AND (%s = 'Request' OR %s = 'Order')",
+	                            Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_TYPE),
+	                    Integer.class, employeeId);
+	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
+	            itemPage.setTotal_page(totalPage);
+
+	            return jdbcTemplate.query(sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+	                    new Request_mapper(),
+	                    employeeId,
+	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
+	                    itemPage.getPage_size());
+	        } else {
+	            return jdbcTemplate.query(sql, new Request_mapper(), employeeId);
+	        }
+	    } catch (DataAccessException e) {
+	        System.err.println("Error fetching requests: " + e.getMessage());
+	        return Collections.emptyList();
+	    }
+	}
+
 	
 	//hien thi bang order theo employee_id
 	public List<Order> findOrderByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
-	        String sql = String.format("SELECT * FROM [%s] WHERE %s = ? ORDER BY %s DESC",
-	                Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE, Views.COL_ORDER_ID);
+	        String sql = String.format("SELECT * FROM [%s] WHERE %s = ? AND %s = 'Processing' ORDER BY %s ASC",
+	                Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE,Views.COL_ORDER_STATUS, Views.COL_ORDER_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 
@@ -173,33 +206,34 @@ public class ReleasenoteRepository {
 	// hien thi bang order khi employee_id = null
 	public List<Order> findAllOrderByEmployeeIdIsNull(PageView itemPage) {
 	    try {
-			String sql =String.format( "SELECT * FROM [%s] WHERE %s IS NULL ORDER BY %s DESC",
-					Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE, Views.COL_ORDER_ID);
+	        String sql = String.format(
+	                "SELECT * FROM [%s] WHERE %s IS NULL AND %s = 'Waiting for confirmation' ORDER BY %s DESC",
+	                Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE, Views.COL_ORDER_STATUS, Views.COL_ORDER_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
-
 	            int count = jdbcTemplate.queryForObject(
-	                    String.format("SELECT COUNT(*) FROM [%s] WHERE %s IS NULL", Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE),
+	                    String.format("SELECT COUNT(*) FROM [%s] WHERE %s IS NULL AND %s = 'Waiting for confirmation'",
+	                            Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE, Views.COL_ORDER_STATUS),
 	                    Integer.class);
 	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(totalPage);
-
 
 	            return jdbcTemplate.query(sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
 	                    new Order_mapper(),
 	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
 	                    itemPage.getPage_size());
 	        } else {
-	    		return jdbcTemplate.query(sql, new Order_mapper());
+	            return jdbcTemplate.query(sql, new Order_mapper());
 	        }
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching requests: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
 	}
+
 	//xoa employee_id bang request
 	public void deleteEmployeeIdByRequestId(int id) {
-	    String sql = "UPDATE Request SET Employee_Id = NULL, status = 'canceled' WHERE Id = ?";
+	    String sql = "UPDATE Request SET Employee_Id = NULL, status = 'Pending Approval' WHERE Id = ?";
 	    jdbcTemplate.update(sql, id);
 	}
 	
@@ -218,6 +252,7 @@ public class ReleasenoteRepository {
         	order.setCus_Name(rs.getString(Views.COL_ORDER_CUSNAME));
         	order.setDate(rs.getTimestamp(Views.COL_REQUEST_DATE).toLocalDateTime().toLocalDate());
         	order.setStatus(rs.getString(Views.COL_ORDER_STATUS));
+        	order.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
             return order;
         }, id);
         
@@ -324,6 +359,7 @@ public class ReleasenoteRepository {
 	    	order.setCus_Name(rs.getString(Views.COL_ORDER_CUSNAME));
 	    	order.setDate(rs.getTimestamp(Views.COL_REQUEST_DATE).toLocalDateTime().toLocalDate());
 	    	order.setStatus(rs.getString(Views.COL_ORDER_STATUS));
+	    	order.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
 	        return order;
 	    }, id, employeeId);
 
@@ -382,6 +418,8 @@ public class ReleasenoteRepository {
     @Transactional
     public boolean addWarehouseReleasenoteByOrder(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
         try {
+        	
+        	
             String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Order_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int result1 = jdbcTemplate.update(connection -> {
@@ -454,7 +492,8 @@ public class ReleasenoteRepository {
 		  
 		  return (totalQuantity != null) ? totalQuantity : 0; 
 	  }
-	// số lượng request_detail
+	  
+	// số lượng request_detail QuantityRequested
 	  public int QuantityRequested(int requestId) { 
 		  String sql = "SELECT SUM(" +
 		  Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED + ") AS totalQuantity " + "FROM "
@@ -467,7 +506,7 @@ public class ReleasenoteRepository {
 		  return (totalQuantity != null) ? totalQuantity : 0; 
 	  }
 	  
-		// số lượng request_detail
+		// số lượng request_detail QuantityExported
 	  public int QuantityExported(int requestId) { 
 		  String sql = "SELECT SUM(" +
 		  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ") AS totalQuantity " + "FROM "
@@ -481,16 +520,20 @@ public class ReleasenoteRepository {
 	  }
 	  
 	  // so sánh quantity vs request Id đổi status
-	  public boolean isRequestComplete(int ReleaseDetailId, int requestId) {
-		    int totalReleasedQuantity = QuantityByReleaseNoteId(ReleaseDetailId);
+	  public boolean isRequestComplete( int requestId) {
+		    int totalQuantityExported = QuantityExported(requestId);
 		    int totalRequestedQuantity = QuantityRequested(requestId);
 		    
+		    
+		    if(totalQuantityExported >= totalRequestedQuantity) {
 
-		    if(totalReleasedQuantity >= totalRequestedQuantity) {
-
-		    	String sql = "UPDATE Request SET Status = 'Completed' WHERE Id = ?";
+		    	String sql = "UPDATE Request SET Status = 'Shipping' WHERE Id = ?";
 		    	jdbcTemplate.update(sql, requestId);
 		    	return true;
+		    } else {
+		    	
+		    	String sql = "UPDATE Request Set Type = 'Request' WHERE Id = ?";
+		    	jdbcTemplate.update(sql, requestId);
 		    }
 		    return false;
 		}
@@ -503,7 +546,7 @@ public class ReleasenoteRepository {
 
 		    if(totalReleasedQuantity >= totalOrderQuantity) {
 
-		    	String sql = "UPDATE [Order] SET Status = 'Completed' WHERE Id = ?";
+		    	String sql = "UPDATE [Order] SET Status = 'Shipping' WHERE Id = ?";
 		    	jdbcTemplate.update(sql, orderId);
 		    	return true;
 		    }
@@ -525,10 +568,10 @@ public class ReleasenoteRepository {
 
 
 		    String updateSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
-                    Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " = COALESCE(" +
-                    Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ", 0) + ? " +
-                    "WHERE " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ? " +
-                    "AND " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ?";
+                  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " = COALESCE(" +
+                  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ", 0) + ? " +
+                  "WHERE " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ? " +
+                  "AND " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ?";
 
 
 		    
@@ -536,6 +579,7 @@ public class ReleasenoteRepository {
 		    
 		    return totalQuantity;
 		}
+
 	  
 	  //total quantity_requested
 	  public int getQuantityRequested(int requestId, int idProduct) {
@@ -579,24 +623,5 @@ public class ReleasenoteRepository {
 		    
 		    return totalQuantityRequested;
 		}
-
-	  // update status Request
-	  public void updateStatusRequest(int requestId) {
-		    String checkCompletionSql = "SELECT COUNT(*) " +
-		                                "FROM " + Views.TBL_REQUEST_DETAIL + " " +
-		                                "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
-		                                "AND " + Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " < " +
-		                                Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED;
-
-		    Integer incompleteCount = jdbcTemplate.queryForObject(checkCompletionSql, Integer.class, requestId);
-
-		    if (incompleteCount != null && incompleteCount == 0) {
-		        String updateStatusSql = "UPDATE " + Views.TBL_REQUEST + " SET " +
-		                                 Views.COL_REQUEST_STATUS + " = 'Completed' " +
-		                                 "WHERE " + Views.COL_REQUEST_ID + " = ?";
-		        jdbcTemplate.update(updateStatusSql, requestId);
-		    }
-		}
-
 
 }

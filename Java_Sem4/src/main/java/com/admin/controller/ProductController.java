@@ -73,7 +73,6 @@ public class ProductController {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setConversion_id(conversionId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);
@@ -135,7 +134,6 @@ public class ProductController {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setConversion_id(conversionId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);

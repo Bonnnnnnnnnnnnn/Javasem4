@@ -22,6 +22,7 @@ public final class Views {
 	
 	public static String TBL_CONVERSION = "Conversion";
 	public static String COL_CONVERSION_ID = "Id";
+	public static String COL_CONVERSION_PRODUCT_ID ="Product_Id";
 	public static String COL_CONVERSION_FROM_UNIT_ID = "From_unit_id";
 	public static String COL_CONVERSION_TO_UNIT_ID ="To_unit_id";
 	public static String COL_CONVERSION_RATE = "Conversion_rate";
@@ -46,6 +47,7 @@ public final class Views {
 	public static String COL_PRODUCT_NAME = "Product_name";
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
+	public static String COL_PRODUCT_UNIT_ID = "Unit_id";
 	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_ID_CONVERSION = "Id_Conversion";
@@ -98,6 +100,10 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_IDWH = "Wh_Id";
 	public static String COL_WAREHOUSE_RECEIPT_STATUS = "Status";
 	public static String COL_WAREHOUSE_RECEIPT_DATE = "Date";
+	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
+	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
+	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
+
 	
 	//10.WAREHOUSE
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
@@ -136,10 +142,12 @@ public final class Views {
 	
 	//13.Warehouse_releasenote
 	public static String ADD_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addReleasenotes";
+	public static String ADD_WAREHOUSE_RELEASENOTE_BY_ORDER= "warehouseManager/releasenote/addReleasenotesByOrder";
 	public static String UPDATE_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/updateReleasenotes";
 	public static String ADD_ALL_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addAllReleasenotes";
 	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE= "warehouseManager/orderRequest/showOrderRequest";
 	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE = "warehouseManager/orderRequest/showOrderinWarehouse";
+	public static String SHOW_ORDER_AND_REQUEST = "warehouseManager/OrderAndRequest/showOrderAndRequest";
 	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/WarehouseReleasenote";
 	public static String SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInWarehouse";
 	public static String SHOW_ORDER_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInfor";
@@ -170,6 +178,8 @@ public final class Views {
 	public static String COL_REQUEST_STATUS = "Status";
 	public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
 	public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_REQUEST_TYPE = "Type";
+	public static String COL_REQUEST_ORDERID = "Order_Id";
 	// Request detail
 	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
 	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";

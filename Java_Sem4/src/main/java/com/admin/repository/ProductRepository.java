@@ -122,7 +122,6 @@ public class ProductRepository {
                 pro.setId(rs.getInt(Views.COL_PRODUCT_ID));
                 pro.setBrand_id(rs.getInt(Views.COL_PRODUCT_BRAND_ID));
                 pro.setCate_id(rs.getInt(Views.COL_PRODUCT_CATE_ID));
-                pro.setConversion_id(rs.getInt(Views.COL_PRODUCT_CONVERSION_ID));
                 pro.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
                 pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));
                 pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));
@@ -145,7 +144,7 @@ public class ProductRepository {
         try {
             String sql = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Id_Conversion, Price, Img, Status, Description, Warranty_period) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             int rowsAffected = dbpro.update(sql, pro.getProduct_name(), pro.getCate_id(),
-            		pro.getBrand_id(), pro.getConversion_id(), pro.getPrice(), pro.getImg(),pro.getStatus(),
+            		pro.getBrand_id(), pro.getPrice(), pro.getImg(),pro.getStatus(),
             		pro.getDescription(), pro.getWarranty_period());
             return rowsAffected > 0;
         } catch (Exception e) {
@@ -215,7 +214,6 @@ public class ProductRepository {
                 pro.getProduct_name(),
                 pro.getCate_id(),
                 pro.getBrand_id(),
-                pro.getConversion_id(),
                 pro.getPrice(),
                 pro.getImg(),
                 pro.getStatus(),
