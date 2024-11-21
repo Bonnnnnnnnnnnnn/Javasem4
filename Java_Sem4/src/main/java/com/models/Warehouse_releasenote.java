@@ -14,8 +14,10 @@ public class Warehouse_releasenote {
 		Date = date;
 		Order_id = order_id;
 	}
+	
 	public Warehouse_releasenote() {
 	}
+	
 	public int getId() {
 		return Id;
 	}

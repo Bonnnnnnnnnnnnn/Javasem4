@@ -22,9 +22,12 @@ import com.customer.repository.CartRepository;
 import com.customer.repository.MomoService;
 import com.customer.repository.OrderRepository;
 import com.customer.repository.Order_detailRepository;
+import com.customer.repository.ReturnOrderRepository;
 import com.models.Order;
 import com.models.Order_detail;
 import com.models.PageView;
+import com.models.ReturnOrder;
+import com.models.ReturnOrderDetail;
 import com.models.Shopping_cart;
 import com.utils.Views;
 
@@ -40,6 +43,8 @@ public class OrderController {
 	@Autowired
 	Order_detailRepository repod;
 	
+	 @Autowired
+	  ReturnOrderRepository returnOrderRepository;
 	@Autowired
 	MomoService momoser;
 	
@@ -62,9 +67,16 @@ public class OrderController {
 	public String showdetailor(Model model,
 			@RequestParam int id,
             HttpServletRequest request) {
-			model.addAttribute("order",repo.getOrderByOrderId(id));
+			model.addAttribute("order",repo.getOrderById(id));
 			model.addAttribute("orderdetail",repod.findAllOrderDetailsByOrderId(id));
-			
+			ReturnOrder returnOrder = returnOrderRepository.findReturnOrderByOrderId(id);
+		    model.addAttribute("hasReturnOrder", returnOrder != null);
+		    if (returnOrder != null) {
+		        List<ReturnOrderDetail> returnOrderDetails = 
+		            returnOrderRepository.findReturnOrderDetailsByReturnOrderId(returnOrder.getId());
+		        model.addAttribute("returnOrder", returnOrder);
+		        model.addAttribute("returnOrderDetails", returnOrderDetails);
+		    }
 			return Views.CUS_ORDEREDDETAILPAGE;
 			}
 	@GetMapping("/gocancel/{id}")
@@ -73,7 +85,7 @@ public class OrderController {
 	    RedirectAttributes redirectAttributes
 	) {
 	    try {
-	        Order order = repo.getOrderByOrderId(id);
+	        Order order = repo.getOrderById(id);
 	        if (order == null) {
 	            throw new RuntimeException("Không tìm thấy đơn hàng");
 	        }

@@ -72,7 +72,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Id_product";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
-
+	public static String COL_WAREHOUSE_RECEIPT_STATUS = "Status";
 	
 	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhAndWhDetails";
@@ -87,7 +87,6 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
 	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
 	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
-
 	
 	//10.WAREHOUSE
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
@@ -250,6 +249,24 @@ public final class Views {
 		public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
 		public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
 		public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
+		//25.RETURN ORDER
+		public static String TBL_RETURN_ORDER = "Return_Order";
+		public static String COL_RETURN_ORDER_ID = "Id";
+		public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
+		public static String COL_RETURN_ORDER_DATE = "Return_Date";
+		public static String COL_RETURN_ORDER_STATUS = "Status";
+		public static String COL_RETURN_ORDER_NOTE = "Note";
+		public static String COL_RETURN_ORDER_TOTAL_AMOUNT = "Total_Amount";
+		public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
+		public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
+		//25.RETURN ORDER DETAIL
+		public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
+		public static String COL_RETURN_DETAIL_ID = "Id";
+		public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
+		public static String COL_RETURN_DETAIL_ORDER_DETAIL_ID = "Order_Detail_Id";
+		public static String COL_RETURN_DETAIL_QUANTITY = "Quantity";
+		public static String COL_RETURN_DETAIL_REASON = "Reason";
+		public static String COL_RETURN_DETAIL_AMOUNT = "Amount";
 	//26.CUSTOMER
 	public static String CUS_SHOWPAGEMAIN = "customer/pagemain";
 	public static String CUS_SHOPPINGPAGE = "customer/shoppingpage";

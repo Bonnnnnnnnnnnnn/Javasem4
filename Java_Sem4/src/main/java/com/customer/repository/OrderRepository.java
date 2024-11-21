@@ -87,7 +87,7 @@ public class OrderRepository {
 	}
 
 	@SuppressWarnings("deprecation")
-	public Order getOrderByOrderId(int orderid) {
+	public Order getOrderById(int orderid) {
 	    StringBuilder queryBuilder = new StringBuilder(String.format("SELECT * FROM [%s] WHERE [%s] = ?",
 	            Views.TBL_ORDER,
 	            Views.COL_ORDER_ID));
