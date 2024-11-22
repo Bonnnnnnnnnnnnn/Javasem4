@@ -77,5 +77,10 @@ public class Warehouse_receipt {
 	public void setTotal_fee(Double total_fee) {
 		Total_fee = total_fee;
 	}
-	
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		this.Status = status;
+	}
 }

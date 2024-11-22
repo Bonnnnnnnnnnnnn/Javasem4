@@ -17,7 +17,6 @@ public class Product {
 	private String Description;
 	private int Warranty_period;
 
-	private String Status;
 	private Double averageRating;
     private Integer totalFeedbacks;
     private List<Feedback> feedbacks;
@@ -109,12 +108,6 @@ public class Product {
 	public void setStatus(String status) {
 		Status = status;
 	}
-	public String getFormattedPrice() {
-		return formattedPrice;
-	}
-	public void setFormattedPrice(String formattedPrice) {
-		this.formattedPrice = formattedPrice;
-	}
 	public int getUnit_id() {
 		return Unit_id;
 	}
@@ -139,18 +132,7 @@ public class Product {
 	public void setBrand_name(String brand_name) {
 		Brand_name = brand_name;
 	}
-	public String getUnit_name() {
-		return Unit_name;
-	}
-	public void setUnit_name(String unit_name) {
-		Unit_name = unit_name;
-	}
-	public String getStatus() {
-		return Status;
-	}
-	public void setStatus(String status) {
-		Status = status;
-	}
+
 	public Double getAverageRating() {
 		return averageRating;
 	}

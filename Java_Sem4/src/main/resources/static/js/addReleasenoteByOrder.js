@@ -44,9 +44,13 @@ function addDetail() {
                 <input type="hidden" id="id_product${detailIndex}" name="id_product" class="form-control" required>
                 <span id="selectedProductId${detailIndex}" class="product-id"></span>
             </div>
+			<div class="form-group col-md-6">
+			    <label for="quantity_Ex${detailIndex}">Quantity</label>
+			    <input type="number" id="quantity_Ex${detailIndex}" name="quantity_Ex" class="form-control" placeholder="Enter Quantity" required>
+			</div>
             <div class="form-group col-md-6">
-                <label for="quantity${detailIndex}">Quantity</label>
-                <input type="number" id="quantity${detailIndex}" name="quantity" class="form-control" placeholder="Enter Quantity" required>
+                <label for="quantity_Rq${detailIndex}">Quantity</label>
+                <input type="number" id="quantity_Rq${detailIndex}" name="quantity_Rq" class="form-control" placeholder="Enter Quantity" required>
             </div>
         </div>
         <input type="hidden" id="status${detailIndex}" name="status" value="Processing">
@@ -55,18 +59,18 @@ function addDetail() {
     detailsDiv.appendChild(newDetail);
 }
 
-
-
 // Lọc sản phẩm dựa trên văn bản tìm kiếm
 function filterProducts(detailIndex) {
     const searchInput = document.getElementById(`productSearch${detailIndex}`);
     const productList = document.getElementById(`productList${detailIndex}`);
     const filterText = searchInput.value.toLowerCase();
 
+    // Hiển thị sản phẩm nào có tên chứa văn bản tìm kiếm
     const filteredProducts = products.filter(product =>
         product.product_name.toLowerCase().includes(filterText)
     );
 
+    // Xóa danh sách hiện tại
     productList.innerHTML = '';
 
     if (filteredProducts.length > 0) {
@@ -92,7 +96,12 @@ function selectProduct(product, detailIndex) {
     document.getElementById(`productList${detailIndex}`).style.display = 'none';
 }
 
-
+/*function hideProductList(detailIndex) {
+    const productList = document.getElementById(`productList${detailIndex}`);
+    // Ẩn danh sách sản phẩm
+    productList.style.display = 'none';
+}
+*/
 
 function removeDetail(button) {
     button.closest('.detail-entry').remove();

@@ -30,4 +30,9 @@ public class Unit {
 		this.relatedCount = relatedCount;
 	}
 	
+	@Override
+    public String toString() {
+        return "Unit{id=" + Id + ", name='" + Name + "'}";
+    }
+	
 }

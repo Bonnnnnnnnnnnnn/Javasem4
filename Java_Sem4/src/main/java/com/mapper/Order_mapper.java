@@ -1,6 +1,5 @@
 package com.mapper;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -38,8 +37,7 @@ public class Order_mapper implements RowMapper<Order> {
         item.setShippingFee(rs.getDouble(Views.COL_ORDER_SHIPPINGFEE));
         item.setNotes(rs.getString(Views.COL_ORDER_NOTES));
         item.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
-        item.setTransactionId(rs.getString(Views.COL_ORDER_TRANSMOMOID));
+        
         return item;
     }
 }
-

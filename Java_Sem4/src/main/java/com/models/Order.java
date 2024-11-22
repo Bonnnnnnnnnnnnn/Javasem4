@@ -1,6 +1,5 @@
 package com.models;
 
-
 import java.time.LocalDate;
 
 public class Order {
@@ -15,21 +14,17 @@ public class Order {
 	private int Payment_id;
 	private LocalDate Date;
 	private int Coupon_id;
-
 	private Double Discount;
 	private Double TotalAmount;
 	private Double ShippingFee;
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
-	private String TransactionId;
 	
 	
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
-			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
-			String transactionId) {
-
+			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID) {
 		super();
 		Id = id;
 		Customer_id = customer_id;
@@ -48,8 +43,6 @@ public class Order {
 		PaymentMethod = paymentMethod;
 		Notes = notes;
 		OrderID = orderID;
-		TransactionId = transactionId;
-
 	}
 	public Order() {
 	}
@@ -119,7 +112,6 @@ public class Order {
 	public void setCoupon_id(int coupon_id) {
 		Coupon_id = coupon_id;
 	}
-
 	public Double getDiscount() {
 		return Discount;
 	}
@@ -136,7 +128,6 @@ public class Order {
 		return ShippingFee;
 	}
 	public void setShippingFee(Double shippingFee) {
-
 		ShippingFee = shippingFee;
 	}
 	public String getPaymentMethod() {
@@ -157,12 +148,5 @@ public class Order {
 	public void setOrderID(String orderID) {
 		OrderID = orderID;
 	}
-	public String getTransactionId() {
-		return TransactionId;
-	}
-	public void setTransactionId(String transactionId) {
-		TransactionId = transactionId;
-	}
-
 	
 }

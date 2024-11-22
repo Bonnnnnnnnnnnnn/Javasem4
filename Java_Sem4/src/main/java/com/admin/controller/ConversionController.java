@@ -25,16 +25,6 @@ public class ConversionController {
 	private ConversionRepository con;
 
 	
-    @GetMapping("/conversions")
-    public String findAllConversions(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-        List<Conversion> conversions = con.findAllConversions(pv);
-        model.addAttribute("conversions", conversions);
-	    model.addAttribute("pv", pv);
-        return Views.SHOW_CONVERSION; 
-    }
     
     @GetMapping("/addConversion")
     public String addConversionForm(Model model) {
@@ -43,23 +33,13 @@ public class ConversionController {
         return Views.ADD_CONVERSION; 
     }
 
-    @PostMapping("/addConversion")
-    public String addConversion(@RequestParam int from_unit_id,
-                                 @RequestParam int to_unit_id,
-                                 @RequestParam int conversion_rate) {
-        Conversion conver = new Conversion();
-        conver.setFrom_unit_id(from_unit_id);
-        conver.setTo_unit_id(to_unit_id);
-        conver.setConversion_rate(conversion_rate);
-        con.addConversion(conver);
-        return "redirect:/admin/conversions";
-    }
 
 
-    @GetMapping("/deleteConversion")
-    public String deleteConversion(@RequestParam("id") int conversionId) {
+    @PostMapping("/deleteConversion")
+    public String deleteConversion(@RequestParam("id") int conversionId,
+    		@RequestParam int product_id) {
     	con.deleteConversion(conversionId);
-        return "redirect:/admin/conversions";
+        return "redirect:/admin/product/showProductDetail?id=" + product_id;
     }
     
     @GetMapping("/editConversion")
@@ -69,7 +49,6 @@ public class ConversionController {
         model.addAttribute("conversion", conversion);
         return Views.UPDATE_CONVERSION; 
     }
-
 
     @PostMapping("/updateConversion")
     public String updateConversion(Conversion conversion) {

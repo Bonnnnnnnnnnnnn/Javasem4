@@ -43,6 +43,7 @@
                                 <thead>
                                     <tr class="text-center">
                                         <th>STT</th>
+                                        <th>Product id</th>
                                         <th>From Unit</th>
                                         <th>To Unit</th>
                                         <th>Conversion Rate</th>						
@@ -57,6 +58,9 @@
                                     </tr>
                                     <tr th:each="item ,iterStat: ${conversions}" class="text-center">
                                         <td th:text="${iterStat.index + 1}"></td>
+                                        <td>
+                                            <span th:text="${item.productName}"></span>
+                                        </td>		
                                         <td>
                                             <span th:text="${item.fromUnitName}"></span>
                                         </td>		

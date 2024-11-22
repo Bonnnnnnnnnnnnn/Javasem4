@@ -49,12 +49,14 @@ public final class Views {
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
 	public static String COL_PRODUCT_UNIT_ID = "Unit_id";
+
+	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
+
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
-	public static String COL_PRODUCT_STATUS ="Status";
 	
 	//5.PRODUCT_CATEGORY
 	public static String CATEGORY_SHOWCATEGORY = "admin/category/showCategory";
@@ -147,10 +149,12 @@ public final class Views {
 	
 	//13.Warehouse_releasenote
 	public static String ADD_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addReleasenotes";
+	public static String ADD_WAREHOUSE_RELEASENOTE_BY_ORDER= "warehouseManager/releasenote/addReleasenotesByOrder";
 	public static String UPDATE_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/updateReleasenotes";
 	public static String ADD_ALL_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/addAllReleasenotes";
 	public static String SHOW_REQUEST_WAREHOUSE_RELEASENOTE= "warehouseManager/orderRequest/showOrderRequest";
 	public static String SHOW_ORDER_REQUEST_IN_WAREHOUSE = "warehouseManager/orderRequest/showOrderinWarehouse";
+	public static String SHOW_ORDER_AND_REQUEST = "warehouseManager/OrderAndRequest/showOrderAndRequest";
 	public static String SHOW_WAREHOUSE_RELEASENOTE= "warehouseManager/releasenote/WarehouseReleasenote";
 	public static String SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInWarehouse";
 	public static String SHOW_ORDER_WAREHOUSE_RELEASENOTE= "warehouseManager/orderInfor/showOrderInfor";
@@ -168,33 +172,6 @@ public final class Views {
 	public static String COL_WAREHOUSE_RELEASENOTE_STATUS = "Status";
 	public static String COL_WAREHOUSE_RELEASENOTE_ORDER_ID = "Order_id";
 
-	public static String COL_WAREHOUSE_RELEASENOTE_WAREHOUSE_REQUEST_ID = "Request_Id";
-
-	
-	// Request
-	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
-	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
-	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
-	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
-
-	public static String TBL_REQUEST = "Request";
-	public static String COL_REQUEST_ID = "Id";
-	public static String COL_REQUEST_NAME = "Name";
-	public static String COL_REQUEST_DATE = "Date";
-	public static String COL_REQUEST_STATUS = "Status";
-	public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
-	public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
-	// Request detail
-	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
-	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
-
-	public static String TBL_REQUEST_DETAIL = "Request_detail";
-	public static String COL_REQUEST_DETAIL_ID = "id";
-	public static String COL_REQUEST_DETAIL_STATUS = "Status";
-	public static String COL_REQUEST_DETAIL_ID_PRODUCT = "Id_product";
-	public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
-	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
-	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
 
 
 	//14.PAYMENT 
@@ -322,7 +299,7 @@ public final class Views {
 		public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
 		public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
 	//26.CUSTOMER
-=======
+
 	
 	//21.CUSTOMER
 
@@ -348,8 +325,6 @@ public final class Views {
 	public static String COL_PRODUCT_IMG_PRODUCT_ID = "Product_id";
 	public static String COL_PRODUCT_IMG_ID_MAIN_IMG = "Id_main_img";
 	//22.product_spe
-	public static String TBL_PRODUCT_SPE = "product_img";
-	public static String COL_PRODUCT_SPE_ID = "Id";
 	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";
 	public static String COL_PRODUCT_SPE_DES_SPE = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCT_ID = "Product_id"; 

@@ -6,10 +6,10 @@ function confirmDelete() {
   function goToDetail(id) {
       var status = document.querySelector('tr[data-id="'+id+'"] td:nth-child(4)').innerText.trim();
 
-      if (status !== 'Completed') {
+      if (status !== 'Shipping') {
           window.location.href = '/warehouseManager/orderInWarehouseDetail?id=' + id;
       } else {
-          alert("This request is complete and cannot be edited.");
+          alert("This Order is complete and cannot be edited.");
       }
   }
 

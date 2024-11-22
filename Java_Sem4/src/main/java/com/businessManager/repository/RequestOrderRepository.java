@@ -28,26 +28,29 @@ public class RequestOrderRepository {
     @Transactional
     public boolean addRequestOrderWithDetails(Request request, List<Request_detail> details) {
         try {
-            String sql1 = "INSERT INTO Request (Name, Date, Status) VALUES (?, ?, ?)";
+            String sql1 = "INSERT INTO Request (Name, Date, Type, Status) VALUES (?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int result1 = jdbcTemplate.update(connection -> {
                 var ps = connection.prepareStatement(sql1, new String[] { "Id" });
                 ps.setString(1, request.getName());
+                
                 ps.setDate(2, java.sql.Date.valueOf(request.getDate().toLocalDate()));
-                ps.setString(3, request.getStatusRequest());
+                ps.setString(3, request.getType());
+                ps.setString(4, request.getStatusRequest());
                 return ps;
             }, keyHolder);
 
             int generatedId = keyHolder.getKey().intValue();
 
-            String sql2 = "INSERT INTO Request_detail (Request_Id, Status, Id_product, Quantity_requested) VALUES ( ?, ?, ?, ?)";
+            String sql2 = "INSERT INTO Request_detail (Request_Id, Status, Id_product, Quantity_requested, Quantity_exported) VALUES ( ?, ?, ?, ?, ?)";
             for (Request_detail detail : details) {
                 detail.setRequest_id(generatedId);
                 jdbcTemplate.update(sql2,
                     detail.getRequest_id(),
                     detail.getStatus(),
                     detail.getId_product(),
-                    detail.getQuantity_requested()
+                    detail.getQuantity_requested(),
+                    detail.getQuantity_exported()
                 );
             }
 
@@ -115,13 +118,25 @@ public class RequestOrderRepository {
 
     public List<Product> findAllProduct() {
         String sql = "SELECT Id, Product_name FROM Product"; 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Product item = new Product();
-            item.setId(rs.getInt(Views.COL_PRODUCT_ID));
-            item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
-            return item;
-        });
-    }
+        try {
+            List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                Product item = new Product();
+                item.setId(rs.getInt(Views.COL_PRODUCT_ID));
+                item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
+                return item;
+            });
+            
 
+            if (products.isEmpty()) {
+                throw new RuntimeException("No products found in the database.");
+            }
+            
+            return products;
+        } catch (DataAccessException e) {
+
+            System.err.println("Database query error: " + e.getMessage());
+            throw new RuntimeException("Error fetching products from the database.", e);
+        }
+    }
     
 }

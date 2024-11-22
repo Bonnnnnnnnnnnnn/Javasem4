@@ -42,11 +42,13 @@
                                 </table>
                             </div>
 		                    <div class="card-footer">
-		                        <button type="submit" class="btn btn-primary">Submit</button>
+		                        <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
 		                    </div>
                         </div>
                     </div>
-
+            <div th:if="${error}" class="alert alert-danger">
+		        <p th:text="${error}"></p>
+		    </div>
                     <div class="col-md-6">
                         <div class="card card-secondary" style="margin-top: 30px;"> 
                             <div class="card-header" style="background-color: #6C75EC;">
@@ -62,7 +64,7 @@
                                     </table>
                                 </div>
 
-                                <button id="addDetailButton" type="button" onclick="addDetail()" class="btn btn-primary add-detail-btn">Add Detail</button>
+                                <button id="addDetailButton" type="button" onclick="addDetail()" class="btn btn-primary add-detail-btn">+</button>
 
                                 <div th:if="${message}" class="alert alert-info">
                                     <span th:text="${message}"></span>

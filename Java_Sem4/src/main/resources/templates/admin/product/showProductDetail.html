@@ -25,7 +25,7 @@
               <div class="card-header">
                 <h3 class="card-title">Details Product</h3>
               </div>
-              <form th:object="${product}">
+              <form th:object="${product}" >
 			    <div class="card-body row">
 			    
 			    	<div class="form-group col-md-2">
@@ -80,7 +80,65 @@
 			    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
 			        <a th:href="@{/admin/product/showUpdateProduct(id=${product.id})}" class="btn btn-success">Update</a>
  					<a th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+					<a href="javascript:void(0)" class="btn btn-success Conversion" 
+					   th:data-product-id="${product.id}" 
+					   th:data-unit-name="${product.unit_name}"				   
+					   th:data-unit-id="${product.unit_id}">
+					   Add Conversion
+					</a>
+ 					
 			    </div>
+				</form>
+            </div>
+          </div>
+        </div>
+        </div>
+        </section>
+        
+        <section class="content-header">
+      <div class="container-fluid">
+	<div class="row">
+          <div class="col-md-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Conversion</h3>
+              </div>
+              <form>
+              
+              <table class="table table-hover text-nowrap">
+              	<thead>
+              			<tr class="text-center">
+				            <th>Product Name</th>
+				            <th>From unit</th>
+				            <th>To unit</th>
+				            <th>conversion rate</th>
+				            
+				        </tr>
+				</thead>
+				<tbody>
+							<tr th:each="item : ${conversions}" class="text-center">
+							            <td>
+                                            <span th:text="${item.productName}"></span>
+                                        </td>		
+                                        <td>
+                                            <span th:text="${item.fromUnitName}"></span>
+                                        </td>		
+                                        <td>
+                                            <span th:text="${item.toUnitName}"></span>
+                                        </td>				            		            
+                                        <td>
+                                            <span th:text="${item.conversion_rate}"></span>
+                                        </td>	
+                                           <td>
+								            <button class="btn btn-danger btn-sm" 
+								                    onclick="deleteConversion('${item.id}')">
+								                X
+								            </button>
+								        </td> 					    
+							</tr>
+				 </tbody>
+              </table>
+
 				</form>
             </div>
           </div>
