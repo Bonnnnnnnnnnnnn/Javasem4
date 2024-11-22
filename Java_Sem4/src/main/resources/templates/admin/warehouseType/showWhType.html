@@ -1,4 +1,4 @@
-
+<link rel="stylesheet" th:href="@{/css/pagination.css}">
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
 <div th:replace="admin/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
@@ -27,16 +27,7 @@
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Warehouse Type Table</h3>
-				<div class="input-group input-group-sm" style="width: 80%;margin-left:15%;">
-				    <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
-				    <div class="input-group-append">
-				        <button type="submit" class="btn btn-default">
-				            <i class="fas fa-search"></i>
-				        </button>
-				    </div>
-				</div>
               </div>
-              <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap" id="warehouseTypeTable">
 				    <thead>
@@ -53,16 +44,47 @@
 				            <td colspan="5">No employees found</td>
 				        </tr>
 				        <tr th:each="item,iterStat : ${whtypes}" class="text-center">
-				            <td th:text="${iterStat.index + 1}"></td>
+				            <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}" 
+				            	th:onclick="'loadWarehouses(' + ${item.id} + ')'" style="cursor: pointer; color: black;"></td>
 				            <td th:onclick="'loadWarehouses(' + ${item.id} + ')'" style="cursor: pointer; color: black;">
 				                <span th:text="${item.name}"></span>
 				            </td>
 				            <td>
 				                <a th:href="@{showUpdateWhType(id=${item.id})}" class="btn btn-warning">Update</a>
-				                <a th:href="@{deleteWt(id=${item.id})}" onclick="return confirmDeleteType();" class="btn btn-danger">Delete</a>
-				            </td>
-				        </tr>
-				    </tbody>
+							    <a th:href="@{deleteWt(id=${item.id})}"
+							       th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
+							       th:attr="disabled=${item.relatedCount > 0}"
+							       th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
+							       th:onclick="${item.relatedCount > 0} ? 'return false;' : 'return confirmDeleteType();'"
+							       class="btn btn-danger">Delete</a>
+								</td>
+					        </tr>
+					    </tbody>
+					</table>
+					<table style="margin-left:42%">
+					<tfoot id="paginationFooter">
+					    <tr class="pagination">
+					        <td>
+					            <a th:href="@{/admin/warehouseType/showWhType(cp=1)}" title="First page">&laquo;</a>
+					        </td>
+					        <td th:if="${pv.Page_current > 1}">
+					            <a th:href="@{/admin/warehouseType/showWhType(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+					        </td>
+					        <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+					            th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+					            <a th:href="@{/admin/warehouseType/showWhType(cp=${i + 1})}"
+					               th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+					                <span th:text="${i + 1}"></span>
+					            </a>
+					        </td>
+					        <td th:if="${pv.Page_current < pv.Total_page}">
+					            <a th:href="@{/admin/warehouseType/showWhType(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+					        </td>
+					        <td>
+					            <a th:href="@{/admin/warehouseType/showWhType(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+					        </td>
+					    </tr>
+					</tfoot>
 				</table>
               </div>
             </div>

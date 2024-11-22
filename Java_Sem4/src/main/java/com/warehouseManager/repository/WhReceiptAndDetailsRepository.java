@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.mapper.Product_mapper;
 import com.mapper.Warehouse_mapper;
 import com.mapper.Warehouse_receipt_detail_mapper;
 import com.mapper.Warehouse_recript_mapper;
 import com.models.PageView;
+import com.models.Product;
 import com.models.Warehouse;
 import com.models.Warehouse_receipt;
 import com.models.Warehouse_receipt_detail;
@@ -64,7 +66,21 @@ public class WhReceiptAndDetailsRepository {
 	        return Collections.emptyList();
 	    }
 	}
-	
+	public List<Product> findAllPro(){
+		try {
+			String sql = "SELECT * FROM Product";
+			return dbwhd.query(sql, (rs, rowNum) -> {
+	            Product item = new Product();
+	            item.setId(rs.getInt(Views.COL_PRODUCT_ID));
+	            item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
+	            return item;
+	        });
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
 	public List<Warehouse> findAllWh() {
 	    try {
 	        String sql = "SELECT * FROM Warehouse";
@@ -148,14 +164,17 @@ public class WhReceiptAndDetailsRepository {
 	        String sql2 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
 	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
 	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + ") VALUES (?, ?, ?)";
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + " , " +
+	                Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + "  ) VALUES (?, ?, ? , ?)";
 	        
 	        for (Warehouse_receipt_detail detail : details) {
 	            detail.setWh_receipt_id(generatedId);
 	            dbwhd.update(sql2,
 	                detail.getWh_receipt_id(),
 	                detail.getWh_price(),
-	                detail.getQuantity()
+	                detail.getQuantity(),
+	                detail.getProduct_id()
+	                
 	            );
 	        }
 	        return result1 > 0;  
@@ -164,28 +183,83 @@ public class WhReceiptAndDetailsRepository {
 	        return false;
 	    }
 	}
-	
+	public String generateReceiptName() {
+	    String prefix = "ES01/";
+	    Integer maxNumber = null;
+	    try {
+
+	        String sql = "SELECT MAX(SUBSTRING(Name, 6, 3)) FROM Warehouse_receipt WHERE Name LIKE ?";
+	        maxNumber = dbwhd.queryForObject(sql, Integer.class, prefix + "%");
+	    } catch (DataAccessException e) {
+	        System.err.println("Error querying max number: " + e.getMessage());
+	    }
+
+	    int nextNumber = (maxNumber == null) ? 1 : maxNumber + 1;
+	    if (nextNumber > 999) {
+	        try {
+	            int currentPrefixNumber = Integer.parseInt(prefix.substring(2, 4)) + 1;
+	            prefix = "ES" + String.format("%02d", currentPrefixNumber) + "/";
+	            nextNumber = 1;
+	        } catch (NumberFormatException nfe) {
+	            System.err.println("Error parsing prefix number: " + nfe.getMessage());
+	        }
+	    }
+	    return prefix + String.format("%03d", nextNumber);
+	}
+
+
 	// Phần Warehouse_receipt_detail
 	
 	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId) {
-	    String sql = "SELECT wrd.* "
-	               + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
-	               + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
+		String sql = "SELECT wrd.*, p.product_name "
+		           + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
+		           + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
+		           + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
 
-	    return dbwhd.query(sql, (rs, rowNum) -> {
+	    List<Warehouse_receipt_detail> details = dbwhd.query(sql, (rs, rowNum) -> {
 	        Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
 	        wrd.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID));
 	        wrd.setWh_receipt_id(rs.getInt(Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID));
 	        wrd.setQuantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
 	        wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
+	        wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID));
+	        wrd.setProduct_name(rs.getString("product_name"));
+
+	        System.out.println("Retrieved detail: " + wrd.getProduct_name() + ", ID: " + wrd.getId());
 	        return wrd;
 	    }, whReceiptId);
+
+	    if (details.isEmpty()) {
+	        System.out.println("No details found for receipt ID: " + whReceiptId);
+	    } else {
+	        for (Warehouse_receipt_detail detail : details) {
+	            System.out.println("Detail: " + detail.getProduct_name() + ", Quantity: " + detail.getQuantity());
+	        }
+	    }
+
+	    return details; 
+	}
+	public Warehouse_receipt_detail findIdDetail(int id) {
+	    try {
+	        String sql = "SELECT wrd.*, p.product_name "
+	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
+	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
+	                   + "WHERE wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " = ?";
+
+	        return dbwhd.queryForObject(sql, new Warehouse_receipt_detail_mapper(), id);
+	    } catch (EmptyResultDataAccessException e) {
+	        System.err.println("No warehouse receipt detail found with ID: " + id);
+	        return null;
+	    } catch (DataAccessException e) {
+	        System.err.println("Error fetching warehouse receipt detail with ID: " + id + " - " + e.getMessage());
+	        return null;
+	    }
 	}
 
 	public boolean updateWhDetails(Warehouse_receipt_detail wrd) {
 		try {
-			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ? WHERE Id= ?";
-			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity() , wrd.getId()};
+			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Product_id = ? WHERE Id= ?";
+			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity() ,wrd.getProduct_id(), wrd.getId()};
 			int row = dbwhd.update(sql,params);
 			return row > 0 ;
 		} catch (Exception e) {

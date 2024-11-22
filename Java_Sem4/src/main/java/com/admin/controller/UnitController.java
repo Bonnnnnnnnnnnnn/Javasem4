@@ -1,5 +1,7 @@
 package com.admin.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,13 +20,18 @@ public class UnitController {
     @Autowired
     private UnitRepository unitRepository;
     
-   
     @GetMapping("/units")
     public String getAllUnits(Model model) {
-        model.addAttribute("units", unitRepository.getAllUnits());
+        List<Unit> units = unitRepository.getAllUnits();
+        
+        for (Unit unit : units) {
+            unit.setRelatedCount(unitRepository.countByUnitId(unit.getId()));
+        }
+        
+        model.addAttribute("units", units);
         return Views.SHOW_UNIT; 
     }
-    
+
 	@GetMapping("showAddUnit")
 	public String showAddUnit(Model model) {
 		Unit un  = new Unit();

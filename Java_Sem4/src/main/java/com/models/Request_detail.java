@@ -77,4 +77,6 @@ public class Request_detail {
 		this.ProductName = ProductName;
 	}
 	
+
 }
+

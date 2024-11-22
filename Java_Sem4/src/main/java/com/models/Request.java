@@ -73,6 +73,7 @@ public class Request {
 	public void setWarehouse_Id(int warehoise_Id) {
 		Warehouse_Id = warehoise_Id;
 	}
+
 	public String getType() {
 		return Type;
 	}
@@ -86,5 +87,8 @@ public class Request {
 		Order_id = order_id;
 	}
 	
-	
 }
+
+
+
+

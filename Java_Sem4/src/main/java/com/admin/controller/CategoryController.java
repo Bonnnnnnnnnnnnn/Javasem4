@@ -1,5 +1,7 @@
 package com.admin.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.admin.repository.CategoryRepository;
 import com.models.Category_Product;
+import com.models.PageView;
 import com.utils.Views;
 
 @Controller
@@ -19,10 +22,20 @@ public class CategoryController {
 	@Autowired
 	private CategoryRepository repca;
 	
-	@GetMapping("showCategory")
-	public String showCategory(Model model) {	
-		model.addAttribute("categorys", repca.findAll());
-		return Views.CATEGORY_SHOWCATEGORY;
+	@GetMapping("/showCategory")
+	public String showCategory(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(5);
+
+	    List<Category_Product> categories = repca.findAll(pv);
+	    for (Category_Product category : categories) {
+	        category.setRelatedCount(repca.countByCategoryId(category.getId()));
+	    }
+	    
+	    model.addAttribute("categories", categories);
+	    model.addAttribute("pv", pv);
+	    return Views.CATEGORY_SHOWCATEGORY;
 	}
 	@GetMapping("showAddCategory")
 	public String showAddCategory(Model model) {
