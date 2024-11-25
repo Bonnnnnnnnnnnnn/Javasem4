@@ -1,17 +1,33 @@
-function removeDollarSign(input) {
-    input.value = input.value.replace(/[$,]/g, '');
-}
+const priceInput = document.getElementById('price');
+priceInput.addEventListener('blur', function (e) {
+    let input = e.target.value;
 
-function addDollarSign(input) {
-    if (input.value) {
-        const value = parseFloat(input.value.replace(/[$,]/g, ''));
-        if (!isNaN(value)) {
-            input.value = '$' + value.toFixed(2);
-        } else {
-            input.value = '';
+    // Chỉ giữ lại các ký tự số và dấu chấm
+    input = input.replace(/[^0-9.]/g, '');
+
+    let value = parseFloat(input);
+    if (!isNaN(value)) {
+        // Giới hạn giá trị tối đa là 100000
+        if (value > 100000) {
+            value = 100000;
+            alert('Maximum price allowed is 100,000 USD.');
         }
+        e.target.value = value.toFixed(2); // Hiển thị giá trị với 2 chữ số sau dấu phẩy
+    } else {
+        e.target.value = ''; // Nếu không phải số, đặt lại input
     }
-}
+});
+
+priceInput.addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/[^0-9.]/g, ''); // Xóa ký tự không hợp lệ
+
+    const value = parseFloat(e.target.value);
+    if (value > 100000) {
+        e.target.value = '100000';
+        alert('Maximum price allowed is 100,000 USD.');
+    }
+});
+
 function showImage(event) {
        const file = event.target.files[0];
        const preview = document.getElementById('preview');

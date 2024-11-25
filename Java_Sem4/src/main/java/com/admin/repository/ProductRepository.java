@@ -17,6 +17,7 @@ import com.models.Category_Product;
 import com.models.PageView;
 import com.models.Product;
 import com.models.Product_specifications;
+import com.mapper.Product_specifications_mapper;
 import com.models.Unit;
 import com.utils.FileUtils;
 import com.utils.Views;
@@ -92,6 +93,36 @@ public class ProductRepository {
 			return Collections.emptyList();
 		}      
     }
+    public Product findIdProT(int id) {
+        try {
+            String sql = "SELECT * FROM Product WHERE Id = ?";
+
+            return dbpro.queryForObject(sql, (rs, rowNum) -> {
+                Product pro = new Product();
+                pro.setId(rs.getInt("Id"));
+                return pro;
+            }, id);
+        } catch (DataAccessException e) {
+            System.err.println("Lỗi khi lấy sản phẩm với ID: " + id + " - " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Product> findAllProductIds() {
+        try {
+            String sql = "SELECT Id FROM Product";
+            return dbpro.query(sql, (rs, rowNum) -> {
+                Product product = new Product();
+                product.setId(rs.getInt(Views.COL_PRODUCT_ID));
+                return product;
+            });
+        } catch (Exception e) {
+            System.err.println("error:" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+
     public List<Category_Product> findAllCategory(){
     	try {
         	String sql = "SELECT * FROM Product_category";
@@ -226,6 +257,34 @@ public class ProductRepository {
     
     //product_specifications
     
+    public List<Product_specifications> findListPs(int psId) {
+        try {
+            String sql = "SELECT ps.*, p.Product_name AS product_name " +
+                         "FROM product_specifications ps " +
+                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
+                         "WHERE ps.Product_id = ?";
+
+            return dbpro.query(sql, new Product_specifications_mapper(), psId);
+
+        } catch (DataAccessException e) {
+            System.err.println("erro Product ID: " + psId);
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    public Product_specifications findPsById(int id) {
+        try {
+            String sql = "SELECT ps.*, p.Product_name AS product_name " +
+                         "FROM product_specifications ps " +
+                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
+                         "WHERE ps.Id = ?";
+            return dbpro.queryForObject(sql, new Product_specifications_mapper(), id);
+        } catch (DataAccessException e) {
+            System.err.println("Error when getting product specifications with ID: " + id + " - " + e.getMessage());
+            return null;
+        }
+    }
+
     public boolean addProSpe(Product_specifications ps) {
     	try {
 			String sql = "INSERT INTO product_specifications (Name_spe, Des_spe, Product_id) VALUES (?, ?, ?)";
@@ -241,6 +300,18 @@ public class ProductRepository {
     		String sql = "UPDATE product_specifications SET Name_spe = ?, Des_spe = ?, Product_id = ? WHERE Id = ?";
 			int row = dbpro.update(sql,ps.getName_spe(),ps.getDes_spe(),ps.getProduct_id(),ps.getId());
 			return row > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    }
+    public boolean deletePs(int idps) {
+    	try {
+    		String sql = "DELETE FROM product_specifications WHERE Id = ?";
+            Object[] params = {idps};
+            int[] types = {Types.INTEGER};
+            int rowsAffected = dbpro.update(sql, params, types);
+            return rowsAffected > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

@@ -84,6 +84,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
 	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
+	public static String COL_WAREHOUSE_RECEIPT_SHIPPING_FEE = "Shipping_fee";
 	
 	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhReceipt";
@@ -242,6 +243,9 @@ public final class Views {
 	public static String COL_PRODUCT_IMG_PRODUCT_ID = "Product_id";
 	public static String COL_PRODUCT_IMG_ID_MAIN_IMG = "Id_main_img";
 	//22.product_spe
+	public static String PRODUCT_SPE_SHOWADDPS ="admin/product/showAddPs";
+	public static String PRODUCT_SPE_SHOWUPDATEPS ="admin/product/showUpdatePs";
+	
 	public static String TBL_PRODUCT_SPE = "product_img";
 	public static String COL_PRODUCT_SPE_ID = "Id";
 	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";

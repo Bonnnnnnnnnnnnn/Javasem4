@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -128,15 +129,17 @@ public class WhReceiptAndDetailsController {
 		public String addWhReceiptDetail(@RequestParam("wh_receipt_id") int wh_receipt_id,
 									        @RequestParam("wh_price") double wh_price, 
 									        @RequestParam("quantity") int quantity,
+									        @RequestParam("shipping_fee") double shipping_fee,
 									        @RequestParam("product_id") int product_id) {
 			Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
 			wrd.setWh_receipt_id(wh_receipt_id);
 			wrd.setWh_price(wh_price);
 			wrd.setQuantity(quantity);
+			wrd.setShipping_fee(shipping_fee);
 			wrd.setProduct_id(product_id);
 			
 			repwd.addWhDetail(wrd);
-			return "redirect:showWhReceiptDetail";
+			return "redirect:showWhReceiptDetail?id=" + wh_receipt_id ;
 		}
 		@GetMapping("showUpdateWhDetail")
 		public String showUpdateWhDetail(@RequestParam String id ,Model model) {
@@ -144,12 +147,14 @@ public class WhReceiptAndDetailsController {
 			Warehouse_receipt_detail whrd = repwd.findIdDetail(idwhr);	
 			model.addAttribute("detail",whrd);
 			model.addAttribute("products",repwd.findAllPro());
+			 model.addAttribute("wh_receipt_id", whrd.getWh_receipt_id());
 			return Views.UPDATE_WAREHOUSE_RECEIPT_DETAIL;
 		}
 		@PostMapping("updateWhDetail")
 		public String updateWhDetail(@RequestParam("wh_price") String wh_priceStr, 
 		                              @RequestParam("quantity") String quantityStr, 
 		                              @RequestParam("product_id") int product_id,
+		                              @RequestParam("shipping_fee") int shipping_fee,
 		                              @RequestParam("wh_receipt_id") int wh_receipt_id,
 		                              @RequestParam("id") int id) {
 		    double wh_price = Double.parseDouble(wh_priceStr.replace(",", "."));
@@ -159,6 +164,7 @@ public class WhReceiptAndDetailsController {
 		    wrd.setWh_receipt_id(wh_receipt_id);
 		    wrd.setWh_price(wh_price);
 		    wrd.setQuantity(quantity);
+		    wrd.setShipping_fee(shipping_fee);
 		    wrd.setProduct_id(product_id);
 		    wrd.setId(id);
 		    

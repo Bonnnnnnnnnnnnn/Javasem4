@@ -26,12 +26,6 @@
                 <h3 class="card-title">Warehouse receipt Table</h3>
                 <div class="input-group input-group-sm" style="width: 80%;margin-left:15%;">
 		           <input type="text" name="table_search" id="searchInput" onkeyup="searchTable()" class="form-control float-right" placeholder="Search">
-		
-		           <div class="input-group-append">
-		             <button type="submit" class="btn btn-default">
-		               <i class="fas fa-search"></i>
-		             </button>
-		           </div>
 		         </div>
               </div>
 
@@ -55,7 +49,8 @@
 					        <td colspan="8">No positions found</td>
 					    </tr>
 					    <tr th:each="item, iterStat : ${whrs}" class="text-center">
-					        <td th:text="${iterStat.index + 1}"></td>
+					        <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}" 
+					        	style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"></td>
 					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 					            <span th:text="${item.name}"></span>
 					        </td>

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.admin.repository.ProductRepository;
 import com.models.PageView;
 import com.models.Product;
+import com.models.Product_specifications;
 import com.utils.FileUtils;
 import com.utils.Views;
 
@@ -29,35 +30,59 @@ import com.utils.Views;
 public class ProductController {
 	@Autowired
 	private ProductRepository reppro;
+
 	@GetMapping("/showProduct")
 	public String showProduct(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-	    List<Product> products = reppro.findAll(pv);
-	    model.addAttribute("products", products);
-	    model.addAttribute("pv", pv);
-	    return Views.PRODUCT_SHOWPRODUCT;
+	    try {
+	        PageView pv = new PageView();
+	        pv.setPage_current(cp);
+	        pv.setPage_size(10);
+	        List<Product> products = reppro.findAll(pv);
+	        model.addAttribute("products", products);
+	        model.addAttribute("pv", pv);
+	        return Views.PRODUCT_SHOWPRODUCT;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("errorMessage", "An error occurred while loading products. Please try again.");
+	        return "admin/product/errorPage";
+	    }
 	}
-	
+
 	@GetMapping("/showProductDetail")
-	public String showProductDetail(@RequestParam("id") String productId, Model model) {
-	    int idpro = Integer.parseInt(productId);
-	    Product pro = reppro.findId(idpro);
-	    NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
-	    String formattedPrice = formatter.format(pro.getPrice());
-	    model.addAttribute("product", pro);
-	    model.addAttribute("formattedPrice", formattedPrice);
-	    return Views.PRODUCT_SHOWPRODUCTDETAIL;
+	public String showProductDetail(@RequestParam("id") String productId,@RequestParam("id") String psId, Model model) {
+	    try {
+	        int idpro = Integer.parseInt(productId);
+	        Product pro = reppro.findId(idpro);
+	        int idps = Integer.parseInt(psId);
+	        List<Product_specifications> ps = reppro.findListPs(idps);
+	        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+	        String formattedPrice = formatter.format(pro.getPrice());
+	        model.addAttribute("product", pro);
+	        model.addAttribute("formattedPrice", formattedPrice);
+	        model.addAttribute("ps", ps);
+	        return Views.PRODUCT_SHOWPRODUCTDETAIL;
+
+	    } catch (NumberFormatException e) {
+	        System.err.println("Product ID not valid: " + productId);
+	        return "admin/product/errorPage";
+	    }
 	}
+
+
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
-	    Product prod = new Product();
-		model.addAttribute("units",reppro.findAllUnit());
-		model.addAttribute("brands",reppro.findAllBrand());
-		model.addAttribute("categorys",reppro.findAllCategory());
-	    model.addAttribute("new_item", prod);
-	    return Views.PRODUCT_SHOWADDPRODUCT;
+	    try {
+	        Product prod = new Product();
+	        model.addAttribute("units", reppro.findAllUnit());
+	        model.addAttribute("brands", reppro.findAllBrand());
+	        model.addAttribute("categorys", reppro.findAllCategory());
+	        model.addAttribute("new_item", prod);
+	        return Views.PRODUCT_SHOWADDPRODUCT;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "An error occurred while loading the page.");
+	        return "admin/product/errorPage";
+	    }
 	}
 	@PostMapping("addProduct")
 	public String addProduct(@RequestParam String proName,
@@ -85,42 +110,42 @@ public class ProductController {
 	@GetMapping("deleteProduct")
 	public String deleteProduct(@RequestParam("id") String id, 
 	                            @RequestParam("fileName") String fileName) {
-	    int idp = Integer.parseInt(id);
-	    String folderName = "uploads";
-	    String result = reppro.deleteProduct(idp, folderName, fileName);
-	    System.out.println(result);
-	    return "redirect:showProduct";
-	}
-	@PostMapping("/deleteSelected")
-	@ResponseBody
-	public ResponseEntity<String> deleteSelectedProducts(@RequestBody List<Integer> ids) {
-	    if (ids == null || ids.isEmpty()) {
-	        return ResponseEntity.badRequest().body("No product IDs provided.");
-	    }
-	    ids.removeIf(Objects::isNull);
-
 	    try {
-	        for (Integer id : ids) {
-	            String fileName = reppro.getProductImageById(id);
-	            String result = reppro.deleteProduct(id, "uploads", fileName);
-	            System.out.println(result);
-	        }
-	        return ResponseEntity.ok("Products and corresponding images deleted successfully.");
-	    } catch (Exception e) {
+	        int idp = Integer.parseInt(id);
+	        String folderName = "uploads";
+	        String result = reppro.deleteProduct(idp, folderName, fileName);
+	        System.out.println(result);
+	        return "redirect:showProduct";
+
+	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete products: " + e.getMessage());
-	    }
+	        return "admin/product/errorPage";
+
+	    } 
 	}
 	@GetMapping("/showUpdateProduct")
-	public String showUpdateProduct(Model model,@RequestParam String id) {
-		int idPro = Integer.parseInt(id);
-		Product product = reppro.findId(idPro);
-		model.addAttribute("up_item", product);
-		model.addAttribute("units",reppro.findAllUnit());
-		model.addAttribute("brands",reppro.findAllBrand());
-		model.addAttribute("categorys",reppro.findAllCategory());
-		return Views.PRODUCT_SHOWUPDATEPRODUCT;
+	public String showUpdateProduct(Model model, @RequestParam String id) {
+	    try {
+	        int idPro = Integer.parseInt(id);
+	        Product product = reppro.findId(idPro);
+	        if (product == null) {
+	            model.addAttribute("error", "Product not found.");
+	            return "redirect:showProduct";
+	        }
+	        model.addAttribute("up_item", product);
+	        model.addAttribute("units", reppro.findAllUnit());
+	        model.addAttribute("brands", reppro.findAllBrand());
+	        model.addAttribute("categorys", reppro.findAllCategory());
+
+	        return Views.PRODUCT_SHOWUPDATEPRODUCT;
+
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "Invalid Product ID format.");
+	        return "redirect:showProduct";
+	    } 
 	}
+
 	@PostMapping("updateProduct")
 	public String updateProduct(@RequestParam("product_name") String proName,
 								@RequestParam("cate_id") int cateId,
@@ -145,5 +170,47 @@ public class ProductController {
 		prod.setId(id);
 		reppro.updateProduct(prod);	
 		return "redirect:showProduct";
+	}
+	//product_specifications
+	@GetMapping("showAddPs")
+	public String showAddPs(Model model, @RequestParam("id") int id) {
+	    try {
+	        Product_specifications ps = new Product_specifications();
+	        Product product = reppro.findIdProT(id);
+	        if (product != null) {
+	            model.addAttribute("new_item", ps);
+	            model.addAttribute("product", product);
+	        } else {
+	            model.addAttribute("errorMessage", "Product not found!");
+	        }
+
+	        return Views.PRODUCT_SPE_SHOWADDPS;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("errorMessage", "An error occurred while loading the product.");
+	        return "redirect:/showProduct";
+	    }
+	}
+	@PostMapping("addPs")
+	public String addPs(@RequestParam("name_spe") String nameSpe,
+	                    @RequestParam("des_spe") String desSpe,
+	                    @RequestParam("product_id") int productId) {
+	    Product_specifications ps = new Product_specifications();
+	    ps.setName_spe(nameSpe);
+	    ps.setDes_spe(desSpe);
+	    ps.setProduct_id(productId);
+
+	    reppro.addProSpe(ps);
+
+	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
+	}
+
+
+
+	@GetMapping("/errorPage")
+	public String errorPage() {
+		
+		return "admin/product/errorPage";
 	}
 }

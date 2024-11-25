@@ -6,13 +6,16 @@ public class Warehouse_receipt_detail {
 	private double Wh_price;
 	private int Quantity;
 	private int Product_id;
+	private double Shipping_fee;
 	private String Product_name;
 	private String formattedPrice;
 
 
-	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,int roduct_id) {
+	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,double shipping_fee,int product_id) {
 		Id = id;
 		Wh_receipt_id = wh_receipt_id;
+		Product_id = product_id;
+		Shipping_fee = shipping_fee;
 		Wh_price = wh_price;
 		Quantity = quantity;
 	}
@@ -60,6 +63,12 @@ public class Warehouse_receipt_detail {
 	}
 	public void setProduct_name(String product_name) {
 		Product_name = product_name;
+	}
+	public double getShipping_fee() {
+		return Shipping_fee;
+	}
+	public void setShipping_fee(double shipping_fee) {
+		Shipping_fee = shipping_fee;
 	}
 
 }
