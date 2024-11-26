@@ -37,9 +37,7 @@ public class Order_mapper implements RowMapper<Order> {
         item.setShippingFee(rs.getDouble(Views.COL_ORDER_SHIPPINGFEE));
         item.setNotes(rs.getString(Views.COL_ORDER_NOTES));
         item.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
-<<<<<<< HEAD
-        
-=======
+
         item.setTransactionId(rs.getString(Views.COL_ORDER_TRANSMOMOID));
         item.setDistrict_Id(rs.getInt(Views.COL_ORDER_DISTRICT_ID));
         item.setProvince_Id(rs.getInt(Views.COL_ORDER_PROVINCE_ID));
@@ -52,7 +50,7 @@ public class Order_mapper implements RowMapper<Order> {
             item.setExpected_delivery_time(timestampCreationTime2.toLocalDateTime().toLocalDate());
         }
         item.setShipping_status(rs.getString(Views.COL_ORDER_SHIPPING_STATUS));
->>>>>>> thuan_dev
+
         return item;
     }
 }

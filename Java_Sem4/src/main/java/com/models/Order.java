@@ -20,8 +20,7 @@ public class Order {
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
-<<<<<<< HEAD
-=======
+
 	private String TransactionId;
 	private int Province_Id;
 	private int District_Id;
@@ -32,18 +31,15 @@ public class Order {
 	private String shipping_status;
 	
 	
->>>>>>> thuan_dev
+
 	
 	
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
-<<<<<<< HEAD
-			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID) {
-=======
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
 			String transactionId, int province_Id, int district_Id, int ward_Id, String ghn_order_code,
 			String tracking_code, LocalDate expected_delivery_time, String shipping_status) {
->>>>>>> thuan_dev
+
 		super();
 		Id = id;
 		Customer_id = customer_id;
@@ -62,8 +58,6 @@ public class Order {
 		PaymentMethod = paymentMethod;
 		Notes = notes;
 		OrderID = orderID;
-<<<<<<< HEAD
-=======
 		TransactionId = transactionId;
 		Province_Id = province_Id;
 		District_Id = district_Id;
@@ -72,7 +66,6 @@ public class Order {
 		Tracking_code = tracking_code;
 		this.expected_delivery_time = expected_delivery_time;
 		this.shipping_status = shipping_status;
->>>>>>> thuan_dev
 	}
 	public Order() {
 	}
@@ -178,8 +171,6 @@ public class Order {
 	public void setOrderID(String orderID) {
 		OrderID = orderID;
 	}
-<<<<<<< HEAD
-=======
 	public String getTransactionId() {
 		return TransactionId;
 	}
@@ -229,6 +220,5 @@ public class Order {
 		this.shipping_status = shipping_status;
 	}
 	
->>>>>>> thuan_dev
 	
 }

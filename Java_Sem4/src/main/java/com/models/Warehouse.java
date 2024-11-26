@@ -8,13 +8,10 @@ public class Warehouse {
 	private String Address;
 	private int Wh_type_id;
 	private String Type_name;
-<<<<<<< HEAD
 	private String ManagerFirstName;
 	private String ManagerLastName;
 	private List<Employee> managers;
 	private int relatedCount;
-	public Warehouse(int id, String name, String address, int wh_type_id) {
-=======
 	private int Province_Id;
 	private int District_Id;
 	private int Ward_Id;
@@ -24,7 +21,6 @@ public class Warehouse {
 	
 	public Warehouse(int id, String name, String address, int wh_type_id, String type_name, int province_Id,
 			int district_Id, int ward_Id, String ghn_store_code) {
->>>>>>> thuan_dev
 		super();
 		Id = id;
 		Name = name;
@@ -68,7 +64,6 @@ public class Warehouse {
 	public void setTypeName(String type_name) {
 		Type_name = type_name;
 	}
-<<<<<<< HEAD
 	public String getManagerFirstName() {
 		return ManagerFirstName;
 	}
@@ -93,7 +88,7 @@ public class Warehouse {
 	public void setRelatedCount(int relatedCount) {
 		this.relatedCount = relatedCount;
 	}
-=======
+
 	public String getType_name() {
 		return Type_name;
 	}
@@ -126,6 +121,5 @@ public class Warehouse {
 	}
 	
 	
->>>>>>> thuan_dev
 	
 }

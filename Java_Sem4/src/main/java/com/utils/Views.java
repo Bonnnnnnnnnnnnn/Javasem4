@@ -88,8 +88,8 @@ public final class Views {
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 
-
-
+	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
+	
 	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
 
 
@@ -112,6 +112,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
 	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
 	
+
 	//10.WAREHOUSE
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
 	public static String WAREHOUSE_SHOWADDWAREHOUSE = "admin/warehouse/showAddWarehouse";
@@ -223,9 +224,6 @@ public final class Views {
 	public static String COL_ORDER_NOTES = "notes";
 	public static String COL_ORDER_ORDERID = "OrderID";
 	public static String COL_ORDER_TRANSMOMOID = "Transaction_id";
-<<<<<<< HEAD
-
-=======
 	public static String COL_ORDER_PROVINCE_ID = "Province_Id";
 	public static String COL_ORDER_DISTRICT_ID = "District_Id";
 	public static String COL_ORDER_WARD_ID = "Ward_Id";
@@ -233,7 +231,6 @@ public final class Views {
 	public static String COL_ORDER_TRACKING_CODE = "tracking_code";
 	public static String COL_ORDER_EXPECTED_DELIVERY_TIME = "expected_delivery_time";
 	public static String COL_ORDER_SHIPPING_STATUS = "shipping_status";
->>>>>>> thuan_dev
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
