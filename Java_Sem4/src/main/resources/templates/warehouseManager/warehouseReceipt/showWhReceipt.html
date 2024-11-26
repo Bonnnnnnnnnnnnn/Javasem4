@@ -1,6 +1,6 @@
   <link rel="stylesheet" th:href="@{/css/pagination.css}">
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="layout/header_admin"></div>
+<div th:replace="warehouseManager/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <section class="content-header">
       <div class="container-fluid">
@@ -40,40 +40,36 @@
 				    <thead>
 				        <tr class="text-center">
 				            <th>
-				                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+				            STT
 				            </th>
 				            <th>Name</th>
 				            <th>Warehouse Receipt Note</th>
-				            <th>Output time </th>
+				            <th>Status </th>
 				            <th>
-				             	<button class="btn btn-danger" onclick="deleteSelectedWhrs()">Delete Selected</button>
-				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhAndWhDetails}" class="btn btn-primary">Add Warehouse receipt</a>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse receipt</a>
 				            </th>
 				        </tr>
 				    </thead>
 				    <tbody>
-				        <tr th:if="${#lists.isEmpty(whrs)}" class="text-center">
-				            <td colspan="8">No positions found</td>
-				        </tr>
-				        <tr th:each="item: ${whrs}" class="text-center">
-				            <td>
-				                <input type="checkbox" class="productCheckbox" th:value="${item.id}">
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.name}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.wh_name}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.date}"></span>
-				            </td>
-				            <td>
-				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
-				                <a th:href="@{deleteWhr(id=${item.id})}" class="btn btn-danger" onclick="return confirmDeleteWhr();">Delete</a>
-				            </td>
-				        </tr>
-				    </tbody>
+					    <tr th:if="${#lists.isEmpty(whrs)}" class="text-center">
+					        <td colspan="8">No positions found</td>
+					    </tr>
+					    <tr th:each="item, iterStat : ${whrs}" class="text-center">
+					        <td th:text="${iterStat.index + 1}"></td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.name}"></span>
+					        </td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.wh_name}"></span>
+					        </td>
+					        <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+					            <span th:text="${item.status}"></span>
+					        </td>
+					        <td>
+					            <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${item.id})}" class="btn btn-warning">Update</a>
+					        </td>
+					    </tr>
+					</tbody>
 				</table>
       			<table style="margin-left:42%">
 				   <tfoot id="paginationFooter">
@@ -111,6 +107,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
   <script th:src="@{/js/showWarehouse_receipt.js}"></script>
   
-<div th:replace="layout/footer_admin"></div>
+<div th:replace="warehouseManager/layout/footer_admin"></div>
 </body>
 

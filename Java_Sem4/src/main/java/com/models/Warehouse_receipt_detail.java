@@ -6,6 +6,12 @@ public class Warehouse_receipt_detail {
 	private double Wh_price;
 	private int Product_id;
 	private int Quantity;
+
+	private String Product_name;
+	private String formattedPrice;
+
+
+
 	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,int roduct_id) {
 		super();
 		Id = id;
@@ -46,5 +52,13 @@ public class Warehouse_receipt_detail {
 	public void setProduct_id(int product_id) {
 		Product_id = product_id;
 	}
-	
+
+	public String getProduct_name() {
+		return Product_name;
+	}
+	public void setProduct_name(String product_name) {
+		Product_name = product_name;
+	}
+
 }
+

@@ -1,6 +1,6 @@
   <link rel="stylesheet" th:href="@{/css/pagination.css}">
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="layout/header_admin"></div>
+<div th:replace="admin/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <section class="content-header">
       <div class="container-fluid">
@@ -24,66 +24,45 @@
             <div class="card">
               <div class="card-header"> 
                 <h3 class="card-title">Product Table</h3>
-                <div class="input-group input-group-sm" style="width: 80%;margin-left:15%;">
-		           <input type="text" name="table_search" id="searchInput" onkeyup="searchTable()" class="form-control float-right" placeholder="Search">
-		
-		           <div class="input-group-append">
-		             <button type="submit" class="btn btn-default">
-		               <i class="fas fa-search"></i>
-		             </button>
-		           </div>
-		         </div>
+					<div class="input-group input-group-sm" style="width: 80%; margin-left: 15%;">
+					    <input type="text" name="table_search" id="searchInput" onkeyup="searchTable()" class="form-control float-right" placeholder="Search">
+					</div>
               </div>
 
               <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap">
 				    <thead>
 				        <tr class="text-center">
-				            <th>
-				                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
-				            </th>
+				            <th>STT</th>
 				            <th>Name</th>
 				            <th>Images</th>
 				            <th>Price</th>
-				            <th>Category</th>
-				            <th>Brand</th>
-				            <th>Unit</th>
+				            <th>Status </th>
 				            <th>
-				             	<button class="btn btn-danger" onclick="deleteSelectedProducts()">Delete Selected</button>
 				                <a th:href="@{/admin/product/showAddProduct}" class="btn btn-primary">Add Product</a>
 				            </th>
 				        </tr>
 				    </thead>
 				    <tbody>
 				        <tr th:if="${#lists.isEmpty(products)}" class="text-center">
-				            <td colspan="8">No positions found</td>
+				            <td colspan="10">No positions found</td>
 				        </tr>
-				        <tr th:each="item: ${products}" class="text-center">
-				            <td>
-				                <input type="checkbox" class="productCheckbox" th:value="${item.id}">
-				            </td>
+				        <tr th:each="item ,iterStat: ${products}" class="text-center">
+				            <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}" style="cursor: pointer;"
+				             	th:onclick="'goToDetail(' + ${item.id} + ')'"></td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <span th:text="${item.product_name}"></span>
 				            </td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
 				                <img th:if="${item.img != null}" th:src="@{/uploads/{imageName}(imageName=${item.img})}" width="60">
 				            </td>
+							<td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
+							    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
+							</td>
 				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.price}"></span>
-				                <script th:inline="javascript">
-				                    var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(/*[[${item.price}]]*/);
-				                    document.currentScript.parentElement.innerHTML = formattedPrice;
-				                </script>
+				                <span th:text="${item.status}"></span>
 				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.categoryName}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.brandName}"></span>
-				            </td>
-				            <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'">
-				                <span th:text="${item.unitName}"></span>
-				            </td>
+				            
 				            <td>
 				                <a th:href="@{/admin/product/showUpdateProduct(id=${item.id})}" class="btn btn-warning">Update</a>
 				                <a th:href="@{deleteProduct(id=${item.id}, fileName=${item.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
@@ -127,6 +106,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
   <script th:src="@{/js/showProduct.js}"></script>
   
-<div th:replace="layout/footer_admin"></div>
+<div th:replace="admin/layout/footer_admin"></div>
 </body>
 

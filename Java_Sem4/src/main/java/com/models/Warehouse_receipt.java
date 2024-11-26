@@ -1,18 +1,18 @@
 package com.models;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Warehouse_receipt {
 	private int Id;
 	private String Name;
 	private int Wh_id;
 	private String Wh_name;
+	private String Status;
     private LocalDateTime Date;
+
     private Double Shipping_fee;
 	private Double Other_fee;
     private Double Total_fee;
-    private String Status;
     
 	public Warehouse_receipt(int id, String name, int wh_id, String wh_name, LocalDateTime date, Double shipping_fee,
 			Double other_fee, Double total_fee, String status) {
@@ -80,7 +80,11 @@ public class Warehouse_receipt {
 		return Status;
 	}
 	public void setStatus(String status) {
+
 		Status = status;
 	}
 	
 }
+
+
+

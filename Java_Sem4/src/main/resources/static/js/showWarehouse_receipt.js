@@ -34,7 +34,7 @@
 		  }
 		//click vào xem chi tiết warehouseReceipt
 		  function goToDetail(id) {
-		        window.location.href = '/admin/product/showProductDetail?id=' + id;
+		        window.location.href = '/warehouseManager/warehouseReceipt/showWhReceiptDetail?id=' + id;
 		    }
 		  //phân trang
 		function loadPage(pageNumber) {

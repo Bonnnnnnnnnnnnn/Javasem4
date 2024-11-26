@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.admin.repository.ConversionRepository;
 import com.admin.repository.ProductRepository;
+import com.models.Conversion;
 import com.models.PageView;
 import com.models.Product;
+import com.models.Unit;
 import com.utils.FileUtils;
 import com.utils.Views;
 
@@ -29,46 +32,72 @@ import com.utils.Views;
 public class ProductController {
 	@Autowired
 	private ProductRepository reppro;
+	@Autowired
+	private ConversionRepository con;
+
 	@GetMapping("/showProduct")
 	public String showProduct(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(10);
-	    List<Product> products = reppro.findAll(pv);
-	    model.addAttribute("products", products);
-	    model.addAttribute("pv", pv);
-	    return Views.PRODUCT_SHOWPRODUCT;
+		PageView pv = new PageView();
+		pv.setPage_current(cp);
+		pv.setPage_size(5);
+		List<Product> products = reppro.findAll(pv);
+		model.addAttribute("products", products);
+		model.addAttribute("pv", pv);
+		return Views.PRODUCT_SHOWPRODUCT;
 	}
+
 	@GetMapping("/showProductDetail")
-	public String showProductDetail(@RequestParam("id") String productId, Model model) {
+	public String showProductDetail(@RequestParam("id") String productId, Model model,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+		PageView pv = new PageView();
+		pv.setPage_current(cp);
+		pv.setPage_size(8);
 		int idpro = Integer.parseInt(productId);
 		Product pro = reppro.findId(idpro);
-		@SuppressWarnings("deprecation")
-		NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        String formattedPrice = formatter.format(pro.getPrice());
-	    model.addAttribute("product", pro);
-	    model.addAttribute("formattedPrice", formattedPrice);
-	    return Views.PRODUCT_SHOWPRODUCTDETAIL;
+		NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+		String formattedPrice = formatter.format(pro.getPrice());
+		List<Conversion> conversions = con.findAllConversions(idpro, pv);
+		model.addAttribute("conversions", conversions);
+		model.addAttribute("pv", pv);
+		model.addAttribute("product", pro);
+		model.addAttribute("formattedPrice", formattedPrice);
+		return Views.PRODUCT_SHOWPRODUCTDETAIL;
+	}
+
+	@PostMapping("/addConversion")
+	public String addConversion(@RequestParam int from_unit_id, @RequestParam int to_unit_id,
+			@RequestParam int conversion_rate, @RequestParam int product_id) {
+
+		Conversion conver = new Conversion();
+		conver.setFrom_unit_id(from_unit_id);
+		conver.setTo_unit_id(to_unit_id);
+		conver.setProduct_id(product_id);
+		conver.setConversion_rate(conversion_rate);
+		
+		con.addConversion(conver);
+		return "redirect:/admin/product/showProductDetail?id=" + product_id;
+	}
+
+	@GetMapping("/getUnits")
+	@ResponseBody
+	public List<Unit> getUnits() {
+		return con.findAllUnit();
 	}
 
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
-	    Product prod = new Product();
-		model.addAttribute("units",reppro.findAllUnit());
-		model.addAttribute("brands",reppro.findAllBrand());
-		model.addAttribute("categorys",reppro.findAllCategory());
-	    model.addAttribute("new_item", prod);
-	    return Views.PRODUCT_SHOWADDPRODUCT;
+		Product prod = new Product();
+		model.addAttribute("units", reppro.findAllUnit());
+		model.addAttribute("brands", reppro.findAllBrand());
+		model.addAttribute("categorys", reppro.findAllCategory());
+		model.addAttribute("new_item", prod);
+		return Views.PRODUCT_SHOWADDPRODUCT;
 	}
+
 	@PostMapping("addProduct")
-	public String addProduct(@RequestParam String proName,
-								@RequestParam int cateId,
-								@RequestParam int unitId,
-								@RequestParam int brandId,
-								@RequestParam double price,
-								@RequestParam String description,
-								@RequestParam int wpe,
-								@RequestParam("images") MultipartFile images) {
+	public String addProduct(@RequestParam String proName, @RequestParam int cateId, @RequestParam int unitId,
+			@RequestParam int brandId, @RequestParam double price, @RequestParam String description,
+			@RequestParam int wpe, @RequestParam String status, @RequestParam("images") MultipartFile images) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
@@ -77,69 +106,72 @@ public class ProductController {
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
-		prod.setImg(FileUtils.uploadFileImage(images,"uploads"));
+		prod.setStatus(status);
+		prod.setImg(FileUtils.uploadFileImage(images, "uploads"));
 		reppro.saveProduct(prod);
 		return "redirect:showProduct";
 	}
+
 	@GetMapping("deleteProduct")
-	public String deleteProduct(@RequestParam("id") String id, 
-	                            @RequestParam("fileName") String fileName) {
-	    int idp = Integer.parseInt(id);
-	    String folderName = "uploads";
-	    String result = reppro.deleteProduct(idp, folderName, fileName);
-	    System.out.println(result);
-	    return "redirect:showProduct";
+	public String deleteProduct(@RequestParam("id") String id, @RequestParam("fileName") String fileName) {
+		int idp = Integer.parseInt(id);
+		String folderName = "uploads";
+		String result = reppro.deleteProduct(idp, folderName, fileName);
+		System.out.println(result);
+		return "redirect:showProduct";
 	}
+
 	@PostMapping("/deleteSelected")
 	@ResponseBody
 	public ResponseEntity<String> deleteSelectedProducts(@RequestBody List<Integer> ids) {
-	    if (ids == null || ids.isEmpty()) {
-	        return ResponseEntity.badRequest().body("No product IDs provided.");
-	    }
-	    ids.removeIf(Objects::isNull);
+		if (ids == null || ids.isEmpty()) {
+			return ResponseEntity.badRequest().body("No product IDs provided.");
+		}
+		ids.removeIf(Objects::isNull);
 
-	    try {
-	        for (Integer id : ids) {
-	            String fileName = reppro.getProductImageById(id);
-	            String result = reppro.deleteProduct(id, "uploads", fileName);
-	            System.out.println(result);
-	        }
-	        return ResponseEntity.ok("Products and corresponding images deleted successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete products: " + e.getMessage());
-	    }
+		try {
+			for (Integer id : ids) {
+				String fileName = reppro.getProductImageById(id);
+				String result = reppro.deleteProduct(id, "uploads", fileName);
+				System.out.println(result);
+			}
+			return ResponseEntity.ok("Products and corresponding images deleted successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to delete products: " + e.getMessage());
+		}
 	}
+
 	@GetMapping("/showUpdateProduct")
-	public String showUpdateProduct(Model model,@RequestParam String id) {
+	public String showUpdateProduct(Model model, @RequestParam String id) {
 		int idPro = Integer.parseInt(id);
-		model.addAttribute("up_item", reppro.findId(idPro));
-		model.addAttribute("units",reppro.findAllUnit());
-		model.addAttribute("brands",reppro.findAllBrand());
-		model.addAttribute("categorys",reppro.findAllCategory());
+		Product product = reppro.findId(idPro);
+		model.addAttribute("up_item", product);
+		model.addAttribute("units", reppro.findAllUnit());
+		model.addAttribute("brands", reppro.findAllBrand());
+		model.addAttribute("categorys", reppro.findAllCategory());
 		return Views.PRODUCT_SHOWUPDATEPRODUCT;
 	}
+
 	@PostMapping("updateProduct")
-	public String updateProduct(@RequestParam("product_name") String proName,
-								@RequestParam("cate_id") int cateId,
-								@RequestParam("unit_id") int unitId,
-								@RequestParam("brand_id") int brandId,
-								@RequestParam("price") double price,
-								@RequestParam("description") String description,
-								@RequestParam("warranty_period") int wpe,
-								@RequestParam("img") MultipartFile img,
-								@RequestParam("id") int id) {
+	public String updateProduct(@RequestParam("product_name") String proName, @RequestParam("cate_id") int cateId,
+			@RequestParam("Unit_id") int UnitId, @RequestParam("brand_id") int brandId,
+			@RequestParam("price") double price, @RequestParam("description") String description,
+			@RequestParam("warranty_period") int wpe, @RequestParam("status") String status,
+			@RequestParam("img") MultipartFile img, @RequestParam("id") int id) {
 		Product prod = new Product();
 		prod.setProduct_name(proName);
 		prod.setCate_id(cateId);
-		prod.setUnit_id(unitId);
+		prod.setUnit_id(UnitId);
 		prod.setBrand_id(brandId);
 		prod.setPrice(price);
 		prod.setDescription(description);
 		prod.setWarranty_period(wpe);
-		prod.setImg(FileUtils.uploadFileImage(img , "uploads"));
+		prod.setStatus(status);
+		prod.setImg(FileUtils.uploadFileImage(img, "uploads"));
 		prod.setId(id);
-		reppro.updateProduct(prod);	
+		reppro.updateProduct(prod);
 		return "redirect:showProduct";
 	}
 }

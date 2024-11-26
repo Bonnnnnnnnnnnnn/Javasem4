@@ -1,0 +1,93 @@
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" th:href="@{/css/pagination.css}">
+<div th:replace="warehouseManager/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <!-- Content Header (Page header) -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Order Table</h3>
+                <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
+                    <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr class="text-center">
+                    	<th></th>
+						<th>Name</th>
+						<th>Date</th>
+						<th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="warehouseTable">
+							<tr th:each="item : ${orders}" class="text-center" th:data-id="${item.id}">
+							    <td></td>
+							    <td th:onclick="|goToDetail(${item.id})|">
+							        <span th:text="${item.cus_Name}"></span>
+							    </td>
+							    <td th:onclick="|goToDetail(${item.id})|">
+							        <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
+							    </td> 
+							    <td th:onclick="|goToDetail(${item.id})|">
+							        <span th:text="${item.status}"></span>
+							    </td>
+							   	<td>
+				                	<a th:href="@{deleteOrder(id=${item.id})}" 
+						               onclick="return confirmDelete();" 
+						               class="btn btn-danger"
+						               th:classappend="${item.status == 'Shipping' ? 'disabled' : ''}"
+       								   th:style="${item.status== 'Shipping' ? 'pointer-events: none; opacity: 0.5;' : ''}">Delete</a>
+				            	</td>
+							</tr>
+				    </tbody>
+                </table>
+                
+      			<table style="margin-left:42%">
+				   <tfoot id="paginationFooter">
+				        <tr class="pagination">
+				            <td>
+				                <a th:href="@{/warehouseManager/showOrderInWarehouse(cp=1)}" title="First page">&laquo;</a>
+				            </td>
+				            <td th:if="${pv.Page_current > 1}">
+				                <a th:href="@{/warehouseManager/showOrderInWarehouse(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+				            </td>
+				            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+				                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+				                <a th:href="@{/warehouseManager/showOrderInWarehouse(cp=${i + 1})}"
+				                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+				                    <span th:text="${i + 1}"></span>
+				                </a>
+				            </td>
+				            <td th:if="${pv.Page_current < pv.Total_page}">
+				                <a th:href="@{/warehouseManager/showOrderInWarehouse(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+				            </td>
+				            <td>
+				                <a th:href="@{/warehouseManager/showOrderInWarehouse(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+				            </td>
+				        </tr>
+				    </tfoot>
+				</table> 
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+  <script th:src="@{/js/orderInWarehouseDetail.js}"></script>
+<div th:replace="warehouseManager/layout/footer_admin"></div>
+</html>

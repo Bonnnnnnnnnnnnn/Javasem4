@@ -6,6 +6,9 @@ public class Conversion {
 	private int From_unit_id;
 	private int To_unit_id;
 	private int Conversion_rate;
+	private String FromUnitName;
+	private String ToUnitName;
+	private String ProductName;
 	public Conversion(int id, int product_id, int from_unit_id, int to_unit_id, int conversion_rate) {
 		super();
 		Id = id;
@@ -46,5 +49,22 @@ public class Conversion {
 	public void setConversion_rate(int conversion_rate) {
 		Conversion_rate = conversion_rate;
 	}
-	
+	public String getFromUnitName() {
+		return FromUnitName;
+	}
+	public void setFromUnitName(String fromUnitName) {
+		this.FromUnitName = fromUnitName;
+	}
+	public String getToUnitName() {
+		return ToUnitName;
+	}
+	public void setToUnitName(String toUnitName) {
+		this.ToUnitName = toUnitName;
+	}
+	public String getProductName() {
+		return ProductName;
+	}
+	public void setProductName(String productName) {
+		this.ProductName = productName;
+	}
 }

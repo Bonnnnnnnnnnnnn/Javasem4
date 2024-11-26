@@ -5,12 +5,15 @@ public class Warehouse_rn_detail {
 	private int Wgrn_id;
 	private String status;
 	private int Stock_id;
+	private int Id_product;
 	private int Quantity;
-	public Warehouse_rn_detail(int id, int wgrn_id, String status, int stock_id, int quantity) {
+	private String ProductName;
+	public Warehouse_rn_detail(int id,int idProduct, int wgrn_id, String status, int stock_id, int quantity) {
 		super();
 		Id = id;
 		Wgrn_id = wgrn_id;
 		this.status = status;
+		this.Id_product = idProduct;
 		Stock_id = stock_id;
 		Quantity = quantity;
 	}
@@ -21,6 +24,12 @@ public class Warehouse_rn_detail {
 	}
 	public void setId(int id) {
 		Id = id;
+	}
+	public int getId_product() {
+		return Id_product;
+	}
+	public void setId_product(int productId) {
+		this.Id_product = productId;
 	}
 	public int getWgrn_id() {
 		return Wgrn_id;
@@ -45,6 +54,14 @@ public class Warehouse_rn_detail {
 	}
 	public void setQuantity(int quantity) {
 		Quantity = quantity;
+	}
+	
+	public String getProductName() {
+		return ProductName;
+	}
+	
+	public void setProductName(String productName) {
+		this.ProductName = productName;
 	}
 	
 }

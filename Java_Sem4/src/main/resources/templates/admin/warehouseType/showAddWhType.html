@@ -1,6 +1,6 @@
 
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="layout/header_admin"></div>
+<div th:replace="admin/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
 <section class="content-header">
       <div class="container-fluid">
@@ -33,7 +33,7 @@
 			        </div>
 			    </div>
 				    <div class="card-footer">
-				    	<a th:href="@{/admin/warehouseType/showWhType}" class="btn btn-primary">Back to List</a>
+				    	<a th:href="@{/admin/warehouseType/showWhType}" class="btn btn-danger">Back to List</a>
 				        <button type="submit" class="btn btn-primary">Submit</button>
 				    </div>
 				</form>
@@ -43,5 +43,5 @@
         </div>
         </section>
         </div>
-        <div th:replace="layout/footer_admin"></div>
+        <div th:replace="admin/layout/footer_admin"></div>
 </body>

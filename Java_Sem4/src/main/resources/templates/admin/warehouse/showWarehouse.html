@@ -1,6 +1,6 @@
-
+<link rel="stylesheet" th:href="@{/css/pagination.css}">
 <body xmlns:th="http://www.thymeleaf.org" lang="en">
-<div th:replace="layout/header_admin"></div>
+<div th:replace="admin/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -27,40 +27,19 @@
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Warehouse Table</h3>
-				<div class="input-group input-group-sm" style="width: 80%;margin-left:15%;">
-				<a class="nav-link" data-widget="navbar-search" href="#" role="button">
-				          <i class="fas fa-search"></i>
-				        </a>
-				        <div class="navbar-search-block">
-				          <form class="form-inline">
-				            <div class="input-group input-group-sm">
-				              <input class="form-control form-control-navbar" name="table_search" id="searchInput" type="search" placeholder="Search" aria-label="Search">
-				              <div class="input-group-append">
-				                <button class="btn btn-navbar" type="submit">
-				                  <i class="fas fa-search"></i>
-				                </button>
-				                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-				                  <i class="fas fa-times"></i>
-				                </button>
-				              </div>
-				            </div>
-				          </form>
-				        </div>
-				</div>
+				<div class="input-group input-group-sm" style="width: 80%; margin-left: 15%;">
+					    <input type="text" name="table_search" id="searchInput" onkeyup="searchTable()" class="form-control float-right" placeholder="Search">
+					</div>
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap">
 				  <thead>
 				      <tr class="text-center">
-				          <th>
-				              <input type="checkbox" id="selectAllWarehouses" onclick="toggleSelectAll(this)">
-				          </th>
+				          <th>STT</th>
 				          <th>Name</th>
-				          <th>Address</th>
 				          <th>TypeName</th>
 				          <th>
-				              <button class="btn btn-danger" onclick="deleteSelectedWarehouses()">Delete Selected</button>
 				              <a th:href="@{/admin/warehouse/showAddWarehouse}" class="btn btn-primary">Add Warehouse</a>
 				          </th>
 				      </tr>
@@ -69,19 +48,46 @@
 				      <tr th:if="${#lists.isEmpty(warehouses)}" class="text-center">
 				          <td colspan="5">No warehouses found</td>
 				      </tr>
-				      <tr th:each="item : ${warehouses}" class="text-center">
-				          <td>
-				              <input type="checkbox" class="warehouseCheckbox" th:value="${item.id}">
-				          </td>
-				          <td><span th:text="${item.name}"></span></td>
-				          <td><span th:text="${item.address}"></span></td>
-				          <td><span th:text="${item.typeName}"></span></td>
+				      <tr th:each="item ,iterStat: ${warehouses}" class="text-center">
+				          <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"></td>
+				          <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"><span th:text="${item.name}"></span></td>
+				          <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"><span th:text="${item.typeName}"></span></td>
 				          <td>
 				              <a th:href="@{showUpdateWarehouse(id=${item.id})}" class="btn btn-warning">Update</a>
-				              <a th:href="@{deleteWh(id=${item.id})}" onclick="return confirmDeleteWh();" class="btn btn-danger">Delete</a>
-				            </td>
+						    <a th:href="@{deleteWh(id=${item.id})}"
+						       th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
+						       th:attr="disabled=${item.relatedCount > 0}"
+						       th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
+						       th:onclick="${item.relatedCount > 0} ? 'return false;' : 'return confirmDeleteWh();'" 
+						       class="btn btn-danger">Delete</a>
+				          </td>
 				        </tr>
 				    </tbody>
+				</table>
+				<table style="margin-left:42%">
+				<tfoot id="paginationFooter">
+					    <tr class="pagination">
+					        <td>
+					            <a th:href="@{/admin/warehouse/showWarehouse(cp=1)}" title="First page">&laquo;</a>
+					        </td>
+					        <td th:if="${pv.Page_current > 1}">
+					            <a th:href="@{/admin/warehouse/showWarehouse(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
+					        </td>
+					        <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
+					            th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
+					            <a th:href="@{/admin/warehouse/showWarehouse(cp=${i + 1})}"
+					               th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
+					                <span th:text="${i + 1}"></span>
+					            </a>
+					        </td>
+					        <td th:if="${pv.Page_current < pv.Total_page}">
+					            <a th:href="@{/admin/warehouse/showWarehouse(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
+					        </td>
+					        <td>
+					            <a th:href="@{/admin/warehouse/showWarehouse(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
+					        </td>
+					    </tr>
+					</tfoot>
 				</table>
               </div>
             </div>
@@ -90,8 +96,10 @@
       </div>
     </section>
   </div>
+  
   <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
   <script th:src="@{/js/showWh_type.js}"></script>
-<div th:replace="layout/footer_admin"></div>
+<div th:replace="admin/layout/footer_admin"></div>
+
 </body>
 

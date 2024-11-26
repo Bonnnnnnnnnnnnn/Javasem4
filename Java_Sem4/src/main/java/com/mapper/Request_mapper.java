@@ -1,3 +1,4 @@
+
 package com.mapper;
 
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ public class Request_mapper implements RowMapper<Request>{
 		item.setWarehouse_Id(r.getInt(Views.COL_REQUEST_WAREHOUSE));
 		item.setType(r.getString(Views.COL_REQUEST_TYPE));
 		item.setOrder_id(r.getInt(Views.COL_REQUEST_ORDERID));
+
 		Timestamp ts = r.getTimestamp(Views.COL_REQUEST_DATE);
 		
 		if(ts != null) {
@@ -26,4 +28,6 @@ public class Request_mapper implements RowMapper<Request>{
 		}
 		return item;
 	}
+
 }
+

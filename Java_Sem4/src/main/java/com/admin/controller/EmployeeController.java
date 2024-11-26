@@ -1,9 +1,8 @@
 package com.admin.controller;
 
-import java.text.NumberFormat;
+
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Logger;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,49 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.admin.repository.EmployeeRepository;
 import com.models.Employee;
 import com.models.PageView;
-import com.models.Product;
-import com.utils.SecurityUtility;
 import com.utils.Views;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("admin/employee")
 public class EmployeeController {
 	@Autowired
     private EmployeeRepository emprep;
-//	@GetMapping("login")
-//	public String login() {
-//		return Views.EMPLOYEE_LOGIN;
-//	}
-//	@PostMapping("/chklogins")
-//	public String chklogins(@RequestParam("phone") String phone,
-//	                        @RequestParam("password") String password,
-//	                        HttpServletRequest request) {
-//	    Logger log = Logger.getGlobal();
-//	    log.info("Attempted login by user: " + phone);
-//
-//	    String encryptedPassword = emprep.findPassword(phone);
-//	    Integer roleid = emprep.findPhone(phone);
-//
-//	    if (encryptedPassword != null && SecurityUtility.compareBcrypt(encryptedPassword, password)) {
-//	        request.getSession().setAttribute("myacc", phone);
-//	        request.getSession().setAttribute("roleid", roleid);
-//
-//	        if (roleid == 1) {
-//	            return "redirect:admin/employee/showEmp"; 
-//	        } else if (roleid == 2) {
-//	            return "redirect:warehouseManage/warehouse/index"; 
-//	        } else if (roleid == 3) {
-//	            return "redirect:businessManage/order/index";
-//	        } else {
-//	            return "redirect:admin/employee/login";
-//	        }
-//	    } else {
-//	        request.setAttribute("error", "Invalid username or password");
-//	        return "/admin/employee/login";
-//	    }
-//	}
 	@GetMapping("/showEmp")
 	public String showEmp(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
