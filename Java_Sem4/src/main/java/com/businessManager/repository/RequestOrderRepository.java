@@ -28,19 +28,21 @@ public class RequestOrderRepository {
     @Transactional
     public boolean addRequestOrderWithDetails(Request request, List<Request_detail> details) {
         try {
-            String sql1 = "INSERT INTO Request (Name, Date, Type, Status) VALUES (?, ?, ?, ?)";
+            String sql1 = "INSERT INTO Request (Name, Date, Type, Status, Employee_Id, Order_Id) VALUES (?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int result1 = jdbcTemplate.update(connection -> {
                 var ps = connection.prepareStatement(sql1, new String[] { "Id" });
-                ps.setString(1, request.getName());
-                
+                ps.setString(1, request.getName());                
                 ps.setDate(2, java.sql.Date.valueOf(request.getDate().toLocalDate()));
                 ps.setString(3, request.getType());
                 ps.setString(4, request.getStatusRequest());
+                ps.setInt(5, request.getEmployee_Id());
+                ps.setInt(6, request.getOrder_id());
                 return ps;
             }, keyHolder);
 
             int generatedId = keyHolder.getKey().intValue();
+            request.setId(generatedId);
 
             String sql2 = "INSERT INTO Request_detail (Request_Id, Status, Id_product, Quantity_requested, Quantity_exported) VALUES ( ?, ?, ?, ?, ?)";
             for (Request_detail detail : details) {

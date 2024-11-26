@@ -42,7 +42,7 @@ public class ReleasenoteRepository {
 	
 	// update status order
 	public void updateStatusInOrder(int orderId) {
-	    String sql = "UPDATE [Order] SET Status = 'Processing' WHERE Id = ?";
+	    String sql = "UPDATE [Order] SET Status = 'Confirm' WHERE Id = ?";
 	    jdbcTemplate.update(sql, orderId);
 
 	    String sql1 = "UPDATE [Order_detail] SET Status = 'Processing' WHERE Order_Id = ?";
@@ -52,7 +52,7 @@ public class ReleasenoteRepository {
 
 	// update status request
 	public void updateStatusToProcessing(int requestId) {
-		String sql = "UPDATE Request SET Status = 'Processing' WHERE Id = ?";
+		String sql = "UPDATE Request SET Status = 'Confirm' WHERE Id = ?";
 		jdbcTemplate.update(sql, requestId);
 	}
 
@@ -60,13 +60,23 @@ public class ReleasenoteRepository {
 	public List<Request> findAllByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
 	        String sql = String.format(
-	                "SELECT * FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL ORDER BY %s DESC",
-	                Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ORDERID, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_ID);
+	                "SELECT * FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'Confirm' ORDER BY %s DESC",
+	                Views.TBL_REQUEST, 
+	                Views.COL_REQUEST_EMPLOYEE_ID, 
+	                Views.COL_REQUEST_ORDERID, 
+	                Views.COL_REQUEST_TYPE, 
+	                Views.COL_REQUEST_STATUS,
+	                Views.COL_REQUEST_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = jdbcTemplate.queryForObject(
-	                    String.format("SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL",
-	                            Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ORDERID, Views.COL_REQUEST_TYPE),
+	                    String.format(
+	                            "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'Shipping'",
+	                            Views.TBL_REQUEST, 
+	                            Views.COL_REQUEST_EMPLOYEE_ID, 
+	                            Views.COL_REQUEST_ORDERID, 
+	                            Views.COL_REQUEST_TYPE, 
+	                            Views.COL_REQUEST_STATUS), 
 	                    Integer.class, employeeId);
 	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(totalPage);
@@ -84,6 +94,7 @@ public class ReleasenoteRepository {
 	        return Collections.emptyList();
 	    }
 	}
+
 	//hien thi bang request theo employee_id and Type =?
 	public List<Request> findAllByEmployeeIdAndType(PageView itemPage, int employeeId) {
 	    try {
@@ -117,7 +128,7 @@ public class ReleasenoteRepository {
 	//hien thi bang order theo employee_id
 	public List<Order> findOrderByEmployeeId(PageView itemPage, int employeeId) {
 	    try {
-	        String sql = String.format("SELECT * FROM [%s] WHERE %s = ? AND %s = 'Processing' ORDER BY %s ASC",
+	        String sql = String.format("SELECT * FROM [%s] WHERE %s = ? AND %s = 'Confirm' ORDER BY %s ASC",
 	                Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE,Views.COL_ORDER_STATUS, Views.COL_ORDER_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
@@ -178,30 +189,40 @@ public class ReleasenoteRepository {
 	// hien thi bang request khi employee_id = null
 	public List<Request> findAllByEmployeeIdIsNull(PageView itemPage) {
 	    try {
-			String sql =String.format( "SELECT * FROM %s WHERE %s IS NULL ORDER BY %s DESC",
-					Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_ID);
+	        String sql = String.format(
+	            "SELECT * FROM %s WHERE %s IS NULL AND %s = 'Pending Approval' ORDER BY %s DESC",
+	            Views.TBL_REQUEST, 
+	            Views.COL_REQUEST_EMPLOYEE_ID, 
+	            Views.COL_REQUEST_STATUS,
+	            Views.COL_REQUEST_ID 
+	        );
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
-
 	            int count = jdbcTemplate.queryForObject(
-	                    String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL", Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID),
-	                    Integer.class);
+	                String.format("SELECT COUNT(*) FROM %s WHERE %s IS NULL AND %s = 'Pending Approval'",
+	                    Views.TBL_REQUEST, 
+	                    Views.COL_REQUEST_EMPLOYEE_ID, 
+	                    Views.COL_REQUEST_STATUS),
+	                Integer.class
+	            );
 	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(totalPage);
 
-
-	            return jdbcTemplate.query(sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
-	                    new Request_mapper(),
-	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
-	                    itemPage.getPage_size());
+	            return jdbcTemplate.query(
+	                sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+	                new Request_mapper(),
+	                (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
+	                itemPage.getPage_size()
+	            );
 	        } else {
-	    		return jdbcTemplate.query(sql, new Request_mapper());
+	            return jdbcTemplate.query(sql, new Request_mapper());
 	        }
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching requests: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
 	}
+
 	
 	// hien thi bang order khi employee_id = null
 	public List<Order> findAllOrderByEmployeeIdIsNull(PageView itemPage) {
@@ -239,7 +260,7 @@ public class ReleasenoteRepository {
 	
 	//xoa employee_id bang order
 	public void deleteEmployeeIdByOrderId(int id) {
-	    String sql = "UPDATE [Order] SET Employee_Id = NULL, status = 'canceled' WHERE Id = ?";
+	    String sql = "UPDATE [Order] SET Employee_Id = NULL, status = 'Waiting for confirmation' WHERE Id = ?";
 	    jdbcTemplate.update(sql, id);
 	}
 	
@@ -261,9 +282,10 @@ public class ReleasenoteRepository {
 	
 	// hiển thị bảng Order_detail
 	public List<Order_detail> findOrderDetail(int OrderId) {
-	    String sql = "SELECT od.*, p.Product_name AS Product_name " +
+	    String sql = "SELECT od.*, p.Product_name AS Product_name, u.Name AS Unit_name " +
 	                 "FROM Order_detail od " +
 	                 "JOIN Product p ON od.Product_Id = p.id " +
+	                 "JOIN Unit u ON p.Unit_id = u.id " +
 	                 "WHERE od.Order_Id = ?";
 	    return jdbcTemplate.query(sql, (rs, rowNum) -> {
 	    	Order_detail detail = new Order_detail();
@@ -271,7 +293,9 @@ public class ReleasenoteRepository {
 	        detail.setProduct_Id(rs.getInt(Views.COL_ORDER_DETAIL_PRODUCT_ID));
 	        detail.setQuantity(rs.getInt(Views.COL_ORDER_DETAIL_QUANTITY));
 	        detail.setStatus(rs.getString(Views.COL_ORDER_DETAIL_STATUS));
-	        detail.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME)); 
+	        detail.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
+	        detail.setUnit_name(rs.getString("Unit_name"));
+	        
 	        return detail;
 	    }, OrderId);
 	}
@@ -549,6 +573,9 @@ public class ReleasenoteRepository {
 		    	String sql = "UPDATE [Order] SET Status = 'Shipping' WHERE Id = ?";
 		    	jdbcTemplate.update(sql, orderId);
 		    	return true;
+		    } else {
+		    	String sql = "UPDATE [Order] SET Status = 'Processing' WHERE Id = ?";
+		    	jdbcTemplate.update(sql, orderId);
 		    }
 		    return false;
 		}

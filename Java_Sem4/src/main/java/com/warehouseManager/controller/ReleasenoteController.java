@@ -197,7 +197,7 @@ public class ReleasenoteController {
 		model.addAttribute("order", order);
 		model.addAttribute("details", details);
 		model.addAttribute("employeeId", employeeId);
-		model.addAttribute("orderId", id);
+		model.addAttribute("id", id);
 	    return Views.SHOW_ORDER_IN_WAREHOUSE_DETAIL;
 	}
 
@@ -278,6 +278,7 @@ public class ReleasenoteController {
 
 	    Request request = rele.findRequestById(requestId); 
 	    List<Request_detail> details = rele.findDetailsByRequestId(requestId);
+	    
         String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
         request.setName(randomName);
 
@@ -333,7 +334,6 @@ public class ReleasenoteController {
 		releasenote.setStatusWr(statusWr);
 		releasenote.setRequest_id(requestId);
 		releasenote.setEmployee_Id(employeeId);
-
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
 			for (int i = 0; i < id_product.size(); i++) {
@@ -382,20 +382,17 @@ public class ReleasenoteController {
 	@GetMapping("/showAddAllOrderRelesenote")
 	public String showAddAllOrderRelesenote(
 	        @RequestParam("employeeId") int employeeId,
-	        @RequestParam("orderId") int orderId,
-	        @RequestParam("name") String name, 
+	        @RequestParam("id") int id,	        
 	        @RequestParam("orderID") String orderID,
 	        Model model) {
 
-	    Order order = rele.findOrderById(orderId); 
-	    List<Order_detail> details = rele.findOrderDetail(orderId);
+	    Order order = rele.findOrderById(id); 
+	    List<Order_detail> details = rele.findOrderDetail(id);
 
-        
 	    model.addAttribute("order", order);
 	    model.addAttribute("details", details);
 	    model.addAttribute("employeeId", employeeId);
-	    model.addAttribute("orderId", orderId);
-	    model.addAttribute("name", name);
+	    model.addAttribute("id", id);
 	    model.addAttribute("orderID", orderID);
 
 	    return Views.ADD_ALL_ORDER_RELEASENOTE;
@@ -405,18 +402,17 @@ public class ReleasenoteController {
 	@GetMapping("/showAddOrderRelesenote")
 	public String showAddOrderRelesenote(
 			@RequestParam("employeeId") int employeeId,
-			@RequestParam("orderId") int orderId, 
+			@RequestParam("id") int id, 
 			Model model) {
 		
 		Warehouse_releasenote releasenote = new Warehouse_releasenote();
-		Order order = rele.findOrderById(orderId); 
-	  	List<Order_detail> details = rele.findOrderDetail(orderId);
-	  	
-       
+		Order order = rele.findOrderById(id); 
+	  	List<Order_detail> details = rele.findOrderDetail(id);
+	
 	  	model.addAttribute("order", order); 
 	  	model.addAttribute("details", details);	
 		model.addAttribute("employeeId", employeeId);
-		model.addAttribute("orderId", orderId);
+		model.addAttribute("id", id);
 		model.addAttribute("releasenotes", releasenote);
 		return Views.ADD_WAREHOUSE_RELEASENOTE_BY_ORDER;
 	}
@@ -426,7 +422,7 @@ public class ReleasenoteController {
 	public String addRelesenoteByOrder(
 			@RequestParam("orderID") String orderID, 
 			@RequestParam("statusWr") String statusWr,
-			@RequestParam("orderId") int orderId, 
+			@RequestParam("id") int id, 
 			@RequestParam("employeeId") int employeeId,
 			@RequestParam(required = false) List<Integer> id_product,
 			@RequestParam(required = false) List<Integer> quantity_Ex,
@@ -439,7 +435,7 @@ public class ReleasenoteController {
 		releasenote.setName(orderID);
 		releasenote.setDate(LocalDateTime.now());
 		releasenote.setStatusWr(statusWr);
-		releasenote.setOrder_id(orderId);
+		releasenote.setOrder_id(id);
 		releasenote.setEmployee_Id(employeeId);
 
 		List<Warehouse_rn_detail> details = new ArrayList<>();
@@ -458,17 +454,19 @@ public class ReleasenoteController {
 		boolean isSaved = rele.addWarehouseReleasenoteByOrder(releasenote, details);
 					
 	    if (isSaved) {
-	        int releaseNoteId = releasenote.getId(); 
-	        
-	        if( rele.isOrderComplete(releaseNoteId, orderId) == false) {
+	        int releaseNoteId = releasenote.getId(); 	        
+	        if( rele.isOrderComplete(releaseNoteId, id) == false) {
 	        	Request rq = new Request();
 	            String randomName = "WRO-" + UUID.randomUUID().toString().substring(0, 8);
+	            
 	        	rq.setName(randomName);
-	        	rq.setOrder_id(orderId);
+	        	rq.setOrder_id(id);
 	        	rq.setDate(LocalDateTime.now());
 	        	rq.setType("Order");
 	        	rq.setEmployee_Id(employeeId);
 	        	rq.setWarehouse_Id(0);
+	        	rq.setStatusRequest("Processing");
+
 	        	List<Request_detail> rqdts = new ArrayList<>();
 	    		if (id_product != null && !id_product.isEmpty()) {
 	    			for (int i = 0; i < id_product.size(); i++) {
@@ -478,11 +476,19 @@ public class ReleasenoteController {
 	                    detail.setQuantity_exported(quantity_Ex.get(i));
 	                    detail.setQuantity_requested(quantity_Rq.get(i));
 	                    detail.setStatus(status != null && i < status.size() ? status.get(i) : null); 
-
 	                    rqdts.add(detail);
 	    			}
 	    		}
-	        	repoder.addRequestOrderWithDetails(rq, rqdts);
+	    		
+	    	boolean saveRs = repoder.addRequestOrderWithDetails(rq, rqdts);
+	    	
+		    if (saveRs) {		        
+		        int requestId = rq.getId();
+		        for (int i = 0; i < id_product.size(); i++) {
+		            int idProduct = id_product.get(i); 
+		            rele.updateStatusRequestDetail(requestId, idProduct); 
+		        }
+		      }
 	        }
 	    }
 		

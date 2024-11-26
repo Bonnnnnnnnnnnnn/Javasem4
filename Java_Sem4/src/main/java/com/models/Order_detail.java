@@ -10,6 +10,7 @@ public class Order_detail {
 	private int Quantity;
 	private String Product_name;
 	private String Img;
+	private String Unit_name;
 	
 	
 	public Order_detail(int id, int stock_id, int order_id, String status, double price, int product_Id, int quantity,
@@ -79,6 +80,13 @@ public class Order_detail {
 	}
 	public void setImg(String img) {
 		Img = img;
+	}
+	
+	public String getUnit_name() {
+		return Unit_name;
+	}
+	public void setUnit_name(String unit_name) {
+		this.Unit_name = unit_name;
 	}
 	
 }

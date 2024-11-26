@@ -24,21 +24,24 @@ public class LoginEmployee {
 	    return Views.EMPLOYEE_LOGIN; 
 	}
 
+	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("uid") String uid, 
 	                    @RequestParam("pwd") String pwd, 
 	                    HttpSession session, 
 	                    Model model) {
 	    Employee emp = emprep.login(uid, pwd);
-	    System.out.println(emp.getId());
-	    session.setAttribute("loggedInEmployee", emp);
-
-
-		switch (emp.getRole_id()) {
-		    case 1: return "redirect:/admin/employee/showEmp";            
-		    case 2: return "redirect:/warehouseManager/warehouseReceipt/showWhReceipt";
-		    case 3: return "redirect:/businessManager/showOrderRequest";  
-		    default: return "redirect:/login?error=role";      
-		}
+	    if (emp != null) {
+	        session.setAttribute("loggedInEmployee", emp);
+	        switch (emp.getRole_id()) {
+		        case 1: return "redirect:/admin/employee/showEmp";            
+			    case 2: return "redirect:/warehouseManager/warehouseReceipt/showWhReceipt";
+			    case 3: return "redirect:/businessManager/showOrderRequest";  
+			    default: return "redirect:/login?error=role";        
+	        }
+	    } else {
+	        model.addAttribute("error", "Wrong login information");
+	        return Views.EMPLOYEE_LOGIN; 
+	    }
 	}	
 }

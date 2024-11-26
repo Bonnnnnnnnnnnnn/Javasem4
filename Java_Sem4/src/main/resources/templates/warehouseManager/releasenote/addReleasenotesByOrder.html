@@ -36,6 +36,7 @@
                                             <th>Status</th>
                                             <td th:text="${order.status}"></td>
                                         </tr>
+                                        
                                     </tbody>
                                 </table>
 
@@ -46,6 +47,7 @@
                                             <th>Product Name</th>
                                             <th>Quantity</th>
                                             <th>Status</th>
+                                            <th>Unit</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -60,13 +62,13 @@
                                             <td>
                                                 <span th:text="${detail.status}"></span>
                                             </td>
+                                            <td>
+                                                <span th:text="${detail.unit_name}"></span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div th:if="${errorMessage}" class="alert alert-danger mt-3">
-								    <span th:text="${error}"></span>
-								</div>
-                                
+                               
                             </div>
                         </div>
                     </div>
@@ -103,7 +105,7 @@
                                     
                                 </table>
                                 <input type="hidden" id="employeeId" name="employeeId" th:value="${employeeId}">
-								<input type="hidden" id="orderId" name="orderId" th:value="${orderId}">                                
+								<input type="hidden" id="id" name="id" th:value="${id}">                                
                             </div>
 		                    <div class="card-footer">
 		                        <button type="submit" class="btn btn-primary">Submit</button>
@@ -117,20 +119,33 @@
                                 <h3 class="card-title" >Warehouse Release note Details</h3>
                             </div>
                             <div class="card-body">
-                                <div id="details">
-                                    <table class="table">
-                                        <thead>
-                                            <tr><th colspan="2">Add Details</th></tr>
-                                        </thead>
-                                        <tbody id="detailsBody"></tbody>
-                                    </table>
-                                </div>
-
-                                <button id="addDetailButton" type="button" onclick="addDetail()" class="btn btn-primary add-detail-btn">+</button>
-
-                                <div th:if="${message}" class="alert alert-info">
-                                    <span th:text="${message}"></span>
-                                </div>
+                                <table class="table table-bordered table-sm mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Quantity Request</th>
+                                            <th>Quantity Exported</th>
+                                        </tr>
+                                    </thead>
+									<tbody>
+									    <tr th:each="detail : ${details}">
+									        <td>
+									            <span th:text="${detail.product_name}"></span>
+									            <input type="hidden" name="id_product[]" th:value="${detail.product_Id}" />
+									        </td>
+									        
+									        <td>
+									            <span th:text="${detail.quantity}"></span>
+									            <input type="hidden" id="quantity_Rq" name="quantity_Rq[]" th:value="${detail.quantity}">
+									        </td>
+									      
+									        <td>
+									            <input type="number" id="quantity_Ex" name="quantity_Ex[]" value="0" class="form-control">
+									        </td>
+									        <td><input type="hidden" id="status" name="status[]" value="Processing"></td>
+									    </tr>
+									</tbody>
+                                </table>															
                             </div>
                         </div>
                     </div>
@@ -147,7 +162,8 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script th:src="@{/js/addReleasenoteByOrder.js}"></script>
-
+<!-- <script th:src="@{/js/addReleasenoteByOrder.js}"></script>
+ -->
+ 
 </body>
 </html>

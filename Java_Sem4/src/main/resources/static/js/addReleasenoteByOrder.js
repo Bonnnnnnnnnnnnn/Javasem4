@@ -106,3 +106,21 @@ function selectProduct(product, detailIndex) {
 function removeDetail(button) {
     button.closest('.detail-entry').remove();
 }
+
+/*document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('.toggle-details');
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', function () {
+            const row = this.closest('tr'); // Lấy hàng hiện tại
+            const extraColumn = row.querySelector('.extra-column'); // Lấy cột bổ sung
+
+            if (this.checked) {
+                extraColumn.style.display = ''; // Hiển thị cột
+            } else {
+                extraColumn.style.display = 'none'; // Ẩn cột
+            }
+        });
+    });
+});*/
+

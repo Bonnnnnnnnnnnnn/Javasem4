@@ -27,9 +27,10 @@
                                         <tr>
                                             <th>Name</th>
                                         <td><input type="text" name="name" th:value="${request.name}" class="form-control" readonly /></td>
-                                        </tr>                                        <tr>
+                                        </tr>                                        
+                                        <tr>
                                         	<th>Status</th>
-                                        <td><input type="text" name="statusWr" value="Completed" class="form-control" readonly /></td>
+                                        <td><input type="text" name="statusWr" value="Shipping" class="form-control" readonly /></td>
                                         </tr>                                       
                                     </tbody>
                                 </table>
@@ -40,7 +41,8 @@
 							    <thead>
 							        <tr>
 							            <th>Product ID</th>
-							            <th>Quantity requested</th>
+							            <th>Unit</th>
+							            <th>Quantity</th>
 							            <th>Status</th>
 							        </tr>
 							    </thead>

@@ -12,7 +12,7 @@
         <form th:action="@{/employee/login}" method="post">
             <input type="text" id="username" name="uid" placeholder="Username" required>
             <input type="password" id="password" name="pwd" placeholder="Password" required>
-            <div class="error" th:if="${error}">
+            <div class="error" style = "color : red;" th:if="${error}">
                 <p th:text="${error}"></p>
             </div>
             <button type="submit">Login</button>
