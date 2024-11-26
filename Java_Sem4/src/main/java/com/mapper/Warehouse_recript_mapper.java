@@ -20,6 +20,7 @@ public class Warehouse_recript_mapper implements RowMapper<Warehouse_receipt>{
 		item.setShipping_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_SHIPPINGFEE));
 		item.setOther_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_OTHERFEE));
 		item.setTotal_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_TOTALFEE));
+		item.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_STATUS));
         Timestamp timestamps = rs.getTimestamp(Views.COL_WAREHOUSE_RECEIPT_DATE);
         if (timestamps != null) {
             item.setDate(timestamps.toLocalDateTime());

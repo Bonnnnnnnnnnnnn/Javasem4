@@ -87,9 +87,11 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_ID = "Id";
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
 
+	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
+	
 	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
+
 
 	
 	//9.WAREHOUSE_RECEIPT 
@@ -109,8 +111,8 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
 	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
 	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
-
 	
+
 	//10.WAREHOUSE
 	public static String WAREHOUSE_SHOWWAREHOUSE = "admin/warehouse/showWarehouse";
 	public static String WAREHOUSE_SHOWADDWAREHOUSE = "admin/warehouse/showAddWarehouse";
@@ -123,6 +125,10 @@ public final class Views {
 	public static String COL_WAREHOUSE_NAME = "Name";
 	public static String COL_WAREHOUSE_ADDRESS = "Address";
 	public static String COL_WAREHOUSE_TYPE_WAREHOUSE_ID = "Wh_type_Id";
+	public static String COL_WAREHOUSE_PROVINCE_ID = "Province_Id";
+	public static String COL_WAREHOUSE_GHN_STORE_ID = "ghn_store_id";
+	public static String COL_WAREHOUSE_DISTRICT_ID= "District_Id";
+	public static String COL_WAREHOUSE_WARD_ID = "Ward_Id";
 	
 	//11.WAREHOUSE_TYPE
 	public static String WAREHOUSETYPE_SHOWWHTYPE="admin/warehouseType/showWhType";
@@ -218,7 +224,13 @@ public final class Views {
 	public static String COL_ORDER_NOTES = "notes";
 	public static String COL_ORDER_ORDERID = "OrderID";
 	public static String COL_ORDER_TRANSMOMOID = "Transaction_id";
-
+	public static String COL_ORDER_PROVINCE_ID = "Province_Id";
+	public static String COL_ORDER_DISTRICT_ID = "District_Id";
+	public static String COL_ORDER_WARD_ID = "Ward_Id";
+	public static String COL_ORDER_GHN_ORDER_CODE = "ghn_order_code";
+	public static String COL_ORDER_TRACKING_CODE = "tracking_code";
+	public static String COL_ORDER_EXPECTED_DELIVERY_TIME = "expected_delivery_time";
+	public static String COL_ORDER_SHIPPING_STATUS = "shipping_status";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
@@ -254,15 +266,15 @@ public final class Views {
 	public static String COL_PRODUCT_SPE_DES = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCTID= "Product_Id";
 	//22.COUPON
-	 public static final String TBL_COUPON = "tbl_coupon";
-	 public static final String COL_COUPON_ID = "Id";
-	 public static final String COL_COUPON_CODE = "Code";
-	 public static final String COL_COUPON_DISCOUNT_PERCENTAGE = "Discount_Percentage";
-	 public static final String COL_COUPON_DISCOUNT_AMOUNT = "Discount_Amount";
-	 public static final String COL_COUPON_EXPIRY_DATE = "Expiry_Date";
-	 public static final String COL_COUPON_MIN_ORDER_VALUE = "Min_Order_Value";
-	 public static final String COL_COUPON_MAX_DISCOUNT_AMOUNT = "Max_Discount_Amount";
-	 public static final String COL_COUPON_STATUS = "Status";
+	public static final String TBL_COUPON = "tbl_coupon";
+	public static final String COL_COUPON_ID = "Id";
+	public static final String COL_COUPON_CODE = "Code";
+	public static final String COL_COUPON_DISCOUNT_PERCENTAGE = "Discount_Percentage";
+	public static final String COL_COUPON_DISCOUNT_AMOUNT = "Discount_Amount";
+	public static final String COL_COUPON_EXPIRY_DATE = "Expiry_Date";
+	public static final String COL_COUPON_MIN_ORDER_VALUE = "Min_Order_Value";
+	public static final String COL_COUPON_MAX_DISCOUNT_AMOUNT = "Max_Discount_Amount";
+	public static final String COL_COUPON_STATUS = "Status";
 	//23.FEEDBACK
 	public static final String TBL_FEEDBACK = "Feedback";
 	public static final String COL_FEEDBACK_ID = "Id";
@@ -273,31 +285,49 @@ public final class Views {
 	public static final String COL_FEEDBACK_CREATEDATE = "Created_Date";
 	public static final String COL_FEEDBACK_STATUS = "Status";
 	//24.REQUEST
-		public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
-		public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
-		public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
-		public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
+	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
+	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
+	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
 
-		public static String TBL_REQUEST = "Request";
-		public static String COL_REQUEST_ID = "Id";
-		public static String COL_REQUEST_NAME = "Name";
-		public static String COL_REQUEST_DATE = "Date";
-		public static String COL_REQUEST_STATUS = "Status";
-		public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
-		public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
-		public static String COL_REQUEST_TYPE = "Type";
-		public static String COL_REQUEST_ORDERID = "Order_Id";
+	public static String TBL_REQUEST = "Request";
+	public static String COL_REQUEST_ID = "Id";
+	public static String COL_REQUEST_NAME = "Name";
+	public static String COL_REQUEST_DATE = "Date";
+	public static String COL_REQUEST_STATUS = "Status";
+	public static String COL_REQUEST_WAREHOUSE = "Warehouse_Id";
+	public static String COL_REQUEST_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_REQUEST_TYPE = "Type";
+	public static String COL_REQUEST_ORDERID = "Order_Id";
 	//25.REQUEST DETAIL
-		public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
-		public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
+	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
 
-		public static String TBL_REQUEST_DETAIL = "Request_detail";
-		public static String COL_REQUEST_DETAIL_ID = "id";
-		public static String COL_REQUEST_DETAIL_STATUS = "Status";
-		public static String COL_REQUEST_DETAIL_ID_PRODUCT = "Id_product";
-		public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
-		public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
-		public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
+	public static String TBL_REQUEST_DETAIL = "Request_detail";
+	public static String COL_REQUEST_DETAIL_ID = "id";
+	public static String COL_REQUEST_DETAIL_STATUS = "Status";
+	public static String COL_REQUEST_DETAIL_ID_PRODUCT = "Id_product";
+	public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
+	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
+	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
+	//25.RETURN ORDER
+	public static String TBL_RETURN_ORDER = "Return_Order";
+	public static String COL_RETURN_ORDER_ID = "Id";
+	public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
+	public static String COL_RETURN_ORDER_DATE = "Return_Date";
+	public static String COL_RETURN_ORDER_STATUS = "Status";
+	public static String COL_RETURN_ORDER_NOTE = "Note";
+	public static String COL_RETURN_ORDER_TOTAL_AMOUNT = "Total_Amount";
+	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
+	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
+	//25.RETURN ORDER DETAIL
+	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
+	public static String COL_RETURN_DETAIL_ID = "Id";
+	public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
+	public static String COL_RETURN_DETAIL_ORDER_DETAIL_ID = "Order_Detail_Id";
+	public static String COL_RETURN_DETAIL_QUANTITY = "Quantity";
+	public static String COL_RETURN_DETAIL_REASON = "Reason";
+	public static String COL_RETURN_DETAIL_AMOUNT = "Amount";
 	//26.CUSTOMER
 
 	

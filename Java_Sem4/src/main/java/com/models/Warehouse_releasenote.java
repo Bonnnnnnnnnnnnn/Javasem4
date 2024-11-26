@@ -24,8 +24,10 @@ public class Warehouse_releasenote {
 		Status = status;
 		Order_id = order_id;
 	}
+	
 	public Warehouse_releasenote() {
 	}
+	
 	public int getId() {
 		return Id;
 	}
