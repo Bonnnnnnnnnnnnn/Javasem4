@@ -25,8 +25,8 @@ public class CartInterceptor implements HandlerInterceptor {
 
         if (isAjaxRequest) {  
 
-                return true; 
-            
+                return true;
+        
         } else {
             
             if (request.getSession().getAttribute("logined") != null) {

@@ -20,11 +20,30 @@ public class Order {
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
+<<<<<<< HEAD
+=======
+	private String TransactionId;
+	private int Province_Id;
+	private int District_Id;
+	private int Ward_Id;
+	private String Ghn_order_code;
+	private String Tracking_code;
+	private LocalDate expected_delivery_time;
+	private String shipping_status;
+	
+	
+>>>>>>> thuan_dev
 	
 	
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
+<<<<<<< HEAD
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID) {
+=======
+			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
+			String transactionId, int province_Id, int district_Id, int ward_Id, String ghn_order_code,
+			String tracking_code, LocalDate expected_delivery_time, String shipping_status) {
+>>>>>>> thuan_dev
 		super();
 		Id = id;
 		Customer_id = customer_id;
@@ -43,6 +62,17 @@ public class Order {
 		PaymentMethod = paymentMethod;
 		Notes = notes;
 		OrderID = orderID;
+<<<<<<< HEAD
+=======
+		TransactionId = transactionId;
+		Province_Id = province_Id;
+		District_Id = district_Id;
+		Ward_Id = ward_Id;
+		Ghn_order_code = ghn_order_code;
+		Tracking_code = tracking_code;
+		this.expected_delivery_time = expected_delivery_time;
+		this.shipping_status = shipping_status;
+>>>>>>> thuan_dev
 	}
 	public Order() {
 	}
@@ -148,5 +178,57 @@ public class Order {
 	public void setOrderID(String orderID) {
 		OrderID = orderID;
 	}
+<<<<<<< HEAD
+=======
+	public String getTransactionId() {
+		return TransactionId;
+	}
+	public void setTransactionId(String transactionId) {
+		TransactionId = transactionId;
+	}
+	public int getProvince_Id() {
+		return Province_Id;
+	}
+	public void setProvince_Id(int province_Id) {
+		Province_Id = province_Id;
+	}
+	public int getDistrict_Id() {
+		return District_Id;
+	}
+	public void setDistrict_Id(int district_Id) {
+		District_Id = district_Id;
+	}
+	public int getWard_Id() {
+		return Ward_Id;
+	}
+	public void setWard_Id(int ward_Id) {
+		Ward_Id = ward_Id;
+	}
+	public String getGhn_order_code() {
+		return Ghn_order_code;
+	}
+	public void setGhn_order_code(String ghn_order_code) {
+		Ghn_order_code = ghn_order_code;
+	}
+	public String getTracking_code() {
+		return Tracking_code;
+	}
+	public void setTracking_code(String tracking_code) {
+		Tracking_code = tracking_code;
+	}
+	public LocalDate getExpected_delivery_time() {
+		return expected_delivery_time;
+	}
+	public void setExpected_delivery_time(LocalDate expected_delivery_time) {
+		this.expected_delivery_time = expected_delivery_time;
+	}
+	public String getShipping_status() {
+		return shipping_status;
+	}
+	public void setShipping_status(String shipping_status) {
+		this.shipping_status = shipping_status;
+	}
+	
+>>>>>>> thuan_dev
 	
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.customer.repository.PagemainRepository;
 import com.customer.repository.ShoppingpageRepository;
 import com.models.PageView;
 import com.utils.Views;
@@ -18,7 +19,8 @@ public class PagemainController {
 	
 	@Autowired
 	private ShoppingpageRepository rep;
-	
+	@Autowired
+	PagemainRepository reppage;
 
 	@GetMapping("")
 	public String showpage(Model model) {
@@ -27,6 +29,7 @@ public class PagemainController {
 	    String[] statusesnew = {"NewRelease"};
 	    PageView pv = new PageView();
 	    pv.setPage_current(1);
+	    reppage.getProvinces();
 	    pv.setPage_size(8);
 	    String[] statuses = {"NewRelease","Active","OutOfStock"}; 
 	    // Call the findAllpaging method with the defined arrays

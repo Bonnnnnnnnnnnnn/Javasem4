@@ -234,13 +234,12 @@
 							            class="btn btn-sm" style ="background-color:#e9ecef;">
 							        Rated
 							    </button>
-							    <button th:if="${item.status == 'Completed' && order.Status == 'Completed'}"
+							    <button th:if="${order.Status == 'Completed' && item.status != 'Reviewed'}"
 							            type="button"
 							            class="btn btn-primary btn-sm"
 							            th:onclick="|showFeedbackModal(${item.Id}, event)|">
 							        Rate
 							    </button>
-							
 							    <!-- Modal Feedback -->
 							    <div class="modal fade" th:id="'feedbackModal' + ${item.Id}" tabindex="-1" role="dialog">
 							        <div class="modal-dialog" role="document">

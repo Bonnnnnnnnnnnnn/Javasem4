@@ -8,16 +8,33 @@ public class Warehouse {
 	private String Address;
 	private int Wh_type_id;
 	private String Type_name;
+<<<<<<< HEAD
 	private String ManagerFirstName;
 	private String ManagerLastName;
 	private List<Employee> managers;
 	private int relatedCount;
 	public Warehouse(int id, String name, String address, int wh_type_id) {
+=======
+	private int Province_Id;
+	private int District_Id;
+	private int Ward_Id;
+	private String Ghn_store_code;
+
+	
+	
+	public Warehouse(int id, String name, String address, int wh_type_id, String type_name, int province_Id,
+			int district_Id, int ward_Id, String ghn_store_code) {
+>>>>>>> thuan_dev
 		super();
 		Id = id;
 		Name = name;
 		Address = address;
 		Wh_type_id = wh_type_id;
+		Type_name = type_name;
+		Province_Id = province_Id;
+		District_Id = district_Id;
+		Ward_Id = ward_Id;
+		Ghn_store_code = ghn_store_code;
 	}
 	public Warehouse() {
 	}
@@ -51,6 +68,7 @@ public class Warehouse {
 	public void setTypeName(String type_name) {
 		Type_name = type_name;
 	}
+<<<<<<< HEAD
 	public String getManagerFirstName() {
 		return ManagerFirstName;
 	}
@@ -75,5 +93,39 @@ public class Warehouse {
 	public void setRelatedCount(int relatedCount) {
 		this.relatedCount = relatedCount;
 	}
+=======
+	public String getType_name() {
+		return Type_name;
+	}
+	public void setType_name(String type_name) {
+		Type_name = type_name;
+	}
+	public int getProvince_Id() {
+		return Province_Id;
+	}
+	public void setProvince_Id(int province_Id) {
+		Province_Id = province_Id;
+	}
+	public int getDistrict_Id() {
+		return District_Id;
+	}
+	public void setDistrict_Id(int district_Id) {
+		District_Id = district_Id;
+	}
+	public int getWard_Id() {
+		return Ward_Id;
+	}
+	public void setWard_Id(int ward_Id) {
+		Ward_Id = ward_Id;
+	}
+	public String getGhn_store_code() {
+		return Ghn_store_code;
+	}
+	public void setGhn_store_code(String ghn_store_code) {
+		Ghn_store_code = ghn_store_code;
+	}
+	
+	
+>>>>>>> thuan_dev
 	
 }
