@@ -52,7 +52,7 @@ public class Warehouse_receipt_detail {
 	public void setFormattedPrice(String formattedPrice) {
 		this.formattedPrice = formattedPrice;
 	}
-	public int getProduct_id() {
+	public int getProduct_id() { 
 		return Product_id;
 	}
 	public void setProduct_id(int product_id) {

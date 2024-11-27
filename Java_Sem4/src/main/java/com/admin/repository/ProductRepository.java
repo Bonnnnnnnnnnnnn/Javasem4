@@ -109,7 +109,7 @@ public class ProductRepository {
                 Product pro = new Product();
                 pro.setId(rs.getInt("Id"));
                 return pro;
-            }, id);
+            }, id); 
         } catch (DataAccessException e) {
             System.err.println("Lỗi khi lấy sản phẩm với ID: " + id + " - " + e.getMessage());
             return null;

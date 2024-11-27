@@ -60,15 +60,17 @@ priceInput.addEventListener('input', handleInput);
 priceChangesInput.addEventListener('input', handleInput); 
    //cái des cảu product
    CKEDITOR.replace('description');
-   document.getElementById('searchBrand').addEventListener('input', function() {
-       const filter = this.value.toLowerCase();
-       const options = document.getElementById('brandId').options;
 
-       for (let i = 0; i < options.length; i++) {
-           const optionText = options[i].text.toLowerCase();
-           options[i].style.display = optionText.includes(filter) ? '' : 'none';
-       }
-   });
+       // Tìm kiếm thương hiệu
+       document.getElementById('searchBrand').addEventListener('input', function() {
+           const filter = this.value.toLowerCase();
+           const options = document.getElementById('brandId').options;
+
+           for (let i = 0; i < options.length; i++) {
+               const optionText = options[i].text.toLowerCase();
+               options[i].style.display = optionText.includes(filter) ? '' : 'none';
+           }
+       });
    // Chức năng xem trước ảnh chính
        function showImage(event) {
            const file = event.target.files[0];

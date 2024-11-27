@@ -34,7 +34,7 @@ public final class Views {
 	public static String TBL_BRAND = "Brand";
 	public static String COL_BRAND_ID = "Id";
 	public static String COL_BRAND_NAME ="Name";
-	
+	 
 	//4.PRODUCT
 	public static String PRODUCT_SHOWPRODUCT = "admin/product/showProduct";
 	public static String PRODUCT_SHOWADDPRODUCT ="admin/product/showAddProduct";
