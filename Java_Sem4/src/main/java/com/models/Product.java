@@ -1,7 +1,5 @@
 package com.models;
 
-import java.util.List;
-
 public class Product {
 	private int Id;
 	private String Product_name;
@@ -16,30 +14,32 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
-	
-	private Double averageRating;
-    private Integer totalFeedbacks;
-    private List<Feedback> feedbacks;
-	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
-			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
-			String status) {
+	private int Length;
+	private int Height;
+	private int Width;
+	private int Weight;
+
+	private String formattedPrice;
+	public Product(int id, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
+			String description, int warranty_period, int length, int height, int width, int weight) {
 
 		super();
 		Id = id;
 		Product_name = product_name;
 		Cate_id = cate_id;
-		Category_name = category_name;
 		Brand_id = brand_id;
-		Brand_name = brand_name;
 		Unit_id = unit_id;
-		Unit_name = unit_name;
 		Price = price;
 		Img = img;
 		Status = status;
 		Description = description;
 		Warranty_period = warranty_period;
-		Status = status;
+		Length = length;
+		Height = height;
+		Width = width;
+		Weight = weight;
 	}
+	
 	public Product() {
 	}
 	public int getId() {
@@ -108,6 +108,12 @@ public class Product {
 	public void setStatus(String status) {
 		Status = status;
 	}
+	public String getFormattedPrice() {
+		return formattedPrice;
+	}
+	public void setFormattedPrice(String formattedPrice) {
+		this.formattedPrice = formattedPrice;
+	}
 	public int getUnit_id() {
 		return Unit_id;
 	}
@@ -120,36 +126,37 @@ public class Product {
 	public void setUnit_name(String unit_name) {
 		Unit_name = unit_name;
 	}
-	public String getCategory_name() {
-		return Category_name;
-	}
-	public void setCategory_name(String category_name) {
-		Category_name = category_name;
-	}
-	public String getBrand_name() {
-		return Brand_name;
-	}
-	public void setBrand_name(String brand_name) {
-		Brand_name = brand_name;
+
+	public int getLength() {
+		return Length;
 	}
 
-	public Double getAverageRating() {
-		return averageRating;
+	public void setLength(int length) {
+		Length = length;
 	}
-	public void setAverageRating(Double averageRating) {
-		this.averageRating = averageRating;
+
+	public int getHeight() {
+		return Height;
 	}
-	public Integer getTotalFeedbacks() {
-		return totalFeedbacks;
+
+	public void setHeight(int height) {
+		Height = height;
 	}
-	public void setTotalFeedbacks(Integer totalFeedbacks) {
-		this.totalFeedbacks = totalFeedbacks;
+
+	public int getWidth() {
+		return Width;
 	}
-	public List<Feedback> getFeedbacks() {
-		return feedbacks;
+
+	public void setWidth(int width) {
+		Width = width;
 	}
-	public void setFeedbacks(List<Feedback> feedbacks) {
-		this.feedbacks = feedbacks;
+
+	public int getWeight() {
+		return Weight;
+	}
+
+	public void setWeight(int weight) {
+		Weight = weight;
 	}
 	
 }
