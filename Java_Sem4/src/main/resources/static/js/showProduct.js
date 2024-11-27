@@ -39,69 +39,23 @@
 	  	        }
 	  	    });
 	  	}
-		//xóa all sản phẩm
-		function toggleSelectAll(selectAllCheckbox) {
-		    const checkboxes = document.querySelectorAll('.productCheckbox');
-		    checkboxes.forEach(checkbox => {
-		        checkbox.checked = selectAllCheckbox.checked;
-		    });
-		}
-		function deleteSelectedProducts() {
-		    const selectedProductIds = [];
-		    document.querySelectorAll('.productCheckbox:checked').forEach(checkbox => {
-		        selectedProductIds.push(parseInt(checkbox.value));
-		    });
+		document.addEventListener('DOMContentLoaded', function() {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    const activeTab = urlParams.get('activeTab');
 
-		    if (selectedProductIds.length > 0) {
-		        if (confirm('Are you sure you want to delete the selected products?')) {
-		            fetch('/admin/product/deleteSelected', {
-		                method: 'POST',
-		                headers: {
-		                    'Content-Type': 'application/json'
-		                },
-		                body: JSON.stringify(selectedProductIds)
-		            })
-		            .then(response => {
-		                if (response.ok) {
-		                    return response.text();
-		                } else {
-		                    throw new Error('Failed to delete products.');
-		                }
-		            })
-		            .then(data => {
-		                console.log(data);
-		                window.location.reload();
-		            })
-		            .catch(error => {
-		                console.error('Error:', error);
-		                alert('An error occurred while deleting products: ' + error.message);
-		            });
-		        }
-		    } else {
-		        alert('Please select at least one product to delete.');
+		    if (activeTab === 'productSpecifications') {
+		        const tab = new bootstrap.Tab(document.querySelector('#productSpecifications-tab'));
+		        tab.show();
 		    }
-		}  
-		function toggleSelectAll(selectAllCheckbox) {
-		            const checkboxes = document.querySelectorAll('.productCheckbox');
-		            checkboxes.forEach((checkbox) => {
-		                checkbox.checked = selectAllCheckbox.checked;
-		            });
-		            toggleDeleteButton(); // Gọi hàm để kiểm tra việc ẩn/hiện nút "Delete Selected"
-		        }
+		});
 
-		        // Kiểm tra trạng thái checkbox và ẩn/hiện nút "Delete Selected"
-		        function toggleDeleteButton() {
-		            const checkboxes = document.querySelectorAll('.productCheckbox');
-		            const deleteButton = document.getElementById('deleteSelectedButton');
-		            let isAnyChecked = false;
 
-		            // Kiểm tra nếu có checkbox nào được chọn
-		            checkboxes.forEach((checkbox) => {
-		                if (checkbox.checked) {
-		                    isAnyChecked = true;
-		                }
-		            });
 
+
+
+
+
+<<<<<<< HEAD
 		            // Nếu có ít nhất một checkbox được chọn thì hiển thị nút, ngược lại thì ẩn nút
 		            deleteButton.style.display = isAnyChecked ? 'block' : 'none';
 		        }
@@ -223,4 +177,6 @@
 				}
 
 
+=======
+>>>>>>> trongdev
 		  

@@ -1,0 +1,27 @@
+@charset "UTF-8";
+.no-bullets {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.no-bullets li {
+    margin-bottom: 1rem; /* Khoảng cách giữa các phần tử li */
+    display: flex; /* Sử dụng flex để căn chỉnh các phần tử theo dòng */
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+}
+
+.no-bullets li input {
+    margin-right: 1rem; /* Khoảng cách giữa input và nút Update */
+    flex-grow: 1; /* Giãn rộng input để chiếm hết không gian */
+    height: 2.5rem; /* Chiều cao của input */
+}
+
+.no-bullets li a.btn {
+    height: 2.5rem; /* Chiều cao nút bằng chiều cao input */
+    line-height: 2.5rem; /* Căn chỉnh văn bản nút giữa theo chiều dọc */
+    font-size: 1rem; /* Kích thước chữ trong nút */
+    padding: 0 1rem; /* Khoảng cách trong nút (trái/phải) */
+    display: inline-flex; /* Căn chỉnh văn bản bên trong nút */
+    justify-content: center; /* Văn bản căn giữa ngang */
+    align-items: center; /* Văn bản căn giữa dọc */
+}

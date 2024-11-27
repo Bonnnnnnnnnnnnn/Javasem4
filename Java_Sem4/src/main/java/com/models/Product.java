@@ -23,22 +23,19 @@ public class Product {
 	private Double averageRating;
     private Integer totalFeedbacks;
     private List<Feedback> feedbacks;
+	private String formattedPrice;
 	
 	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, int unit_id,
 			String unit_name, String brand_name, double price, String img, String status, String description,
 			int warranty_period, int length, int height, int width, int weight, Double averageRating,
 			Integer totalFeedbacks, List<Feedback> feedbacks) {
-
-		super();
 		Id = id;
 		Product_name = product_name;
 		Cate_id = cate_id;
 		Brand_id = brand_id;
 		Unit_id = unit_id;
-
 		Unit_name = unit_name;
 		Brand_name = brand_name;
-
 		Price = price;
 		Img = img;
 		Status = status;
@@ -48,11 +45,9 @@ public class Product {
 		Height = height;
 		Width = width;
 		Weight = weight;
-
 		this.averageRating = averageRating;
 		this.totalFeedbacks = totalFeedbacks;
 		this.feedbacks = feedbacks;
-
 	}
 	
 	public Product() {
@@ -201,5 +196,4 @@ public class Product {
 	public void setFeedbacks(List<Feedback> feedbacks) {
 		this.feedbacks = feedbacks;
 	}
-	
 }

@@ -1,83 +1,96 @@
-
-<body xmlns:th="http://www.thymeleaf.org" lang="en" >
-<div th:replace="admin/layout/header_admin"></div>
-<div class="content-wrapper" style="min-height: 1302.4px;">
-<section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Employee Warehouse</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Details Employee Warehouse</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </section>
+<link rel="stylesheet" th:href="@{/css/managerwh.css}">
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+    <div th:replace="admin/layout/header_admin"></div>
+    <div class="content-wrapper" style="min-height: 1302.4px;">
         <section class="content-header">
-      <div class="container-fluid">
-	<div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Details Employee Warehouse</h3>
-              </div>
-              <form th:object="${warehouse}">
-				    <div class="card-body row">
-					    <div class="form-group col-md-6">    
-					        <label for="title">Name Warehouse</label>
-					        <input type="text" id="name" disabled readonly th:value="${warehouse.name}" class="form-control">
-					    </div>
-					    <div class="form-group col-md-6">
-					        <label for="title">Address</label>
-					        <input type="text" id="address" disabled readonly th:value="${warehouse.address}" class="form-control">
-					    </div>
-					    <div class="form-group col-md-6">
-					        <label for="title">Type name</label>
-					        <input type="text" id="typeName" disabled readonly th:value="${warehouse.typeName}" class="form-control">
-					    </div>
-					    <div class="form-group col-md-6">
-						    <label for="manager">Managers</label>
-						    <div th:if="${warehouse.managers == null || warehouse.managers.isEmpty()}">
-						        <span>No managers yet</span>
-						    </div>
-						    <div th:unless="${warehouse.managers == null || warehouse.managers.isEmpty()}">
-						        <ul>
-						            <li th:each="manager : ${warehouse.managers}">
-						                <input type="text" th:value="${manager.first_name} + ' ' + ${manager.last_name}" disabled class="form-control" />
-						            </li>
-						        </ul>
-						    </div>
-						</div>
-
-				</div>
-					    
-				</div>
-				    <div class="card-footer">
-                  		<a th:href="@{/admin/warehouse/showWarehouse}" class="btn btn-danger">Back to List</a>
-						<a th:if="${#strings.isEmpty(warehouse.managerFirstName)}" 
-						   th:href="@{/admin/warehouse/showWarehouseManagementLevel(iddtwh=${warehouse.id})}" 
-						   th:text="'Warehouse management level'" 
-						   class="btn btn-primary">
-						</a>
-						<a th:if="${!#strings.isEmpty(warehouse.managerFirstName)}" 
-						   th:href="@{/admin/warehouse/showUpdateWarehouseManagementLevel(iddtwh=${warehouse.id}, idup=${empwh != null ? empwh.id : ''})}" 
-						   th:text="'Update manager'" 
-						   class="btn btn-warning">
-						</a>
-				    </div>
-				</form>
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Employee Warehouse</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Details Employee Warehouse</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        </div>
         </section>
-        </div>
-        <div th:replace="admin/layout/footer_admin"></div>
-          <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
-              <script th:src="@{/js/showWh_type.js}"></script>
-</body>
 
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Details Employee Warehouse</h3>
+                            </div>
+                            <form th:object="${warehouse}">
+                                <div class="card-body row">
+                                    <!-- Name Warehouse -->
+                                    <div class="form-group col-md-6">
+                                        <label for="name">Name Warehouse</label>
+                                        <input type="text" id="name" disabled readonly th:value="${warehouse.name}" class="form-control">
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div class="form-group col-md-6">
+                                        <label for="address">Address</label>
+                                        <input type="text" id="address" disabled readonly th:value="${warehouse.address}" class="form-control">
+                                    </div>
+
+                                    <!-- Type Name -->
+                                    <div class="form-group col-md-6">
+                                        <label for="typeName">Type Name</label>
+                                        <input type="text" id="typeName" disabled readonly th:value="${warehouse.typeName}" class="form-control">
+                                    </div>
+
+                                    <!-- Managers -->
+                                    <div class="form-group col-md-12">
+                                        <label for="managers">Managers</label>
+                                        <div th:if="${warehouse.managers == null || warehouse.managers.isEmpty()}">
+                                        <input type="text" disabled readonly th:value="No_Managers_Yet" class="form-control">
+                                        </div>
+                                        <div th:unless="${warehouse.managers == null || warehouse.managers.isEmpty()}">
+										    <ul class="no-bullets">
+										        <li th:each="manager : ${warehouse.managers}" class="d-flex align-items-center mb-2">
+										            <input type="text" th:value="${manager.first_name} + ' ' + ${manager.last_name}" disabled class="form-control form-control-sm mr-2" style="width: 200px;" />
+										            
+										            <a th:if="${!warehouse.managers.isEmpty()}"
+										               th:href="@{/admin/warehouse/showUpdateWarehouseManagementLevel(iddtwh=${warehouse.id}, idup=${manager.id})}"
+										               th:text="'Update'"
+										               class="btn btn-warning btn-sm mr-2">
+										            </a>
+
+										            <a th:href="@{deleteWh(id=${manager.id})}"
+										               onclick="return confirmDeleteWh();"
+										               class="btn btn-danger btn-sm">
+										               Delete
+										            </a>
+										        </li>
+										    </ul>
+										</div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a th:href="@{/admin/warehouse/showWarehouse}" class="btn btn-danger">Back to List</a>
+                                    <a th:href="@{/admin/warehouse/showWarehouseManagementLevel(iddtwh=${warehouse.id})}" 
+                                       class="btn btn-primary">
+                                       Warehouse management level
+                                    </a>
+                                </div> 
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div th:replace="admin/layout/footer_admin"></div>
+
+    <!-- JavaScript inclusion -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script th:src="@{/js/showWh_type.js}"></script>
+</body>

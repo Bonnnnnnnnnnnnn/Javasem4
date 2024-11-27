@@ -39,14 +39,23 @@ public class WarehouseController {
 
 	    return Views.WAREHOUSE_SHOWWAREHOUSE;
 	}
-
 	@GetMapping("showWarehouseDetails")
 	public String showWarehouseDetails(Model model, @RequestParam("id") String id) {
-	    int idwh = Integer.parseInt(id);
-	    Warehouse wh = repwh.findId(idwh);
-	    model.addAttribute("warehouse", wh);
+	    try {
+	        int idwh = Integer.parseInt(id); 
+	        Warehouse wh = repwh.findId(idwh);
+	        if (wh != null) {
+	            model.addAttribute("warehouse", wh);
+	        } else {
+	            model.addAttribute("error", "Warehouse not found");
+	        }
+	    } catch (NumberFormatException e) {
+	        model.addAttribute("error", "Invalid Warehouse ID");
+	    }
 	    return Views.WAREHOUSE_SHOWWAREHOUSEDETAILS;
 	}
+
+
 	@GetMapping("showAddWarehouse")
 	public String showAddWarehouse(Model model) {
 		Warehouse wh = new Warehouse();

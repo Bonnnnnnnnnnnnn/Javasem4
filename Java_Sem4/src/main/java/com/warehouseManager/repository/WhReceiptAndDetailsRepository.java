@@ -211,10 +211,10 @@ public class WhReceiptAndDetailsRepository {
 	// Phần Warehouse_receipt_detail
 	
 	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId) {
-		String sql = "SELECT wrd.*, p.product_name "
-		           + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
-		           + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
-		           + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
+	    String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
+	               + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
+	               + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
+	               + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
 
 	    List<Warehouse_receipt_detail> details = dbwhd.query(sql, (rs, rowNum) -> {
 	        Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
@@ -224,6 +224,7 @@ public class WhReceiptAndDetailsRepository {
 	        wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
 	        wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID));
 	        wrd.setProduct_name(rs.getString("product_name"));
+	        wrd.setShipping_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE));
 
 	        System.out.println("Retrieved detail: " + wrd.getProduct_name() + ", ID: " + wrd.getId());
 	        return wrd;
@@ -233,7 +234,7 @@ public class WhReceiptAndDetailsRepository {
 	        System.out.println("No details found for receipt ID: " + whReceiptId);
 	    } else {
 	        for (Warehouse_receipt_detail detail : details) {
-	            System.out.println("Detail: " + detail.getProduct_name() + ", Quantity: " + detail.getQuantity());
+	            System.out.println("Detail: " + detail.getProduct_name() + ", Quantity: " + detail.getQuantity() + ", Shipping Fee: " + detail.getShipping_fee());
 	        }
 	    }
 
@@ -241,7 +242,7 @@ public class WhReceiptAndDetailsRepository {
 	}
 	public Warehouse_receipt_detail findIdDetail(int id) {
 	    try {
-	        String sql = "SELECT wrd.*, p.product_name "
+	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
 	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
 	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
 	                   + "WHERE wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " = ?";
@@ -258,8 +259,8 @@ public class WhReceiptAndDetailsRepository {
 
 	public boolean updateWhDetails(Warehouse_receipt_detail wrd) {
 		try {
-			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Product_id = ? WHERE Id= ?";
-			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity() ,wrd.getProduct_id(), wrd.getId()};
+			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Shipping_fee = ?,Product_id = ? WHERE Id= ?";
+			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getShipping_fee() ,wrd.getProduct_id(), wrd.getId()};
 			int row = dbwhd.update(sql,params);
 			return row > 0 ;
 		} catch (Exception e) {
@@ -269,12 +270,8 @@ public class WhReceiptAndDetailsRepository {
 	}
 	public boolean addWhDetail(Warehouse_receipt_detail wrd) {
 	    try {
-	        String sql = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
-	                     Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
-	                     Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
-	                     Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + 
-	                     ") VALUES (?, ?, ?)";
-	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity()};
+	        String sql = "INSERT INTO Warehouse_receipt_detail (Wh_receiptId,Wh_price,Quantity,Shipping_fee,Product_id) VALUES (?, ?, ?, ? , ?)";
+	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getShipping_fee(),wrd.getProduct_id()};
 			int row = dbwhd.update(sql,params);
 			return row > 0 ;
 	    } catch (Exception e) {

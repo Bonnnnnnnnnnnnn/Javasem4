@@ -16,7 +16,7 @@
         </div>
       </div>
     </section>
-
+	<div style="border-top: 2px solid #ccc; margin: 20px 0;"></div>
     <section class="content-header">
       <div class="container-fluid">
         <div class="row">
@@ -44,12 +44,11 @@
 						<input type="text" id="manager" th:value="${warehouse.managerFirstName} + ' ' + ${warehouse.managerLastName}" disabled class="form-control">
 			       </div>
                 </div>
-                <div class="card-footer">
-                  <a th:href="@{/admin/warehouse/showWarehouse}" class="btn btn-danger">Back to List</a>
-                </div>
               </form>
+              <hr style="border: 1px solid #ccc;margin: 20px 0;">
               <form th:object="${warehouse}" action="updateWarehouseManagementLevel" method="post">
 			    <div class="card-body">
+			    <h3>Update Manager</h3>
 			        <div class="form-group">
 			            <input type="hidden" id="warehouse_id" name="warehouse_id" th:value="${warehouse.id}">
 			        </div>
@@ -61,6 +60,7 @@
 			        </div>
 			    </div>
 				    <div class="card-footer">
+				    	<a th:href="@{/admin/warehouse/showWarehouseDetails(id=${warehouse.id})}" class="btn btn-danger">Back to Detail</a>
 				        <button type="submit" class="btn btn-primary">Submit</button>
 				    </div>
 				</form>
