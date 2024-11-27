@@ -33,7 +33,7 @@ public class PagemainController {
 	    //gHNService.getProvinces();//209
 	    //gHNService.getDistricts(202);//1837
 	    //gHNService.getWards(1837);//420302
-	    gHNService.testCreateStore();
+	    //gHNService.testCreateStore();
 	    //gHNService.deleteShop(5481952);
 	    //System.out.println(gHNService.calculateShippingFee(1461,1837,new Product())); 
 	    pv.setPage_size(8);
