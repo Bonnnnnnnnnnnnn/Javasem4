@@ -49,15 +49,16 @@ public final class Views {
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
 	public static String COL_PRODUCT_UNIT_ID = "Unit_id";
-
 	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
-
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
-	
+	public static String COL_PRODUCT_LENGTH = "Length";
+	public static String COL_PRODUCT_WIDTH = "Width";
+	public static String COL_PRODUCT_HEIGHT ="Height";
+	public static String COL_PRODUCT_WELGHT ="Weight";
 	//5.PRODUCT_CATEGORY
 	public static String CATEGORY_SHOWCATEGORY = "admin/category/showCategory";
 	public static String CATEGORY_SHOWADDCATEGORY = "admin/category/showAddCategory";
