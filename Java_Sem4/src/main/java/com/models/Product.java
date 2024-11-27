@@ -16,7 +16,7 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
-
+	
 	private Double averageRating;
     private Integer totalFeedbacks;
     private List<Feedback> feedbacks;
