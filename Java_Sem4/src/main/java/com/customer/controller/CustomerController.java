@@ -48,7 +48,7 @@ public class CustomerController {
 		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		    LocalDateTime birthDayParsed = LocalDateTime.parse(birthDay, formatter);
 		    cus.setBirthDay(birthDayParsed);
-		    cus.setImg_cus(FileUtils.uploadFileImage(imgCus, "uploads"));
+//		    cus.setImg_cus(FileUtils.uploadFileImage(imgCus, "uploads"));
 		    cusrep.saveCus(cus);
 		    return "redirect:/customer/index";
 		}

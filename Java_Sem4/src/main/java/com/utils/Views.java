@@ -52,6 +52,10 @@ public final class Views {
 	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
+	public static String COL_PRODUCT_LENGTH = "Length";
+	public static String COL_PRODUCT_WIDTH = "Width";
+	public static String COL_PRODUCT_HEIGHT ="Height";
+	public static String COL_PRODUCT_WELGHT ="Weight";
 	
 	//5.PRODUCT_CATEGORY
 	public static String CATEGORY_SHOWCATEGORY = "admin/category/showCategory";
@@ -241,7 +245,6 @@ public final class Views {
 	public static String COL_PRODUCT_IMG_ID = "Id";
 	public static String COL_PRODUCT_IMG_URL = "Img_url";
 	public static String COL_PRODUCT_IMG_PRODUCT_ID = "Product_id";
-	public static String COL_PRODUCT_IMG_ID_MAIN_IMG = "Id_main_img";
 	//22.product_spe
 	public static String PRODUCT_SPE_SHOWADDPS ="admin/product/showAddPs";
 	public static String PRODUCT_SPE_SHOWUPDATEPS ="admin/product/showUpdatePs";

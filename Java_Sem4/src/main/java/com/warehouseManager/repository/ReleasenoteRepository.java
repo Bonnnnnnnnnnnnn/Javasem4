@@ -124,9 +124,6 @@ public class ReleasenoteRepository {
 
 	    return requests.get(0);  
 	}
-
-
-
     @Transactional
     public boolean addWarehouseReleasenote(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
         try {

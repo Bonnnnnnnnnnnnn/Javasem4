@@ -1,14 +1,20 @@
 package com.admin.repository;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.mapper.Product_mapper;
+import com.mapper.Product_img_mapper;
+import com.mapper.Product_price_change_mapper;
 import com.mapper.Unit_mapper;
 import com.mapper.Brand_mapper;
 import com.mapper.Category_mapper;
@@ -16,6 +22,8 @@ import com.models.Brand;
 import com.models.Category_Product;
 import com.models.PageView;
 import com.models.Product;
+import com.models.Product_img;
+import com.models.Product_price_change;
 import com.models.Product_specifications;
 import com.mapper.Product_specifications_mapper;
 import com.models.Unit;
@@ -136,7 +144,8 @@ public class ProductRepository {
     public Product findId(int id) {
         try {
             String sql = "SELECT p.*, b.Name AS brand_name, c.Cate_name AS category_name, "
-                       + "u.Name AS unit_name, p.Status AS status "
+                       + "u.Name AS unit_name, p.Status AS status, "
+                       + "p.Length, p.Width, p.Height, p.Weight "
                        + "FROM Product p "
                        + "LEFT JOIN Brand b ON p.Brand_id = b.Id "
                        + "LEFT JOIN Product_category c ON p.Cate_id = c.Id "
@@ -158,6 +167,10 @@ public class ProductRepository {
                 pro.setCategoryName(rs.getString("category_name"));
                 pro.setStatus(rs.getString("Status"));
                 pro.setUnit_name(rs.getString("unit_name"));
+                pro.setLength(rs.getInt("Length"));
+                pro.setWidth(rs.getInt("Width"));
+                pro.setHeight(rs.getInt("Height"));
+                pro.setWeight(rs.getInt("Weight"));
                 return pro;
             }, id);
         } catch (DataAccessException e) {
@@ -285,15 +298,60 @@ public class ProductRepository {
         }
     }
 
-    public boolean addProSpe(Product_specifications ps) {
-    	try {
-			String sql = "INSERT INTO product_specifications (Name_spe, Des_spe, Product_id) VALUES (?, ?, ?)";
-			int row = dbpro.update(sql,ps.getName_spe(),ps.getDes_spe(),ps.getProduct_id());
-			return row > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+    @Transactional
+    public boolean saveProductWithDetails(Product pro, Product_specifications specification, List<Product_img> images, Product_price_change priceChange) {
+        try {
+            String sql1 = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Unit_Id, " +
+                    "Price, Img, Status, Description, Warranty_period, Weight, Width, Height, Length) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int result1 = dbpro.update(connection -> {
+                var ps = connection.prepareStatement(sql1, new String[] { "Id" });
+                ps.setString(1, pro.getProduct_name());
+                ps.setInt(2, pro.getCate_id());
+                ps.setInt(3, pro.getBrand_id());
+                ps.setInt(4, pro.getUnit_id());
+                ps.setDouble(5, pro.getPrice());
+                ps.setString(6, pro.getImg());
+                ps.setString(7, pro.getStatus());
+                ps.setString(8, pro.getDescription());
+                ps.setInt(9, pro.getWarranty_period());
+                ps.setInt(10, pro.getWeight());
+                ps.setInt(11, pro.getWidth());
+                ps.setInt(12, pro.getHeight());
+                ps.setInt(13, pro.getLength());
+                return ps;
+            }, keyHolder);
+
+            int generatedProductId = keyHolder.getKey().intValue();
+            pro.setId(generatedProductId);
+
+            // Lưu Product_specifications
+            if (specification != null) {
+                String sql2 = "INSERT INTO product_specifications (Name_spe, Des_spe, Product_id) VALUES (?, ?, ?)";
+                dbpro.update(sql2, specification.getName_spe(), specification.getDes_spe(), generatedProductId);
+            }
+
+            // Lưu nhiều Product_img
+            if (images != null && !images.isEmpty()) {
+                String sql3 = "INSERT INTO product_img (Img_url, Product_id) VALUES (?, ?)";
+                for (Product_img img : images) {
+                    img.setProduct_id(generatedProductId);
+                    dbpro.update(sql3, img.getImg_url(), img.getProduct_id());
+                }
+            }
+
+            // Lưu Product_price_change
+            if (priceChange != null) {
+                String sql4 = "INSERT INTO Product_price_change (Product_Id, Price, Date_start, Date_end) VALUES (?, ?, ?, ?)";
+                priceChange.setProduct_id(generatedProductId);
+                dbpro.update(sql4, priceChange.getProduct_id(), priceChange.getPrice(), priceChange.getDate_start(), null);
+            }
+
+            return result1 > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     public boolean updateProSpe(Product_specifications ps) {
     	try {
@@ -317,4 +375,34 @@ public class ProductRepository {
 			return false;
 		}
     }
+    public List<Product_img> findListImages(int productId) {
+        try {
+            String sql = "SELECT pi.*, p.Product_name AS product_name " +
+                         "FROM product_img pi " +
+                         "LEFT JOIN Product p ON pi.Product_id = p.Id " +
+                         "WHERE pi.Product_id = ?";
+            return dbpro.query(sql, new Product_img_mapper(), productId);
+
+        } catch (DataAccessException e) {
+            System.err.println("Error fetching images for Product ID: " + productId);
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    public List<Product_price_change> findListProductPriceChanges(int productId) {
+        try {
+            String sql = "SELECT ppc.*, p.Product_name AS product_name " +
+                         "FROM Product_price_change ppc " +
+                         "LEFT JOIN Product p ON ppc.Product_id = p.Id " +
+                         "WHERE ppc.Product_id = ?";
+            return dbpro.query(sql, new Product_price_change_mapper(), productId);
+
+        } catch (DataAccessException e) {
+            System.err.println("Lỗi khi lấy dữ liệu thay đổi giá cho Product ID: " + productId);
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+
 }

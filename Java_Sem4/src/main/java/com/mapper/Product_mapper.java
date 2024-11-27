@@ -21,6 +21,10 @@ public class Product_mapper implements RowMapper<Product> {
         item.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE));
         item.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
         item.setUnit_id(rs.getInt(Views.COL_PRODUCT_UNIT_ID));
+        item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
+        item.setWeight(rs.getInt(Views.COL_PRODUCT_WELGHT));
+        item.setLength(rs.getInt(Views.COL_PRODUCT_LENGTH));
+        item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
         
 
 		item.setBrandName(rs.getString("brand_name"));

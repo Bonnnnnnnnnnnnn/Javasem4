@@ -14,10 +14,14 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
+	private int Length;
+	private int Height;
+	private int Width;
+	private int Weight;
 
 	private String formattedPrice;
 	public Product(int id, String product_name, int cate_id, int brand_id, int unit_id, double price,String status, String img,
-			String description, int warranty_period) {
+			String description, int warranty_period, int length, int height, int width, int weight) {
 
 		super();
 		Id = id;
@@ -30,7 +34,12 @@ public class Product {
 		Status = status;
 		Description = description;
 		Warranty_period = warranty_period;
+		Length = length;
+		Height = height;
+		Width = width;
+		Weight = weight;
 	}
+	
 	public Product() {
 	}
 	public int getId() {
@@ -116,6 +125,38 @@ public class Product {
 	}
 	public void setUnit_name(String unit_name) {
 		Unit_name = unit_name;
+	}
+
+	public int getLength() {
+		return Length;
+	}
+
+	public void setLength(int length) {
+		Length = length;
+	}
+
+	public int getHeight() {
+		return Height;
+	}
+
+	public void setHeight(int height) {
+		Height = height;
+	}
+
+	public int getWidth() {
+		return Width;
+	}
+
+	public void setWidth(int width) {
+		Width = width;
+	}
+
+	public int getWeight() {
+		return Weight;
+	}
+
+	public void setWeight(int weight) {
+		Weight = weight;
 	}
 	
 }
