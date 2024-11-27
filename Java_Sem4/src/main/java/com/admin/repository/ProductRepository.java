@@ -299,8 +299,9 @@ public class ProductRepository {
     }
 
     @Transactional
-    public boolean saveProductWithDetails(Product pro, Product_specifications specification, List<Product_img> images, Product_price_change priceChange) {
+    public boolean saveProductWithDetails(Product pro, List<Product_specifications> specifications, List<Product_img> images, Product_price_change priceChange) {
         try {
+            // Lưu Product
             String sql1 = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Unit_Id, " +
                     "Price, Img, Status, Description, Warranty_period, Weight, Width, Height, Length) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -325,10 +326,12 @@ public class ProductRepository {
             int generatedProductId = keyHolder.getKey().intValue();
             pro.setId(generatedProductId);
 
-            // Lưu Product_specifications
-            if (specification != null) {
+            // Lưu nhiều Product_specifications
+            if (specifications != null && !specifications.isEmpty()) {
                 String sql2 = "INSERT INTO product_specifications (Name_spe, Des_spe, Product_id) VALUES (?, ?, ?)";
-                dbpro.update(sql2, specification.getName_spe(), specification.getDes_spe(), generatedProductId);
+                for (Product_specifications spec : specifications) {
+                    dbpro.update(sql2, spec.getName_spe(), spec.getDes_spe(), generatedProductId);
+                }
             }
 
             // Lưu nhiều Product_img
@@ -353,6 +356,7 @@ public class ProductRepository {
             return false;
         }
     }
+
     public boolean updateProSpe(Product_specifications ps) {
     	try {
     		String sql = "UPDATE product_specifications SET Name_spe = ?, Des_spe = ?, Product_id = ? WHERE Id = ?";

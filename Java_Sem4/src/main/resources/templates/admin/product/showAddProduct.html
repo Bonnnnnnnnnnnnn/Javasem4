@@ -33,17 +33,34 @@
 			                               <label for="proName">Product Name</label>
 			                               <input type="text" id="proName" name="proName" class="form-control" placeholder="Enter Product Name" required>
 			                           </div>
-			                           <!-- Price -->
-										<div class="form-group col-4">
+										<!-- Price -->
+										<div class="form-group col-3">
 										    <label for="price">Price (USD)</label>
 										    <input type="text" id="price" name="price" class="form-control" placeholder="Enter Price in USD" required>
 										</div>
-										<!-- Price change -->
-										<div class="form-group col-4">
-										    <label for="priceChanges">Price Changes</label>
-										    <input type="text" id="priceChanges" name="priceChanges" class="form-control" placeholder="Enter price changes" required>
-										    <div id="error-message" style="color: red; display: none;">Error: Values do not match!</div>
+										<!-- Status -->
+			                           <div class="form-group col-3">
+			                               <label for="status">Status</label>
+			                               <select name="status" id="status" class="form-control" required>
+			                                   <option th:value="Active" th:text="Active"></option>
+			                                   <option th:value="InActive" th:text="InActive"></option>
+			                                   <option th:value="OutOfstock" th:text="OutOfstock"></option>
+			                                   <option th:value="NewRelease" th:text="NewRelease"></option>
+			                               </select>
+			                           </div>
+			                           <!-- Warranty Period -->
+										<div class="form-group col-2">
+										    <label for="wpe">Warranty Period</label>
+										    <select name="wpe" id="wpe" class="form-control" required>
+										    	<option value="0">0 months</option>
+										        <option value="6">6 months</option>
+										        <option value="12">12 months</option>
+										        <option value="18">18 months</option>
+										        <option value="24">24 months</option>
+										    </select>
 										</div>
+										<!-- Price change -->
+											<input type="hidden" id="priceChanges" name="priceChanges">
 			                           <!-- Unit -->
 			                           <div class="form-group col-4">
 			                               <label for="unitId">Unit</label>
@@ -70,27 +87,6 @@
 										    <label for="description">Description</label>
 										    <textarea name="description" id="description" class="form-control" placeholder="Enter description" required></textarea>
 										</div>
-			                           <!-- Status -->
-			                           <div class="form-group col-6">
-			                               <label for="status">Status</label>
-			                               <select name="status" id="status" class="form-control" required>
-			                                   <option th:value="Active" th:text="Active"></option>
-			                                   <option th:value="InActive" th:text="InActive"></option>
-			                                   <option th:value="OutOfstock" th:text="OutOfstock"></option>
-			                                   <option th:value="NewRelease" th:text="NewRelease"></option>
-			                               </select>
-			                           </div>
-			                           <!-- Warranty Period -->
-										<div class="form-group col-6">
-										    <label for="wpe">Warranty Period</label>
-										    <select name="wpe" id="wpe" class="form-control" required>
-										    	<option value="0">0 months</option>
-										        <option value="6">6 months</option>
-										        <option value="12">12 months</option>
-										        <option value="18">18 months</option>
-										        <option value="24">24 months</option>
-										    </select>
-										</div>
 			                           <!-- Product Dimensions -->
 			                           <div class="form-group col-3">
 			                               <label for="weight">Weight</label>
@@ -110,27 +106,34 @@
 			                           </div>
 										<input type="hidden" id="dateStart" name="dateStart">
 										<input type="hidden" id="dateEnd" name="dateEnd">
-			                           <div class="form-group col-6">
-								            <label for="specNames">Specification Names</label>
-								            <input type="text" id="specNames" name="specNames" class="form-control" required> 
-								        </div>
-								        <div class="form-group col-6">
-								            <label for="specDescriptions">Specification Descriptions</label>
-								            <input type="text" id="specDescriptions" name="specDescriptions" class="form-control" required>
-								        </div>
 			                           <!-- Product Image (Main Image) -->
 										<div class="form-group col-6">
 										    <label for="productImage">Product Image (Main Image)</label>
 										    <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" required onchange="showImage(event)">
-										    <img id="preview" alt="Main Image Preview" style="display: none; margin-top: 10px; max-width: 100%; height: auto;">
+										    <img id="preview" alt="Main Image Preview" style="display: none; margin-top: 10px; max-width: 100%; height: 100px;">
 										</div>
-
 										<div class="form-group col-6">
 										    <label for="additionalImages">Additional Images (Product Images)</label>
 										    <input type="file" class="form-control" id="additionalImages" name="additionalImages"  multiple>
 										    <div id="imagePreviewContainer" class="image-preview-container"></div>
 										</div>
-						    		</div>
+									</div>
+									<div id="specContainer">
+										<div class="card-body row">
+											<div class="form-group col-6">
+									            <label for="specNames-0">Specification Name 1</label>
+									            <input type="text" id="specNames-0" name="specNames[]" class="form-control" required>
+									        </div>
+									        <div class="form-group col-6">
+									            <label for="specDescriptions-0">Specification Description 1</label>
+									            <input type="text" id="specDescriptions-0" name="specDescriptions[]" class="form-control" required>
+									        </div>
+									       <div class="form-group">
+										    <button type="button" id="addSpecBtn" class="btn btn-primary">Add Specification</button>
+										</div> 
+										</div>   
+									</div>
+
                                <div class="card-footer">
                                    <a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
                                    <button type="submit" class="btn btn-primary">Submit</button>

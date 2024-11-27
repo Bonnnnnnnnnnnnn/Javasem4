@@ -109,8 +109,8 @@ public class ProductController {
 	        @RequestParam int length,
 	        @RequestParam("productImage") MultipartFile productImage,
 	        @RequestParam("additionalImages") List<MultipartFile> additionalImages,
-	        @RequestParam String specNames,
-	        @RequestParam String specDescriptions,
+	        @RequestParam("specNames") List<String> specNames,
+	        @RequestParam("specDescriptions") List<String> specDescriptions,
 	        @RequestParam double priceChanges,
 	        @RequestParam String dateStart,
 	        @RequestParam String dateEnd
@@ -128,13 +128,13 @@ public class ProductController {
 	    prod.setWidth(width);
 	    prod.setHeight(height);
 	    prod.setLength(length);
+
 	    String productImgUrl = FileUtils.uploadFileImage(productImage, "uploads", "product");
 	    prod.setImg(productImgUrl);
-	    
+
 	    List<Product_img> productImages = new ArrayList<>();
 	    for (MultipartFile image : additionalImages) {
 	        if (!image.isEmpty()) {
-	        	System.out.println(image.getOriginalFilename());
 	            String imgUrl = FileUtils.uploadFileImage(image, "uploads", "imgDetail");
 	            Product_img productImageDetail = new Product_img();
 	            productImageDetail.setImg_url(imgUrl);
@@ -142,19 +142,25 @@ public class ProductController {
 	        }
 	    }
 
-	    Product_specifications specification = new Product_specifications();
-	    specification.setName_spe(specNames);
-	    specification.setDes_spe(specDescriptions);
-
+	    // Lưu nhiều Product_specifications
+	    List<Product_specifications> specifications = new ArrayList<>();
+	    for (int i = 0; i < specNames.size(); i++) {
+	        Product_specifications spec = new Product_specifications();
+	        spec.setName_spe(specNames.get(i));
+	        spec.setDes_spe(specDescriptions.get(i));
+	        specifications.add(spec);
+	    }
+	    // Lưu thông tin thay đổi giá
 	    Product_price_change priceChangeDetail = new Product_price_change();
 	    priceChangeDetail.setPrice(priceChanges);
 	    priceChangeDetail.setDate_start(LocalDateTime.now());
 	    priceChangeDetail.setDate_end(null);
-
-	    reppro.saveProductWithDetails(prod, specification, productImages, priceChangeDetail);
+	    
+	    reppro.saveProductWithDetails(prod, specifications, productImages, priceChangeDetail);
 
 	    return "redirect:showProduct";
 	}
+
 
 
 
