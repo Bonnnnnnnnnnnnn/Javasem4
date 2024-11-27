@@ -16,39 +16,29 @@ public class Product {
 	private String Status;
 	private String Description;
 	private int Warranty_period;
-	private int Length;
-	private int Height;
-	private int Width;
-	private int Weight;
+	
 	private Double averageRating;
     private Integer totalFeedbacks;
     private List<Feedback> feedbacks;
-	
-	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, int unit_id,
-			String unit_name, String brand_name, double price, String img, String status, String description,
-			int warranty_period, int length, int height, int width, int weight, Double averageRating,
-			Integer totalFeedbacks, List<Feedback> feedbacks) {
+	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, String brand_name,
+			int unit_id, String unit_name, double price, String img, String description, int warranty_period,
+			String status) {
+
 		super();
 		Id = id;
 		Product_name = product_name;
 		Cate_id = cate_id;
 		Category_name = category_name;
 		Brand_id = brand_id;
+		Brand_name = brand_name;
 		Unit_id = unit_id;
 		Unit_name = unit_name;
-		Brand_name = brand_name;
 		Price = price;
 		Img = img;
 		Status = status;
 		Description = description;
 		Warranty_period = warranty_period;
-		Length = length;
-		Height = height;
-		Width = width;
-		Weight = weight;
-		this.averageRating = averageRating;
-		this.totalFeedbacks = totalFeedbacks;
-		this.feedbacks = feedbacks;
+		Status = status;
 	}
 	public Product() {
 	}
@@ -160,30 +150,6 @@ public class Product {
 	}
 	public void setFeedbacks(List<Feedback> feedbacks) {
 		this.feedbacks = feedbacks;
-	}
-	public int getLength() {
-		return Length;
-	}
-	public void setLength(int length) {
-		Length = length;
-	}
-	public int getHeight() {
-		return Height;
-	}
-	public void setHeight(int height) {
-		Height = height;
-	}
-	public int getWidth() {
-		return Width;
-	}
-	public void setWidth(int width) {
-		Width = width;
-	}
-	public int getWeight() {
-		return Weight;
-	}
-	public void setWeight(int weight) {
-		Weight = weight;
 	}
 	
 }

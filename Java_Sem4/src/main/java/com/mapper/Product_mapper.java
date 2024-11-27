@@ -26,6 +26,10 @@ public class Product_mapper implements RowMapper<Product> {
         item.setBrandName(rs.getString("brand_name"));
         item.setUnit_name(rs.getString("unit_name"));
         item.setCategoryName(rs.getString("category_name"));
+        item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
+        item.setWeight(rs.getInt(Views.COL_PRODUCT_WELGHT));
+        item.setLength(rs.getInt(Views.COL_PRODUCT_LENGTH));
+        item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
         try {
             FeedbackRepository feedbackRepo = MapperHelper.getFeedbackRepo();
             if (feedbackRepo != null) {
@@ -40,7 +44,7 @@ public class Product_mapper implements RowMapper<Product> {
             item.setFeedbacks(new ArrayList<>());
             item.setTotalFeedbacks(0);
         }
-
+        
         return item;
     }
 }
