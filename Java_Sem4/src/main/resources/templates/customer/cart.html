@@ -79,7 +79,7 @@
 						            </div>
 						            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
 						                   th:value="${item.Quantity}"
-						                   th:attr="data-cart-id=${item.Id}, data-price=${item.Price}" 
+						                   th:attr="data-cart-id=${item.Id}, data-price=${item.Price}"
 						                  	style="height:30px;"
 						                  	readonly /> 
 						             <div class="input-group-btn">
@@ -95,7 +95,7 @@
 						        </div>
 						    </td>
 						    <td class="align-middle" th:attr="data-total-id=${item.Id}"
-						        th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
+						        th:text="${'$' + #numbers.formatDecimal(item.Price * item.Quantity, 1, 'COMMA', 2, 'POINT')}"></td>
 						    <td class="align-middle">
 						        <div th:onclick="'deleteFromCart(event,' + ${item.Id} + ')'" class="btn btn-sm btn-danger">
 						            <i class="fa fa-times"></i>
@@ -167,16 +167,18 @@ function updateQuantity(event,cartId) {
             var jsonResponse = JSON.parse(response);
 
             if (jsonResponse.status === "success") {
-                var quantityInput = $('input[data-cart-id="' + cartId + '"]');          
-                var currentQuantity = parseInt(quantityInput.val());
-                currentQuantity++;
-                quantityInput.val(currentQuantity);
+            	var quantityInput = $('input[data-cart-id="' + cartId + '"]');          
+            	var currentQuantity = parseInt(quantityInput.val());
+            	currentQuantity++;
+            	quantityInput.val(currentQuantity);
 
-                var price = parseFloat(quantityInput.data('price'));
-                var newTotal = price * currentQuantity ;
-                var totalCell = $('td[data-total-id="' + cartId + '"]');
-                
-                totalCell.text('$' + newTotal.toFixed(0));
+            	var price = parseFloat(quantityInput.data('price'));
+            	
+            	var newTotal = Number(price * currentQuantity);
+            	
+            	var totalCell = $('td[data-total-id="' + cartId + '"]');
+
+            	totalCell.text('$' + newTotal.toFixed(2));
                 if(appliedCoupon !== null){
      	    		var totalamount = calculateTotalAmount()
      	    		const cpe = document.getElementById('coupon-error')
@@ -220,9 +222,10 @@ function minusFromCart(event,cartId) {
 		                const price = parseFloat(inputField.data('price')); 
 		                currentQuantity--;
 		                inputField.val(currentQuantity); 
-		                var newTotal = price * (currentQuantity );
+		                var newTotal = Number(price * currentQuantity);
+		               
 		                var totalCell = $('td[data-total-id="' + cartId + '"]');
-		                totalCell.text('$' + newTotal.toFixed(0));
+		                totalCell.text('$' + newTotal.toFixed(2));
 		                if(appliedCoupon !== null){
 		                	
 	         	    		var totalamount = calculateTotalAmount()

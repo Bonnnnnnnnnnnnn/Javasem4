@@ -250,7 +250,6 @@ public class GHNService {
                 totalHeight += item.getHeight() * quantity;
                 totalInsuranceValue += item.getPrice() * quantity * usdToVndRate;
             }
-            
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("from_district_id", fromDistrictId);
             requestBody.put("to_district_id", toDistrictId);

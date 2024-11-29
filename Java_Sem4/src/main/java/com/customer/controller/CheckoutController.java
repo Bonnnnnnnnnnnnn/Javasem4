@@ -123,17 +123,20 @@ public class CheckoutController {
 	}
 	@PostMapping("/gocheckout")
 	public String gocheckout(@ModelAttribute Customer cusinfo,
-							@RequestParam String payment,
-							@RequestParam String phoneco,
-							@RequestParam(required = false) String couponId,
-							@RequestParam(required = false) String discount,
-							@RequestParam(required = false) String totalCartValue,
-							@RequestParam(required = false) String notes,
+	                        @RequestParam String payment,
+	                        @RequestParam String phoneco,
+	                        @RequestParam(required = false) String couponId,
+	                        @RequestParam(required = false) String discount,
+	                        @RequestParam(required = false) String totalCartValue,
+	                        @RequestParam(required = false) String notes,
 	                        @RequestParam String province,
 	                        @RequestParam String district,
 	                        @RequestParam String ward,
-							Model model, HttpServletRequest request,HttpServletResponse response) {
-		String[] provinceData = province.split("\\|");
+	                        @RequestParam(required = false) String shippingFee,  
+	                        @RequestParam(required = false) String warehouseId, 
+	                        Model model, HttpServletRequest request, HttpServletResponse response) {
+	    
+	    String[] provinceData = province.split("\\|");
 	    String[] districtData = district.split("\\|");
 	    String[] wardData = ward.split("\\|");
 	    int provinceId = Integer.parseInt(provinceData[0]);
@@ -143,42 +146,45 @@ public class CheckoutController {
 	    String wardId = wardData[0];
 	    String wardName = wardData[1];
 	    String fullAddress = String.format("%s, %s, %s, %s", 
-	    	    removeAccent(cusinfo.getAddress()), 
-	    	    removeAccent(wardName), 
-	    	    removeAccent(districtName), 
-	    	    removeAccent(provinceName));
-			Order or = new Order();
-			or.setDiscount(Double.parseDouble(discount));
-			or.setShippingFee(10.0);
-			or.setCustomer_id(cusinfo.getId());
-			or.setCus_Name(cusinfo.getFirst_name() + " " + cusinfo.getLast_name());
-			or.setStatus("Waiting for cofirmation");
-			or.setPhone(phoneco);
-			or.setProvince_Id(provinceId);
-		    or.setDistrict_Id(districtId);
-		    or.setWard_Id(wardId);
-		    or.setWareHouse_Id(0);
-			or.setAddress(fullAddress);
-			or.setEmployee_id(0);
-			or.setPayment_id(Integer.parseInt(payment));
-			or.setNotes(notes);
-			or.setDate(LocalDate.now());
-			or.setTotalAmount(Double.parseDouble(totalCartValue));
-			or.setCoupon_id(couponId != "" ? Integer.parseInt(couponId) : 0);  
-			or.setOrderID(generateOrderId());
-			List<Shopping_cart> listc = repcart.findAllCartsByCustomerId( (int) request.getSession().getAttribute("logined"));
-//			if(or.getPayment_id() == 1) {
-//				or.setPay_status("Not pay yet");
-//				
-//			 	if(repco.Checkout(or,listc)) {
-//			 		 request.getSession().removeAttribute("cameFromCart");
-//			 	}
-//			 }
-//			else if(or.getPayment_id() == 2) {
-//			 	request.getSession().setAttribute("ordercheckout", or);
-//			 	momoService.processPayment(or, response);
-//	                 return null;
-//			 }
+	            removeAccent(cusinfo.getAddress()), 
+	            removeAccent(wardName), 
+	            removeAccent(districtName), 
+	            removeAccent(provinceName));
+
+	    Order or = new Order();
+	    or.setDiscount(Double.parseDouble(discount));
+	    or.setShippingFee(Double.parseDouble(shippingFee)); // Set shipping fee
+	    or.setCustomer_id(cusinfo.getId());
+	    or.setCus_Name(cusinfo.getFirst_name() + " " + cusinfo.getLast_name());
+	    or.setStatus("Waiting for confirmation");
+	    or.setPhone(phoneco);
+	    or.setProvince_Id(provinceId);
+	    or.setDistrict_Id(districtId);
+	    or.setWard_Id(wardId);
+	    or.setWareHouse_Id(Integer.parseInt(warehouseId)); // Set warehouse ID
+	    or.setAddress(fullAddress);
+	    or.setEmployee_id(0);
+	    or.setPayment_id(Integer.parseInt(payment));
+	    or.setNotes(notes);
+	    or.setDate(LocalDate.now());
+	    or.setTotalAmount(Double.parseDouble(totalCartValue));
+	    or.setCoupon_id(couponId != "" ? Integer.parseInt(couponId) : 0);  
+	    or.setOrderID(generateOrderId());
+	    
+	    List<Shopping_cart> listc = repcart.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
+
+			if(or.getPayment_id() == 1) {
+				or.setPay_status("Not pay yet");
+				
+			 	if(repco.Checkout(or,listc)) {
+			 		 request.getSession().removeAttribute("cameFromCart");
+			 	}
+			 }
+			else if(or.getPayment_id() == 2) {
+			 	request.getSession().setAttribute("ordercheckout", or);
+			 	momoService.processPayment(or, response);
+	                 return null;
+			 }
 		return "redirect:/order/showorder";
 	}
 	private String removeAccent(String s) {
