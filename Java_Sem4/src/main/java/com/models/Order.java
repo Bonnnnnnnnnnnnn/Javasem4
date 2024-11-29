@@ -20,11 +20,11 @@ public class Order {
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
-
 	private String TransactionId;
+	private int WareHouse_Id;
 	private int Province_Id;
 	private int District_Id;
-	private int Ward_Id;
+	private String Ward_Id;
 	private String Ghn_order_code;
 	private String Tracking_code;
 	private LocalDate expected_delivery_time;
@@ -37,8 +37,8 @@ public class Order {
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
-			String transactionId, int province_Id, int district_Id, int ward_Id, String ghn_order_code,
-			String tracking_code, LocalDate expected_delivery_time, String shipping_status) {
+			String transactionId, int province_Id, int district_Id, String ward_Id, String ghn_order_code,
+			String tracking_code, LocalDate expected_delivery_time, String shipping_status,int wareHouse_Id) {
 
 		super();
 		Id = id;
@@ -64,6 +64,7 @@ public class Order {
 		Ward_Id = ward_Id;
 		Ghn_order_code = ghn_order_code;
 		Tracking_code = tracking_code;
+		WareHouse_Id = wareHouse_Id;
 		this.expected_delivery_time = expected_delivery_time;
 		this.shipping_status = shipping_status;
 	}
@@ -189,10 +190,10 @@ public class Order {
 	public void setDistrict_Id(int district_Id) {
 		District_Id = district_Id;
 	}
-	public int getWard_Id() {
+	public String getWard_Id() {
 		return Ward_Id;
 	}
-	public void setWard_Id(int ward_Id) {
+	public void setWard_Id(String ward_Id) {
 		Ward_Id = ward_Id;
 	}
 	public String getGhn_order_code() {
@@ -218,6 +219,12 @@ public class Order {
 	}
 	public void setShipping_status(String shipping_status) {
 		this.shipping_status = shipping_status;
+	}
+	public int getWareHouse_Id() {
+		return WareHouse_Id;
+	}
+	public void setWareHouse_Id(int wareHouse_Id) {
+		WareHouse_Id = wareHouse_Id;
 	}
 	
 	

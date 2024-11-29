@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,14 +19,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.mapper.Customer_mapper;
-import com.mapper.Payment_mapper;
-import com.mapper.Shopping_cart_mapper;
+import com.mapper.*;
+import com.mapper.Warehouse_mapper;
 import com.models.Customer;
 import com.models.Order;
 import com.models.Order_detail;
+import com.models.PageView;
 import com.models.Payment;
 import com.models.Shopping_cart;
+import com.models.Warehouse;
 import com.utils.Views;
 
 @Repository
@@ -54,7 +56,8 @@ public class CheckoutRepository {
 	public boolean Checkout(Order order, List<Shopping_cart> listc) {
 	    try {
 	        
-	        String insertSql = String.format("INSERT INTO [%s] (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	        String insertSql = String.format("INSERT INTO [%s] (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+	        		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 	        		Views.TBL_ORDER,
 	                Views.COL_ORDER_CUSTOMER_ID,
 	                Views.COL_ORDER_CUSNAME,
@@ -71,7 +74,11 @@ public class CheckoutRepository {
 	                Views.COL_ORDER_SHIPPINGFEE,
 	                Views.COL_ORDER_ORDERID,
 	                Views.COL_ORDER_NOTES,
-	                Views.COL_ORDER_TRANSMOMOID);   
+	                Views.COL_ORDER_TRANSMOMOID,
+	                Views.COL_ORDER_PROVINCE_ID,
+	                Views.COL_ORDER_DISTRICT_ID,
+	                Views.COL_ORDER_WARD_ID,
+	                Views.COL_ORDER_WAREHOUSE_ID);   
 
 	        KeyHolder keyHolder = new GeneratedKeyHolder();
 	        int rowsAffected = db.update(connection -> {
@@ -92,6 +99,10 @@ public class CheckoutRepository {
 	            ps.setString(14, order.getOrderID());
 	            ps.setString(15, order.getNotes());
 	            ps.setString(16, order.getTransactionId());
+	            ps.setInt(17, order.getProvince_Id());
+	            ps.setInt(18, order.getDistrict_Id());
+	            ps.setString(19, order.getWard_Id());
+	            ps.setObject(20, order.getWareHouse_Id() != 0 ? order.getWareHouse_Id() : null);
 	            return ps;
 	        }, keyHolder);
 
@@ -127,7 +138,18 @@ public class CheckoutRepository {
 	    }
 	}
 
+	public List<Warehouse> findAll() {
+	    try {
+	        String sql = String.format("SELECT * FROM %s", Views.TBL_WAREHOUSE);
 
+	        List<Warehouse> warehouses = db.query(sql, new WarehouseDISTANCE_mapper());
+	        
+	        return warehouses;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return Collections.emptyList();
+	    }
+	}
 	
 	
 

@@ -1,4 +1,4 @@
-package com.models;
+package com.models.ghn;
 
 import java.util.List;
 

@@ -20,7 +20,10 @@ public class Shopping_cart_mapper implements RowMapper<Shopping_cart> {
         item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME)); 
         item.setPrice(rs.getDouble(Views.COL_PRODUCT_PRICE)); 
         item.setImg(rs.getString(Views.COL_PRODUCT_IMG)); 
-
+        item.setWeight(rs.getInt(Views.COL_PRODUCT_WELGHT));
+        item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
+        item.setWidth(rs.getInt(Views.COL_PRODUCT_WIDTH));
+        item.setLength(rs.getInt(Views.COL_PRODUCT_LENGTH));
         return item;
     }
 }

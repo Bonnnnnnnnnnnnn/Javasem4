@@ -1,4 +1,4 @@
-package com.models;
+package com.models.ghn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -3,11 +3,16 @@ package com.customer.controller;
 
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.text.Normalizer;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +30,8 @@ import com.customer.repository.AccountRepository;
 import com.customer.repository.CartRepository;
 import com.customer.repository.CheckoutRepository;
 import com.customer.repository.CouponRepository;
+import com.customer.repository.DistanceService;
+import com.customer.repository.GHNService;
 import com.customer.repository.MomoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +39,7 @@ import com.models.Coupon;
 import com.models.Customer;
 import com.models.Order;
 import com.models.Shopping_cart;
+import com.models.Warehouse;
 import com.utils.Views;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +64,11 @@ public class CheckoutController {
 	@Autowired
 	private MomoService momoService;
 	
+	@Autowired
+    private GHNService ghnService;
+	
+	@Autowired
+	private DistanceService distanceService;
 	@GetMapping("/showcheckout")
 	public String showpage(
 	        Model model, 
@@ -74,6 +87,7 @@ public class CheckoutController {
 	    double totalCartValue = listc.stream()
 		        .mapToDouble(cartItem -> cartItem.getPrice() * cartItem.getQuantity())
 		        .sum();
+	    model.addAttribute("totalCartorigin", totalCartValue);
 	    Double discount = 0.00;
 	    if(request.getSession().getAttribute("appliedcouponid") != null) {
 	    	Coupon cp = repcp.findCouponByid((int)request.getSession().getAttribute("appliedcouponid"));
@@ -115,7 +129,24 @@ public class CheckoutController {
 							@RequestParam(required = false) String discount,
 							@RequestParam(required = false) String totalCartValue,
 							@RequestParam(required = false) String notes,
+	                        @RequestParam String province,
+	                        @RequestParam String district,
+	                        @RequestParam String ward,
 							Model model, HttpServletRequest request,HttpServletResponse response) {
+		String[] provinceData = province.split("\\|");
+	    String[] districtData = district.split("\\|");
+	    String[] wardData = ward.split("\\|");
+	    int provinceId = Integer.parseInt(provinceData[0]);
+	    String provinceName = provinceData[1];
+	    int districtId = Integer.parseInt(districtData[0]);
+	    String districtName = districtData[1];
+	    String wardId = wardData[0];
+	    String wardName = wardData[1];
+	    String fullAddress = String.format("%s, %s, %s, %s", 
+	    	    removeAccent(cusinfo.getAddress()), 
+	    	    removeAccent(wardName), 
+	    	    removeAccent(districtName), 
+	    	    removeAccent(provinceName));
 			Order or = new Order();
 			or.setDiscount(Double.parseDouble(discount));
 			or.setShippingFee(10.0);
@@ -123,7 +154,11 @@ public class CheckoutController {
 			or.setCus_Name(cusinfo.getFirst_name() + " " + cusinfo.getLast_name());
 			or.setStatus("Waiting for cofirmation");
 			or.setPhone(phoneco);
-			or.setAddress(cusinfo.getAddress());
+			or.setProvince_Id(provinceId);
+		    or.setDistrict_Id(districtId);
+		    or.setWard_Id(wardId);
+		    or.setWareHouse_Id(0);
+			or.setAddress(fullAddress);
 			or.setEmployee_id(0);
 			or.setPayment_id(Integer.parseInt(payment));
 			or.setNotes(notes);
@@ -132,18 +167,24 @@ public class CheckoutController {
 			or.setCoupon_id(couponId != "" ? Integer.parseInt(couponId) : 0);  
 			or.setOrderID(generateOrderId());
 			List<Shopping_cart> listc = repcart.findAllCartsByCustomerId( (int) request.getSession().getAttribute("logined"));
-			if(or.getPayment_id() == 1) {
-				or.setPay_status("Not pay yet");
-				
-				if(repco.Checkout(or,listc)) {
-					 request.getSession().removeAttribute("cameFromCart");
-				}
-			}else if(or.getPayment_id() == 2) {
-				request.getSession().setAttribute("ordercheckout", or);
-				momoService.processPayment(or, response);
-	                return null;
-			}
+//			if(or.getPayment_id() == 1) {
+//				or.setPay_status("Not pay yet");
+//				
+//			 	if(repco.Checkout(or,listc)) {
+//			 		 request.getSession().removeAttribute("cameFromCart");
+//			 	}
+//			 }
+//			else if(or.getPayment_id() == 2) {
+//			 	request.getSession().setAttribute("ordercheckout", or);
+//			 	momoService.processPayment(or, response);
+//	                 return null;
+//			 }
 		return "redirect:/order/showorder";
+	}
+	private String removeAccent(String s) {
+	    String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+	    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+	    return pattern.matcher(temp).replaceAll("").replace('đ', 'd').replace('Đ', 'D');
 	}
 	private String generateOrderId() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -195,17 +236,10 @@ public class CheckoutController {
         try {
             String resultCode = body.get("resultCode");
             String orderId = body.get("orderId");
-            
-           
-            
-            if ("0".equals(resultCode)) {
-               
+            if ("0".equals(resultCode)) { 
             } else {
                 
             }
-            
-           
-            
             return ResponseEntity.ok().body(Map.of("message", "Success"));
             
         } catch (Exception e) {
@@ -213,4 +247,72 @@ public class CheckoutController {
             return ResponseEntity.badRequest().body(Map.of("message", "Failed"));
         }
     }
+	@GetMapping("/api/provinces")
+    @ResponseBody
+    public ResponseEntity<?> getProvinces() {
+        try {
+            return ResponseEntity.ok(ghnService.getProvinces());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching provinces: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/districts")
+    @ResponseBody
+    public ResponseEntity<?> getDistricts(@RequestParam Integer provinceId) {
+        try {
+            return ResponseEntity.ok(ghnService.getDistricts(provinceId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching districts: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/wards")
+    @ResponseBody
+    public ResponseEntity<?> getWards(@RequestParam Integer districtId) {
+        try {
+            return ResponseEntity.ok(ghnService.getWards(districtId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching wards: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/api/nearest")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> nearest(
+        @RequestParam("address") String address,
+        @RequestParam("districtId") int toDistrictId,
+        HttpServletRequest request
+    ) {
+        try {
+            
+            Warehouse nearestWarehouse = distanceService.findNearestWarehouse(address);
+            List<Shopping_cart> listc = repcart.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
+            if (nearestWarehouse != null) {
+                // Tính phí ship
+                double shippingFee = ghnService.calculateShippingFee(
+                    nearestWarehouse.getDistrict_Id(),
+                    toDistrictId,
+                    listc
+                );
+                
+                // Tạo object response
+                Map<String, Object> response = new HashMap<>();
+                response.put("id", nearestWarehouse.getId());
+                response.put("name", nearestWarehouse.getName());
+                response.put("address", nearestWarehouse.getAddress());
+                response.put("lat", nearestWarehouse.getLat());
+                response.put("lng", nearestWarehouse.getLng());
+                response.put("districtId", nearestWarehouse.getDistrict_Id());
+                response.put("shippingFee", shippingFee);
+                
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
 }	

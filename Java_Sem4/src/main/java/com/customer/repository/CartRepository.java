@@ -177,15 +177,20 @@ public class CartRepository {
 
 	public List<Shopping_cart> findAllCartsByCustomerId(int customerId) {
 	    try {
-	        String str_query = String.format("SELECT sc.*, p.%s , p.%s , p.%s, p.%s as cart_status " +
+	        String str_query = String.format("SELECT sc.*, p.%s, p.%s, p.%s, p.%s as cart_status, " +
+	                        "p.%s, p.%s, p.%s, p.%s " +
 	                        "FROM %s sc " +
 	                        "INNER JOIN %s p ON sc.%s = p.%s " +
 	                        "INNER JOIN %s c ON sc.%s = c.%s " +
-	                        "WHERE sc.%s = ? " ,
+	                        "WHERE sc.%s = ? ",
 	                Views.COL_PRODUCT_NAME, 
 	                Views.COL_PRODUCT_PRICE, 
 	                Views.COL_PRODUCT_IMG,
 	                Views.COL_PRODUCT_STATUS,
+	                Views.COL_PRODUCT_WELGHT,   
+	                Views.COL_PRODUCT_HEIGHT,    
+	                Views.COL_PRODUCT_WIDTH,     
+	                Views.COL_PRODUCT_LENGTH,    
 	                Views.TBL_SHOPING_CART,
 	                Views.TBL_PRODUCT, 
 	                Views.COL_SHOPING_CART_PRODUCT_ID, 
@@ -195,7 +200,7 @@ public class CartRepository {
 	                Views.COL_CUSTOMER_ID,
 	                Views.COL_SHOPING_CART_CUSTOMER_ID);
 
-	            return db.query(str_query, new Shopping_cart_mapper(), customerId);
+	        return db.query(str_query, new Shopping_cart_mapper(), customerId);
 	        
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching shopping carts: " + e.getMessage());

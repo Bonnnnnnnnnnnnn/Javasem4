@@ -14,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.models.Order;
@@ -31,7 +32,8 @@ public class MomoService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	@Autowired
     private MomoConfig momoConfig;
-    
+	@Autowired
+	private Environment env;
 	private static final Logger logger = LoggerFactory.getLogger(MomoService.class);
 	public MomoCreatePaymentResponseModel createPayment(OrderInfoModel model,Order or) {
 	    try {
@@ -119,7 +121,7 @@ public class MomoService {
     }
     public void processPayment(Order or, HttpServletResponse response) {
         try {
-            // Validate amount
+        	double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
             if (or.getTotalAmount() < 1000 || or.getTotalAmount()  > 50000000) {
                 sendErrorResponse(response, "Số tiền phải từ 1,000đ đến 50,000,000đ");
                 return;
@@ -128,7 +130,7 @@ public class MomoService {
             // Tạo order info model
             OrderInfoModel orderInfoModel = new OrderInfoModel();
             orderInfoModel.setOrderInfo(or.getOrderID());
-            orderInfoModel.setAmount((int)Math.round(or.getTotalAmount() * 100));
+            orderInfoModel.setAmount((int)Math.round(or.getTotalAmount() * usdToVndRate));
 
             // Gọi API MoMo
             MomoCreatePaymentResponseModel momoResponse = createPayment(orderInfoModel,or);
@@ -174,9 +176,9 @@ public class MomoService {
         try {
             String requestId = String.valueOf(System.currentTimeMillis());
             String orderId = String.valueOf(System.currentTimeMillis());
-            
+            double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
             // Chuyển đổi số tiền sang đúng format
-            long amount = Math.round(order.getTotalAmount()*100);
+            long amount = Math.round(order.getTotalAmount()*usdToVndRate);
             
             // Log để debug
             logger.info("Refund request:");
