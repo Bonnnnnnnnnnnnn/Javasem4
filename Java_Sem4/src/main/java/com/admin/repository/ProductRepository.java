@@ -1,6 +1,7 @@
 package com.admin.repository;
 
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
@@ -159,10 +161,10 @@ public class ProductRepository {
                 pro.setCate_id(rs.getInt("Cate_id"));
                 pro.setUnit_id(rs.getInt("Unit_Id"));
                 pro.setProduct_name(rs.getString("Product_name"));
-                pro.setDescription(rs.getString("Description"));
-                pro.setImg(rs.getString("Img"));
+                pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));  // Sử dụng hằng số
+                pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));  // Sử dụng hằng số
                 pro.setPrice(rs.getDouble("Price"));
-                pro.setWarranty_period(rs.getInt("Warranty_period"));
+                pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));  // Sử dụng hằng số
                 pro.setBrandName(rs.getString("brand_name"));
                 pro.setCategoryName(rs.getString("category_name"));
                 pro.setStatus(rs.getString("Status"));
@@ -178,6 +180,7 @@ public class ProductRepository {
             return null;
         }
     }
+
     public boolean saveProduct(Product pro) {
         try {
             String sql = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Unit_Id, Price, Img, Status, Description, Warranty_period) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -243,12 +246,19 @@ public class ProductRepository {
             return null; 
         }
     }
-
-    public boolean updateProduct(Product pro) 
-    {   
+    @Transactional
+    public boolean updateProductAndPrice(Product pro, double newPrice) {
         try {
-        	String sql = "UPDATE Product SET Product_name = ?, Cate_Id = ?, Brand_Id = ?, Unit_Id = ?, Price = ?, Img = ?, Status = ?, Description = ?, Warranty_period = ? WHERE Id = ?";
-            Object[] params = {
+        	String sqlGetCurrentPrice = "SELECT Price FROM Product WHERE Id = ?";
+            Double currentPrice = dbpro.queryForObject(sqlGetCurrentPrice, Double.class, pro.getId());
+            String sqlUpdateProduct = """
+                UPDATE Product 
+                SET Product_name = ?, Cate_Id = ?, Brand_Id = ?, Unit_Id = ?, 
+                    Price = ?, Img = ?, Status = ?, Description = ?, Warranty_period = ?, 
+                    Length = ?, Width = ?, Height = ?, Weight = ? 
+                WHERE Id = ?
+            """;
+            Object[] productParams = {
                 pro.getProduct_name(),
                 pro.getCate_id(),
                 pro.getBrand_id(),
@@ -258,15 +268,54 @@ public class ProductRepository {
                 pro.getStatus(),
                 pro.getDescription(),
                 pro.getWarranty_period(),
+                pro.getLength(),
+                pro.getWidth(),
+                pro.getHeight(),
+                pro.getWeight(),
                 pro.getId()
             };
-            int rowsAffected = dbpro.update(sql, params);
-            return rowsAffected > 0;
-        } catch (DataAccessException ex) {
-            ex.printStackTrace();
-            return false;
+            int rowsProduct = dbpro.update(sqlUpdateProduct, productParams);
+
+            if (rowsProduct == 0) {
+                throw new RuntimeException("Không thể cập nhật thông tin sản phẩm.");
+            }
+
+            if (pro.getPrice() != currentPrice) {
+                // 2.1 Cập nhật cột Date_end của bản ghi giá trước đó (nếu NULL) với thời gian hiện tại
+                String sqlUpdatePreviousPrice = """
+                    UPDATE Product_price_change 
+                    SET Date_end = ? 
+                    WHERE Product_Id = ? AND Date_end IS NULL
+                """;
+                int rowsUpdatedPrice = dbpro.update(sqlUpdatePreviousPrice, LocalDateTime.now(), pro.getId());
+
+                if (rowsUpdatedPrice == 0) {
+                    // Nếu không có bản ghi nào thỏa mãn điều kiện, log chi tiết và thông báo
+                    System.err.println("Không có bản ghi giá cũ để cập nhật Date_end.");
+                    throw new RuntimeException("Không thể cập nhật thời gian kết thúc cho giá trước đó.");
+                }
+
+                // 2.2 Thêm bản ghi mới vào Product_price_change
+                String sqlInsertNewPrice = """
+                    INSERT INTO Product_price_change (Product_Id, Price, Date_start, Date_end) 
+                    VALUES (?, ?, ?, NULL)
+                """;
+                int rowsPrice = dbpro.update(sqlInsertNewPrice, pro.getId(), newPrice, LocalDateTime.now());
+
+                if (rowsPrice == 0) {
+                    // In ra lỗi nếu không thêm được bản ghi
+                    System.err.println("Không thể thêm bản ghi thay đổi giá.");
+                    throw new RuntimeException("Không thể thêm bản ghi thay đổi giá.");
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cập nhật thất bại, toàn bộ giao dịch bị hủy.");
         }
     }
+
     
     //product_specifications
     
@@ -405,6 +454,17 @@ public class ProductRepository {
             System.err.println("Lỗi khi lấy dữ liệu thay đổi giá cho Product ID: " + productId);
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+    public boolean addProPs(Product_specifications ps) {
+        try {
+            String sql = "INSERT INTO product_specifications (Product_id,Name_spe,Des_spe) VALUES (?, ?, ?)";
+            int rowsAffected = dbpro.update(sql, ps.getProduct_id(), ps.getName_spe(),ps.getDes_spe());
+            		
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

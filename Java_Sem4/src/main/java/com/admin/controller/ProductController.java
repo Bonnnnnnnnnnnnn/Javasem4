@@ -162,8 +162,6 @@ public class ProductController {
 	}
 
 
-
-
 	@GetMapping("deleteProduct")
 	public String deleteProduct(@RequestParam("id") String id, 
 	                            @RequestParam("fileName") String fileName) {
@@ -184,12 +182,12 @@ public class ProductController {
 	public String showUpdateProduct(Model model, @RequestParam String id) {
 	    try {
 	        int idPro = Integer.parseInt(id);
-	        Product product = reppro.findId(idPro);
+	        Product product = reppro.findId(idPro);  // Gọi phương thức findId với ID sản phẩm
 	        if (product == null) {
 	            model.addAttribute("error", "Product not found.");
 	            return "redirect:showProduct";
 	        }
-	        model.addAttribute("up_item", product);
+	        model.addAttribute("product", product);  // Truyền đối tượng product vào model
 	        model.addAttribute("units", reppro.findAllUnit());
 	        model.addAttribute("brands", reppro.findAllBrand());
 	        model.addAttribute("categorys", reppro.findAllCategory());
@@ -203,31 +201,47 @@ public class ProductController {
 	    } 
 	}
 
-//	@PostMapping("updateProduct")
-//	public String updateProduct(@RequestParam("product_name") String proName,
-//								@RequestParam("cate_id") int cateId,
-//								@RequestParam("Unit_id") int UnitId,
-//								@RequestParam("brand_id") int brandId,
-//								@RequestParam("price") double price,
-//								@RequestParam("description") String description,
-//								@RequestParam("warranty_period") int wpe,
-//								@RequestParam("status") String status,
-//								@RequestParam("img") MultipartFile img,
-//								@RequestParam("id") int id) {
-//		Product prod = new Product();
-//		prod.setProduct_name(proName);
-//		prod.setCate_id(cateId);
-//		prod.setUnit_id(UnitId);
-//		prod.setBrand_id(brandId);
-//		prod.setPrice(price);
-//		prod.setDescription(description);
-//		prod.setWarranty_period(wpe);
-//		prod.setStatus(status);
-//		prod.setImg(FileUtils.uploadFileImage(img , "uploads"));
-//		prod.setId(id);
-//		reppro.updateProduct(prod);	
-//		return "redirect:showProduct";
-//	}
+
+	@PostMapping("/updateProductAndPrice")
+	public String updateProductAndPrice(
+	        @RequestParam int id,
+	        @RequestParam String productName,
+	        @RequestParam int categoryId,
+	        @RequestParam int brandId,
+	        @RequestParam int unitId,
+	        @RequestParam double price,
+	        @RequestParam String description,
+	        @RequestParam String status,
+	        @RequestParam("warranty_period") int warrantyPeriod,
+	        @RequestParam int weight,
+	        @RequestParam int width,
+	        @RequestParam int height,
+	        @RequestParam int length,
+	        @RequestParam("img") MultipartFile productImage,
+	        @RequestParam double newPrice) {
+	    Product product = new Product();
+	    product.setId(id);
+	    product.setProduct_name(productName);
+	    product.setCate_id(categoryId);
+	    product.setBrand_id(brandId);
+	    product.setUnit_id(unitId);
+	    product.setPrice(price);
+	    product.setDescription(description);
+	    product.setStatus(status);
+	    product.setWarranty_period(warrantyPeriod);
+	    product.setWeight(weight);
+	    product.setWidth(width);
+	    product.setHeight(height);
+	    product.setLength(length);
+
+	    if (!productImage.isEmpty()) {
+	        String imageUrl = FileUtils.uploadFileImage(productImage, "uploads", "product");
+	        product.setImg(imageUrl);
+	    }
+	     reppro.updateProductAndPrice(product, newPrice);
+
+	     return "redirect:showProduct";
+	}
 	//product_specifications
 	@GetMapping("showAddPs")
 	public String showAddPs(Model model, @RequestParam("id") int id) {
@@ -249,19 +263,19 @@ public class ProductController {
 	        return "redirect:/showProduct";
 	    }
 	}
-//	@PostMapping("addPs")
-//	public String addPs(@RequestParam("name_spe") String nameSpe,
-//	                    @RequestParam("des_spe") String desSpe,
-//	                    @RequestParam("product_id") int productId) {
-//	    Product_specifications ps = new Product_specifications();
-//	    ps.setName_spe(nameSpe);
-//	    ps.setDes_spe(desSpe);
-//	    ps.setProduct_id(productId);
-//
-//	    reppro.addProSpe(ps);
-//
-//	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
-//	}
+	@PostMapping("addPs")
+	public String addPs(@RequestParam("name_spe") String nameSpe,
+	                    @RequestParam("des_spe") String desSpe,
+	                    @RequestParam("product_id") int productId) {
+	    Product_specifications ps = new Product_specifications();
+	    ps.setName_spe(nameSpe);
+	    ps.setDes_spe(desSpe);
+	    ps.setProduct_id(productId);
+
+	    reppro.addProPs(ps);
+
+	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
+	}
 
 
 

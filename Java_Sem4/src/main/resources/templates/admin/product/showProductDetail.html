@@ -199,11 +199,13 @@
 					                    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
 					                </td>
 									<td>
-									    <span th:text="${#temporals.format(item.date_start, 'dd-MM-yyyy')}"></span>
+									    <span th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span>
 									</td>
-					                <td>
-					                    <span th:text="${item.date_end != null ? #dates.format(item.date_end, 'yyyy-MM-dd') : 'Present'}"></span>
-					                </td>
+									<td>
+									    <span th:if="${item.date_end != null}" th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
+									    <span th:if="${item.date_end == null}" th:text="'Present'"></span>
+									</td>
+
 					            </tr>
 					        </tbody>
 					    </table>
