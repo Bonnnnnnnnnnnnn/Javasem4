@@ -32,9 +32,228 @@
 			opacity: 0;
 			}
 		}
-		
-		
-		
+		.comment-input.banned {
+    color: red !important; /* Dùng !important để override các style khác */
+}
+/* Container chính */
+.product-reviews {
+    padding: 20px;
+    background: #fff;
+}
+
+/* Form comment chính */
+.main-comment-form {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    z-index: 10;
+}
+
+/* Style chung cho input groups */
+.comment-input-group, .reply-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Style chung cho inputs */
+.comment-input, .reply-input {
+    flex: 1;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.comment-input:focus, .reply-input:focus {
+    border-color: #007bff;
+}
+
+/* Style cho nút submit */
+.comment-submit, .reply-submit {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.comment-submit:hover, .reply-submit:hover {
+    background: #0056b3;
+}
+
+/* Container comments có scroll */
+.comments-container {
+	min-height:200px;
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 10px;
+}
+
+/* Tùy chỉnh thanh scroll */
+.comments-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.comments-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.comments-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.comments-container::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Comment items */
+.comment-item {
+    margin-bottom: 20px;
+}
+
+.comment-main {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Comment header */
+.comment-header, .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info i {
+    color: #666;
+    font-size: 1.2em;
+}
+
+.username {
+    font-weight: 500;
+    color: #333;
+}
+
+.staff-name {
+    color: #007bff;
+}
+
+.comment-date, .reply-date {
+    font-size: 0.85em;
+    color: #666;
+}
+
+/* Comment content */
+.comment-content, .reply-content {
+    color: #444;
+    line-height: 1.5;
+    margin: 10px 0;
+}
+
+/* Comment actions */
+.comment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 5px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    color: #666;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+/* Replies section */
+.replies-section {
+    margin-left: 30px;
+    margin-top: 10px;
+    padding-left: 15px;
+    border-left: 2px solid #e9ecef;
+}
+
+.reply-item {
+    background: #fff;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Reply input group */
+.reply-input-group {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+/* Login prompt */
+.login-prompt {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    color: #666;
+}
+
+.login-prompt a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-prompt a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .replies-section {
+        margin-left: 15px;
+        padding-left: 10px;
+    }
+    
+    .comment-input, .reply-input {
+        padding: 6px 12px;
+    }
+    
+    .comment-submit, .reply-submit {
+        width: 32px;
+        height: 32px;
+    }
+}
 </style>
 <body>
 
@@ -161,6 +380,8 @@
                         <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
                         <!-- <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Information</a> -->
                         <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Reviews</a>
+                        
+                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Comment</a>
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="tab-pane-1">
@@ -168,88 +389,166 @@
                              <p th:text="${product.Description}"></p>
                         </div>
                        <div class="tab-pane fade" id="tab-pane-2">
-    <h4 class="mb-3">Customer Reviews 
-    <div class="row">
-    <div class="col-3">
-    <div class="d-flex mb-3">
-    <div class="text-primary mr-2">
-        <th:block th:with="rating=${product.averageRating}">
-            <!-- Rating từ 1-5 -->
-            <th:block th:if="${rating >= 1}"><small class="fas fa-star"></small></th:block>
-            <th:block th:if="${rating >= 0.5 && rating < 1}"><small class="fas fa-star-half-alt"></small></th:block>
-            <th:block th:if="${rating < 0.5}"><small class="far fa-star"></small></th:block>
-            
-            <th:block th:if="${rating >= 2}"><small class="fas fa-star"></small></th:block>
-            <th:block th:if="${rating >= 1.5 && rating < 2}"><small class="fas fa-star-half-alt"></small></th:block>
-            <th:block th:if="${rating < 1.5}"><small class="far fa-star"></small></th:block>
-            
-            <th:block th:if="${rating >= 3}"><small class="fas fa-star"></small></th:block>
-            <th:block th:if="${rating >= 2.5 && rating < 3}"><small class="fas fa-star-half-alt"></small></th:block>
-            <th:block th:if="${rating < 2.5}"><small class="far fa-star"></small></th:block>
-            
-            <th:block th:if="${rating >= 4}"><small class="fas fa-star"></small></th:block>
-            <th:block th:if="${rating >= 3.5 && rating < 4}"><small class="fas fa-star-half-alt"></small></th:block>
-            <th:block th:if="${rating < 3.5}"><small class="far fa-star"></small></th:block>
-            
-            <th:block th:if="${rating >= 5}"><small class="fas fa-star"></small></th:block>
-            <th:block th:if="${rating >= 4.5 && rating < 5}"><small class="fas fa-star-half-alt"></small></th:block>
-            <th:block th:if="${rating < 4.5}"><small class="far fa-star"></small></th:block>
-        </th:block>
-    </div>
-    <small class="pt-1">
-        (<span th:text="${product.totalFeedbacks}"></span> Reviews)
-    </small>
-</div>
-    </div>
-    </div>
-        
-    </h4>
-    <h5>Feedbacks comment</h5>
-    <div class="feedback-scroll" style="max-height: 400px; overflow-y: auto;">
-        <div th:if="${not #lists.isEmpty(product.feedbacks)}" class="row">
-            <div class="col-md-12">
-                <div class="list-group">
-                    <div th:each="feedback : ${product.feedbacks}" 
-                         class="list-group-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-1" th:text="${feedback.customerName}"></h6>
-                            <small th:text="${#temporals.format(feedback.created_Date, 'dd-MM-yyyy')}">Date</small>
+						    <h4 class="mb-3">Customer Reviews </h4>
+						    <div class="row">
+							    <div class="col-3">
+								    <div class="d-flex mb-3">
+									    <div class="text-primary mr-2">
+									        <th:block th:with="rating=${product.averageRating}">
+									            <!-- Rating từ 1-5 -->
+									            <th:block th:if="${rating >= 1}"><small class="fas fa-star"></small></th:block>
+									            <th:block th:if="${rating >= 0.5 && rating < 1}"><small class="fas fa-star-half-alt"></small></th:block>
+									            <th:block th:if="${rating < 0.5}"><small class="far fa-star"></small></th:block>
+									            
+									            <th:block th:if="${rating >= 2}"><small class="fas fa-star"></small></th:block>
+									            <th:block th:if="${rating >= 1.5 && rating < 2}"><small class="fas fa-star-half-alt"></small></th:block>
+									            <th:block th:if="${rating < 1.5}"><small class="far fa-star"></small></th:block>
+									            
+									            <th:block th:if="${rating >= 3}"><small class="fas fa-star"></small></th:block>
+									            <th:block th:if="${rating >= 2.5 && rating < 3}"><small class="fas fa-star-half-alt"></small></th:block>
+									            <th:block th:if="${rating < 2.5}"><small class="far fa-star"></small></th:block>
+									            
+									            <th:block th:if="${rating >= 4}"><small class="fas fa-star"></small></th:block>
+									            <th:block th:if="${rating >= 3.5 && rating < 4}"><small class="fas fa-star-half-alt"></small></th:block>
+									            <th:block th:if="${rating < 3.5}"><small class="far fa-star"></small></th:block>
+									            
+									            <th:block th:if="${rating >= 5}"><small class="fas fa-star"></small></th:block>
+									            <th:block th:if="${rating >= 4.5 && rating < 5}"><small class="fas fa-star-half-alt"></small></th:block>
+									            <th:block th:if="${rating < 4.5}"><small class="far fa-star"></small></th:block>
+									        </th:block>
+									    </div>
+									    <small class="pt-1">
+									        (<span th:text="${product.totalFeedbacks}"></span> Reviews)
+									    </small>
+									</div>
+							    </div>
+						    </div>
+						        
+						    
+						    <h5>Feedbacks comment</h5>
+						    <div class="feedback-scroll" style="max-height: 300px; overflow-y: auto;">
+						        <div th:if="${not #lists.isEmpty(product.feedbacks)}" class="row">
+						            <div class="col-md-12">
+						                <div class="list-group">
+						                    <div th:each="feedback : ${product.feedbacks}" 
+						                         class="list-group-item mb-3">
+						                        <div class="d-flex justify-content-between align-items-center">
+						                            <h6 class="mb-1" th:text="${feedback.customerName}"></h6>
+						                            <small th:text="${#temporals.format(feedback.created_Date, 'dd-MM-yyyy')}">Date</small>
+						                        </div>
+						                        
+						                        <!-- Rating stars -->
+						                        <div class="text-primary mb-2">
+						                            <th:block th:with="rate=${feedback.rating}">
+						                                <!-- Rating từ 1-5 -->
+						                                <th:block th:if="${rate >= 1}"><small class="fas fa-star"></small></th:block>
+						                                <th:block th:if="${rate < 1}"><small class="far fa-star"></small></th:block>
+						                                
+						                                <th:block th:if="${rate >= 2}"><small class="fas fa-star"></small></th:block>
+						                                <th:block th:if="${rate < 2}"><small class="far fa-star"></small></th:block>
+						                                
+						                                <th:block th:if="${rate >= 3}"><small class="fas fa-star"></small></th:block>
+						                                <th:block th:if="${rate < 3}"><small class="far fa-star"></small></th:block>
+						                                
+						                                <th:block th:if="${rate >= 4}"><small class="fas fa-star"></small></th:block>
+						                                <th:block th:if="${rate < 4}"><small class="far fa-star"></small></th:block>
+						                                
+						                                <th:block th:if="${rate >= 5}"><small class="fas fa-star"></small></th:block>
+						                                <th:block th:if="${rate < 5}"><small class="far fa-star"></small></th:block>
+						                            </th:block>
+						                        </div>
+						                        
+						                        <p class="mb-1" th:text="${feedback.comment}">Comment</p>
+						                    </div>
+						                </div>
+						            </div>
+						        </div>
+						        
+						        <div th:if="${#lists.isEmpty(product.feedbacks.?[comment != null && !comment.isEmpty()])}" 
+						             class="text-center py-4">
+						            <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+						        </div>
+						    </div>
+						</div>
+                       <div class="tab-pane fade" id="tab-pane-3">
+    <div class="product-reviews">
+        <!-- Notification container -->
+        <div id="notification-container"></div>
+
+        <!-- Form comment chính -->
+        <div class="main-comment-form">
+            <h5>Write a Comment</h5>
+            <div class="comment-input-group">
+                <input type="text" class="comment-input" placeholder="Write your comment here...">
+                <button class="comment-submit" th:onclick="submitComment(this, [[${product.Id}]])">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Số lượng reviews -->
+        <div class="reviews-count">
+            <h5>Customer Comments (<span th:text="${comments.size()}">0</span>)</h5>
+        </div>
+
+        <!-- Container comments -->
+        <div class="comments-container">
+            <!-- Comment chính -->
+            <div th:each="comment : ${comments}" class="comment-item">
+                <div class="comment-main">
+                    <div class="comment-header">
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="username" th:text="${comment.customerFirstName + ' ' + comment.customerLastName}"></span>
                         </div>
-                        
-                        <!-- Rating stars -->
-                        <div class="text-primary mb-2">
-                            <th:block th:with="rate=${feedback.rating}">
-                                <!-- Rating từ 1-5 -->
-                                <th:block th:if="${rate >= 1}"><small class="fas fa-star"></small></th:block>
-                                <th:block th:if="${rate < 1}"><small class="far fa-star"></small></th:block>
-                                
-                                <th:block th:if="${rate >= 2}"><small class="fas fa-star"></small></th:block>
-                                <th:block th:if="${rate < 2}"><small class="far fa-star"></small></th:block>
-                                
-                                <th:block th:if="${rate >= 3}"><small class="fas fa-star"></small></th:block>
-                                <th:block th:if="${rate < 3}"><small class="far fa-star"></small></th:block>
-                                
-                                <th:block th:if="${rate >= 4}"><small class="fas fa-star"></small></th:block>
-                                <th:block th:if="${rate < 4}"><small class="far fa-star"></small></th:block>
-                                
-                                <th:block th:if="${rate >= 5}"><small class="fas fa-star"></small></th:block>
-                                <th:block th:if="${rate < 5}"><small class="far fa-star"></small></th:block>
-                            </th:block>
+                        <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                    </div>
+                    
+                    <div class="comment-content" th:text="${comment.content}"></div>
+                    
+                    <div class="comment-actions">
+                        <button class="action-btn reply-btn" 
+                                th:onclick="'showReplyInput(' + ${comment.id} + ')'">
+                            <i class="fas fa-reply"></i> Reply
+                        </button>
+                        <button class="action-btn toggle-replies-btn" 
+                                th:if="${not #lists.isEmpty(comment.replies)}"
+                                th:onclick="'toggleReplies(' + ${comment.id} + ')'">
+                            <i class="fas fa-chevron-down"></i>
+                            <span th:text="${comment.replies.size() + ' replies'}"></span>
+                        </button>
+                    </div>
+
+                    <!-- Reply input ngay dưới comment chính -->
+                    <div class="reply-input-group" th:id="'reply-input-' + ${comment.id}" style="display: none;">
+                        <input type="text" class="reply-input" placeholder="Write your reply...">
+                        <button class="reply-submit" th:onclick="submitReply([[${comment.id}]], this, [[${product.Id}]])">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Replies section -->
+                <div th:id="'replies-' + ${comment.id}" class="replies-section" style="display: none;">
+                    <div th:each="reply : ${comment.replies}" class="reply-item">
+                        <div class="reply-header">
+                            <div class="user-info">
+                                <i th:if="${reply.employeeId != 0}" class="fas fa-user-tie text-primary"></i>
+                                <i th:if="${reply.employeeId == 0}" class="fas fa-user-circle"></i>
+                                <span class="username" th:classappend="${reply.employeeId != 0} ? 'staff-name'">
+                                    <span th:if="${reply.employeeId != 0}" class="staff-label">Staff: </span>
+                                    <span th:text="${reply.employeeId != 0 ? reply.employeeFirstName + ' ' + reply.employeeLastName : reply.customerFirstName + ' ' + reply.customerLastName}"></span>
+                                </span>
+                            </div>
+                            <span class="reply-date" th:text="${#temporals.format(reply.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
                         </div>
-                        
-                        <p class="mb-1" th:text="${feedback.comment}">Comment</p>
+                        <div class="reply-content" th:text="${reply.content}"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div th:if="${#lists.isEmpty(product.feedbacks.?[comment != null && !comment.isEmpty()])}" 
-             class="text-center py-4">
-            <p class="text-muted">No reviews yet. Be the first to review this product!</p>
-        </div>
     </div>
 </div>
-                        
                     </div>
                 </div>
             </div>
@@ -541,5 +840,220 @@ function resetsize() {
         }
     });
 }
+//Toggle hiển thị replies
+function toggleReplies(commentId) {
+    const repliesDiv = document.getElementById('replies-' + commentId);
+    const button = event.currentTarget;
+    const icon = button.querySelector('i');
+    
+    if (repliesDiv.style.display === 'none') {
+        repliesDiv.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    } else {
+        repliesDiv.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    }
+}
+
+// Hiển thị form reply
+function showReplyInput(commentId) {
+    // Ẩn tất cả các reply input khác
+    const allReplyInputs = document.querySelectorAll('.reply-input-group');
+    allReplyInputs.forEach(input => {
+        if (input.id !== 'reply-input-' + commentId) {
+            input.style.display = 'none';
+        }
+    });
+    
+    // Hiển thị reply input được chọn
+    const replyInput = document.getElementById('reply-input-' + commentId);
+    if (replyInput) {
+        replyInput.style.display = replyInput.style.display === 'flex' ? 'none' : 'flex';
+        if (replyInput.style.display === 'flex') {
+            replyInput.querySelector('input').focus();
+        }
+    }
+}
+
+
+let canComment = true;
+
+function submitComment(button, productId) {
+    const input = button.previousElementSibling;
+    const content = input.value.trim();
+    
+    if (!content || !canComment) return;
+
+    canComment = false;
+    setTimeout(() => { canComment = true; }, 3000);
+
+    const commentData = {
+        content: content,
+        productId: productId
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/comment/add",
+        data: JSON.stringify(commentData),
+        contentType: "application/json",
+        success: function(response) {
+            input.value = '';
+            input.classList.remove('banned');
+
+            const newComment = `
+                <div class="comment-item">
+                    <div class="comment-main">
+                        <div class="comment-header">
+                            <div class="user-info">
+                                <i class="fas fa-user-circle"></i>
+                                <span class="username">${response.customerName}</span>
+                            </div>
+                            <span class="comment-date">${response.createdAt}</span>
+                        </div>
+                        
+                        <div class="comment-content">${response.content}</div>
+                        
+                        <div class="comment-actions">
+                            <button class="action-btn reply-btn" onclick="showReplyInput(${response.commentId})">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                        </div>
+
+                        <div class="reply-input-group" id="reply-input-${response.commentId}" style="display: none;">
+                            <input type="text" class="reply-input" placeholder="Write your reply...">
+                            <button class="reply-submit" onclick="submitReply(${response.commentId}, this, ${productId})">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="replies-${response.commentId}" class="replies-section" style="display: none;">
+                    </div>
+                </div>
+            `;
+
+            $('.comments-container').prepend(newComment);
+
+            const countElement = $('.reviews-count h5 span');
+            const currentCount = parseInt(countElement.text());
+            countElement.text(currentCount + 1);
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                window.location.href = "/account/signin";
+            } else if (xhr.status === 400) {
+                input.classList.add('banned');
+            }
+        }
+    });
+}
+
+function submitReply(parentId, button, productId) {
+    const input = button.previousElementSibling;
+    const content = input.value.trim();
+    
+    if (!content || !canComment) return;
+
+    canComment = false;
+    setTimeout(() => { canComment = true; }, 3000);
+
+    const replyData = {
+        content: content,
+        productId: productId,
+        parentId: parentId
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/comment/reply",
+        data: JSON.stringify(replyData),
+        contentType: "application/json",
+        success: function(response) {
+            input.value = '';
+            input.classList.remove('banned');
+
+            const newReply = `
+                <div class="reply-item">
+                    <div class="reply-header">
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="username">${response.customerName}</span>
+                        </div>
+                        <span class="reply-date">${response.createdAt}</span>
+                    </div>
+                    <div class="reply-content">${response.content}</div>
+                </div>
+            `;
+
+            // Thêm reply mới vào cuối danh sách replies
+            $(`#replies-${parentId}`).append(newReply);
+            
+            // Hiển thị section replies nếu đang ẩn
+            $(`#replies-${parentId}`).show();
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                window.location.href = "/account/signin";
+            } else if (xhr.status === 400) {
+                input.classList.add('banned');
+            }
+        }
+    });
+}
+
+// Reset màu text khi user bắt đầu sửa nội dung
+document.querySelectorAll('.comment-input, .reply-input').forEach(input => {
+    input.addEventListener('input', function() {
+        this.classList.remove('banned');
+    });
+});
+
+
+// Hiển thị thông báo
+function showNotification(type, message) {
+    const notificationClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const notification = `
+        <div class="alert ${notificationClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    
+    $('#notification-container').html(notification);
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 3000);
+}
+
+// Event listeners khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    // Enter để submit main comment
+    const mainCommentInput = document.querySelector('.comment-input');
+    if (mainCommentInput) {
+        mainCommentInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const submitButton = this.nextElementSibling;
+                submitButton.click();
+            }
+        });
+    }
+
+    // Enter để submit replies
+    document.querySelectorAll('.reply-input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const submitButton = this.nextElementSibling;
+                submitButton.click();
+            }
+        });
+    });
+});
 </script>
 </html>

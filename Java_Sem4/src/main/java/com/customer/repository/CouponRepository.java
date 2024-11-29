@@ -25,7 +25,7 @@ public class CouponRepository {
 	    try {
 	        // Câu lệnh SQL để tìm coupon dựa trên code
 	        String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-	                Views.TBL_COUPON, Views.COL_COUPON_CODE);
+	                Views.TBL_DISCOUNT, Views.COL_DISCOUNT_CODE);
 
 	        return db.queryForObject(sql, new Object[]{couponCode}, new Coupon_mapper());
 	    } catch (DataAccessException e) {
@@ -38,7 +38,7 @@ public class CouponRepository {
 	    try {
 
 	        String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-	                Views.TBL_COUPON, Views.COL_COUPON_ID);
+	                Views.TBL_DISCOUNT, Views.COL_DISCOUNT_ID);
 
 	        return db.queryForObject(sql, new Object[]{id}, new Coupon_mapper());
 	    } catch (DataAccessException e) {

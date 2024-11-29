@@ -87,7 +87,8 @@ public class CheckoutController {
 	    double totalCartValue = listc.stream()
 		        .mapToDouble(cartItem -> cartItem.getPrice() * cartItem.getQuantity())
 		        .sum();
-	    model.addAttribute("totalCartorigin", totalCartValue);
+	 
+	    model.addAttribute("totalCartorigin",  String.format("%.2f", totalCartValue));
 	    Double discount = 0.00;
 	    if(request.getSession().getAttribute("appliedcouponid") != null) {
 	    	Coupon cp = repcp.findCouponByid((int)request.getSession().getAttribute("appliedcouponid"));
@@ -97,10 +98,10 @@ public class CheckoutController {
 	    	 model.addAttribute("couponId", null);
 	    }
 	    totalCartValue=totalCartValue - discount;
-	   
+	    
 	 
-	    model.addAttribute("discount", discount);
-	    model.addAttribute("totalCartValue", totalCartValue);
+	    model.addAttribute("discount", String.format("%.2f", discount));
+	    model.addAttribute("totalCartValue", String.format("%.2f", totalCartValue));
 	    model.addAttribute("carts", listc);
 
 	    Customer cus = repacc.finbyid(customerId);

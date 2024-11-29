@@ -166,24 +166,14 @@
 	<script>
 	$(document).ready(function() {
 	    var checkoutForm = document.getElementById('checkoutForm');
-
 	    checkoutForm.addEventListener('submit', function(event) {
-
 	        if (checkoutForm.checkValidity()) {
-
 	            event.preventDefault();
-
-
 	            $('#confirmModal').modal('show');
 	        } 
 	    });
-
-	    // Lắng nghe sự kiện khi nhấn "Confirm" trong modal
 	    document.getElementById('confirmCheckout').addEventListener('click', function() {
-	        // Tiến hành gửi form sau khi nhấn "Confirm"
 	        checkoutForm.submit();
-
-
 	    });
 	});
 	$.ajax({
@@ -197,9 +187,8 @@
         }
     });
 
-    // Load districts when province changes
     $('#province').change(function() {
-    	const provinceValue = $(this).val(); // Giá trị sẽ là "ID|Name"
+    	const provinceValue = $(this).val();
         const provinceId = provinceValue.split('|')[0];
         $('#district').empty().append('<option value="">Select District</option>');
         $('#ward').empty().append('<option value="">Select Ward</option>');
@@ -221,7 +210,7 @@
         }
     });
 
-    // Load wards when district changes
+   
     $('#district').change(function() {
     	const districtValue = $(this).val();
         const districtId = districtValue.split('|')[0];
@@ -251,23 +240,13 @@
     }
     const originalTotal = parseFloat($('.cart-total-input').val());
     $('#ward').change(function() {
-        // Lấy tên tỉnh/thành phố
         const provinceValue = $('#province').val();
         const provinceName = provinceValue ? removeAccents(provinceValue.split('|')[1]) : '';
-        
-        // Lấy tên quận/huyện
         const districtValue = $('#district').val();
         const districtId = districtValue ? districtValue.split('|')[0] : '';
         const districtName = districtValue ? removeAccents(districtValue.split('|')[1]) : '';
-        
-        // Lấy tên phường/xã
         const wardValue = $(this).val();
         const wardName = wardValue ? removeAccents(wardValue.split('|')[1]) : '';
-        
-        // Lấy số nhà, đường
-        const street = $('#street').val() ? removeAccents($('#street').val()) : '';
-        
-        // Ghép chuỗi địa chỉ đầy đủ
         const fullAddress = [
             street,
             wardName,
@@ -275,13 +254,9 @@
             provinceName,
             "Vietnam"
         ].filter(Boolean).join(', ');
-
-        // Lấy các elements cần thiết
         const checkoutBtn = $('.checkout-btn');
         const buttonText = checkoutBtn.find('.button-text');
         const spinner = checkoutBtn.find('.spinner-border');
-        
-        // Hiển thị spinner và vô hiệu hóa nút
         buttonText.addClass('d-none');
         spinner.removeClass('d-none');
         checkoutBtn.prop('disabled', true);
@@ -295,32 +270,14 @@
                     districtId: districtId
                 },
                 success: function(response) {
-                    console.log('Response:', response);
-                    
-                    // Chuyển phí ship từ VND sang USD
                     var shippingFeeUSD = (response.shippingFee / 23000).toFixed(2);
-                    
-                    // Hiển thị phí ship
                     $('.shipping-fee').text('$' + shippingFeeUSD);
-                    
-                    // Lấy giá trị total hiện tại và cộng thêm phí ship
+
                     var newTotal = (originalTotal + parseFloat(shippingFeeUSD)).toFixed(2);
-                    
-                    // Cập nhật tổng tiền hiển thị
                     $('.cart-total').text('$' + newTotal);
-                    
-                    // Cập nhật input hidden tổng tiền
                     $('.cart-total-input').val(newTotal);
-                    
-                    // Cập nhật input hidden ID kho
                     $('.warehouse-id-input').val(response.id);
-                    
-                    // Cập nhật input hidden phí ship (USD)
                     $('.shipping-fee-input').val(shippingFeeUSD);
-                    
-                  
-                    
-                    // Trả lại trạng thái bình thường cho nút
                     buttonText.removeClass('d-none');
                     spinner.addClass('d-none');
                     checkoutBtn.prop('disabled', false);
@@ -331,21 +288,17 @@
                     $('.shipping-fee').text('$0.00');
                     $('.warehouse-id-input').val('');
                     $('.shipping-fee-input').val('0.00');
-                    
-                    // Trả lại trạng thái bình thường cho nút
                     buttonText.removeClass('d-none');
                     spinner.addClass('d-none');
                     checkoutBtn.prop('disabled', false);
                 },
                 complete: function() {
-                    // Đảm bảo nút luôn được kích hoạt lại
                     buttonText.removeClass('d-none');
                     spinner.addClass('d-none');
                     checkoutBtn.prop('disabled', false);
                 }
             });
         } else {
-            // Trả lại trạng thái bình thường cho nút nếu không có đủ thông tin
             buttonText.removeClass('d-none');
             spinner.addClass('d-none');
             checkoutBtn.prop('disabled', false);
