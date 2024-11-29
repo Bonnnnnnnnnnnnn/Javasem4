@@ -249,7 +249,7 @@ public class ProductRepository {
     @Transactional
     public boolean updateProductAndPrice(Product pro, double newPrice) {
         try {
-        	String sqlGetCurrentPrice = "SELECT Price FROM Product WHERE Id = ?";
+            String sqlGetCurrentPrice = "SELECT Price FROM Product WHERE Id = ?";
             Double currentPrice = dbpro.queryForObject(sqlGetCurrentPrice, Double.class, pro.getId());
             String sqlUpdateProduct = """
                 UPDATE Product 
@@ -277,11 +277,10 @@ public class ProductRepository {
             int rowsProduct = dbpro.update(sqlUpdateProduct, productParams);
 
             if (rowsProduct == 0) {
-                throw new RuntimeException("Không thể cập nhật thông tin sản phẩm.");
+                throw new RuntimeException("Unable to update product information.");
             }
 
             if (pro.getPrice() != currentPrice) {
-                // 2.1 Cập nhật cột Date_end của bản ghi giá trước đó (nếu NULL) với thời gian hiện tại
                 String sqlUpdatePreviousPrice = """
                     UPDATE Product_price_change 
                     SET Date_end = ? 
@@ -290,12 +289,9 @@ public class ProductRepository {
                 int rowsUpdatedPrice = dbpro.update(sqlUpdatePreviousPrice, LocalDateTime.now(), pro.getId());
 
                 if (rowsUpdatedPrice == 0) {
-                    // Nếu không có bản ghi nào thỏa mãn điều kiện, log chi tiết và thông báo
-                    System.err.println("Không có bản ghi giá cũ để cập nhật Date_end.");
-                    throw new RuntimeException("Không thể cập nhật thời gian kết thúc cho giá trước đó.");
+                    System.err.println("No previous price record found to update Date_end.");
+                    throw new RuntimeException("Unable to update the end date for the previous price.");
                 }
-
-                // 2.2 Thêm bản ghi mới vào Product_price_change
                 String sqlInsertNewPrice = """
                     INSERT INTO Product_price_change (Product_Id, Price, Date_start, Date_end) 
                     VALUES (?, ?, ?, NULL)
@@ -303,18 +299,18 @@ public class ProductRepository {
                 int rowsPrice = dbpro.update(sqlInsertNewPrice, pro.getId(), newPrice, LocalDateTime.now());
 
                 if (rowsPrice == 0) {
-                    // In ra lỗi nếu không thêm được bản ghi
-                    System.err.println("Không thể thêm bản ghi thay đổi giá.");
-                    throw new RuntimeException("Không thể thêm bản ghi thay đổi giá.");
+                    System.err.println("Unable to add price change record.");
+                    throw new RuntimeException("Unable to add price change record.");
                 }
             }
 
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Cập nhật thất bại, toàn bộ giao dịch bị hủy.");
+            throw new RuntimeException("Update failed, transaction has been rolled back.");
         }
     }
+
 
     
     //product_specifications

@@ -17,10 +17,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.WarehouseRepository;
+import com.customer.repository.GHNService;
 import com.models.Employee_warehouse;
 import com.models.PageView;
 import com.models.Warehouse;
+import com.models.ghn.District;
+import com.models.ghn.Province;
+import com.models.ghn.Ward;
 import com.utils.Views;
+
+import ch.qos.logback.core.joran.spi.NoAutoStart;
 
 @Controller
 @RequestMapping("admin/warehouse")
@@ -28,6 +34,8 @@ public class WarehouseController {
 
 	@Autowired
 	private WarehouseRepository repwh;
+	@Autowired
+	private GHNService ghn;
 	@GetMapping("showWarehouse")
 	public String showWarehouse(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
@@ -55,13 +63,41 @@ public class WarehouseController {
 	    return Views.WAREHOUSE_SHOWWAREHOUSEDETAILS;
 	}
 
-
 	@GetMapping("showAddWarehouse")
 	public String showAddWarehouse(Model model) {
 		Warehouse wh = new Warehouse();
+		List<Province> province = ghn.getProvinces();
+		model.addAttribute("provinces",province);
 		model.addAttribute("new_item",wh);
 		model.addAttribute("types",repwh.findAllType());
 		return Views.WAREHOUSE_SHOWADDWAREHOUSE;
+	}
+	@GetMapping("districts")
+    public ResponseEntity<List<District>> getDistricts(@RequestParam("provinceId") int provinceId) {
+        try {
+            List<District> districts = ghn.getDistricts(provinceId);
+            if (districts.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(districts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+	@GetMapping("wards")
+	@ResponseBody
+	public ResponseEntity<List<Ward>> getWards(@RequestParam("districtId") int districtId) {
+	    try {
+	        List<Ward> wards = ghn.getWards(districtId);
+	        if (wards.isEmpty()) {
+	            return ResponseEntity.noContent().build();
+	        }
+	        return ResponseEntity.ok(wards);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
 	}
 	@PostMapping("addWh")
 	public String addWh(@RequestParam String name,

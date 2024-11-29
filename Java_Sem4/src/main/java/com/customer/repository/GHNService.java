@@ -13,6 +13,11 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.models.*;
+import com.models.ghn.District;
+import com.models.ghn.Province;
+import com.models.ghn.StoreRequest;
+import com.models.ghn.StoreResponse;
+import com.models.ghn.Ward;
 @Repository
 public class GHNService {
 	private static final String TOKEN = "858b9bf9-ab01-11ef-81b6-5e2e958f07fa";

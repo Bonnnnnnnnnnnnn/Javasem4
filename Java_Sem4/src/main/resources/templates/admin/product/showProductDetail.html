@@ -54,9 +54,9 @@
 			    	<div class="form-group col-md-4">	
 			        </div>
 			        
-			        <div class="form-group col-md-6">
-					    <label for="phone">Description</label>
-					    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
+					<div class="form-group col-6 ">
+					    <label for="exampleInputEmail1">Status</label>
+					    <input class="form-control" disabled readonly th:value="${product.status}">
 					</div>
 					<div class="form-group col-md-6">
 					    <label for="title">Price</label>
@@ -86,13 +86,10 @@
 					    <label for="exampleInputEmail1">Category</label>
 					    <input class="form-control" disabled readonly th:value="${product.categoryName}">
 					</div>
-					
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Status</label>
-					    <input class="form-control" disabled readonly th:value="${product.status}">
+					<div class="form-group col-md-12">
+					    <label for="phone">Description</label>
+					    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
 					</div>	
-					<div class="form-group col-6 ">
-					</div>
 					<div class="form-group col-3">
 					    <label for="conversion">Length</label>
 					    <input class="form-control" disabled readonly th:value="${product.length} + ' ' + (cm)">
@@ -124,23 +121,24 @@
                   </div>
                   
 				   <div class="tab-pane" id="productimage-tab">
-				    <h3>Product Images</h3>
-				    <div class="row">
-				        <div th:each="img : ${images}" class="col-md-3 mb-3">
-				            <div class="card">
-				                <img th:src="@{/uploads/{imageName}(imageName=${img.img_url})}" 
-				                     class="card-img-top" alt="Product Image" style="width:100%; height: auto;">
-				                <div class="card-body">
-				                    <p class="card-text" th:text="${img.product_name}"></p>
-				                    <a th:href="@{/admin/product/deleteImage(id=${img.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
-				                </div>
-				            </div>
-				        </div>
-				        <div th:if="${#lists.isEmpty(images)}" class="col-12 text-center">
-				            <p>No product images found.</p>
-				        </div>
-				    </div>
-				</div>
+					    <h3>Product Images details</h3>
+					    <div class="row">
+					        <div th:each="img : ${images}" class="col-md-3 mb-3">
+					            <div class="card">
+					                <img th:src="@{/uploads/{imageName}(imageName=${img.img_url})}" 
+					                     class="card-img-top" alt="Product Image" style="max-width: 200px; height: auto; margin: 0 auto;">
+					                <div class="card-body">
+					                    <p class="card-text" th:text="${img.product_name}"></p>
+					                    <a th:href="@{/admin/product/deleteImage(id=${img.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+					                </div>
+					            </div>
+					        </div>
+					        <div th:if="${#lists.isEmpty(images)}" class="col-12 text-center">
+					            <p>No product images found.</p>
+					        </div>
+					    </div>
+					</div>
+
 
 
                   <div class="tab-pane " id="productSpecifications-tab">
