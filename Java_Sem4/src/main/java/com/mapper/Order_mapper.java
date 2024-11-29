@@ -37,11 +37,11 @@ public class Order_mapper implements RowMapper<Order> {
         item.setShippingFee(rs.getDouble(Views.COL_ORDER_SHIPPINGFEE));
         item.setNotes(rs.getString(Views.COL_ORDER_NOTES));
         item.setOrderID(rs.getString(Views.COL_ORDER_ORDERID));
-
+        item.setWareHouse_Id(rs.getInt(Views.COL_ORDER_WAREHOUSE_ID));
         item.setTransactionId(rs.getString(Views.COL_ORDER_TRANSMOMOID));
         item.setDistrict_Id(rs.getInt(Views.COL_ORDER_DISTRICT_ID));
         item.setProvince_Id(rs.getInt(Views.COL_ORDER_PROVINCE_ID));
-        item.setWard_Id(rs.getInt(Views.COL_ORDER_WARD_ID));
+        item.setWard_Id(rs.getString(Views.COL_ORDER_WARD_ID));
         item.setGhn_order_code(rs.getString(Views.COL_ORDER_GHN_ORDER_CODE));
         item.setTracking_code(rs.getString(Views.COL_ORDER_TRACKING_CODE));
      // Map Date

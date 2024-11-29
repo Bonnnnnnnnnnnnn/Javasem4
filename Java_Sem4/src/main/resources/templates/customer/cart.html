@@ -79,7 +79,7 @@
 						            </div>
 						            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
 						                   th:value="${item.Quantity}"
-						                   th:attr="data-cart-id=${item.Id}, data-price=${item.Price}" 
+						                   th:attr="data-cart-id=${item.Id}, data-price=${item.Price}"
 						                  	style="height:30px;"
 						                  	readonly /> 
 						             <div class="input-group-btn">
@@ -95,7 +95,7 @@
 						        </div>
 						    </td>
 						    <td class="align-middle" th:attr="data-total-id=${item.Id}"
-						        th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
+						        th:text="${'$' + #numbers.formatDecimal(item.Price * item.Quantity, 1, 'COMMA', 2, 'POINT')}"></td>
 						    <td class="align-middle">
 						        <div th:onclick="'deleteFromCart(event,' + ${item.Id} + ')'" class="btn btn-sm btn-danger">
 						            <i class="fa fa-times"></i>
@@ -120,26 +120,27 @@
 
                 </div>
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
-                <div class="bg-light p-30 mb-5">
-                    <div class="border-bottom pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Discount</h6>
-                            <h6 class="discountasd">$0</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$</h6>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5>Total</h5>
-                            <h5 class="totalamount" th:text="'$' + ${totalCartValue}"></h5>
-                        </div>
-                       <a id="checkoutButton" th:onclick="goToCheckout()" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
-                       
-                    </div>
-                </div>	
+               <div class="bg-light p-30 mb-5">
+    <div class="border-bottom pb-2">
+        <div class="d-flex justify-content-between mb-3">
+            <h6>Cart Subtotal</h6>
+            <h6 class="subtotal" th:text="'$' + ${totalCartValue}"></h6>
+        </div>
+        <hr class="pb-2">
+        <div class="d-flex justify-content-between mb-3">
+            <h6>Discount</h6>
+            <h6 class="discountasd text-danger">- $0</h6>
+        </div>
+        
+    </div>
+    <div class="pt-2">
+        <div class="d-flex justify-content-between mt-2">
+            <h5>Total (Excluding shipping)</h5>
+           <h5 class="totalamount text-success" th:text="'$' + ${totalCartValue}"></h5>
+        </div>
+        <a id="checkoutButton" th:onclick="goToCheckout()" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
+    </div>
+</div>
             </div>
         </div>
     </div>
@@ -166,16 +167,18 @@ function updateQuantity(event,cartId) {
             var jsonResponse = JSON.parse(response);
 
             if (jsonResponse.status === "success") {
-                var quantityInput = $('input[data-cart-id="' + cartId + '"]');          
-                var currentQuantity = parseInt(quantityInput.val());
-                currentQuantity++;
-                quantityInput.val(currentQuantity);
+            	var quantityInput = $('input[data-cart-id="' + cartId + '"]');          
+            	var currentQuantity = parseInt(quantityInput.val());
+            	currentQuantity++;
+            	quantityInput.val(currentQuantity);
 
-                var price = parseFloat(quantityInput.data('price'));
-                var newTotal = price * currentQuantity ;
-                var totalCell = $('td[data-total-id="' + cartId + '"]');
-                
-                totalCell.text('$' + newTotal.toFixed(0));
+            	var price = parseFloat(quantityInput.data('price'));
+            	
+            	var newTotal = Number(price * currentQuantity);
+            	
+            	var totalCell = $('td[data-total-id="' + cartId + '"]');
+
+            	totalCell.text('$' + newTotal.toFixed(2));
                 if(appliedCoupon !== null){
      	    		var totalamount = calculateTotalAmount()
      	    		const cpe = document.getElementById('coupon-error')
@@ -183,7 +186,7 @@ function updateQuantity(event,cartId) {
      	    			cpe.innerHTML = 'success(' + appliedCoupon.code +')';
     	            	cpe.style.color = 'rgb(70 165 0)';
     	            	const result = applyCouponDiscount(appliedCoupon, totalamount);
-    	            	updateDiscountAndTotal(result.discount, result.finalAmount);
+    	            	updateDiscountAndTotal(result.discount, result.finalAmount,totalamount);
      	    		}else{
      	    			cpe.innerHTML = 'Not enough conditions to apply this coupon('+ appliedCoupon.code +')';
     	            	cpe.style.color = 'red';
@@ -192,7 +195,7 @@ function updateQuantity(event,cartId) {
      	    		}
      		    }else{
      		    	var totalamount = calculateTotalAmount()
-     		    	updateDiscountAndTotal(0, totalamount);
+     		    	updateDiscountAndTotal(0, totalamount,totalamount);
      		    }
                 
             } else {
@@ -219,9 +222,10 @@ function minusFromCart(event,cartId) {
 		                const price = parseFloat(inputField.data('price')); 
 		                currentQuantity--;
 		                inputField.val(currentQuantity); 
-		                var newTotal = price * (currentQuantity );
+		                var newTotal = Number(price * currentQuantity);
+		               
 		                var totalCell = $('td[data-total-id="' + cartId + '"]');
-		                totalCell.text('$' + newTotal.toFixed(0));
+		                totalCell.text('$' + newTotal.toFixed(2));
 		                if(appliedCoupon !== null){
 		                	
 	         	    		var totalamount = calculateTotalAmount()
@@ -230,7 +234,7 @@ function minusFromCart(event,cartId) {
 	         	    			cpe.innerHTML = 'success(' + appliedCoupon.code +')';
 		    	            	cpe.style.color = 'rgb(70 165 0)';
 		    	            	const result = applyCouponDiscount(appliedCoupon, totalamount);
-		    	            	updateDiscountAndTotal(result.discount, result.finalAmount);
+		    	            	updateDiscountAndTotal(result.discount, result.finalAmount,totalamount);
 	         	    		}else{
 	         	    			cpe.innerHTML = 'Not enough conditions to apply this coupon('+ appliedCoupon.code +')';
 		    	            	cpe.style.color = 'red';
@@ -239,7 +243,7 @@ function minusFromCart(event,cartId) {
 	         	    		}
 	         		    }else{
 	         		    	var totalamount = calculateTotalAmount()
-	         		    	updateDiscountAndTotal(0, totalamount);
+	         		    	updateDiscountAndTotal(0, totalamount,totalamount);
 	         		    }
 		                
 		            } else {
@@ -277,18 +281,18 @@ function deleteFromCart(event,cartId) {
       	    			cpe.innerHTML = 'success(' + appliedCoupon.code +')';
 	    	            	cpe.style.color = 'rgb(70 165 0)';
 	    	            	const result = applyCouponDiscount(appliedCoupon, totalamount);
-	    	            	updateDiscountAndTotal(result.discount, result.finalAmount);
+	    	            	updateDiscountAndTotal(result.discount, result.finalAmount,totalamount);
       	    		}else{
       	    			cpe.innerHTML = 'Not enough conditions to apply this coupon('+ appliedCoupon.code +')';
 	    	            	cpe.style.color = 'red';
 	    	            	
-	    	            	updateDiscountAndTotal(0, totalamount);
+	    	            	updateDiscountAndTotal(0, totalamount,totalamount);
       	    		}
       	    		
       	    		
       		    }else{
       		    	var totalamount = calculateTotalAmount()
-      		    	updateDiscountAndTotal(0, totalamount);
+      		    	updateDiscountAndTotal(0, totalamount,totalamount);
       		    }
 				 setTimeout(() => {
    	    			checkCart()
@@ -359,13 +363,13 @@ function applydiscount() {
 	         	    			cpe.innerHTML = 'success(' + appliedCoupon.code +')';
 		    	            	cpe.style.color = 'rgb(70 165 0)';
 		    	            	const result = applyCouponDiscount(appliedCoupon, totalamount);
-		    	            	updateDiscountAndTotal(result.discount, result.finalAmount);
+		    	            	updateDiscountAndTotal(result.discount, result.finalAmount,totalamount);
 	         	    		}else{
 	         	    			appliedCoupon = preCoupon
 	         	    			cpe.innerHTML = 'Not enough conditions to apply this coupon.('+ appliedCoupon.code +')';
 		    	            	cpe.style.color = 'red';
 		    	            	const result = applyCouponDiscount(appliedCoupon, totalamount);
-		    	            	updateDiscountAndTotal(result.discount, result.finalAmount);
+		    	            	updateDiscountAndTotal(result.discount, result.finalAmount,totalamount);
 	         	    		}
 	         		    }
 
@@ -464,10 +468,10 @@ function applyCouponDiscount(coupon, amounttotal) {
 
     return { finalAmount, discount: 0 }; 
 }
-function updateDiscountAndTotal(discount, amounttotal) {
-   
+function updateDiscountAndTotal(discount, amounttotal,totalnguyen) {
+	document.querySelector('.subtotal').textContent = `$${totalnguyen.toFixed(2)}`;
     // Cập nhật giá trị giảm giá vào phần tử có class 'discountasd'
-    document.querySelector('.discountasd').textContent = `$${discount.toFixed(2)}`;
+    document.querySelector('.discountasd').textContent = `- $${discount.toFixed(2)}`;
 
     // Cập nhật tổng tiền vào phần tử có class 'totalamount'
     document.querySelector('.totalamount').textContent = `$${amounttotal.toFixed(2)}`;

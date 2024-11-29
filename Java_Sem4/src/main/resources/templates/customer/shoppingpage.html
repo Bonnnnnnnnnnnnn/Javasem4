@@ -127,54 +127,61 @@
         					<h4>No products found</h4>
     				</div>
                     <div th:each="item : ${pronewar}" class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                <div class="product-item bg-light mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <img class="img-fluid w-100" th:src="'/uploads/' + ${item.Img}" alt="">
-							<div class="product-action">
-							    <a class="btn btn-outline-dark btn-square" th:if="${item.status != 'OutOfStock'}" th:onclick="'addToCart(' + ${item.Id} + ')'">
-							        <i class="fa fa-shopping-cart"></i>
-							    </a>
-							    <span th:if="${item.Status == 'OutOfStock'}" style="font-weight:500;color:black;font-size:20;" class="out-of-stock-message">Out of stock</span>
-							</div>
-							</div>
-							<div class="text-center py-4">
-							    <a class="h6 text-decoration-none text-truncate" th:href="@{'/detailproduct/product?id=' + ${item.Id}}" th:text="${item.Product_name}"></a>
-							    <div class="d-flex align-items-center justify-content-center mt-2">
-							        <h5 th:text="'$' + ${item.Price}"></h5>
-                            <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
-                        </div>
-                       <div class="d-flex align-items-center justify-content-center mb-1">
-							    <div class="text-primary mr-2">
-							        <th:block th:with="rating=${item.averageRating}">
-							            <!-- Rating từ 1-5 -->
-							            <th:block th:if="${rating >= 1}"><small class="fas fa-star"></small></th:block>
-							            <th:block th:if="${rating >= 0.5 && rating < 1}"><small class="fas fa-star-half-alt"></small></th:block>
-							            <th:block th:if="${rating < 0.5}"><small class="far fa-star"></small></th:block>
-							            
-							            <th:block th:if="${rating >= 2}"><small class="fas fa-star"></small></th:block>
-							            <th:block th:if="${rating >= 1.5 && rating < 2}"><small class="fas fa-star-half-alt"></small></th:block>
-							            <th:block th:if="${rating < 1.5}"><small class="far fa-star"></small></th:block>
-							            
-							            <th:block th:if="${rating >= 3}"><small class="fas fa-star"></small></th:block>
-							            <th:block th:if="${rating >= 2.5 && rating < 3}"><small class="fas fa-star-half-alt"></small></th:block>
-							            <th:block th:if="${rating < 2.5}"><small class="far fa-star"></small></th:block>
-							            
-							            <th:block th:if="${rating >= 4}"><small class="fas fa-star"></small></th:block>
-							            <th:block th:if="${rating >= 3.5 && rating < 4}"><small class="fas fa-star-half-alt"></small></th:block>
-							            <th:block th:if="${rating < 3.5}"><small class="far fa-star"></small></th:block>
-							            
-							            <th:block th:if="${rating >= 5}"><small class="fas fa-star"></small></th:block>
-							            <th:block th:if="${rating >= 4.5 && rating < 5}"><small class="fas fa-star-half-alt"></small></th:block>
-							            <th:block th:if="${rating < 4.5}"><small class="far fa-star"></small></th:block>
-							        </th:block>
-							    </div>
-							    <small class="pt-1">
-							        (<span th:text="${item.totalFeedbacks}">0</span>)
-							    </small>
-                            </div>
-                    </div>
-                </div>
+    <div class="product-item bg-light mb-4">
+        <div class="product-img position-relative overflow-hidden">
+            <img class="img-fluid w-100" th:src="'/uploads/' + ${item.Img}" alt="">
+            <div class="product-action">
+                <a class="btn btn-outline-dark btn-square" th:if="${item.status != 'OutOfStock'}" th:onclick="'addToCart(' + ${item.Id} + ')'">
+                    <i class="fa fa-shopping-cart"></i>
+                </a>
+                <span th:if="${item.Status == 'OutOfStock'}" style="font-weight:500;color:black;font-size:20;" class="out-of-stock-message">Out of stock</span>
             </div>
+        </div>
+        <div class="text-center py-4">
+            <a class="h6 text-decoration-none text-truncate" th:href="@{'/detailproduct/product?id=' + ${item.Id}}" th:text="${item.Product_name}"></a>
+            
+            <!-- Thêm Brand và Category -->
+            <div class="d-flex align-items-center justify-content-center mt-2">
+                <span class="badge badge-info mr-2" th:text="${item.Brand_name}"></span>
+                <span class="badge badge-secondary" th:text="${item.Category_name}"></span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center mt-2">
+                <h5 th:text="'$' + ${item.Price}"></h5>
+                <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
+            </div>
+            <div class="d-flex align-items-center justify-content-center mb-1">
+                <div class="text-primary mr-2">
+                    <th:block th:with="rating=${item.averageRating}">
+                        <!-- Rating từ 1-5 -->
+                        <th:block th:if="${rating >= 1}"><small class="fas fa-star"></small></th:block>
+                        <th:block th:if="${rating >= 0.5 && rating < 1}"><small class="fas fa-star-half-alt"></small></th:block>
+                        <th:block th:if="${rating < 0.5}"><small class="far fa-star"></small></th:block>
+                        
+                        <th:block th:if="${rating >= 2}"><small class="fas fa-star"></small></th:block>
+                        <th:block th:if="${rating >= 1.5 && rating < 2}"><small class="fas fa-star-half-alt"></small></th:block>
+                        <th:block th:if="${rating < 1.5}"><small class="far fa-star"></small></th:block>
+                        
+                        <th:block th:if="${rating >= 3}"><small class="fas fa-star"></small></th:block>
+                        <th:block th:if="${rating >= 2.5 && rating < 3}"><small class="fas fa-star-half-alt"></small></th:block>
+                        <th:block th:if="${rating < 2.5}"><small class="far fa-star"></small></th:block>
+                        
+                        <th:block th:if="${rating >= 4}"><small class="fas fa-star"></small></th:block>
+                        <th:block th:if="${rating >= 3.5 && rating < 4}"><small class="fas fa-star-half-alt"></small></th:block>
+                        <th:block th:if="${rating < 3.5}"><small class="far fa-star"></small></th:block>
+                        
+                        <th:block th:if="${rating >= 5}"><small class="fas fa-star"></small></th:block>
+                        <th:block th:if="${rating >= 4.5 && rating < 5}"><small class="fas fa-star-half-alt"></small></th:block>
+                        <th:block th:if="${rating < 4.5}"><small class="far fa-star"></small></th:block>
+                    </th:block>
+                </div>
+                <small class="pt-1">
+                    (<span th:text="${item.totalFeedbacks}">0</span>)
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
                    <div class="col-12">
 					    <nav th:if="${pv.total_page > 1}"> <!-- Only show the pagination if there's more than one page -->
 					        <ul class="pagination justify-content-center">

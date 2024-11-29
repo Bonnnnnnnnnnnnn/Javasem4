@@ -127,7 +127,8 @@ public final class Views {
 	public static String COL_WAREHOUSE_GHN_STORE_ID = "ghn_store_id";
 	public static String COL_WAREHOUSE_DISTRICT_ID= "District_Id";
 	public static String COL_WAREHOUSE_WARD_ID = "Ward_Id";
-	
+	public static String COL_WAREHOUSE_LAT= "lat";
+	public static String COL_WAREHOUSE_LNG = "lng";
 	//11.WAREHOUSE_TYPE
 	public static String WAREHOUSETYPE_SHOWWHTYPE="admin/warehouseType/showWhType";
 	public static String WAREHOUSETYPE_SHOWADDWHTYPE = "admin/warehouseType/showAddWhType";
@@ -229,6 +230,7 @@ public final class Views {
 	public static String COL_ORDER_TRACKING_CODE = "tracking_code";
 	public static String COL_ORDER_EXPECTED_DELIVERY_TIME = "expected_delivery_time";
 	public static String COL_ORDER_SHIPPING_STATUS = "shipping_status";
+	public static String COL_ORDER_WAREHOUSE_ID = "Warehouse_Id";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";

@@ -32,8 +32,8 @@ public class PagemainController {
 	    pv.setPage_current(1);
 	    //gHNService.getProvinces();//209
 	    //gHNService.getDistricts(202);//1837
-	    //gHNService.getWards(1837);//420302
-	    gHNService.testCreateStore();
+	    //gHNService.getWards(1489);//420302
+	    //gHNService.testCreateStore();
 	    //gHNService.deleteShop(5481952);
 	    //System.out.println(gHNService.calculateShippingFee(1461,1837,new Product())); 
 	    pv.setPage_size(8);

@@ -226,8 +226,7 @@
                             <td class="align-middle" th:text="${item.product_name}"></td>
                             <td class="align-middle" th:text="'$' + ${item.Price}" ></td>
                              <td class="align-middle" th:text="${item.Quantity}" ></td>
-                             <td class="align-middle" th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
-              			     
+                             <td class="align-middle" th:text="${'$' + #numbers.formatDecimal(item.Price * item.Quantity, 1, 'COMMA', 2, 'POINT')}"></td>
                              <td onclick="event.stopPropagation()">
                               <button th:if="${item.status == 'Reviewed'}"
 							            type="button" 

@@ -14,13 +14,14 @@ public class Warehouse {
 	private int relatedCount;
 	private int Province_Id;
 	private int District_Id;
-	private int Ward_Id;
+	private String Ward_Id;
 	private String Ghn_store_code;
-
+	private Double lat;
+	private Double lng;
 	
 	
 	public Warehouse(int id, String name, String address, int wh_type_id, String type_name, int province_Id,
-			int district_Id, int ward_Id, String ghn_store_code) {
+			int district_Id, String ward_Id, String ghn_store_code) {
 		super();
 		Id = id;
 		Name = name;
@@ -107,10 +108,10 @@ public class Warehouse {
 	public void setDistrict_Id(int district_Id) {
 		District_Id = district_Id;
 	}
-	public int getWard_Id() {
+	public String getWard_Id() {
 		return Ward_Id;
 	}
-	public void setWard_Id(int ward_Id) {
+	public void setWard_Id(String ward_Id) {
 		Ward_Id = ward_Id;
 	}
 	public String getGhn_store_code() {
@@ -118,6 +119,18 @@ public class Warehouse {
 	}
 	public void setGhn_store_code(String ghn_store_code) {
 		Ghn_store_code = ghn_store_code;
+	}
+	public Double getLat() {
+		return lat;
+	}
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+	public Double getLng() {
+		return lng;
+	}
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 	
 	

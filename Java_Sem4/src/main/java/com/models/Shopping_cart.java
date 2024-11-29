@@ -7,13 +7,16 @@ public class Shopping_cart {
 	private int Quantity;
 	
 	private String Product_name;
-	private double Price;
+	private Double Price;
 	private String Img;
 	private String Pro_Status;
 
+	private int Length;
+	private int Height;
+	private int Width;
+	private int Weight;
 	
-	
-	public Shopping_cart(int id, int customer_id, int product_id, int quantity, String product_name, double price,
+	public Shopping_cart(int id, int customer_id, int product_id, int quantity, String product_name, Double price,
 			String img, String pro_Status) {
 		super();
 		Id = id;
@@ -57,10 +60,10 @@ public class Shopping_cart {
 	public void setProduct_name(String product_name) {
 		Product_name = product_name;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return Price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		Price = price;
 	}
 	public String getImg() {
@@ -74,6 +77,30 @@ public class Shopping_cart {
 	}
 	public void setPro_Status(String pro_Status) {
 		Pro_Status = pro_Status;
+	}
+	public int getLength() {
+		return Length;
+	}
+	public void setLength(int length) {
+		Length = length;
+	}
+	public int getHeight() {
+		return Height;
+	}
+	public void setHeight(int height) {
+		Height = height;
+	}
+	public int getWidth() {
+		return Width;
+	}
+	public void setWidth(int width) {
+		Width = width;
+	}
+	public int getWeight() {
+		return Weight;
+	}
+	public void setWeight(int weight) {
+		Weight = weight;
 	}
 	
 }
