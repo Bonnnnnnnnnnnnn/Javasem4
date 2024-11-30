@@ -8,6 +8,8 @@ public class Comment {
     private int id;
     private String content;
     private int productId;
+    private String productName;
+    private String productImage;
     private int customerId;
     private int employeeId;
     private int parentId;    
@@ -23,22 +25,36 @@ public class Comment {
     public Comment() {
     	
     }
-
-    public Comment(int id, String content, int productId, int customerId, int employeeId, int parentId,
-			boolean isReply, String status, LocalDate createdAt, LocalDate updatedAt) {
-		super();
-		this.id = id;
-		this.content = content;
-		this.productId = productId;
-		this.customerId = customerId;
-		this.employeeId = employeeId;
-		this.parentId = parentId;
-		this.isReply = isReply;
-		this.status = status;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+    
+    public boolean hasEmployeeReply() {
+        if (replies == null || replies.isEmpty()) {
+            return false;
+        }
+        return replies.stream()
+            .anyMatch(reply -> reply.getEmployeeId() > 0);
+    }
+    
+    public String getProductName() {
+		return productName;
 	}
-    public List<Comment> getReplies() {
+
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+
+	public String getProductImage() {
+		return productImage;
+	}
+
+
+	public void setProductImage(String productImage) {
+		this.productImage = productImage;
+	}
+
+
+	public List<Comment> getReplies() {
         return replies;
     }
     

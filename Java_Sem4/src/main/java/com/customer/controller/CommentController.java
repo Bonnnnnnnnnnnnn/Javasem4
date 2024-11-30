@@ -87,15 +87,5 @@ public class CommentController {
         }
     }
 
-    @PostMapping("/staffReply")
-    @ResponseBody
-    public ResponseEntity<String> staffReply(@RequestBody Comment comment, HttpServletRequest request) {
-        if (request.getSession().getAttribute("logined") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
-        }
-        System.out.println(comment);
-//        commentRepository.insertComment(comment)
-        boolean success = true;
-        return success ? ResponseEntity.ok("Staff reply added successfully") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding staff reply");
-    }
+    
 }

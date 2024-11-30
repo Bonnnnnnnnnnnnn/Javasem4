@@ -3,6 +3,7 @@ package com.mapper;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.springframework.jdbc.core.RowMapper;
 
@@ -11,7 +12,7 @@ import com.models.Comment;
 import com.utils.Views;
 
 
-public class Comment_mapper implements RowMapper<Comment> {
+public class BsComment_mapper implements RowMapper<Comment> {
     @Override
     public Comment mapRow(ResultSet rs, int rowNum) throws SQLException {
         Comment comment = new Comment();
@@ -37,7 +38,9 @@ public class Comment_mapper implements RowMapper<Comment> {
         comment.setCustomerLastName(rs.getString("customer_lastname"));
         comment.setEmployeeFirstName(rs.getString("employee_firstname"));
         comment.setEmployeeLastName(rs.getString("employee_lastname"));
-       
+        comment.setProductName(rs.getString("product_name"));
+        comment.setProductImage(rs.getString("product_image"));
+        comment.setReplies(new ArrayList<>());
         return comment;
     }
 }

@@ -289,7 +289,8 @@ public final class Views {
 	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
 	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
 	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
-
+	public static String REPLY_COMMENT = "businessManager/Comment/Replycomment";
+	
 	public static String TBL_REQUEST = "Request";
 	public static String COL_REQUEST_ID = "Id";
 	public static String COL_REQUEST_NAME = "Name";
