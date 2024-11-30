@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.customer.repository.CustomerRepository;
 import com.models.Customer;
-import com.utils.FileUtils;
 
 @Controller
 @RequestMapping("/customer")

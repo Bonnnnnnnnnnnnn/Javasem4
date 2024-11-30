@@ -23,7 +23,6 @@ public class LoginEmployee {
 	public String showLoginPage() {
 	    return Views.EMPLOYEE_LOGIN; 
 	}
-
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("uid") String uid, 
 	                    @RequestParam("pwd") String pwd, 

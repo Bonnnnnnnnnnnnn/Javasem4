@@ -23,27 +23,47 @@ import com.utils.Views;
 public class EmployeeController {
 	@Autowired
     private EmployeeRepository emprep;
+	// show nhân viên ra 
 	@GetMapping("/showEmp")
 	public String showEmp(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-	    List<Employee> emp = emprep.findAll(pv);
-		model.addAttribute("employees", emp);
-	    model.addAttribute("pv", pv);
-		return Views.EMPLOYEE_SHOWEMP;
+	    try {
+	        PageView pv = new PageView();
+	        pv.setPage_current(cp);
+	        pv.setPage_size(12);
+	        List<Employee> emp = emprep.findAll(pv);
+	        model.addAttribute("employees", emp);
+	        model.addAttribute("pv", pv);
+	        return Views.EMPLOYEE_SHOWEMP;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
+	
+	// show chi tiết nhân viên ra và nhân viên đó quản lý kho nào
 	@GetMapping("/showEmployeeDetail")
 	public String showEmployeeDetail(@RequestParam("id") String employeeId, Model model) {
-		int idemp = Integer.parseInt(employeeId);
-		Employee emp = emprep.findId(idemp);
-	    model.addAttribute("employee", emp);
-	    return Views.EMPLOYEE_SHOWEMPLOYEEDETAIL;
+	    try {
+	        int idemp = Integer.parseInt(employeeId);
+	        Employee emp = emprep.findId(idemp);
+	        model.addAttribute("employee", emp);
+	        return Views.EMPLOYEE_SHOWEMPLOYEEDETAIL;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
+	
+	// show thêm nhân viên cũng là đăng ký tài khoản cho nhân viên
 	@GetMapping("/showRegister")
 	public String showRegister(Model model) {
-		model.addAttribute("roles",emprep.findAllRole());
-		return Views.EMPLOYEE_SHOWREGISTER;
+	    try {
+	        model.addAttribute("roles", emprep.findAllRole());
+	        return Views.EMPLOYEE_SHOWREGISTER;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
 	@PostMapping("/registerEmp")
     public String registerEmp(@RequestParam String finame,
@@ -60,12 +80,22 @@ public class EmployeeController {
         emprep.saveEmp(emp);
         return "redirect:/admin/employee/showEmp";
     }
+	
+	// sửa lại nhân viên cũng là đổi mật khẩu nhân viên luôn
 	@GetMapping("showUpdateEmployee")
-	public String showUpdateEmployee(Model model,@RequestParam String id) {
-		int ide = Integer.parseInt(id);
-		model.addAttribute("employee",emprep.findId(ide));
-		model.addAttribute("roles", emprep.findAllRole());
-		return Views.EMPLOYEE_SHOWUPDATEMPLOYEE;
+	public String showUpdateEmployee(Model model, @RequestParam String id) {
+	    try {
+	        int ide = Integer.parseInt(id);
+	        model.addAttribute("employee", emprep.findId(ide));
+	        model.addAttribute("roles", emprep.findAllRole());
+	        return Views.EMPLOYEE_SHOWUPDATEMPLOYEE;
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
 	@PostMapping("updateEmp")
 	public String updateEmp(@RequestParam("id") int id,
@@ -84,12 +114,22 @@ public class EmployeeController {
 	    emprep.updateEmp(emp);
 	    return "redirect:/admin/employee/showEmp";
 	}
-
+	
+	// xóa nhân viên 
 	@GetMapping("deleteEmployee")
 	public String deleteEmployee(@RequestParam("id") String id) {
-		int ide = Integer.parseInt(id);
-		emprep.deleteEmployee(ide);
-		return "redirect:/admin/employee/showEmp";
+	    try {
+	        int ide = Integer.parseInt(id);
+	        emprep.deleteEmployee(ide);
+	        return "redirect:/admin/employee/showEmp";
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
+
 
 }

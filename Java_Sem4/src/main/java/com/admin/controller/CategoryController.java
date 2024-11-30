@@ -22,26 +22,37 @@ public class CategoryController {
 	@Autowired
 	private CategoryRepository repca;
 	
+	// show danh mục
 	@GetMapping("/showCategory")
 	public String showCategory(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-
-	    List<Category_Product> categories = repca.findAll(pv);
-	    for (Category_Product category : categories) {
-	        category.setRelatedCount(repca.countByCategoryId(category.getId()));
+	    try {
+	        PageView pv = new PageView();
+	        pv.setPage_current(cp);
+	        pv.setPage_size(5);
+	        List<Category_Product> categories = repca.findAll(pv);
+	        for (Category_Product category : categories) {
+	            category.setRelatedCount(repca.countByCategoryId(category.getId()));
+	        }
+	        model.addAttribute("categories", categories);
+	        model.addAttribute("pv", pv);
+	        return Views.CATEGORY_SHOWCATEGORY;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
 	    }
-	    
-	    model.addAttribute("categories", categories);
-	    model.addAttribute("pv", pv);
-	    return Views.CATEGORY_SHOWCATEGORY;
 	}
+
+	// thêm danh mục 
 	@GetMapping("showAddCategory")
 	public String showAddCategory(Model model) {
-		Category_Product ca  = new Category_Product();
-		model.addAttribute("new_item",ca);
-		return Views.CATEGORY_SHOWADDCATEGORY;
+	    try {
+	        Category_Product ca  = new Category_Product();
+	        model.addAttribute("new_item", ca);
+	        return Views.CATEGORY_SHOWADDCATEGORY;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
 	@PostMapping("addCategory")
 	public String addCategory(@RequestParam String name) {
@@ -50,17 +61,31 @@ public class CategoryController {
 		repca.saveCate(ca);
 		return "redirect:showCategory";
 	}
+	
+	//xóa danh mục
 	@GetMapping("deleteCa")
 	public String deleteCa(@RequestParam String id) {
-		int idb = Integer.parseInt(id);
-		repca.deleteCa(idb);
-		return "redirect:showCategory";
+	    try {
+	        int idb = Integer.parseInt(id);
+	        repca.deleteCa(idb);
+	        return "redirect:showCategory";
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
+	
+	// sửa danh mục
 	@GetMapping("showUpdateCategory")
-	public String showUpdateCategory(Model model , @RequestParam String id) {
-		int idp = Integer.parseInt(id);
-		model.addAttribute("up_item",repca.findId(idp));
-		return Views.CATEGORY_SHOWUPDATECATEGORY;
+	public String showUpdateCategory(Model model, @RequestParam String id) {
+	    try {
+	        int idp = Integer.parseInt(id);
+	        model.addAttribute("up_item", repca.findId(idp));
+	        return Views.CATEGORY_SHOWUPDATECATEGORY;
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
 	@PostMapping("updateCa")
 	public String updateCa(@RequestParam("id") int id,

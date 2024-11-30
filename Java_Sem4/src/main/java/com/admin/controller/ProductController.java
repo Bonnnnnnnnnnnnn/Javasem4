@@ -5,19 +5,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.admin.repository.ProductRepository;
@@ -34,7 +29,8 @@ import com.utils.Views;
 public class ProductController {
 	@Autowired
 	private ProductRepository reppro;
-
+	
+	// show sản phẩm
 	@GetMapping("/showProduct")
 	public String showProduct(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    try {
@@ -51,7 +47,8 @@ public class ProductController {
 	        return "admin/product/errorPage";
 	    }
 	}
-
+	
+	// show deatils sản phẩm
 	@GetMapping("/showProductDetail")
 	public String showProductDetail(@RequestParam("id") String productId, @RequestParam("id") String psId, Model model) {
 	    try {
@@ -76,7 +73,7 @@ public class ProductController {
 	    }
 	}
 
-
+	// add sản phẩm,images chi tiết,change price, và thuộc tính sản phẩm
 	@GetMapping("showAddProduct")
 	public String showAddProduct(Model model) {
 	    try {
@@ -92,7 +89,6 @@ public class ProductController {
 	        return "admin/product/errorPage";
 	    }
 	}
-	// Cập nhật controller để phân biệt ảnh cho Product và Product_img
 	@PostMapping("addProductWithDetails")
 	public String addProductWithDetails(
 	        @RequestParam String proName,
@@ -131,7 +127,7 @@ public class ProductController {
 
 	    String productImgUrl = FileUtils.uploadFileImage(productImage, "uploads", "product");
 	    prod.setImg(productImgUrl);
-
+	    //lưu nhiều images
 	    List<Product_img> productImages = new ArrayList<>();
 	    for (MultipartFile image : additionalImages) {
 	        if (!image.isEmpty()) {
@@ -161,7 +157,7 @@ public class ProductController {
 	    return "redirect:showProduct";
 	}
 
-
+	// xóa sản phẩm,hình sản phẩm
 	@GetMapping("deleteProduct")
 	public String deleteProduct(@RequestParam("id") String id, 
 	                            @RequestParam("fileName") String fileName) {
@@ -178,16 +174,18 @@ public class ProductController {
 
 	    } 
 	}
+	
+	// sửa lại sản phẩm , change price lại
 	@GetMapping("/showUpdateProduct")
 	public String showUpdateProduct(Model model, @RequestParam String id) {
 	    try {
 	        int idPro = Integer.parseInt(id);
-	        Product product = reppro.findId(idPro);  // Gọi phương thức findId với ID sản phẩm
+	        Product product = reppro.findId(idPro);
 	        if (product == null) {
 	            model.addAttribute("error", "Product not found.");
 	            return "redirect:showProduct";
 	        }
-	        model.addAttribute("product", product);  // Truyền đối tượng product vào model
+	        model.addAttribute("product", product);
 	        model.addAttribute("units", reppro.findAllUnit());
 	        model.addAttribute("brands", reppro.findAllBrand());
 	        model.addAttribute("categorys", reppro.findAllCategory());
@@ -200,8 +198,6 @@ public class ProductController {
 	        return "redirect:showProduct";
 	    } 
 	}
-
-
 	@PostMapping("/updateProductAndPrice")
 	public String updateProductAndPrice(
 	        @RequestParam int id,
@@ -242,7 +238,12 @@ public class ProductController {
 
 	     return "redirect:showProduct";
 	}
-	//product_specifications
+	
+	
+	
+	//product_specifications ============================================================
+	
+	// add thêm thuộc tính nếu cần
 	@GetMapping("showAddPs")
 	public String showAddPs(Model model, @RequestParam("id") int id) {
 	    try {
@@ -276,7 +277,6 @@ public class ProductController {
 
 	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
 	}
-
 
 
 	@GetMapping("/errorPage")

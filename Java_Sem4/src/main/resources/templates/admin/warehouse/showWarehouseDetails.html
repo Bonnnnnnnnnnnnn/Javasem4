@@ -57,11 +57,11 @@
 										        <li th:each="manager : ${warehouse.managers}" class="d-flex align-items-center mb-2">
 										            <input type="text" th:value="${manager.first_name} + ' ' + ${manager.last_name}" disabled class="form-control form-control-sm mr-2" style="width: 200px;" />
 										            
-										            <a th:if="${!warehouse.managers.isEmpty()}"
-										               th:href="@{/admin/warehouse/showUpdateWarehouseManagementLevel(iddtwh=${warehouse.id}, idup=${manager.id})}"
-										               th:text="'Update'"
-										               class="btn btn-warning btn-sm mr-2">
-										            </a>
+													<a th:if="${!warehouse.managers.isEmpty()}"
+													   th:href="@{/admin/warehouse/showUpdateWarehouseManagementLevel(iddtwh=${warehouse.id}, idup=${ew.id})}"
+													   th:text="'Update'"
+													   class="btn btn-warning btn-sm mr-2">
+													</a>
 
 										            <a th:href="@{deleteWh(id=${manager.id})}"
 										               onclick="return confirmDeleteWh();"

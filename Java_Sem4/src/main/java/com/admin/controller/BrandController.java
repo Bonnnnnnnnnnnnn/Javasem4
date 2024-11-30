@@ -21,27 +21,39 @@ public class BrandController {
 	@Autowired
 	private BrandRepository repbr;
 	
+	//thêm thương hiẹu
 	@GetMapping("/showBrand")
 	public String showBrand(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
-	    List<Brand> brands = repbr.findAll(pv);
-	    for (Brand brand : brands) {
-	        int relatedCount = repbr.countByBrandId(brand.getId());
-	        brand.setRelatedCount(relatedCount);
+	    try {
+	        PageView pv = new PageView();
+	        pv.setPage_current(cp);
+	        pv.setPage_size(5);
+	        List<Brand> brands = repbr.findAll(pv); 
+	        for (Brand brand : brands) {
+	            int relatedCount = repbr.countByBrandId(brand.getId());
+	            brand.setRelatedCount(relatedCount);
+	        }
+	        model.addAttribute("brands", brands);
+	        model.addAttribute("pv", pv);
+	        return Views.BRAND_SHOWBRAND;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
 	    }
-	    model.addAttribute("brands", brands);
-	    model.addAttribute("pv", pv);
-	    return Views.BRAND_SHOWBRAND;
 	}
 
-
+	
+	// thêm thương hiệu
 	@GetMapping("showAddBrand")
 	public String showAddBrand(Model model) {
-		Brand br  = new Brand();
-		model.addAttribute("new_item",br);
-		return Views.BRAND_SHOWADDBRAND;
+	    try {
+	        Brand br = new Brand();
+	        model.addAttribute("new_item", br);
+	        return Views.BRAND_SHOWADDBRAND;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
 	@PostMapping("addBrand")
 	public String addBrand(@RequestParam String name) {
@@ -50,18 +62,31 @@ public class BrandController {
 		repbr.saveBr(br);
 		return "redirect:showBrand";
 	}
+	
+	//xóa thương hiệu
 	@GetMapping("deleteBr")
 	public String deleteBr(@RequestParam String id) {
 		int idb = Integer.parseInt(id);
 		repbr.deleteBr(idb);
 		return "redirect:showBrand";
 	}
+	
+	//sửa lại thương hiệu
 	@GetMapping("showUpdateBrand")
-	public String showUpdateBrand(Model model , @RequestParam String id) {
-		int idp = Integer.parseInt(id);
-		model.addAttribute("up_item",repbr.findId(idp));
-		return Views.BRAND_SHOWUPDATEBRAND;
+	public String showUpdateBrand(Model model, @RequestParam String id) {
+	    try {
+	        int idp = Integer.parseInt(id);
+	        model.addAttribute("up_item", repbr.findId(idp));
+	        return Views.BRAND_SHOWUPDATEBRAND;
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "redirect:/error";
+	    }
 	}
+
 	@PostMapping("updateBr")
 	public String updateBr(@RequestParam("id") int id,
 							@RequestParam("name") String name) {
