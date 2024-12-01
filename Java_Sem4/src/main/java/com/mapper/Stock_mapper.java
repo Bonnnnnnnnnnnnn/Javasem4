@@ -14,9 +14,8 @@ public class Stock_mapper implements RowMapper<Stock> {
 		item.setId(rs.getInt(Views.COL_STOCK_ID));
 		item.setProduct_id(rs.getInt(Views.COL_STOCK_PRODUCT_ID));
 		item.setQuantity(rs.getInt(Views.COL_STOCK_QUANTITY));
+		item.setStatus(rs.getString(Views.COL_STOCK_STATUS));
 		item.setWh_rc_dt_id(rs.getInt(Views.COL_STOCK_WARERCDT_ID));
-		item.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
-		item.setWh_rc_dt_id_quantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
 		return item;
 	}
 

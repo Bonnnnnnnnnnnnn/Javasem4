@@ -55,7 +55,7 @@ public class ConversionRepository {
                         (ItemPage.getPage_current() - 1) * (ItemPage.getPage_size()),
                         ItemPage.getPage_size());
             } else {
-                return jdbcTemplate.query(str_query, new Conversion_mapper(), product_Id); // Thêm tham số WHERE
+                return jdbcTemplate.query(str_query, new Conversion_mapper(), product_Id); 
             }
         } catch (DataAccessException e) {
             System.err.println("Error fetching conversions: " + e.getMessage());

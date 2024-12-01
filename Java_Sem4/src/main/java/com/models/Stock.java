@@ -1,18 +1,23 @@
 package com.models;
 
+import java.util.List;
+
 public class Stock {
 	private int Id;
 	private int Product_id;
 	private String product_name;
 	private int Wh_rc_dt_id_quantity;
 	private int Quantity;
+	private String Status;
 	private int Wh_rc_dt_id;
-	public Stock(int id, int product_id, int quantity, int wh_rc_dt_id) {
+	private List<ConversionShow> listconversion;
+	public Stock(int id, int product_id, int quantity, int wh_rc_dt_id, String status) {
 		super();
 		Id = id;
 		Product_id = product_id;
 		Quantity = quantity;
 		Wh_rc_dt_id = wh_rc_dt_id;
+		Status = status;
 	}
 	public Stock() {
 	}
@@ -34,6 +39,12 @@ public class Stock {
 	public void setQuantity(int quantity) {
 		Quantity = quantity;
 	}
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		this.Status = status;
+	}
 	public int getWh_rc_dt_id() {
 		return Wh_rc_dt_id;
 	}
@@ -51,6 +62,6 @@ public class Stock {
 	}
 	public void setWh_rc_dt_id_quantity(int wh_rc_dt_id_quantity) {
 		Wh_rc_dt_id_quantity = wh_rc_dt_id_quantity;
-	}
+	}	
 	
 }

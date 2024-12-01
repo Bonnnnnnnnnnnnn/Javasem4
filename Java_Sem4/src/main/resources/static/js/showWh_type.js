@@ -116,6 +116,21 @@
 			        }
 			    });
 			}
+			function searchTable() {
+			       var searchTerm = $('#searchInput').val().toLowerCase();
+			       var rows = $('#warehouseTable tr');
+
+			       rows.each(function() {
+			           var employeeName = $(this).find('td:nth-child(2) span').text().toLowerCase();
+			           var warehouseName = $(this).find('td:nth-child(3) span').text().toLowerCase();
+
+			           if (employeeName.indexOf(searchTerm) !== -1 || warehouseName.indexOf(searchTerm) !== -1) {
+			               $(this).show();
+			           } else {
+			               $(this).hide();
+			           }
+			       });
+			   }
 
 
 

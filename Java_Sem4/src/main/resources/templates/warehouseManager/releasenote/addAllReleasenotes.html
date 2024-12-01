@@ -53,6 +53,9 @@
 									                <input type="text" th:value="${detail.productName}" class="form-control" readonly />
 									            </td>
 									            <td>
+									            	<span th:text="${detail.unit_name}" class="form-control" readonly></span>
+									            </td>
+									            <td>
 									                <input type="text" name="quantity[]" th:value="${detail.quantity_requested}" class="form-control" readonly />
 									            </td>
 									            <td>

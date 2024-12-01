@@ -7,7 +7,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Warehouse</h1>
+            <h1>Warehouse Employee</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -27,26 +27,9 @@
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Warehouse Table</h3>
-				<div class="input-group input-group-sm" style="width: 80%;margin-left:15%;">
-				<a class="nav-link" data-widget="navbar-search" href="#" role="button">
-				          <i class="fas fa-search"></i>
-				        </a>
-				        <div class="navbar-search-block">
-				          <form class="form-inline">
-				            <div class="input-group input-group-sm">
-				              <input class="form-control form-control-navbar" name="table_search" id="searchInput" type="search" placeholder="Search" aria-label="Search">
-				              <div class="input-group-append">
-				                <button class="btn btn-navbar" type="submit">
-				                  <i class="fas fa-search"></i>
-				                </button>
-				                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-				                  <i class="fas fa-times"></i>
-				                </button>
-				              </div>
-				            </div>
-				          </form>
-				        </div>
-				</div>
+					<div class="input-group input-group-sm" style="width: 80%; margin-left: 15%;">
+					    <input type="text" name="table_search" id="searchInput" onkeyup="searchTable()" class="form-control float-right" placeholder="Search">
+					</div>
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
@@ -59,18 +42,15 @@
 				      </tr>
 				  </thead>
 				  <tbody id="warehouseTable">
-				      <tr th:if="${#lists.isEmpty(ews)}" class="text-center">
-				          <td colspan="5">No warehouses found</td>
-				      </tr>
-				      <tr th:each="item ,iterStat: ${ews}" class="text-center">
-				          <td th:text="${iterStat.index + 1}"></td>
-				          <td><span th:text="${item.employee_name}"></span></td>
-				          <td><span th:text="${item.warehouse_name}"></span></td>
-				          <td>
-				              <a th:href="@{deleteWh(id=${item.id})}" onclick="return confirmDeleteWh();" class="btn btn-danger">Delete</a>
-				            </td>
-				        </tr>
-				    </tbody>
+					    <tr th:if="${#lists.isEmpty(ews)}" class="text-center">
+					        <td colspan="5">No warehouses found</td>
+					    </tr>
+					    <tr th:each="item, iterStat : ${ews}" class="text-center">
+					        <td th:text="${iterStat.index + 1}"></td>
+					        <td><span th:text="${item.employee_name}"></span></td>
+					        <td><span th:text="${item.warehouse_name}"></span></td>
+					    </tr>
+					</tbody>
 				</table>
               </div>
             </div>

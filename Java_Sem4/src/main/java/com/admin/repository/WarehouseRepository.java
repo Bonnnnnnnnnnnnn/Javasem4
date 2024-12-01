@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -147,35 +148,37 @@ public class WarehouseRepository {
 	                     "WHERE w.id = ?";
 
 	        return dbwh.query(sql, (rs) -> {
-	            Warehouse warehouse = new Warehouse();
-	            warehouse.setId(rs.getInt(Views.COL_WAREHOUSE_ID));
-	            warehouse.setName(rs.getString(Views.COL_WAREHOUSE_NAME));
-	            warehouse.setAddress(rs.getString(Views.COL_WAREHOUSE_ADDRESS));
-	            warehouse.setWh_type_id(rs.getInt(Views.COL_WAREHOUSE_TYPE_WAREHOUSE_ID));
-	            warehouse.setTypeName(rs.getString("type_name"));
+	            if (rs.next()) {  // Kiểm tra nếu có dòng dữ liệu
+	                Warehouse warehouse = new Warehouse();
+	                warehouse.setId(rs.getInt("id"));
+	                warehouse.setName(rs.getString("name"));
+	                warehouse.setAddress(rs.getString("address"));
+	                warehouse.setWh_type_id(rs.getInt("wh_type_id"));
+	                warehouse.setTypeName(rs.getString("type_name"));
 
-	            List<Employee> managers = new ArrayList<>();
-	            do {
-	                String firstName = rs.getString("manager_first_name");
-	                String lastName = rs.getString("manager_last_name");
-	                if (firstName != null && lastName != null) {
-	                    Employee manager = new Employee();
-	                    manager.setFirst_name(firstName);
-	                    manager.setLast_name(lastName);
-	                    managers.add(manager);
-	                }
-	            } while (rs.next());
-	            warehouse.setManagers(managers);
+	                List<Employee> managers = new ArrayList<>();
+	                do {
+	                    String firstName = rs.getString("manager_first_name");
+	                    String lastName = rs.getString("manager_last_name");
+	                    if (firstName != null && lastName != null) {
+	                        Employee manager = new Employee();
+	                        manager.setFirst_name(firstName);
+	                        manager.setLast_name(lastName);
+	                        managers.add(manager);
+	                    }
+	                } while (rs.next());
 
-	            return warehouse;
+	                warehouse.setManagers(managers);
+
+	                return warehouse;
+	            }
+	            return null;
 	        }, id);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return null;
 	    }
 	}
-
-
 	public boolean updatewh(Warehouse wh) {
 		try {
 			String sql = "UPDATE Warehouse SET Name = ?,Address = ?,Wh_type_Id = ? WHERE Id = ?";
@@ -189,20 +192,22 @@ public class WarehouseRepository {
 	
 	//Employee Warehouse 
 	public List<Employee_warehouse> findAllEw() {
-        
-        try {
-        	String sql = "SELECT ew.Id, ew.Employee_Id, " +
-                    "CONCAT(e.First_name, ' ', e.Last_name) AS Employee_name, " +
-                    "ew.Warehouse_Id, w.Name AS Warehouse_name " +
-                    "FROM employee_warehouse ew " +
-                    "JOIN employee e ON ew.Employee_Id = e.Id " +
-                    "JOIN warehouse w ON ew.Warehouse_Id = w.Id";
-            return dbwh.query(sql, new Employee_warehouse_mapper());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	    try {
+	        String sql = "SELECT ew.Id, ew.Employee_Id, " +
+	                     "CONCAT(e.First_name, ' ', e.Last_name) AS Employee_name, " +
+	                     "ew.Warehouse_Id, w.Name AS Warehouse_name " +
+	                     "FROM employee_warehouse ew " +
+	                     "JOIN employee e ON ew.Employee_Id = e.Id " +
+	                     "JOIN warehouse w ON ew.Warehouse_Id = w.Id";
+	        
+	        List<Employee_warehouse> result = dbwh.query(sql, new Employee_warehouse_mapper());
+	        return result;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
 	public List<Employee> showEmpAll() {
 	    try {
 	        String sql = "SELECT e.*, r.Name AS role_name " +
@@ -236,11 +241,14 @@ public class WarehouseRepository {
 	                     "JOIN warehouse w ON ew.Warehouse_Id = w.Id " +
 	                     "WHERE ew.Id = ?";
 	        return dbwh.queryForObject(sql, new Employee_warehouse_mapper(), id);
+	    } catch (EmptyResultDataAccessException e) {
+	        return null;
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return null;
 	    }
 	}
+
 	public boolean addEw(Employee_warehouse ew) {
 		try {
 			String sql = "INSERT INTO employee_warehouse (Employee_Id,Warehouse_Id) VALUES (?,?)";

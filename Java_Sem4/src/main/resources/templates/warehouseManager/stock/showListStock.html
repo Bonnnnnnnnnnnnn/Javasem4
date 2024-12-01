@@ -1,0 +1,12 @@
+        <tbody>
+                                        <tr th:each="detail : ${stocks}">
+
+                                            <td>
+                                                <span th:text="${detail.product_id}"></span>
+                                            </td>       
+                                                                                        <td>
+                                                <span th:text="${detail.status}"></span>
+                                            </td>                                   
+                                    
+                                        </tr>
+                                    </tbody>

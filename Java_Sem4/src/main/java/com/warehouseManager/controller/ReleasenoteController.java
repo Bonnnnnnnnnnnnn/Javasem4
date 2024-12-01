@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -76,14 +77,23 @@ public class ReleasenoteController {
 	
 	//show order in warehouseManager
 	@GetMapping("/ShowInforOrder")
-	public String ShowInforOrder(Model model,
+	public String ShowInforOrder(Model model, HttpSession session,
 			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
 	    pv.setPage_size(8);
-		List<Order> orders = rele.findAllOrderByEmployeeIdIsNull(pv);
-		model.addAttribute("orders", orders);
-		model.addAttribute("pv",pv);
+		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+		
+		if(loggedInEmployee != null) {					    
+			List<Order> orders = rele.findAllOrderByEmployeeIdIsNull(pv, warehouseId);
+			model.addAttribute("orders", orders);
+			model.addAttribute("pv",pv);		
+		}else {
+			System.out.println("login zzzz");
+		}
+
 		return Views.SHOW_ORDER_WAREHOUSE_RELEASENOTE;
 	}
 		
@@ -127,14 +137,19 @@ public class ReleasenoteController {
 	 
 	 //receive request by employee
 	@PostMapping("/receiveNote")
-	public String receiveNote(@RequestParam("requestId") int releasenoteId, HttpSession session) {
+	public String receiveNote(@RequestParam("requestId") int requestId, HttpSession session) {
 
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 
 		if (loggedInEmployee != null) {
+			
 			int employeeId = loggedInEmployee.getId();
-			rele.updateEmployeeId(releasenoteId, employeeId);
-			rele.updateStatusToProcessing(releasenoteId);
+				        	        
+	        rele.updateEmployeeId(requestId, employeeId, warehouseId);
+			
+			rele.updateStatusToProcessing(requestId);
 		} else {
 			System.out.println("login");
 		}
@@ -169,7 +184,7 @@ public class ReleasenoteController {
 
 		if (loggedInEmployee != null) {
 			int employeeId = loggedInEmployee.getId();
-
+						
 	        List<Order> orders = rele.findOrderByEmployeeId(pv, employeeId);
 
 			model.addAttribute("orders", orders);
@@ -208,12 +223,15 @@ public class ReleasenoteController {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
 	    pv.setPage_size(8);
+	    
 		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 
 		if (loggedInEmployee != null) {
 			int employeeId = loggedInEmployee.getId();
-
-	        List<Request> requests = rele.findAllByEmployeeId(pv, employeeId);
+			
+	        List<Request> requests = rele.findAllByEmployeeId(pv, employeeId, warehouseId);
 
 			model.addAttribute("requests", requests);
 			model.addAttribute("pv",pv);
@@ -245,6 +263,25 @@ public class ReleasenoteController {
 		}
 
 		return Views.SHOW_ORDER_AND_REQUEST;
+	}
+	
+	@GetMapping("/insufficientOutputDetail")
+	public String insufficientOutputDetail(
+			@RequestParam("id") int id,
+			HttpSession session, Model model) {
+		
+		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		int employeeId = loggedInEmployee.getId();
+			
+		Request request = rele.findRequestByIdEmp(id, employeeId);
+		    
+		List<Request_detail> details = rele.findDetailsByRequestId(id);
+		    
+		model.addAttribute("request", request);
+		model.addAttribute("details", details);
+		model.addAttribute("employeeId", employeeId);
+		model.addAttribute("requestId", id);
+	    return Views.SHOW_INSUFFICIENT_OUTPUT_DETAIL;
 	}
 	
 	//show request and request_detail in warehouse 
@@ -302,14 +339,18 @@ public class ReleasenoteController {
 		
 		Warehouse_releasenote releasenote = new Warehouse_releasenote();
 		Request request = repoder.findRequestById(requestId); 
-	  	List<Request_detail> details = rele.findDetailsByRequestId(requestId);
+	  	List<Request_detail> requestDetails  = rele.findDetailsByRequestId(requestId);
 	  	
         String randomName = "WRR-" + UUID.randomUUID().toString().substring(0, 8);
         request.setName(randomName);
         
+        List<Request_detail> filteredDetails = requestDetails.stream()
+                .filter(detail -> detail.getQuantity_exported() < detail.getQuantity_requested())
+                .collect(Collectors.toList());
 
 	  	model.addAttribute("request", request); 
-	  	model.addAttribute("details", details);	
+	  	model.addAttribute("details", requestDetails);	
+	  	model.addAttribute("filteredDetails", filteredDetails);	
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", requestId);
 		model.addAttribute("releasenotes", releasenote);
@@ -336,7 +377,7 @@ public class ReleasenoteController {
 		releasenote.setEmployee_Id(employeeId);
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
-			for (int i = 0; i < id_product.size(); i++) {
+			for (int i = 0; i < id_product.size(); i++) {			
 
 				Warehouse_rn_detail detail = new Warehouse_rn_detail();
 				detail.setId_product(id_product.get(i));
@@ -345,7 +386,7 @@ public class ReleasenoteController {
 				details.add(detail);
 			}
 		}
-
+		
 		boolean isSaved = rele.addWarehouseReleasenote(releasenote, details);
 		
 
@@ -408,7 +449,7 @@ public class ReleasenoteController {
 		Warehouse_releasenote releasenote = new Warehouse_releasenote();
 		Order order = rele.findOrderById(id); 
 	  	List<Order_detail> details = rele.findOrderDetail(id);
-	
+	  		
 	  	model.addAttribute("order", order); 
 	  	model.addAttribute("details", details);	
 		model.addAttribute("employeeId", employeeId);
@@ -490,6 +531,9 @@ public class ReleasenoteController {
 		        }
 		      }
 	        }
+	        
+	       rele.isRleComplete(releaseNoteId, id);
+
 	    }
 		
 		return "redirect:showWareReleasenote";

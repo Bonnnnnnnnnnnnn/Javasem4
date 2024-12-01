@@ -8,5 +8,5 @@ function goToDetail(id) {
         return; 
     }
 
-    window.location.href = '/warehouseManager/requestInWarehouseDetail?id=' + id;
+    window.location.href = '/warehouseManager/insufficientOutputDetail?id=' + id;
 }

@@ -46,8 +46,9 @@
                                         <tr>
                                             <th>Product Name</th>
                                             <th>Quantity</th>
-                                            <th>Status</th>
                                             <th>Unit</th>
+                                            <th>Status</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -58,13 +59,13 @@
                                             <td>
                                                 <span th:text="${detail.quantity}"></span>
                                             </td>
-                                          
-                                            <td>
-                                                <span th:text="${detail.status}"></span>
-                                            </td>
                                             <td>
                                                 <span th:text="${detail.unit_name}"></span>
                                             </td>
+                                            <td>
+                                                <span th:text="${detail.status}"></span>
+                                            </td>
+
                                         </tr>
                                     </tbody>
                                 </table>
@@ -119,33 +120,39 @@
                                 <h3 class="card-title" >Warehouse Release note Details</h3>
                             </div>
                             <div class="card-body">
-                                <table class="table table-bordered table-sm mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th>Product Name</th>
-                                            <th>Quantity Request</th>
-                                            <th>Quantity Exported</th>
-                                        </tr>
-                                    </thead>
-									<tbody>
-									    <tr th:each="detail : ${details}">
-									        <td>
-									            <span th:text="${detail.product_name}"></span>
-									            <input type="hidden" name="id_product[]" th:value="${detail.product_Id}" />
-									        </td>
-									        
-									        <td>
-									            <span th:text="${detail.quantity}"></span>
-									            <input type="hidden" id="quantity_Rq" name="quantity_Rq[]" th:value="${detail.quantity}">
-									        </td>
-									      
-									        <td>
-									            <input type="number" id="quantity_Ex" name="quantity_Ex[]" value="0" class="form-control">
-									        </td>
-									        <td><input type="hidden" id="status" name="status[]" value="Processing"></td>
-									    </tr>
-									</tbody>
-                                </table>															
+                                <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc;">
+								    <table class="table table-bordered table-sm mt-3">
+								        <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 1;">
+								            <tr>
+								                <th>Product Name</th>
+								                <th>Unit</th>
+								                <th>Quantity Request</th>
+								                <th>Quantity Exported</th>
+								            </tr>
+								        </thead>
+								        <tbody>
+								            <tr th:each="detail : ${details}">
+								                <td>
+								                    <span th:text="${detail.product_name}"></span>
+								                    <input type="hidden" name="id_product[]" th:value="${detail.product_Id}" />
+								                </td>
+								                <td>
+								                	<span th:text="${detail.unit_name}"></span>
+								                </td>
+								                <td>
+								                    <span class="remainingQuantity" th:text="${detail.quantity}"></span>
+								                    <input type="hidden" id="quantity_Rq" name="quantity_Rq[]" th:value="${detail.quantity}" >
+								                </td>
+								                <td>
+								                    <input type="number" id="quantity_Ex" name="quantity_Ex[]" value="0" class="form-control">
+								                    <input type="hidden" id="status" name="status[]" value="Processing">								                    
+								                </td>							            
+								            </tr>
+								        </tbody>
+								    </table>
+								</div>
+
+															
                             </div>
                         </div>
                     </div>
@@ -162,8 +169,38 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- <script th:src="@{/js/addReleasenoteByOrder.js}"></script>
- -->
+<script>
+	document.querySelectorAll('input[name="quantity_Ex[]"]').forEach(input => {
+	    input.addEventListener('input', function (e) {
+	        const quantityValue = parseInt(e.target.value, 10); // Chuyển đổi giá trị input thành số nguyên
+	
+	        // Kiểm tra xem quantityValue có phải là NaN không
+	        if (isNaN(quantityValue)) {
+	            alert("Invalid input! Please enter a valid number.");
+	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu nhập không hợp lệ
+	            return; // Dừng xử lý nếu giá trị không hợp lệ
+	        }
+	
+	        const row = e.target.closest('tr'); // Lấy hàng chứa input
+	        const remainingQuantity = parseInt(row.querySelector('.remainingQuantity').textContent, 10); // Giá trị remainingQuantity
+	        const statusInput = row.querySelector('input[name="status[]"]');
+	
+	        // Kiểm tra nếu quantityValue là số âm
+	        if (quantityValue < 0) {
+	            alert("Quantity entered cannot be a negative number! Please enter a valid quantity.");
+	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu số âm
+	        } else if (quantityValue > remainingQuantity) {
+	            alert("Quantity entered exceeds remaining quantity! Please enter a valid quantity.");
+	            e.target.value = remainingQuantity; // Đặt lại giá trị của input về số lượng còn lại
+	        } else if(quantityValue === remainingQuantity) {
+	        	statusInput.value = "Completed";
+	        } else {
+	        	statusInput.value = "Processing";
+	        }
+	    });
+	});
+
+</script>
  
 </body>
 </html>

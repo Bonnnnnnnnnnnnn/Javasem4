@@ -55,7 +55,7 @@
 									                <input type="text" th:value="${detail.product_name}" class="form-control" readonly />
 									            </td>
 									            <td>
-									            	<input type="text" th:text="${detail.unit_name}" class="form-control">
+									            	<span th:text = "${detail.unit_name}" class="form-control" readonly></span>
 									            </td>
 									            <td>
 									                <input type="text" name="quantity_Ex[]" th:value="${detail.quantity}" class="form-control" readonly />

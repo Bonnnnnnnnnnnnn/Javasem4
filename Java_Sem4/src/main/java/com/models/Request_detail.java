@@ -8,6 +8,7 @@ public class Request_detail {
 	private int Quantity_exported;
 	private int Request_id;
 	private String ProductName;
+	private String Unit_name;
 	
 	public Request_detail(int id, int idProduct, String status, int quantity_requested, int quantity_exported, int request_id) {
 		super();
@@ -77,6 +78,13 @@ public class Request_detail {
 		this.ProductName = ProductName;
 	}
 	
+	public String getUnit_name() {
+		return Unit_name;
+	}
+	
+	public void setUnit_name(String unit_name) {
+		this.Unit_name = unit_name;
+	}
 
 }
 

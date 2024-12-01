@@ -18,106 +18,140 @@
       </div>
     </section>
         <section class="content-header">
-      <div class="container-fluid">
-	<div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Details Warehouse Receipt and Warehouse Receipt Details</h3>
-              </div>
-              <form th:object="${whr}">
-			    <div class="card-body row">
-			        <div class="form-group col-md-6">
-			          	<label for="title">Name warehouse receipt</label>
-			            <input type="text" disabled readonly th:value="${whr.name}" class="form-control">
-			        </div>
-			        
-					<div class="form-group col-md-6">
-					    <label for="title">Warehouse name</label>
-					    <input type="text" disabled readonly th:value="${whr.wh_name}" class="form-control">
-					</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header p-2">
+                        <ul class="nav nav-pills" id="tabNavigation">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#Warehousereceiptdetails" data-toggle="tab">
+                                     Warehouse receipt details
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#Warehousedetailsreceipt" data-toggle="tab">
+                                     Warehouse details receipt
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#AddWarehousedetailsreceipt" data-toggle="tab">
+                                     Add Warehouse details receipt
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="Warehousereceiptdetails">
+                                <!--  Warehouse receipt details-->
+                              <form th:object="${whr}">
+							    <div class="card-body row">
+							        <div class="form-group col-md-6">
+							          	<label for="title">Name warehouse receipt</label>
+							            <input type="text" disabled readonly th:value="${whr.name}" class="form-control">
+							        </div>
+							        
+									<div class="form-group col-md-6">
+									    <label for="title">Warehouse name</label>
+									    <input type="text" disabled readonly th:value="${whr.wh_name}" class="form-control">
+									</div>
+				
+									<div class="form-group col-md-6">
+									    <label for="phone">Date time</label>
+											<input type="text" disabled readonly th:value="${whr.date}" class="form-control">
+									</div>
+									
+									<div class="form-group col-6 ">
+									    <label for="exampleInputEmail1">Status</label>
+									    <input class="form-control" disabled readonly th:value="${whr.status}">
+									</div>
+									
+							    </div>
+							    <div class="card-footer">
+							    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
+							        <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${whr.id})}" class="btn btn-warning">Update</a>
+							    </div>
+							</form>
+                            </div>
+                            <div class="tab-pane" id="Warehousedetailsreceipt">
+                                <table class="table table-hover text-nowrap">
+								    <thead>
+								        <tr class="text-center">
+								         	<th>STT</th>
+								            <th>Price</th>
+								            <th>Quantity</th>
+								            <th>Shipping_fee</th>
+								            <th>Product</th>
+								            <th>
+								            </th>
+								        </tr>
+								    </thead>
+								    <tbody>
+								        <tr th:if="${#lists.isEmpty(details)}" class="text-center">
+								            <td colspan="8">No positions found</td>
+								        </tr>
+								        <tr th:each="item , iterStat: ${details}" class="text-center">
+								        	<td th:text="${iterStat.index + 1}"></td>
+								            <td>
+								                <span th:text="${#numbers.formatCurrency(item.wh_price)}"></span>
+								            </td>
+								            <td>
+								                <span th:text="${item.quantity}"></span>
+								            </td>
+								            <td>
+								                <span th:text="${#numbers.formatCurrency(item.shipping_fee)}"></span>
+								            </td>
+								            <td>
+								                <span th:text="${item.product_name}"></span>
+								            </td>
+								            <td>
+								                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhDetail(id=${item.id})}" class="btn btn-warning">Update</a>
+								            </td>
+								        </tr>
+								    </tbody>
+								</table>
+                            </div>
+                            <div class="tab-pane" id="AddWarehousedetailsreceipt">
+								<form action="addWhReceiptDetail" method="post">
+								    <div id="detailsContainer">
+								        <div class="card-body row">
+								            <input type="hidden" name="wh_receipt_id" th:value="${whr.id}">
+								            <div class="form-group col-md-6">
+	                                            <label for="quantity">Quantity</label>
+	                                            <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" required>
+	                                        </div>
+	                                        <div class="form-group col-md-6">
+											    <label for="wh_price">Warehouse Price</label>
+											    <input id="wh_price" type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
+											</div>
+											<div class="form-group col-md-6">
+											    <label for="shipping_fee">Shipping Fee</label>
+											    <input id="shipping_fee" type="number" name="shipping_fee" class="form-control" placeholder="Enter Shipping Fee" step="0.01" required>
+											</div>
+	                                        <div class="form-group col-md-6">
+	                                            <label for="product_id">Product</label>
+	                                            <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
+	                                            <select id="product_id" name="product_id" class="form-control" required>
+	                                                <option value="" disabled selected>Select Product</option>
+	                                                <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
+	                                            </select>
+	                                        </div>
+								        </div>
+								    </div>
+								    <div class="card-footer">
+								        <button type="submit" class="btn btn-primary">Submit</button>
+								    </div>
+								</form>
 
-					<div class="form-group col-md-6">
-					    <label for="phone">Date time</label>
-							<input type="text" disabled readonly th:value="${whr.date}" class="form-control">
-					</div>
-					
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Status</label>
-					    <input class="form-control" disabled readonly th:value="${whr.status}">
-					</div>
-					
-			    </div>
-			    <div class="card-footer">
-			    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
-			        <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${whr.id})}" class="btn btn-warning">Update</a>
-			    </div>
-
-				<table class="table table-hover text-nowrap">
-				    <thead>
-				        <tr class="text-center">
-				         	<th>STT</th>
-				            <th>Price</th>
-				            <th>Quantity</th>
-				            <th>Product</th>
-				            <th>
-				            </th>
-				        </tr>
-				    </thead>
-				    <tbody>
-				        <tr th:if="${#lists.isEmpty(details)}" class="text-center">
-				            <td colspan="8">No positions found</td>
-				        </tr>
-				        <tr th:each="item , iterStat: ${details}" class="text-center">
-				        	<td th:text="${iterStat.index + 1}"></td>
-				            <td>
-				                <span th:text="${#numbers.formatCurrency(item.wh_price)}"></span>
-				            </td>
-				            <td>
-				                <span th:text="${item.quantity}"></span>
-				            </td>
-				            <td>
-				                <span th:text="${item.product_name}"></span>
-				            </td>
-				            <td>
-				                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhDetail(id=${item.id})}" class="btn btn-warning">Update</a>
-				            </td>
-				        </tr>
-				    </tbody>
-				</table>
-				</form>
-				<form action="addWhReceiptDetail" method="post">
-				    <div id="detailsContainer">
-				        <h3>Warehouse Receipt Details</h3>
-				        <div class="detail-entry row">
-				            <input type="hidden" name="wh_receipt_id" th:value="${whr.id}">
-				            <div class="form-group col-md-4">
-				                <label for="quantity">Quantity</label>
-				                <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" required>
-				            </div>
-				            <div class="form-group col-md-4">
-				                <label for="wh_price">Warehouse Price</label>
-				                <input type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
-				            </div>
-				            <div class="form-group col-md-4">
-					            <label for="product_id">Product</label>
-					            <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
-					            <select id="product_id" name="product_id" class="form-control" required>
-					                <option value="" disabled selected>Select Product</option>
-					                <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
-					            </select>
-					        </div>
-				        </div>
-				    </div>
-				    <div class="card-footer">
-				        <button type="submit" class="btn btn-primary">Submit</button>
-				    </div>
-				</form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        </div>
-        </section>
+    </div>
+</section>
         </div>
         <div th:replace="warehouseManager/layout/footer_admin"></div>
           <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>

@@ -34,7 +34,7 @@ public class RequestOrderController {
 	private ReleasenoteRepository rele;
 
     @GetMapping("/showOrderRequest")
-    public String showshowOrderRequest(Model model,
+    public String showOrderRequest(Model model,
     		@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);

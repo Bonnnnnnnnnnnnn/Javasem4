@@ -40,5 +40,6 @@ public class WebConfig implements WebMvcConfigurer {
         .addPathPatterns("/cart/**"); 
        
     }
+
 }
 

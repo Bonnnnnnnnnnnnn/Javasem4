@@ -20,7 +20,7 @@ public class Order {
 	private String PaymentMethod;
 	private String Notes;
 	private String OrderID;
-
+	private int WareHouse_Id;
 	private String TransactionId;
 	private int Province_Id;
 	private int District_Id;
@@ -38,7 +38,7 @@ public class Order {
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
 			String transactionId, int province_Id, int district_Id, int ward_Id, String ghn_order_code,
-			String tracking_code, LocalDate expected_delivery_time, String shipping_status) {
+			String tracking_code, LocalDate expected_delivery_time, String shipping_status, int wareHouse_Id) {
 
 		super();
 		Id = id;
@@ -64,6 +64,7 @@ public class Order {
 		Ward_Id = ward_Id;
 		Ghn_order_code = ghn_order_code;
 		Tracking_code = tracking_code;
+		WareHouse_Id = wareHouse_Id;
 		this.expected_delivery_time = expected_delivery_time;
 		this.shipping_status = shipping_status;
 	}
@@ -219,6 +220,11 @@ public class Order {
 	public void setShipping_status(String shipping_status) {
 		this.shipping_status = shipping_status;
 	}
-	
+	public int getWareHouse_Id() {
+		return WareHouse_Id;
+	}
+	public void setWareHouse_Id(int wareHouse_Id) {
+		WareHouse_Id = wareHouse_Id;
+	}
 	
 }

@@ -5,14 +5,12 @@ public class Product_img {
 	private String Img_url;
 	private int Product_id;
 	private String Product_name;
-	private int Id_main_img;
 	public Product_img() {
 	}
-	public Product_img(int id, String img_url, int product_id, int id_main_img) {
+	public Product_img(int id, String img_url, int product_id) {
 		Id = id;
 		Img_url = img_url;
 		Product_id = product_id;
-		Id_main_img = id_main_img;
 	}
 	public int getId() {
 		return Id;
@@ -38,12 +36,4 @@ public class Product_img {
 	public void setProduct_name(String product_name) {
 		Product_name = product_name;
 	}
-	public int getId_main_img() {
-		return Id_main_img;
-	}
-	public void setId_main_img(int id_main_img) {
-		Id_main_img = id_main_img;
-	}
-	
-	
 }

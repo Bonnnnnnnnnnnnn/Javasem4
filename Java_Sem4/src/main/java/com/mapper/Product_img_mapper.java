@@ -13,7 +13,6 @@ public class Product_img_mapper implements RowMapper<Product_img> {
 		Product_img proi = new Product_img();
 		proi.setId(rs.getInt(Views.COL_PRODUCT_IMG_ID));
 		proi.setImg_url(rs.getString(Views.COL_PRODUCT_IMG_URL));
-		proi.setId_main_img(rs.getInt(Views.COL_PRODUCT_IMG_ID_MAIN_IMG));
 		proi.setProduct_id(rs.getInt(Views.COL_PRODUCT_IMG_PRODUCT_ID));
 		proi.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
 		return proi;

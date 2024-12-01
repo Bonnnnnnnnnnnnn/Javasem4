@@ -57,6 +57,7 @@
                                     <thead>
                                         <tr>
                                             <th>Product ID</th>
+                                            <th>Unit</th>
                                             <th>Quantity requested</th>
                                             <th>Quantity exported</th>
                                             <th>Status</th>
@@ -66,6 +67,9 @@
                                         <tr th:each="detail : ${details}">
                                             <td>
                                                 <span th:text="${detail.productName}"></span>
+                                            </td>
+                                            <td>
+                                            	<span th:text="${detail.unit_name}"></span>
                                             </td>
                                             <td>
                                                 <span th:text="${detail.quantity_requested}"></span>

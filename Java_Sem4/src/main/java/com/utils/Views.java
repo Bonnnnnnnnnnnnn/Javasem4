@@ -36,7 +36,7 @@ public final class Views {
 	public static String TBL_BRAND = "Brand";
 	public static String COL_BRAND_ID = "Id";
 	public static String COL_BRAND_NAME ="Name";
-	
+	 
 	//4.PRODUCT
 	public static String PRODUCT_SHOWPRODUCT = "admin/product/showProduct";
 	public static String PRODUCT_SHOWADDPRODUCT ="admin/product/showAddProduct";
@@ -49,15 +49,16 @@ public final class Views {
 	public static String COL_PRODUCT_CATE_ID = "Cate_Id";
 	public static String COL_PRODUCT_BRAND_ID = "Brand_Id";
 	public static String COL_PRODUCT_UNIT_ID = "Unit_id";
-
 	public static String COL_PRODUCT_CONVERSION_ID = "Id_Conversion";
-
 	public static String COL_PRODUCT_PRICE = "Price";
 	public static String COL_PRODUCT_IMG = "Img";
 	public static String COL_PRODUCT_STATUS = "Status";
 	public static String COL_PRODUCT_DESCIPTION ="Description";
 	public static String COL_PRODUCT_WARRANTY_PERIOD ="Warranty_period";
-	
+	public static String COL_PRODUCT_LENGTH = "Length";
+	public static String COL_PRODUCT_WIDTH = "Width";
+	public static String COL_PRODUCT_HEIGHT ="Height";
+	public static String COL_PRODUCT_WELGHT ="Weight";
 	//5.PRODUCT_CATEGORY
 	public static String CATEGORY_SHOWCATEGORY = "admin/category/showCategory";
 	public static String CATEGORY_SHOWADDCATEGORY = "admin/category/showAddCategory";
@@ -76,10 +77,14 @@ public final class Views {
 	public static String COL_PRICE_CHANGE_DATE_END = "Date_end";
 	
 	//7.STOCK
+	public static String SHOW_STOCK = "warehouseManager/stock/showListStock";
+
+	
 	public static String TBL_STOCK = "Stock";
 	public static String COL_STOCK_ID = "Id";
 	public static String COL_STOCK_PRODUCT_ID = "Id_product";
 	public static String COL_STOCK_QUANTITY = "Quantity";
+	public static String COL_STOCK_STATUS = "Status";
 	public static String COL_STOCK_WARERCDT_ID = "Wh_rc_dt_id";
 	
 	//8.WAREHOUSE_RECEIPT_DETAIL
@@ -87,12 +92,9 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_ID = "Id";
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
-
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
-	
 	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
-
-
+	public static String COL_WAREHOUSE_RECEIPT_SHIPPING_FEE = "Shipping_fee";
 	
 	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhReceipt";
@@ -231,6 +233,7 @@ public final class Views {
 	public static String COL_ORDER_TRACKING_CODE = "tracking_code";
 	public static String COL_ORDER_EXPECTED_DELIVERY_TIME = "expected_delivery_time";
 	public static String COL_ORDER_SHIPPING_STATUS = "shipping_status";
+	public static String COL_ORDER_WAREHOUSE_ID = "Warehouse_Id";
 	
 	//18.ORDER DETAIL
 	public static String TBL_ORDER_DETAIL = "Order_detail";
@@ -302,6 +305,7 @@ public final class Views {
 	//25.REQUEST DETAIL
 	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
 	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
+	public static String SHOW_INSUFFICIENT_OUTPUT_DETAIL = "warehouseManager/OrderAndRequest/showInsufficientOutputDetail";
 
 	public static String TBL_REQUEST_DETAIL = "Request_detail";
 	public static String COL_REQUEST_DETAIL_ID = "id";
@@ -353,8 +357,10 @@ public final class Views {
 	public static String COL_PRODUCT_IMG_ID = "Id";
 	public static String COL_PRODUCT_IMG_URL = "Img_url";
 	public static String COL_PRODUCT_IMG_PRODUCT_ID = "Product_id";
-	public static String COL_PRODUCT_IMG_ID_MAIN_IMG = "Id_main_img";
 	//22.product_spe
+	public static String PRODUCT_SPE_SHOWADDPS ="admin/product/showAddPs";
+	public static String PRODUCT_SPE_SHOWUPDATEPS ="admin/product/showUpdatePs";
+	
 	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";
 	public static String COL_PRODUCT_SPE_DES_SPE = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCT_ID = "Product_id"; 

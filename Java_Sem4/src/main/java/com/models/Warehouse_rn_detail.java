@@ -8,6 +8,7 @@ public class Warehouse_rn_detail {
 	private int Id_product;
 	private int Quantity;
 	private String ProductName;
+	private String Unit_name;
 	public Warehouse_rn_detail(int id,int idProduct, int wgrn_id, String status, int stock_id, int quantity) {
 		super();
 		Id = id;
@@ -62,6 +63,14 @@ public class Warehouse_rn_detail {
 	
 	public void setProductName(String productName) {
 		this.ProductName = productName;
+	}
+	
+	public String getUnit_name() {
+		return Unit_name;
+	}
+	
+	public void setUnit_name(String unit_name) {
+		this.Unit_name = unit_name;
 	}
 	
 }
