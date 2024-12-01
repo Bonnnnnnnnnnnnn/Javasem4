@@ -12,8 +12,8 @@ public class ReturnOrder {
     private double totalAmount;
     private double discountAmount;
     private double finalAmount;
-    
-    // Thêm fields để hiển thị
+    private Order order;
+    private String message;
     private String customerName;
     private List<ReturnOrderDetail> returnDetails;
 	public ReturnOrder(int id, int orderId, LocalDate returnDate, String status, String note, double totalAmount,
@@ -30,6 +30,22 @@ public class ReturnOrder {
 		this.returnDetails = returnDetails;
 	}
 	
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
 	public ReturnOrder() {
 	}
 

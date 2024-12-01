@@ -192,15 +192,17 @@ $(document).ready(function() {
             `;
             dropdown.append(noProductDiv);  // Thêm dòng "No products found"
         } else {
-            // Lặp qua danh sách sản phẩm và thêm vào dropdown
-            products.forEach(product => {
-                const productDiv = `
-                    <div class="thuandropdown-item" >
-                    <a href="/detailproduct/product?id=${product.id}">${product.product_name}</a>
-                    </div>
-                `;
-                dropdown.append(productDiv);  // Thêm vào dropdown
-            });
+            
+        	products.forEach(product => {
+        		console.log(product)
+        	    const productDiv = `
+        	        <div class="thuandropdown-item">
+        	            <img src="/uploads/${product.img}" alt="${product.product_name}" style="width: 40px; height: 40px; margin-right: 10px;">
+        	            <a href="/detailproduct/product?id=${product.id}">${product.product_name}</a>
+        	        </div>
+        	    `;
+        	    dropdown.append(productDiv);
+        	});
 
             // Bắt sự kiện khi người dùng chọn sản phẩm trong dropdown
           

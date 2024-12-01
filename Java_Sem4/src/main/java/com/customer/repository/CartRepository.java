@@ -1,32 +1,15 @@
 package com.customer.repository;
 
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.mapper.Product_mapper;
-import com.mapper.Unit_mapper;
-import com.mapper.Brand_mapper;
-import com.mapper.Category_mapper;
 import com.mapper.Shopping_cart_mapper;
-import com.models.Brand;
-import com.models.Category_Product;
-import com.models.Customer;
-import com.models.Order;
-import com.models.PageView;
-import com.models.Product;
 import com.models.Shopping_cart;
-import com.models.Unit;
-import com.utils.FileUtils;
 import com.utils.Views;
 
 
@@ -177,15 +160,20 @@ public class CartRepository {
 
 	public List<Shopping_cart> findAllCartsByCustomerId(int customerId) {
 	    try {
-	        String str_query = String.format("SELECT sc.*, p.%s , p.%s , p.%s, p.%s as cart_status " +
+	        String str_query = String.format("SELECT sc.*, p.%s, p.%s, p.%s, p.%s as cart_status, " +
+	                        "p.%s, p.%s, p.%s, p.%s " +
 	                        "FROM %s sc " +
 	                        "INNER JOIN %s p ON sc.%s = p.%s " +
 	                        "INNER JOIN %s c ON sc.%s = c.%s " +
-	                        "WHERE sc.%s = ? " ,
+	                        "WHERE sc.%s = ? ",
 	                Views.COL_PRODUCT_NAME, 
 	                Views.COL_PRODUCT_PRICE, 
 	                Views.COL_PRODUCT_IMG,
 	                Views.COL_PRODUCT_STATUS,
+	                Views.COL_PRODUCT_WELGHT,   
+	                Views.COL_PRODUCT_HEIGHT,    
+	                Views.COL_PRODUCT_WIDTH,     
+	                Views.COL_PRODUCT_LENGTH,    
 	                Views.TBL_SHOPING_CART,
 	                Views.TBL_PRODUCT, 
 	                Views.COL_SHOPING_CART_PRODUCT_ID, 
@@ -195,7 +183,7 @@ public class CartRepository {
 	                Views.COL_CUSTOMER_ID,
 	                Views.COL_SHOPING_CART_CUSTOMER_ID);
 
-	            return db.query(str_query, new Shopping_cart_mapper(), customerId);
+	        return db.query(str_query, new Shopping_cart_mapper(), customerId);
 	        
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching shopping carts: " + e.getMessage());

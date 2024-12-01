@@ -1,4 +1,4 @@
-package com.models;
+package com.models.ghn;
 
 public class StoreRequest {
     private String name;           

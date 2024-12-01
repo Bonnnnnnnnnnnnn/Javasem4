@@ -5,7 +5,7 @@ public class Order_detail {
 	private int Stock_id;
 	private int Order_id;
 	private String Status;
-	private double Price;
+	private Double Price;
 	private int Product_Id;
 	private int Quantity;
 	private String Product_name;
@@ -13,7 +13,7 @@ public class Order_detail {
 	private String Unit_name;
 	
 	
-	public Order_detail(int id, int stock_id, int order_id, String status, double price, int product_Id, int quantity,
+	public Order_detail(int id, int stock_id, int order_id, String status, Double price, int product_Id, int quantity,
 			String product_name, String img) {
 		super();
 		Id = id;
@@ -51,10 +51,10 @@ public class Order_detail {
 	public void setStatus(String status) {
 		Status = status;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return Price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		Price = price;
 	}
 	public int getProduct_Id() {

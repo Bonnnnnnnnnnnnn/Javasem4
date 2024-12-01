@@ -1,7 +1,5 @@
 package com.customer.repository;
 
-
-
 import java.util.Collections;
 import java.util.List;
 
@@ -11,9 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.Order_detail_mapper;
-import com.mapper.Shopping_cart_mapper;
 import com.models.Order_detail;
-import com.models.Shopping_cart;
 import com.utils.Views;
 
 

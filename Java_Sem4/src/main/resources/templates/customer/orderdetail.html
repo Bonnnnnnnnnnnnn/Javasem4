@@ -226,8 +226,7 @@
                             <td class="align-middle" th:text="${item.product_name}"></td>
                             <td class="align-middle" th:text="'$' + ${item.Price}" ></td>
                              <td class="align-middle" th:text="${item.Quantity}" ></td>
-                             <td class="align-middle" th:text="'$' + (${item.Price} * ${item.Quantity})"></td>
-              			     
+                             <td class="align-middle" th:text="${'$' + #numbers.formatDecimal(item.Price * item.Quantity, 1, 'COMMA', 2, 'POINT')}"></td>
                              <td onclick="event.stopPropagation()">
                               <button th:if="${item.status == 'Reviewed'}"
 							            type="button" 
@@ -355,12 +354,19 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Return Date:</strong> <span th:text="${#temporals.format(returnOrder.returnDate, 'dd-MM-yyyy')}"></span></p>
-                    <p><strong>Status:</strong> <span th:text="${returnOrder.status}" 
-                       th:class="${returnOrder.status == 'Processing' ? 'text-warning' : 
-                                 returnOrder.status == 'Completed' ? 'text-success' : 
-                                 returnOrder.status == 'Cancelled' ? 'text-danger' : ''}">
-                    </span></p>
+                    <p><strong>Status:</strong> 
+					    <span th:text="${returnOrder.status}" 
+							    th:class="${
+							        returnOrder.status == 'Processing' ? 'badge badge-warning' : 
+							        returnOrder.status == 'Accepted' ? 'badge badge-success' : 
+							        returnOrder.status == 'Completed' ? 'badge badge-success' : 
+							        returnOrder.status == 'Cancelled' ? 'badge badge-danger' : 
+							        returnOrder.status == 'Rejected' ? 'badge badge-danger' : ''
+							    }">
+							</span>
+					</p>
                     <p><strong>Note:</strong> <span th:text="${returnOrder.note}"></span></p>
+                     <p><strong>Message from Seller:</strong> <span th:text="${returnOrder.message}"></span></p>
                 </div>
                 <div class="col-md-6 text-right">
                     <p><strong>Total Amount:</strong> $<span th:text="${#numbers.formatDecimal(returnOrder.totalAmount, 1, 2)}"></span></p>
@@ -439,13 +445,67 @@
                     </table>
                 </div>
             </div>
+            <div class="col-12 mt-3 text-right">
+                    <button th:if="${returnOrder.status == 'Processing'}"
+					        class="btn btn-danger"
+					        th:data-return-id="${returnOrder.id}"
+					        th:onclick="'showCancelModal(\'' + ${returnOrder.id} + '\')'">
+					    <i class="fas fa-times"></i> Cancel Return
+					</button>
+					
+					<button th:unless="${returnOrder.status == 'Processing'}"
+					        class="btn d-flex align-items-center justify-content-center float-right"
+					        th:classappend="${
+					            returnOrder.status == 'Accepted' ? 'btn-info' : 
+					            returnOrder.status == 'Completed' ? 'btn-success' : 
+					            returnOrder.status == 'Cancelled' ? 'btn-secondary' : 
+					            returnOrder.status == 'Rejected' ? 'btn-danger' : ''
+					        }"
+					        style="min-width: 120px;"
+					        disabled>
+					    <i th:class="${
+					        returnOrder.status == 'Accepted' ? 'fas fa-check-circle' : 
+					        returnOrder.status == 'Completed' ? 'fas fa-check' : 
+					        returnOrder.status == 'Cancelled' ? 'fas fa-ban' : 
+					        returnOrder.status == 'Rejected' ? 'fas fa-times-circle' : ''
+					    }"></i>
+					    <span class="ml-2" th:text="${
+					        returnOrder.status == 'Accepted' ? 'Accepted' : 
+					        returnOrder.status == 'Completed' ? 'Completed' : 
+					        returnOrder.status == 'Cancelled' ? 'Cancelled' : 
+					        returnOrder.status == 'Rejected' ? 'Rejected' : ''
+					    }"></span>
+					</button>
+                </div>
         </div>
     </div>
 </div>
         </div>
         </div>
         </div>
-    
+    <!-- modal cancel return -->
+    <div class="modal fade" id="cancelReturnModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Return Order</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this return order?</p>
+                <input type="hidden" id="returnOrderId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="confirmCancel()">
+                    <i class="fas fa-times"></i> Confirm Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Cart End -->
 	<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -871,6 +931,29 @@
 	                title: 'Error',
 	                text: xhr.responseText || 'Failed to create return order'
 	            });
+	        }
+	    });
+	}
+	
+	
+	function showCancelModal(returnId) {
+	    $('#returnOrderId').val(returnId);
+	    $('#cancelReturnModal').modal('show');
+	}
+
+	function confirmCancel() {
+	    var returnId = $('#returnOrderId').val();
+	    
+	    $.ajax({
+	        url: '/returnorders/cancel/' + returnId,
+	        method: 'POST',
+	        success: function(response) {
+	            $('#cancelReturnModal').modal('hide');
+	            location.reload();
+	        },
+	        error: function(xhr, status, error) {
+	            alert('Error cancelling return order');
+	            console.error('Error:', error);
 	        }
 	    });
 	}

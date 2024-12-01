@@ -6,17 +6,25 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.models.*;
+import com.models.ghn.District;
+import com.models.ghn.Province;
+import com.models.ghn.StoreRequest;
+import com.models.ghn.StoreResponse;
+import com.models.ghn.Ward;
 @Repository
 public class GHNService {
 	private static final String TOKEN = "858b9bf9-ab01-11ef-81b6-5e2e958f07fa";
-	
+	@Autowired
+	private Environment env;
 	public List<Province> getProvinces() {
 	    try {
 	        String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
@@ -36,7 +44,7 @@ public class GHNService {
 	            entity,
 	            String.class
 	        );
-	        System.out.println("Raw Response: " + rawResponse.getBody());
+	        
 	        
 	        // Gọi API với model Province
 	        ResponseEntity<GHNResponse<List<Province>>> response = restTemplate.exchange(
@@ -45,21 +53,16 @@ public class GHNService {
 	            entity,
 	            new ParameterizedTypeReference<GHNResponse<List<Province>>>() {}
 	        );
-	        
-	        System.out.println("Response Code: " + response.getStatusCode());
-	        if (response.getBody() != null) {
-	            System.out.println("GHN Code: " + response.getBody().getCode());
-	            System.out.println("GHN Message: " + response.getBody().getMessage());
-	        }
+	                
 	        
 	        if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<Province> provinces = response.getBody().getData();
-	            provinces.forEach(p -> {
-	                System.out.println("Province ID: " + p.getProvinceId());
-	                System.out.println("Province Name: " + p.getProvinceName());
-	                System.out.println("Province Code: " + p.getCode());
-	                System.out.println("----------------");
-	            });
+//	            provinces.forEach(p -> {
+//	                System.out.println("Province ID: " + p.getProvinceId());
+//	                System.out.println("Province Name: " + p.getProvinceName());
+//	                System.out.println("Province Code: " + p.getCode());
+//	                System.out.println("----------------");
+//	            });
 	            return provinces;
 	        }
 	        
@@ -93,12 +96,12 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<District> district = response.getBody().getData();
-	            district.forEach(p -> {
-	                System.out.println("district ID: " + p.getDistrictId());
-	                System.out.println("district Name: " + p.getDistrictName());
-	                System.out.println("district Code: " + p.getCode());
-	                System.out.println("----------------");
-	            });
+//	            district.forEach(p -> {
+//	                System.out.println("district ID: " + p.getDistrictId());
+//	                System.out.println("district Name: " + p.getDistrictName());
+//	                System.out.println("district Code: " + p.getCode());
+//	                System.out.println("----------------");
+//	            });
 	            return district;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {
@@ -134,11 +137,11 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<Ward> ward = response.getBody().getData();
-	            ward.forEach(p -> {
-	                System.out.println("Ward ID: " + p.getWardCode());
-	                System.out.println("Ward Name: " + p.getWardName());
-	                System.out.println("----------------");
-	            });
+//	            ward.forEach(p -> {
+//	                System.out.println("Ward ID: " + p.getWardCode());
+//	                System.out.println("Ward Name: " + p.getWardName());
+//	                System.out.println("----------------");
+//	            });
 	            return ward;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {
@@ -171,9 +174,7 @@ public class GHNService {
                 HttpMethod.POST,
                 entity,
                 String.class
-            );
-            System.out.println("Raw Response JSON: " + rawResponse.getBody());
-            
+            );          
             
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(rawResponse.getBody());
@@ -228,26 +229,38 @@ public class GHNService {
             System.out.println("Tạo shop thất bại!");
         }
     }
-    public ShippingFeeResponse calculateFee(int fromDistrictId, int toDistrictId, Product product) {
+    public ShippingFeeResponse calculateFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
         try {
             String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
-            
+            double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
             HttpHeaders headers = new HttpHeaders();
             headers.set("Token", TOKEN);
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            
+         
+            int totalWeight = 0;
+            int maxLength = 0;    
+            int maxWidth = 0;     
+            int totalHeight = 0; 
+            double totalInsuranceValue = 0;
+            for(Shopping_cart item : listc) {
+                int quantity = item.getQuantity();
+                totalWeight += item.getWeight() * quantity;
+                maxLength = Math.max(maxLength, item.getLength());
+                maxWidth = Math.max(maxWidth, item.getWidth());
+                totalHeight += item.getHeight() * quantity;
+                totalInsuranceValue += item.getPrice() * quantity * usdToVndRate;
+            }
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("from_district_id", fromDistrictId);
             requestBody.put("to_district_id", toDistrictId);
             requestBody.put("service_type_id", 2);
             
           
-            requestBody.put("weight", 3000);
-            requestBody.put("length", 100);
-            requestBody.put("width", 100);
-            requestBody.put("height", 100);
-            requestBody.put("insurance_value", 100000);
+            requestBody.put("weight", totalWeight);
+            requestBody.put("length", maxLength);
+            requestBody.put("width", maxWidth);
+            requestBody.put("height", totalHeight);
+            requestBody.put("insurance_value", (int)totalInsuranceValue);
             
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             
@@ -270,10 +283,10 @@ public class GHNService {
             return null;
         }
     }
-    public double calculateShippingFee(int fromDistrictId, int toDistrictId, Product product) {
+    public double calculateShippingFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
    
         
-        ShippingFeeResponse fee = calculateFee(fromDistrictId, toDistrictId, product);
+        ShippingFeeResponse fee = calculateFee(fromDistrictId, toDistrictId,listc);
         
         if (fee != null) {
             return fee.getTotal();

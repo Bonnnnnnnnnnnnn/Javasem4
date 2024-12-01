@@ -5,6 +5,7 @@ public class Warehouse_receipt_detail {
 	private int Wh_receipt_id;
 	private double Wh_price;
 	private int Product_id;
+	private int Conversion_id;
 	private int Quantity;
 	private double Shipping_fee;
 	private String Product_name;
@@ -20,6 +21,13 @@ public class Warehouse_receipt_detail {
 		Quantity = quantity;
 	}
 	public Warehouse_receipt_detail() {
+	}
+	
+	public int getConversion_id() {
+		return Conversion_id;
+	}
+	public void setConversion_id(int conversion_id) {
+		Conversion_id = conversion_id;
 	}
 	public int getId() {
 		return Id;

@@ -21,13 +21,7 @@ public class ReturnOrderMapper implements RowMapper<ReturnOrder> {
         returnOrder.setTotalAmount(rs.getDouble(Views.COL_RETURN_ORDER_TOTAL_AMOUNT));
         returnOrder.setDiscountAmount(rs.getDouble(Views.COL_RETURN_ORDER_DISCOUNT_AMOUNT));
         returnOrder.setFinalAmount(rs.getDouble(Views.COL_RETURN_ORDER_FINAL_AMOUNT));
-        
-        // Nếu join với Customer
-        try {
-            returnOrder.setCustomerName(rs.getString("CustomerName"));
-        } catch (SQLException e) {
-            // Ignore if not joined
-        }
+        returnOrder.setMessage(rs.getString(Views.COL_RETURN_ORDER_MESSAGE));
         
         return returnOrder;
     }

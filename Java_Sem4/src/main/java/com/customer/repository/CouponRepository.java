@@ -1,20 +1,15 @@
 package com.customer.repository;
 
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.ui.Model;
 
 import com.mapper.Coupon_mapper;
 import com.models.Coupon;
-import com.models.Shopping_cart;
 import com.utils.Views;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @Repository
 public class CouponRepository {
@@ -25,7 +20,7 @@ public class CouponRepository {
 	    try {
 	        // Câu lệnh SQL để tìm coupon dựa trên code
 	        String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-	                Views.TBL_COUPON, Views.COL_COUPON_CODE);
+	                Views.TBL_DISCOUNT, Views.COL_DISCOUNT_CODE);
 
 	        return db.queryForObject(sql, new Object[]{couponCode}, new Coupon_mapper());
 	    } catch (DataAccessException e) {
@@ -38,7 +33,7 @@ public class CouponRepository {
 	    try {
 
 	        String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-	                Views.TBL_COUPON, Views.COL_COUPON_ID);
+	                Views.TBL_DISCOUNT, Views.COL_DISCOUNT_ID);
 
 	        return db.queryForObject(sql, new Object[]{id}, new Coupon_mapper());
 	    } catch (DataAccessException e) {
