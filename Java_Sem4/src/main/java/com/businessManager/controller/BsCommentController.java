@@ -39,10 +39,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("businessManager/comment")
 public class BsCommentController {
     
-    @Autowired
-    private RequestOrderRepository repoder;
-	@Autowired
-	private ReleasenoteRepository rele;
 	@Autowired
 	CommentRepository repcm;
 	@GetMapping("/showcomment")
@@ -75,7 +71,7 @@ public class BsCommentController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> staffReply(@RequestBody Comment comment, HttpServletRequest request) {
 	    try {
-	        // Lấy employee_id từ session
+	        
 	        Employee employee = (Employee) request.getSession().getAttribute("loggedInEmployee");
 	        if (employee == null) {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

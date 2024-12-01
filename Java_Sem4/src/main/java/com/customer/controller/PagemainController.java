@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.customer.repository.GHNService;
 import com.customer.repository.ShoppingpageRepository;
 import com.models.PageView;
-import com.models.Product;
 import com.utils.Views;
 
 @Controller

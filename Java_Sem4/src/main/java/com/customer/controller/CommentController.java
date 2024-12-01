@@ -3,8 +3,6 @@ package com.customer.controller;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import com.customer.repository.AccountRepository;
 import com.customer.repository.CommentRepository;
 import com.models.Comment;
-import com.models.Customer;
 
 @Controller
 @RequestMapping("comment")

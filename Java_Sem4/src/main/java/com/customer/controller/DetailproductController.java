@@ -1,11 +1,6 @@
 package com.customer.controller;
 
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +13,6 @@ import com.customer.repository.CommentRepository;
 import com.customer.repository.DetailproductRepository;
 import com.customer.repository.ShoppingpageRepository;
 import com.models.Comment;
-import com.models.Feedback;
 import com.models.PageView;
 import com.models.Product;
 import com.utils.Views;

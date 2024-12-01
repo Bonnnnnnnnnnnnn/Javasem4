@@ -89,7 +89,8 @@ public final class Views {
 	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
-	public static String COL_WAREHOUSE_RECEIPT_PRODUCT_ID = "Product_Id";
+	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Product_Id";
+	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION = "Conversion_Id";
 	public static String COL_WAREHOUSE_RECEIPT_SHIPPING_FEE = "Shipping_fee";
 	
 	//9.WAREHOUSE_RECEIPT 
@@ -312,6 +313,10 @@ public final class Views {
 	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
 	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
 	//25.RETURN ORDER
+	public static String PRORESS_RETURN_ORDER = "businessManager/ReturnOrder/Showlistorder";
+	public static String RETURN_BS_ORDER_DETAIL = "businessManager/ReturnOrder/showreorderde";
+	public static String PRORESS_RETURN_ORDER_COMPLETE = "businessManager/ReturnOrder/Showlistordercomplete";
+	
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
 	public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
@@ -321,6 +326,7 @@ public final class Views {
 	public static String COL_RETURN_ORDER_TOTAL_AMOUNT = "Total_Amount";
 	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
 	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
+	public static String COL_RETURN_ORDER_MESSAGE = "Message";
 	//25.RETURN ORDER DETAIL
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";

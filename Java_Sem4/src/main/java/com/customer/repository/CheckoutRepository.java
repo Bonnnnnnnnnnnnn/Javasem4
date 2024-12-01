@@ -1,17 +1,11 @@
 package com.customer.repository;
 
-
-
-import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,11 +14,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.*;
-import com.mapper.Warehouse_mapper;
-import com.models.Customer;
 import com.models.Order;
 import com.models.Order_detail;
-import com.models.PageView;
 import com.models.Payment;
 import com.models.Shopping_cart;
 import com.models.Warehouse;

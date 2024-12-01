@@ -24,9 +24,6 @@ public class Product_mapper implements RowMapper<Product> {
         item.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
         item.setUnit_id(rs.getInt(Views.COL_PRODUCT_UNIT_ID));
         item.setStatus(rs.getString(Views.COL_PRODUCT_STATUS));
-        item.setBrandName(rs.getString("brand_name"));
-        item.setUnit_name(rs.getString("unit_name"));
-        item.setCategoryName(rs.getString("category_name"));
 
         item.setHeight(rs.getInt(Views.COL_PRODUCT_HEIGHT));
         item.setWeight(rs.getInt(Views.COL_PRODUCT_WELGHT));

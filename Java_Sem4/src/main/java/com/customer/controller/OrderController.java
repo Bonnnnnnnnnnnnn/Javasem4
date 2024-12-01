@@ -1,7 +1,5 @@
 package com.customer.controller;
 
-
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,27 +10,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.customer.repository.CartRepository;
 import com.customer.repository.MomoService;
 import com.customer.repository.OrderRepository;
 import com.customer.repository.Order_detailRepository;
 import com.customer.repository.ReturnOrderRepository;
 import com.models.Order;
-import com.models.Order_detail;
 import com.models.PageView;
 import com.models.ReturnOrder;
 import com.models.ReturnOrderDetail;
-import com.models.Shopping_cart;
 import com.utils.Views;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("order")

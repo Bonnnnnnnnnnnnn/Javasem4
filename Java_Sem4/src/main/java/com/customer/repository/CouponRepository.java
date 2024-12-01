@@ -1,20 +1,15 @@
 package com.customer.repository;
 
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.ui.Model;
 
 import com.mapper.Coupon_mapper;
 import com.models.Coupon;
-import com.models.Shopping_cart;
 import com.utils.Views;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @Repository
 public class CouponRepository {

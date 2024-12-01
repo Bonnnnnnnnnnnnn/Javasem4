@@ -9,20 +9,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.mapper.Customer_mapper;
 import com.mapper.Order_mapper;
-import com.mapper.Payment_mapper;
-import com.mapper.Shopping_cart_mapper;
-import com.models.Customer;
 import com.models.Order;
-import com.models.Order_detail;
 import com.models.PageView;
-import com.models.Payment;
-import com.models.Shopping_cart;
 import com.utils.Views;
 
 @Repository

@@ -1,17 +1,11 @@
 package com.customer.controller;
 
-
-
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +27,6 @@ import com.customer.repository.CouponRepository;
 import com.customer.repository.DistanceService;
 import com.customer.repository.GHNService;
 import com.customer.repository.MomoService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.models.Coupon;
 import com.models.Customer;
 import com.models.Order;

@@ -1,27 +1,25 @@
 package com.customer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.models.Order;
 import com.models.ReturnOrder;
 import com.models.ReturnOrderDetail;
 
-import lombok.Data;
-
 import com.customer.repository.OrderRepository;
 import com.customer.repository.ReturnOrderRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("returnorders")
@@ -67,7 +65,7 @@ public class ReturnOrderController {
             }
             returnOrder.setId(returnOrderId);
             
-         // Insert ReturnOrderDetails
+         
             boolean allDetailsInserted = true;
             for (ReturnItemRequest item : request.getItems()) {
                 ReturnOrderDetail detail = new ReturnOrderDetail();
@@ -97,6 +95,27 @@ public class ReturnOrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    @PostMapping("/cancel/{id}")
+    @ResponseBody
+    public ResponseEntity<?> cancelReturnOrder(@PathVariable("id") int returnOrderId) {
+        try {
+            boolean updated = returnOrderRepository.updateStatusAndMessage(returnOrderId,"", "Cancelled");
+            
+            if (updated) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Return order cancelled successfully");
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body("Failed to cancel return order");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("Error cancelling return order: " + e.getMessage());
+        }
+    }
+    
+    
 }
 
 class ReturnOrderRequest {
