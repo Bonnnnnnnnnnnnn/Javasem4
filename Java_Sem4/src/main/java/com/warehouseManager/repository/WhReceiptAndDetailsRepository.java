@@ -165,7 +165,7 @@ public class WhReceiptAndDetailsRepository {
 	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
 	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
 	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + " , " +
-	                Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + "  ) VALUES (?, ?, ? , ?)";
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + "  ) VALUES (?, ?, ? , ?)";
 	        
 	        for (Warehouse_receipt_detail detail : details) {
 	            detail.setWh_receipt_id(generatedId);
@@ -213,7 +213,7 @@ public class WhReceiptAndDetailsRepository {
 	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId) {
 	    String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
 	               + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
-	               + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
+	               + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id "
 	               + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
 
 	    List<Warehouse_receipt_detail> details = dbwhd.query(sql, (rs, rowNum) -> {
@@ -222,7 +222,7 @@ public class WhReceiptAndDetailsRepository {
 	        wrd.setWh_receipt_id(rs.getInt(Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID));
 	        wrd.setQuantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
 	        wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
-	        wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID));
+	        wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
 	        wrd.setProduct_name(rs.getString("product_name"));
 	        wrd.setShipping_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE));
 
@@ -244,7 +244,7 @@ public class WhReceiptAndDetailsRepository {
 	    try {
 	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
 	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
-	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_PRODUCT_ID + " = p.id "
+	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id "
 	                   + "WHERE wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " = ?";
 
 	        return dbwhd.queryForObject(sql, new Warehouse_receipt_detail_mapper(), id);
