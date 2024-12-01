@@ -1,5 +1,6 @@
 package com.models;
 
+import java.sql.Date;
 import java.util.List;
 
 public class Stock {
@@ -11,6 +12,11 @@ public class Stock {
 	private String Status;
 	private int Wh_rc_dt_id;
 	private List<ConversionShow> listconversion;
+	private String ProductName;
+	private Double WhPrice;
+	private String UnitName;
+	private Double ShippingFee;
+	private Date Date;
 	public Stock(int id, int product_id, int quantity, int wh_rc_dt_id, String status) {
 		super();
 		Id = id;
@@ -62,6 +68,42 @@ public class Stock {
 	}
 	public void setWh_rc_dt_id_quantity(int wh_rc_dt_id_quantity) {
 		Wh_rc_dt_id_quantity = wh_rc_dt_id_quantity;
-	}	
+	}
+	public List<ConversionShow> getListconversion() {
+		return listconversion;
+	}
+	public void setListconversion(List<ConversionShow> listconversion) {
+		this.listconversion = listconversion;
+	}
+	public String getProductName() {
+		return ProductName;
+	}
+	public void setProductName(String productName) {
+		ProductName = productName;
+	}
+	public Double getWhPrice() {
+		return WhPrice;
+	}
+	public void setWhPrice(Double whPrice) {
+		WhPrice = whPrice;
+	}
+	public String getUnitName() {
+		return UnitName;
+	}
+	public void setUnitName(String unitName) {
+		UnitName = unitName;
+	}
+	public Double getShippingFee() {
+		return ShippingFee;
+	}
+	public void setShippingFee(Double shippingFee) {
+		ShippingFee = shippingFee;
+	}
+	public Date getDate() {
+		return Date;
+	}
+	public void setDate(Date date) {
+		Date = date;
+	}
 	
 }

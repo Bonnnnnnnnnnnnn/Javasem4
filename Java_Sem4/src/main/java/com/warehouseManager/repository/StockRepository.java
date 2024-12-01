@@ -4,19 +4,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.models.Conversion;
-import com.models.Order_detail;
-import com.models.PageView;
-import com.models.Product;
-import com.models.Stock;
-import com.mapper.Stock_mapper;
 import com.mapper.Conversion_mapper;
 import com.mapper.Product_mapper;
+import com.mapper.Stock_mapper;
+import com.models.Conversion;
+import com.models.Product;
+import com.models.Stock;
 import com.utils.Views;
+import java.util.Map;
+
 
 @Repository
 public class StockRepository {
@@ -25,29 +24,49 @@ public class StockRepository {
     private JdbcTemplate jdbcTemplate;
 	
 
-    public List<Stock> findAllStock(int stockId) {
-        String sql = String.format(
-            "SELECT s.*, p.%s AS product_name " +
-            "FROM Stock s " +
-            "JOIN Product p ON s.%s = p.%s " +
-            "WHERE s.%s = ?",
-            Views.COL_PRODUCT_NAME,       
-            Views.COL_STOCK_PRODUCT_ID,   
-            Views.COL_PRODUCT_ID,         
-            Views.COL_STOCK_ID            
-        );
+    public List<Stock> findAllStock(int employeeId, int warehouseId) {
+        String sql = """
+            SELECT st.*, 
+                   p.Product_name, 
+                   wrd.Wh_price, 
+                   u.Name, 
+                   whr.Shipping_fee, 
+                   whr.Date 
+            FROM stock st
+            JOIN Product p ON st.Id_product = p.Id
+            JOIN Unit u ON p.Unit_id = u.Id
+            JOIN Conversion c ON p.Id = c.Product_Id
+            JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+            JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+            JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+            JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+            WHERE ew.Employee_Id = ? 
+              AND ew.Warehouse_Id = ?;
+        """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Stock stock = new Stock();
-            stock.setId(rs.getInt(Views.COL_STOCK_ID));                 
-            stock.setQuantity(rs.getInt(Views.COL_STOCK_QUANTITY));     
-            stock.setStatus(rs.getString(Views.COL_STOCK_STATUS));      
-            stock.setProduct_name(rs.getString(Views.COL_PRODUCT_NAME));
-            return stock;
-        }, stockId);
+        return jdbcTemplate.query(sql, new Stock_mapper(), employeeId, warehouseId);
+    }
+	
+    public List<Map<String, Object>> getInventoryStats() {
+        String sql = """
+            SELECT 
+                p.Product_name AS ProductName,
+                wr.Date AS ImportDate,
+                st.Quantity AS StockQuantity,
+                CASE 
+                    WHEN st.Quantity > 0 THEN 'Còn'
+                    ELSE 'Hết'
+                END AS Status
+            FROM stock st
+            JOIN Product p ON st.Id_product = p.Id
+            JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+            JOIN Warehouse_receipt wr ON wrd.Wh_receiptId = wr.Id
+            ORDER BY p.Product_name, wr.Date
+        """;
+
+        return jdbcTemplate.queryForList(sql);  
     }
 
-	
 	
 	public List<Conversion> conversionByProductId(int product_Id) {
 	    try {
