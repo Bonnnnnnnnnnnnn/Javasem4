@@ -326,12 +326,16 @@ public class ProductController {
 	    if (ids == null || ids.isEmpty()) {
 	        return ResponseEntity.badRequest().body("No product_img IDs provided.");
 	    }
+	    
 	    ids.removeIf(Objects::isNull);
 	    try {
 	        for (Integer id : ids) {
 	            String fileName = reppro.getProImageById(id);
-	            String result = reppro.deletePi(id, "uploads/imgDetail", fileName);
-	            System.out.println(result);
+	            if (fileName != null && !fileName.isEmpty()) {
+	                String result = reppro.deletePi(id, "uploads", fileName);
+	            } else {
+	                System.out.println("File name is invalid for product image ID: " + id);
+	            }
 	        }
 	        return ResponseEntity.ok("Product_img and corresponding images deleted successfully.");
 	    } catch (Exception e) {
@@ -339,6 +343,7 @@ public class ProductController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete products: " + e.getMessage());
 	    }
 	}
+
 
 
 	

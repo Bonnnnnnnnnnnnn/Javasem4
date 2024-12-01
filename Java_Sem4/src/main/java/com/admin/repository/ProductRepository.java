@@ -498,16 +498,24 @@ public class ProductRepository {
  // xóa product_imgaes
     public String deletePi(int idpi, String folderName, String fileName) {
         try {
+            // Xóa bản ghi trong cơ sở dữ liệu
             String sql = "DELETE FROM product_img WHERE Id = ?";
             Object[] params = {idpi};
             int[] types = {Types.INTEGER};
             int rowsAffected = dbpro.update(sql, params, types);
             if (rowsAffected > 0) {
-                String deleteFileResult = FileUtils.deleteFile(folderName, fileName);
-                if (deleteFileResult.equals("file deleted")) {
-                    return "Product image file deleted successfully!";
+                // Kiểm tra fileName có hợp lệ không
+                if (fileName != null && !fileName.isEmpty()) {
+                    // Xóa file từ thư mục uploads/imgDetail
+                    String deleteFileResult = FileUtils.deleteFile(folderName, fileName);
+                    System.out.println(deleteFileResult);  // In ra kết quả xóa tệp
+                    if ("file deleted".equals(deleteFileResult)) {
+                        return "Product image file deleted successfully!";
+                    } else {
+                        return "Product deleted, but failed to delete image file: " + deleteFileResult;
+                    }
                 } else {
-                    return "Product deleted, but failed to delete image file.";
+                    return "Failed to delete image: Invalid file name.";
                 }
             } else {
                 return "Failed to delete product: No rows affected";
@@ -516,6 +524,8 @@ public class ProductRepository {
             return "Failed to delete product: " + e.getMessage();
         }
     }
+
+
     @SuppressWarnings("deprecation")
 	public String getProImageById(int imageId) {
 	    try {
