@@ -24,11 +24,11 @@
             <div class="card">
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
-				    <li class="nav-item">
-				        <a class="nav-link active" href="#productdetails-tab" data-toggle="pill">Product details</a>
+                	<li class="nav-item">
+				        <a class="nav-link active" href="#productimage-tab" data-toggle="pill">Product image details</a>
 				    </li>
 				    <li class="nav-item">
-				        <a class="nav-link" href="#productimage-tab" data-toggle="pill">Product Image</a>
+				        <a class="nav-link" href="#productdetails-tab" data-toggle="pill">Product details</a>
 				    </li>
 				    <li class="nav-item">
 				        <a class="nav-link" href="#productSpecifications-tab" data-toggle="pill">Product specifications</a>
@@ -40,96 +40,23 @@
               </div>
               <div class="card-body">
                 <div class="tab-content">
-                  <div class="tab-pane active" id="productdetails-tab">
-                    <!-- Post -->
-                    <form th:object="${product}">
-			    <div class="card-body row">
-			    
-			    	<div class="form-group col-md-2">
-						<label for="exampleInputPassword1">Image</label>
-						<img th:if="${product.img != null}"
-                     th:src="@{/uploads/{imageName}(imageName=${product.img})}"
-                     style="width:55%;">
-                     </div>
-			    	<div class="form-group col-md-4">	
-			        </div>
-			        
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Status</label>
-					    <input class="form-control" disabled readonly th:value="${product.status}">
-					</div>
-					<div class="form-group col-md-6">
-					    <label for="title">Price</label>
-					    <input type="text" id="price" disabled readonly th:value="${formattedPrice}" class="form-control">
-					</div>
-			        <div class="form-group col-md-6">
-			          	<label for="title">Product Name</label>
-			            <input type="text" id="proName" disabled readonly th:value="${product.product_name}" class="form-control">
-			        </div>
-			        
-					<div class="form-group col-md-6">
-					    <label for="phone">Warranty period</label>
-							<input type="text" disabled readonly  th:value="${product.warranty_period} + ' ' + months" class="form-control">
-					</div>
-					
-					<div class="form-group col-6">
-					    <label for="conversion">Unit</label>
-					    <input class="form-control" disabled readonly th:value="${product.unit_name}">
-					</div>
-
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Brand</label>
-					    <input class="form-control" disabled readonly th:value="${product.brandName}">
-					</div>
-					
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Category</label>
-					    <input class="form-control" disabled readonly th:value="${product.categoryName}">
-					</div>
-					<div class="form-group col-md-12">
-					    <label for="phone">Description</label>
-					    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
-					</div>	
-					<div class="form-group col-3">
-					    <label for="conversion">Length</label>
-					    <input class="form-control" disabled readonly th:value="${product.length} + ' ' + (cm)">
-					</div>
-
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Height</label>
-					    <input class="form-control" disabled readonly th:value="${product.height} + ' ' + (cm)">
-					</div>
-					
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Width</label>
-					    <input class="form-control" disabled readonly th:value="${product.width} + ' ' + (cm)">
-					</div>
-					
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Weight</label>
-					    <input class="form-control" disabled readonly th:value="${product.weight} + ' ' + (g)">
-					</div>				
-			    </div>
-			    <div class="card-footer">
-			    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
-			        <a th:href="@{/admin/product/showUpdateProduct(id=${product.id})}" class="btn btn-success">Update</a>
- 					<a th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
-			    </div>
-				</form>
-                    
-                    <!-- /.post -->
-                  </div>
-                  
-				   <div class="tab-pane" id="productimage-tab">
-					    <h3>Product Images details</h3>
-					    <div class="row">
+	                <div class="tab-pane active" id="productimage-tab">
+						<div>
+					        <a th:href="@{/admin/product/showAddPImg(id=${product.id})}" class="btn btn-primary" id="addProductBtn">Add Product</a>
+					        <button class="btn btn-danger" id="deleteSelectedBtn" onclick="deleteSelectedImg()" style="display: none;">Delete Selected</button>
+					    </div>
+					    <div class="card-body row">
+					        <div class="col-12 mb-3">
+					            <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+					            <label for="selectAll">Select all</label>
+					        </div>
 					        <div th:each="img : ${images}" class="col-md-3 mb-3">
 					            <div class="card">
 					                <img th:src="@{/uploads/{imageName}(imageName=${img.img_url})}" 
 					                     class="card-img-top" alt="Product Image" style="max-width: 200px; height: auto; margin: 0 auto;">
 					                <div class="card-body">
 					                    <p class="card-text" th:text="${img.product_name}"></p>
-					                    <a th:href="@{/admin/product/deleteImage(id=${img.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+					                    <input type="checkbox" class="productCheckbox" th:value="${img.id}" onclick="toggleDeleteButton()">
 					                </div>
 					            </div>
 					        </div>
@@ -137,77 +64,164 @@
 					            <p>No product images found.</p>
 					        </div>
 					    </div>
+					    <div class="card-footer">
+					        <a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List Product</a>
+					    </div>
 					</div>
 
-
-
-                  <div class="tab-pane " id="productSpecifications-tab">
-                    <table class="table table-hover text-nowrap">
-                  <thead>
-                    <tr class="text-center">
-                    	<th>STT</th>
-						<th>Name specification</th>
-						<th>Description specification</th>
-						<th>
-							<a th:href="@{/admin/product/showAddPs(id=${product.id})}" class="btn btn-primary">Add product specification</a>
-						</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-					    <tr th:if="${#lists.isEmpty(ps)}" class="text-center">
-					        <td colspan="5">No units found</td>
-					    </tr>
+	                  <div class="tab-pane" id="productdetails-tab">
+	                    <!-- Post -->
+	                    <form th:object="${product}">
+					    <div class="card-body row">
 					    
-					    <tr th:each="item, iterStat : ${ps}" class="text-center">
-					        <td th:text="${iterStat.index + 1}"></td>
-					        <td>
-					            <span th:text="${item.name_spe}"></span>
-					        </td>
-					        <td>
-					            <span th:text="${item.des_spe}"></span>
-					        </td>
-					        <td>
-					            <a href="#" class="btn btn-warning">Update</a>
-					            <a href="#" class="btn btn-danger">Delete</a>
-					        </td>
-					    </tr>
-					</tbody>
-                </table>
-                  </div>
-                  <!-- /.tab-pane -->
+					    	<div class="form-group col-md-2">
+								<label for="exampleInputPassword1">Image</label>
+								<img th:if="${product.img != null}"
+		                     th:src="@{/uploads/{imageName}(imageName=${product.img})}"
+		                     style="width:55%;">
+		                     </div>
+					    	<div class="form-group col-md-4">	
+					        </div>
+					        
+							<div class="form-group col-6 ">
+							    <label for="exampleInputEmail1">Status</label>
+							    <input class="form-control" disabled readonly th:value="${product.status}">
+							</div>
+							<div class="form-group col-md-6">
+							    <label for="title">Price</label>
+							    <input type="text" id="price" disabled readonly th:value="${formattedPrice}" class="form-control">
+							</div>
+					        <div class="form-group col-md-6">
+					          	<label for="title">Product Name</label>
+					            <input type="text" id="proName" disabled readonly th:value="${product.product_name}" class="form-control">
+					        </div>
+					        
+							<div class="form-group col-md-6">
+							    <label for="phone">Warranty period</label>
+									<input type="text" disabled readonly  th:value="${product.warranty_period} + ' ' + months" class="form-control">
+							</div>
+							
+							<div class="form-group col-6">
+							    <label for="conversion">Unit</label>
+							    <input class="form-control" disabled readonly th:value="${product.unit_name}">
+							</div>
+		
+							<div class="form-group col-6 ">
+							    <label for="exampleInputEmail1">Brand</label>
+							    <input class="form-control" disabled readonly th:value="${product.brandName}">
+							</div>
+							
+							<div class="form-group col-6 ">
+							    <label for="exampleInputEmail1">Category</label>
+							    <input class="form-control" disabled readonly th:value="${product.categoryName}">
+							</div>
+							<div class="form-group col-md-12">
+							    <label for="phone">Description</label>
+							    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
+							</div>	
+							<div class="form-group col-3">
+							    <label for="conversion">Length</label>
+							    <input class="form-control" disabled readonly th:value="${product.length} + ' ' + (cm)">
+							</div>
+		
+							<div class="form-group col-3 ">
+							    <label for="exampleInputEmail1">Height</label>
+							    <input class="form-control" disabled readonly th:value="${product.height} + ' ' + (cm)">
+							</div>
+							
+							<div class="form-group col-3 ">
+							    <label for="exampleInputEmail1">Width</label>
+							    <input class="form-control" disabled readonly th:value="${product.width} + ' ' + (cm)">
+							</div>
+							
+							<div class="form-group col-3 ">
+							    <label for="exampleInputEmail1">Weight</label>
+							    <input class="form-control" disabled readonly th:value="${product.weight} + ' ' + (g)">
+							</div>				
+					    </div>
+					    <div class="card-footer">
+					    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List Product</a>
+					        <a th:href="@{/admin/product/showUpdateProduct(id=${product.id})}" class="btn btn-success">Update</a>
+		 					<a th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+					    </div>
+					</form>
+	                    
+	                    <!-- /.post -->
+	                  </div>
                   
-                  <!-- .change price -->
-					<div class="tab-pane" id="changeprice-tab">
-					    <table class="table table-hover text-nowrap">
-					        <thead>
-					            <tr class="text-center">
-					                <th>STT</th>
-					                <th>Price</th>
-					                <th>Start Date</th>
-					                <th>End Date</th>
-					            </tr>
-					        </thead>
-					        <tbody>
-					            <tr th:if="${#lists.isEmpty(priceChanges)}" class="text-center">
-					                <td colspan="5">No price changes found</td>
-					            </tr>
-					            <tr th:each="item, iterStat : ${priceChanges}" class="text-center">
-					                <td th:text="${iterStat.index + 1}"></td>
-					                <td>
-					                    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
-					                </td>
-									<td>
-									    <span th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span>
-									</td>
-									<td>
-									    <span th:if="${item.date_end != null}" th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
-									    <span th:if="${item.date_end == null}" th:text="'Present'"></span>
-									</td>
-
-					            </tr>
-					        </tbody>
-					    </table>
-					</div>
+		                  <div class="tab-pane " id="productSpecifications-tab">
+		                    <table class="table table-hover text-nowrap">
+		                  <thead>
+		                    <tr class="text-center">
+		                    	<th>STT</th>
+								<th>Name specification</th>
+								<th>Description specification</th>
+								<th>
+									<a th:href="@{/admin/product/showAddPs(id=${product.id})}" class="btn btn-primary">Add product specification</a>
+								</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+							    <tr th:if="${#lists.isEmpty(ps)}" class="text-center">
+							        <td colspan="5">No units found</td>
+							    </tr>
+							    
+							    <tr th:each="item, iterStat : ${ps}" class="text-center">
+							        <td th:text="${iterStat.index + 1}"></td>
+							        <td>
+							            <span th:text="${item.name_spe}"></span>
+							        </td>
+							        <td>
+							            <span th:text="${item.des_spe}"></span>
+							        </td>
+							        <td>
+							            <a th:href="@{/admin/product/showUpdatePs(id=${item.id})}" class="btn btn-warning">Update</a>
+							            <a th:href="@{deletePs(id=${item.id})}" onclick="return confirmDeletePs();" class="btn btn-danger" >Delete</a>
+							        </td>
+							    </tr>
+							</tbody>
+		                </table>
+		                <div class="card-footer">
+					    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List Product</a>
+					    </div>
+		                  </div>
+	                  	<!-- /.tab-pane -->
+	                  
+	                  <!-- .change price -->
+						<div class="tab-pane" id="changeprice-tab">
+						    <table class="table table-hover text-nowrap">
+						        <thead>
+						            <tr class="text-center">
+						                <th>STT</th>
+						                <th>Price</th>
+						                <th>Start Date</th>
+						                <th>End Date</th>
+						            </tr>
+						        </thead>
+						        <tbody>
+						            <tr th:if="${#lists.isEmpty(priceChanges)}" class="text-center">
+						                <td colspan="5">No price changes found</td>
+						            </tr>
+						            <tr th:each="item, iterStat : ${priceChanges}" class="text-center">
+						                <td th:text="${iterStat.index + 1}"></td>
+						                <td>
+						                    <span th:text="${#numbers.formatCurrency(item.price)}"></span>
+						                </td>
+										<td>
+										    <span th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span>
+										</td>
+										<td>
+										    <span th:if="${item.date_end != null}" th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
+										    <span th:if="${item.date_end == null}" th:text="'Present'"></span>
+										</td>
+	
+						            </tr>
+						        </tbody>
+						    </table>
+							<div class="card-footer">
+						    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List Product</a>
+						    </div>
+						</div>
                   <!-- /.change price -->
                   
                 </div>

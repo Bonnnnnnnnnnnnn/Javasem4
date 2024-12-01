@@ -46,13 +46,17 @@ public class FileUtils {
 	    public static String deleteFile(String folderName, String fileName) {
 	        try {
 	            Path pathFile = Path.of(System.getProperty("user.dir"), folderName, fileName);
-	            Files.deleteIfExists(pathFile);
+	            if (!Files.exists(pathFile)) {
+	                return "File not found: " + pathFile.toString();
+	            }
+	            Files.delete(pathFile);
 	            return "file deleted";
-	        } catch (Exception e) {
+	        } catch (IOException e) {
 	            e.printStackTrace();
-	            return "file delete failed";
+	            return "File delete failed: " + e.getMessage();
 	        }
 	    }
+
 
 
 }

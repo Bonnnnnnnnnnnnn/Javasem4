@@ -1,18 +1,28 @@
   package com.admin.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.admin.repository.ProductRepository;
@@ -241,6 +251,97 @@ public class ProductController {
 	
 	
 	
+	//product_img =========================================================================
+	
+	@GetMapping("showAddPImg")
+	public String showAddPImg(Model model, @RequestParam("id") int id) {
+		try {
+			Product_img pi = new Product_img();
+			Product product = reppro.findIdProT(id);
+			if (product != null) {
+	            model.addAttribute("new_item", pi);
+	            model.addAttribute("product", product);
+	        } else {
+	            model.addAttribute("errorMessage", "Product_img not found!");
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+	        model.addAttribute("errorMessage", "An error occurred while loading the product_IMG.");
+	        return "redirect:/erro";
+		}
+		return Views.PRODUCT_IMAGES_SHOWADDPI;
+	}
+	@PostMapping("addpi")
+	public String addpi(@RequestParam("additionalImages") MultipartFile[] additionalImages,
+	                      @RequestParam("product_id") int productId) {
+	    try {
+	        List<Product_img> productImages = new ArrayList<>();
+
+	        for (MultipartFile file : additionalImages) {
+	            if (!file.isEmpty()) {
+	                String fileName = file.getOriginalFilename();
+	                Path path = Paths.get("uploads/imgDetail/" + fileName);
+	                Files.createDirectories(path.getParent());
+	                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+	                
+	                Product_img pi = new Product_img();
+	                pi.setProduct_id(productId);
+	                pi.setImg_url("imgDetail/" + fileName);
+	                productImages.add(pi);
+	            }
+	        }
+	        reppro.addProDetails(productImages);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return "redirect:/admin/product/showProductDetail?id=" + productId ;
+	}
+	
+	//xóa 1 ảnh
+	@GetMapping("deleteProductImage")
+	public String deleteProductImage(@RequestParam("id") String id, 
+	                                 @RequestParam("fileName") String fileName) {
+	    try {
+	        int imageId = Integer.parseInt(id);
+	        Integer productId = reppro.getProductIdByimgId(imageId);
+	        String folderName = "uploads/imgDetail";
+	        reppro.deletePi(imageId, folderName, fileName);
+	        System.out.println("Product ID: " + productId);
+	        if (productId != null) {
+	            return "redirect:/admin/product/showProductDetail?id=" + productId;
+	        } else {
+	            return "admin/product/errorPage";
+	        }	
+
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "admin/product/errorPage";
+	    }
+	}
+	
+	//xóa nhiều ảnh
+	@PostMapping("/deleteSelected")
+	@ResponseBody
+	public ResponseEntity<String> deleteSelectedProducts(@RequestBody List<Integer> ids) {
+	    if (ids == null || ids.isEmpty()) {
+	        return ResponseEntity.badRequest().body("No product_img IDs provided.");
+	    }
+	    ids.removeIf(Objects::isNull);
+	    try {
+	        for (Integer id : ids) {
+	            String fileName = reppro.getProImageById(id);
+	            String result = reppro.deletePi(id, "uploads/imgDetail", fileName);
+	            System.out.println(result);
+	        }
+	        return ResponseEntity.ok("Product_img and corresponding images deleted successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete products: " + e.getMessage());
+	    }
+	}
+
+
+	
 	//product_specifications ============================================================
 	
 	// add thêm thuộc tính nếu cần
@@ -277,11 +378,63 @@ public class ProductController {
 
 	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
 	}
+	
+	// sửa thuộc tính
+	@GetMapping("showUpdatePs")
+	public String showUpdatePs(Model model, @RequestParam("id") String id) {
+	    try {
+	    	int idup = Integer.parseInt(id);
+	        Product_specifications ps = reppro.findPsById(idup);
+	        if (ps != null) {
+	            model.addAttribute("ps", ps);
+	        } else {
+	            model.addAttribute("errorMessage", "Product not found!");
+	        }
+	        return Views.PRODUCT_SPE_SHOWUPDATEPS;
 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("errorMessage", "An error occurred while loading the product.");
+	        return "redirect:/showProduct";
+	    }
+	}
+	@PostMapping("updatePs")
+	public String updatePs(@RequestParam("name_spe") String nameSpe,
+	                    @RequestParam("des_spe") String desSpe,
+	                    @RequestParam("product_id") int productId,
+	                    @RequestParam("id") int id) {
+	    Product_specifications ps = new Product_specifications();
+	    ps.setName_spe(nameSpe);
+	    ps.setDes_spe(desSpe);
+	    ps.setProduct_id(productId);
+	    ps.setId(id);
 
+	    reppro.updatePs(ps);
+
+	    return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
+	}
 	@GetMapping("/errorPage")
 	public String errorPage() {
 		
 		return "admin/product/errorPage";
 	}
+	
+	//xóa thuộc tính
+	@GetMapping("deletePs")
+	public String deletePs(@RequestParam("id") String idps) {
+	    try {
+	        int idp = Integer.parseInt(idps);
+	        Integer productId = reppro.getProductIdBySpecificationId(idp);
+	        reppro.deletePs(idp);
+	        if (productId != null) {
+	            return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
+	        } else {
+	            return "admin/product/errorPage";
+	        }	        
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
+	        return "admin/product/errorPage";
+	    }
+	}
+
 }

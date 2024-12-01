@@ -241,6 +241,8 @@ public final class Views {
 	public static String COL_ROLE_ID = "Id";
 	public static String COL_ROLE_NAME = "Name";
 	//21.Product_Img
+	public static String PRODUCT_IMAGES_SHOWADDPI ="admin/product/showAddPImg";
+	
 	public static String TBL_PRODUCT_IMG = "product_img";
 	public static String COL_PRODUCT_IMG_ID = "Id";
 	public static String COL_PRODUCT_IMG_URL = "Img_url";
@@ -249,7 +251,7 @@ public final class Views {
 	public static String PRODUCT_SPE_SHOWADDPS ="admin/product/showAddPs";
 	public static String PRODUCT_SPE_SHOWUPDATEPS ="admin/product/showUpdatePs";
 	
-	public static String TBL_PRODUCT_SPE = "product_img";
+	public static String TBL_PRODUCT_SPE = "product_specifications";
 	public static String COL_PRODUCT_SPE_ID = "Id";
 	public static String COL_PRODUCT_SPE_NAME_SPE = "Name_spe";
 	public static String COL_PRODUCT_SPE_DES_SPE = "Des_spe";
