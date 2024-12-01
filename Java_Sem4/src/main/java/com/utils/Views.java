@@ -440,6 +440,7 @@ public final class Views {
     public static String COL_SALARY_HISTORY_CREATED_AT = "Created_At";
 
     // Tax History
+    public static String TAX_SHOWTAXPAGE = "admin/tax/showTax";
     public static String TBL_TAX_HISTORY = "Tax_History";
     public static String COL_TAX_HISTORY_ID = "Id";
     public static String COL_TAX_HISTORY_TYPE = "Tax_Type";
