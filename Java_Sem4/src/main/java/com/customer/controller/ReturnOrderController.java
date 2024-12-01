@@ -42,7 +42,7 @@ public class ReturnOrderController {
             returnOrder.setReturnDate(LocalDate.now());
             returnOrder.setStatus("Processing");
             returnOrder.setNote(request.getReason());
-            
+            returnOrder.setEmployee_id(0);
             double totalAmount = 0;
             for (ReturnItemRequest item : request.getItems()) {
                 totalAmount += item.getAmount();
@@ -100,7 +100,7 @@ public class ReturnOrderController {
     @ResponseBody
     public ResponseEntity<?> cancelReturnOrder(@PathVariable("id") int returnOrderId) {
         try {
-            boolean updated = returnOrderRepository.updateStatusAndMessage(returnOrderId,"", "Cancelled");
+            boolean updated = returnOrderRepository.updateStatusAndMessage(returnOrderId,"", "Cancelled",0);
             
             if (updated) {
                 Map<String, String> response = new HashMap<>();

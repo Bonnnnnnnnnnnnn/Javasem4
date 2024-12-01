@@ -185,6 +185,7 @@ public class CheckoutController {
 	    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 	    return pattern.matcher(temp).replaceAll("").replace('đ', 'd').replace('Đ', 'D');
 	}
+	
 	private String generateOrderId() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder orderId = new StringBuilder(16);

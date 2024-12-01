@@ -315,7 +315,9 @@ public final class Views {
 	//25.RETURN ORDER
 	public static String PRORESS_RETURN_ORDER = "businessManager/ReturnOrder/Showlistorder";
 	public static String RETURN_BS_ORDER_DETAIL = "businessManager/ReturnOrder/showreorderde";
+	public static String PRORESS_RETURN_ORDER_COMPLETE_ID = "businessManager/ReturnOrder/Showlistordercompleteid";
 	public static String PRORESS_RETURN_ORDER_COMPLETE = "businessManager/ReturnOrder/Showlistordercomplete";
+	
 	
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
@@ -327,6 +329,7 @@ public final class Views {
 	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
 	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
 	public static String COL_RETURN_ORDER_MESSAGE = "Message";
+	public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
 	//25.RETURN ORDER DETAIL
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";
@@ -395,4 +398,59 @@ public final class Views {
     public static final String COL_BANNED_KEYWORD_IS_ACTIVE = "is_active";
     public static final String COL_BANNED_KEYWORD_CREATED_AT = "created_at";
     public static final String COL_BANNED_KEYWORD_UPDATED_AT = "updated_at";
+    // Expense Types
+    public static String TBL_EXPENSE_TYPES = "Expense_Types";
+    public static String COL_EXPENSE_TYPE_ID = "Id";
+    public static String COL_EXPENSE_TYPE_NAME = "Name";
+    public static String COL_EXPENSE_TYPE_DESC = "Description";
+    public static String COL_EXPENSE_TYPE_IS_FIXED = "Is_Fixed";
+    public static String COL_EXPENSE_TYPE_IS_ACTIVE = "Is_Active";
+    public static String COL_EXPENSE_TYPE_CREATED_AT = "Created_At";
+    public static String COL_EXPENSE_TYPE_UPDATED_AT = "Updated_At";
+
+    // Expense History
+    public static String TBL_EXPENSE_HISTORY = "Expense_History";
+    public static String COL_EXPENSE_HISTORY_ID = "Id";
+    public static String COL_EXPENSE_HISTORY_TYPE_ID = "Expense_Type_Id";
+    public static String COL_EXPENSE_HISTORY_AMOUNT = "Amount";
+    public static String COL_EXPENSE_HISTORY_START_DATE = "Start_Date";
+    public static String COL_EXPENSE_HISTORY_END_DATE = "End_Date";
+    public static String COL_EXPENSE_HISTORY_NOTE = "Note";
+    public static String COL_EXPENSE_HISTORY_CREATED_BY = "Created_By";
+    public static String COL_EXPENSE_HISTORY_CREATED_AT = "Created_At";
+    public static String COL_EXPENSE_HISTORY_UPDATED_AT = "Updated_At";
+
+    // Salary Types
+    public static String TBL_SALARY_TYPES = "Salary_Types";
+    public static String COL_SALARY_TYPE_ID = "Id";
+    public static String COL_SALARY_TYPE_NAME = "Name";
+    public static String COL_SALARY_TYPE_DESC = "Description";
+    public static String COL_SALARY_TYPE_IS_ACTIVE = "Is_Active";
+
+    // Employee Salary History
+    public static String TBL_EMPLOYEE_SALARY_HISTORY = "Employee_Salary_History";
+    public static String COL_SALARY_HISTORY_ID = "Id";
+    public static String COL_SALARY_HISTORY_EMPLOYEE_ID = "Employee_Id";
+    public static String COL_SALARY_HISTORY_TYPE_ID = "Salary_Type_Id";
+    public static String COL_SALARY_HISTORY_AMOUNT = "Amount";
+    public static String COL_SALARY_HISTORY_START_DATE = "Start_Date";
+    public static String COL_SALARY_HISTORY_END_DATE = "End_Date";
+    public static String COL_SALARY_HISTORY_NOTE = "Note";
+    public static String COL_SALARY_HISTORY_CREATED_BY = "Created_By";
+    public static String COL_SALARY_HISTORY_CREATED_AT = "Created_At";
+
+    // Tax History
+    public static String TBL_TAX_HISTORY = "Tax_History";
+    public static String COL_TAX_HISTORY_ID = "Id";
+    public static String COL_TAX_HISTORY_TYPE = "Tax_Type";
+    public static String COL_TAX_HISTORY_PERIOD_START = "Period_Start";
+    public static String COL_TAX_HISTORY_PERIOD_END = "Period_End";
+    public static String COL_TAX_HISTORY_REVENUE = "Revenue_Amount";
+    public static String COL_TAX_HISTORY_RATE = "Tax_Rate";
+    public static String COL_TAX_HISTORY_AMOUNT = "Tax_Amount";
+    public static String COL_TAX_HISTORY_STATUS = "Payment_Status";
+    public static String COL_TAX_HISTORY_PAYMENT_DATE = "Payment_Date";
+    public static String COL_TAX_HISTORY_NOTE = "Note";
+    public static String COL_TAX_HISTORY_CREATED_AT = "Created_At";
+    public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
 }

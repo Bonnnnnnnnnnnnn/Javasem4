@@ -13,11 +13,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.models.Employee;
 import com.models.Order;
 import com.models.PageView;
 import com.models.ReturnOrder;
 import com.models.ReturnOrderDetail;
 import com.utils.Views;
+import com.admin.repository.EmployeeRepository;
 import com.mapper.ReturnOrderDetailMapper;
 import com.mapper.ReturnOrderMapper;
 @Repository
@@ -27,11 +29,14 @@ public class ReturnOrderRepository {
     private JdbcTemplate db;
     @Autowired
     private OrderRepository repo;
+    @Autowired 
+    EmployeeRepository employeeRepo;
     public int insertReturnOrder(ReturnOrder ro) {
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             
-            String insertSql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            String insertSql = String.format(
+                "INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 Views.TBL_RETURN_ORDER,
                 Views.COL_RETURN_ORDER_ORDER_ID,
                 Views.COL_RETURN_ORDER_DATE,
@@ -39,7 +44,8 @@ public class ReturnOrderRepository {
                 Views.COL_RETURN_ORDER_NOTE,
                 Views.COL_RETURN_ORDER_TOTAL_AMOUNT,
                 Views.COL_RETURN_ORDER_DISCOUNT_AMOUNT,
-                Views.COL_RETURN_ORDER_FINAL_AMOUNT
+                Views.COL_RETURN_ORDER_FINAL_AMOUNT,
+                Views.COL_RETURN_ORDER_EMPLOYEE_ID
             );
 
             int rowsAffected = db.update(connection -> {
@@ -51,13 +57,14 @@ public class ReturnOrderRepository {
                 ps.setDouble(5, ro.getTotalAmount());
                 ps.setDouble(6, ro.getDiscountAmount());
                 ps.setDouble(7, ro.getFinalAmount());
+                ps.setObject(8, ro.getEmployee_id() == 0 ? null : ro.getEmployee_id()); // Set null nếu là 0
                 return ps;
             }, keyHolder);
 
             if(rowsAffected > 0) {
-            	return keyHolder.getKey().intValue();
+                return keyHolder.getKey().intValue();
             }
-            return keyHolder.getKey().intValue();
+            return 0;
         } catch (DataAccessException e) {
             System.out.println("Error in insertReturnOrder: " + e.getMessage());
             return 0;
@@ -103,6 +110,13 @@ public class ReturnOrderRepository {
                 // Lấy order info
                 Order order = repo.getOrderById(returnOrder.getOrderId());
                 returnOrder.setOrder(order);
+                
+                // Lấy employee info nếu có
+                if (returnOrder.getEmployee_id() != 0) {
+                    Employee employee = employeeRepo.findId(returnOrder.getEmployee_id());
+                    returnOrder.setEmployee(employee);
+                }
+                
                 return returnOrder;
             }
             
@@ -112,7 +126,7 @@ public class ReturnOrderRepository {
             return null;
         }
     }
-    
+
     public ReturnOrder findReturnOrderById(int Id) {
         try {
             String sql = String.format("SELECT * FROM %s WHERE %s = ?",
@@ -127,12 +141,19 @@ public class ReturnOrderRepository {
                 // Lấy order info
                 Order order = repo.getOrderById(returnOrder.getOrderId());
                 returnOrder.setOrder(order);
+                
+                // Lấy employee info nếu có
+                if (returnOrder.getEmployee_id() != 0) {
+                    Employee employee = employeeRepo.findId(returnOrder.getEmployee_id());
+                    returnOrder.setEmployee(employee);
+                }
+                
                 return returnOrder;
             }
             
             return null;
         } catch (DataAccessException e) {
-            System.out.println("Error in findReturnOrderByOrderId: " + e.getMessage());
+            System.out.println("Error in findReturnOrderById: " + e.getMessage());
             return null;
         }
     }
@@ -171,16 +192,22 @@ public class ReturnOrderRepository {
             return new ArrayList<>();
         }
     }
-    public boolean updateStatusAndMessage(int returnOrderId, String status, String message) {
+    public boolean updateStatusAndMessage(int returnOrderId, String status, String message, int employeeId) {
         try {
             String sql = String.format(
-                "UPDATE %s SET %s = ?, message = ? WHERE %s = ?",
+                "UPDATE %s SET %s = ?, message = ?, %s = ? WHERE %s = ?",
                 Views.TBL_RETURN_ORDER,
                 Views.COL_RETURN_ORDER_STATUS,
+                Views.COL_RETURN_ORDER_EMPLOYEE_ID,
                 Views.COL_RETURN_ORDER_ID
             );
             
-            int rowsAffected = db.update(sql, status, message, returnOrderId);
+            int rowsAffected = db.update(sql, 
+                status, 
+                message, 
+                employeeId,  // Thêm employeeId vào
+                returnOrderId
+            );
             return rowsAffected > 0;
         } catch (DataAccessException e) {
             System.err.println("Error updating status and message: " + e.getMessage());
@@ -276,12 +303,75 @@ public class ReturnOrderRepository {
             for (ReturnOrder ro : returnOrders) {
                 Order order = repo.getOrderById(ro.getOrderId());
                 ro.setOrder(order);
+                
+                if (ro.getEmployee_id() != 0) {
+                    Employee employee = employeeRepo.findId(ro.getEmployee_id());
+                    ro.setEmployee(employee);
+                }
             }
 
             return returnOrders;
 
         } catch (DataAccessException e) {
             System.err.println("Error in findAllProcessedReturnOrders: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+    public List<ReturnOrder> findProcessedReturnOrdersByEmployee(PageView pageView, int employeeId) {
+        try {
+            StringBuilder str_query = new StringBuilder(
+                String.format("SELECT ro.* FROM %s ro " +
+                            "WHERE ro.%s IN ('Accepted', 'Completed', 'Rejected') " +
+                            "AND ro.%s = ? " +
+                            "ORDER BY ro.%s DESC",
+                            Views.TBL_RETURN_ORDER,
+                            Views.COL_RETURN_ORDER_STATUS,
+                            Views.COL_RETURN_ORDER_EMPLOYEE_ID,
+                            Views.COL_RETURN_ORDER_DATE));
+
+            List<Object> params = new ArrayList<>();
+            params.add(employeeId); 
+
+            
+            String countQuery = String.format(
+                "SELECT COUNT(*) FROM %s WHERE %s IN ('Accepted', 'Completed', 'Rejected') AND %s = ?",
+                Views.TBL_RETURN_ORDER,
+                Views.COL_RETURN_ORDER_STATUS,
+                Views.COL_RETURN_ORDER_EMPLOYEE_ID
+            );
+            
+            int count = db.queryForObject(countQuery, Integer.class, employeeId);
+            
+            // Tính total page
+            int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
+            pageView.setTotal_page(total_page);
+
+            // Thêm phân trang
+            if (pageView.isPaginationEnabled()) {
+                str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+                params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
+                params.add(pageView.getPage_size());
+            }
+
+            // Thực hiện query và map kết quả
+            List<ReturnOrder> returnOrders = db.query(str_query.toString(), new ReturnOrderMapper(), params.toArray());
+
+            // Lấy thông tin Order cho mỗi ReturnOrder
+            for (ReturnOrder ro : returnOrders) {
+                Order order = repo.getOrderById(ro.getOrderId());
+                ro.setOrder(order);
+                
+                // Lấy thông tin Employee nếu cần
+                if (ro.getEmployee_id() != 0) {
+                    Employee employee = employeeRepo.findId(ro.getEmployee_id());
+                    ro.setEmployee(employee);
+                }
+            }
+
+            return returnOrders;
+
+        } catch (DataAccessException e) {
+            System.err.println("Error in findProcessedReturnOrdersByEmployee: " + e.getMessage());
             return Collections.emptyList();
         }
     }

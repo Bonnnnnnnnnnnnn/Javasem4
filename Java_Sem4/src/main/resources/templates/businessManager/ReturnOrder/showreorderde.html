@@ -54,11 +54,22 @@
                     <p><strong>Address:</strong> [[${returnOrder.order.address}]]</p>
                 </div>
             </div>
-			<div class="alert alert-info mb-6 col-md-6" th:if="${returnOrder.message != null && !returnOrder.message.empty}">
-                <i class="fas fa-info-circle"></i>
-                <strong>Message from Seller:</strong>
-                <p class="mb-0 mt-1" th:text="${returnOrder.message}"></p>
-            </div>
+			<div class="row">
+    <div class="col-md-6">
+        <div class="alert alert-info mb-3" th:if="${returnOrder.message != null && !returnOrder.message.empty}">
+            <i class="fas fa-info-circle"></i>
+            <strong>Message from Seller:</strong>
+            <p class="mb-0 mt-1" th:text="${returnOrder.message}"></p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="alert alert-secondary mb-3" th:if="${returnOrder.employee != null}">
+            <i class="fas fa-user"></i>
+            <strong>Processed by:</strong>
+            <p class="mb-0 mt-1" th:text="${returnOrder.employee.first_name + ' ' + returnOrder.employee.last_name}"></p>
+        </div>
+    </div>
+</div>
             <!-- Return Items -->
             <h5>Return Items</h5>
             <div class="table-responsive">
