@@ -1,31 +1,29 @@
 package com.models;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Customer {
 	private int Id;
-	private String Uid;
-	private LocalDateTime Creation_time;
-	private String Phone;
-	private LocalDateTime BirthDay;
+	private String Email;
+	private LocalDate Creation_time;
+	private LocalDate BirthDay;
 	private String Password;
 	private String Address;
 	private String First_name;
 	private String Last_name;
-	private String Img_cus;
-	public Customer(int id, String uid, LocalDateTime creation_time, String phone, LocalDateTime birthDay,
-			String password, String address, String first_name, String last_name, String img_cus) {
+
+	public Customer(int id, String email, LocalDate creation_time, LocalDate birthDay,
+			String password, String address, String first_name, String last_name) {
 		super();
 		Id = id;
-		Uid = uid;
+		Email = email;
 		Creation_time = creation_time;
-		Phone = phone;
 		BirthDay = birthDay;
 		Password = password;
 		Address = address;
 		First_name = first_name;
 		Last_name = last_name;
-		Img_cus = img_cus;
+		
 	}
 	public Customer() {
 
@@ -36,28 +34,22 @@ public class Customer {
 	public void setId(int id) {
 		Id = id;
 	}
-	public String getUid() {
-		return Uid;
+	public String getEmail() {
+		return Email;
 	}
-	public void setUid(String uid) {
-		Uid = uid;
+	public void setEmail(String email) {
+		Email = email;
 	}
-	public LocalDateTime getCreation_time() {
+	public LocalDate getCreation_time() {
 		return Creation_time;
 	}
-	public void setCreation_time(LocalDateTime creation_time) {
+	public void setCreation_time(LocalDate creation_time) {
 		Creation_time = creation_time;
 	}
-	public String getPhone() {
-		return Phone;
-	}
-	public void setPhone(String phone) {
-		Phone = phone;
-	}
-	public LocalDateTime getBirthDay() {
+	public LocalDate getBirthDay() {
 		return BirthDay;
 	}
-	public void setBirthDay(LocalDateTime birthDay) {
+	public void setBirthDay(LocalDate birthDay) {
 		BirthDay = birthDay;
 	}
 	public String getPassword() {
@@ -83,12 +75,6 @@ public class Customer {
 	}
 	public void setLast_name(String last_name) {
 		Last_name = last_name;
-	}
-	public String getImg_cus() {
-		return Img_cus;
-	}
-	public void setImg_cus(String img_cus) {
-		Img_cus = img_cus;
 	}
 	
 }

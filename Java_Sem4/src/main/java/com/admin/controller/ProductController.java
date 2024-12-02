@@ -304,8 +304,7 @@ public class ProductController {
 	    try {
 	        int imageId = Integer.parseInt(id);
 	        Integer productId = reppro.getProductIdByimgId(imageId);
-	        String folderName = "uploads/imgDetail";
-	        reppro.deletePi(imageId, folderName, fileName);
+	        reppro.deletePi(imageId, "uploads", fileName);
 	        System.out.println("Product ID: " + productId);
 	        if (productId != null) {
 	            return "redirect:/admin/product/showProductDetail?id=" + productId;
@@ -332,7 +331,7 @@ public class ProductController {
 	        for (Integer id : ids) {
 	            String fileName = reppro.getProImageById(id);
 	            if (fileName != null && !fileName.isEmpty()) {
-	                String result = reppro.deletePi(id, "uploads", fileName);
+	                 reppro.deletePi(id, "uploads", fileName);
 	            } else {
 	                System.out.println("File name is invalid for product image ID: " + id);
 	            }
