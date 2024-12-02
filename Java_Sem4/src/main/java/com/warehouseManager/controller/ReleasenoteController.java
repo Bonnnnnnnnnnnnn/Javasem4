@@ -302,6 +302,7 @@ public class ReleasenoteController {
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", id);
 	    return Views.SHOW_REQUEST_IN_WAREHOUSE_DETAIL;
+
 	}
 
 	//show add all release note by request

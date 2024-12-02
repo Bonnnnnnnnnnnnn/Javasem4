@@ -8,14 +8,15 @@ public class Warehouse_receipt {
 	private int Wh_id;
 	private String Wh_name;
 	private String Status;
+	private int Employee_id;
+	private String Employee_name;
     private LocalDateTime Date;
-
     private Double Shipping_fee;
 	private Double Other_fee;
     private Double Total_fee;
     
 	public Warehouse_receipt(int id, String name, int wh_id, String wh_name, LocalDateTime date, Double shipping_fee,
-			Double other_fee, Double total_fee, String status) {
+			Double other_fee, Double total_fee, String status,int employee_id) {
 		Id = id;
 		Name = name;
 		Wh_id = wh_id;
@@ -25,6 +26,7 @@ public class Warehouse_receipt {
 		Other_fee = other_fee;
 		Total_fee = total_fee;
 		Status = status;
+		Employee_id = employee_id;
 	}
 	public Warehouse_receipt() {
 	}
@@ -83,6 +85,19 @@ public class Warehouse_receipt {
 
 		Status = status;
 	}
+	public int getEmployee_id() {
+		return Employee_id;
+	}
+	public void setEmployee_id(int employee_id) {
+		Employee_id = employee_id;
+	}
+	public String getEmployee_name() {
+		return Employee_name;
+	}
+	public void setEmployee_name(String employee_name) {
+		Employee_name = employee_name;
+	}
+	
 	
 }
 

@@ -41,5 +41,11 @@ public class WebConfig implements WebMvcConfigurer {
 //       
 //    }
 
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//		registry.addInterceptor(new AuthInterceptor())
+//			.addPathPatterns("/admin/**", "/warehouseManager/**" ,"/businessManager/**", "/role/**")
+//			.excludePathPatterns("login", "/access-denied");
+//	}
 }
 

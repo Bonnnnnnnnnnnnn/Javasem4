@@ -19,7 +19,7 @@ public class WarehouseDISTANCE_mapper implements RowMapper<Warehouse>{
 		item.setLng(r.getDouble(Views.COL_WAREHOUSE_LNG));
         item.setDistrict_Id(r.getInt(Views.COL_WAREHOUSE_DISTRICT_ID));
 		item.setProvince_Id(r.getInt(Views.COL_WAREHOUSE_PROVINCE_ID));
-		item.setWard_Id(r.getString(Views.COL_WAREHOUSE_WARD_ID));
+		item.setWard_Id(r.getInt(Views.COL_WAREHOUSE_WARD_ID));
 		item.setGhn_store_code(r.getString(Views.COL_WAREHOUSE_GHN_STORE_ID));
 
 		return item;

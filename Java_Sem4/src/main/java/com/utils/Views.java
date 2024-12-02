@@ -95,9 +95,11 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Product_Id";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION = "Conversion_Id";
-	public static String COL_WAREHOUSE_RECEIPT_SHIPPING_FEE = "Shipping_fee";
 
 	// 9.WAREHOUSE_RECEIPT
+	public static String COL_WAREHOUSE_RECEIPT_DETAILS_STATUS = "Status";
+	
+	//9.WAREHOUSE_RECEIPT 
 	public static String ADD_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showAddWhReceipt";
 
 	public static String SHOW_WAREHOUSE_RECEIPT = "warehouseManager/warehouseReceipt/showWhReceipt";
@@ -111,6 +113,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_IDWH = "Wh_Id";
 	public static String COL_WAREHOUSE_RECEIPT_STATUS = "Status";
 	public static String COL_WAREHOUSE_RECEIPT_DATE = "Date";
+	public static String COL_WAREHOUSE_RECEIPT_EMP_ID = "Employee_Id";
 	public static String COL_WAREHOUSE_RECEIPT_SHIPPINGFEE = "Shipping_fee";
 	public static String COL_WAREHOUSE_RECEIPT_OTHERFEE = "Other_fee";
 	public static String COL_WAREHOUSE_RECEIPT_TOTALFEE = "Total_fee";
@@ -263,18 +266,20 @@ public final class Views {
 	public static String COL_PRODUCT_SPE_ID = "Id";
 	public static String COL_PRODUCT_SPE_NAME = "Name_spe";
 	public static String COL_PRODUCT_SPE_DES = "Des_spe";
-	public static String COL_PRODUCT_SPE_PRODUCTID = "Product_Id";
-	// 22.COUPON
+	public static String COL_PRODUCT_SPE_PRODUCTID= "Product_Id";
+	//22.COUPON
+
 	public static final String TBL_DISCOUNT = "tbl_discount";
-	public static final String COL_DISCOUNT_ID = "id";
-	public static final String COL_DISCOUNT_CODE = "code";
-	public static final String COL_DISCOUNT_PERCENTAGE = "discount_percentage";
-	public static final String COL_DISCOUNT_AMOUNT = "discount_amount";
-	public static final String COL_DISCOUNT_EXPIRY_DATE = "expiry_date";
-	public static final String COL_DISCOUNT_MIN_ORDER_VALUE = "min_order_value";
-	public static final String COL_DISCOUNT_MAX_DISCOUNT_AMOUNT = "max_discount_amount";
-	public static final String COL_DISCOUNT_STATUS = "status";
-	// 23.FEEDBACK
+    public static final String COL_DISCOUNT_ID = "id";
+    public static final String COL_DISCOUNT_CODE = "code";
+    public static final String COL_DISCOUNT_PERCENTAGE = "discount_percentage";
+    public static final String COL_DISCOUNT_AMOUNT = "discount_amount";
+    public static final String COL_DISCOUNT_EXPIRY_DATE = "expiry_date";
+    public static final String COL_DISCOUNT_MIN_ORDER_VALUE = "min_order_value";
+    public static final String COL_DISCOUNT_MAX_DISCOUNT_AMOUNT = "max_discount_amount";
+    public static final String COL_DISCOUNT_STATUS = "status";
+
+	//23.FEEDBACK
 	public static final String TBL_FEEDBACK = "Feedback";
 	public static final String COL_FEEDBACK_ID = "Id";
 	public static final String COL_FEEDBACK_PROID = "Product_Id";
@@ -320,6 +325,8 @@ public final class Views {
 	public static String PRORESS_RETURN_ORDER_COMPLETE_ID = "businessManager/ReturnOrder/Showlistordercompleteid";
 	public static String PRORESS_RETURN_ORDER_COMPLETE = "businessManager/ReturnOrder/Showlistordercomplete";
 
+	//25.RETURN ORDER
+	
 
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
@@ -333,6 +340,8 @@ public final class Views {
 	public static String COL_RETURN_ORDER_MESSAGE = "Message";
 	public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
 
+
+	//25.RETURN ORDER DETAIL
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";
 	public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
@@ -460,5 +469,6 @@ public final class Views {
 	public static String COL_TAX_HISTORY_NOTE = "Note";
 	public static String COL_TAX_HISTORY_CREATED_AT = "Created_At";
 	public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
+
 
 }

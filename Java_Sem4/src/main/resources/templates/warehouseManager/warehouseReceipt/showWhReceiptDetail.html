@@ -63,10 +63,25 @@
 									</div>
 									
 									<div class="form-group col-6 ">
-									    <label for="exampleInputEmail1">Status</label>
-									    <input class="form-control" disabled readonly th:value="${whr.status}">
+									    <label for="exampleInputEmail1">Shipping fee</label>
+									    <input class="form-control" disabled readonly th:value="${whr.shipping_fee}">
 									</div>
 									
+									<div class="form-group col-6 ">
+									    <label for="exampleInputEmail1">Order fee</label>
+									    <input class="form-control" disabled readonly th:value="${whr.other_fee}">
+									</div>
+									
+									<div class="form-group col-6 ">
+									    <label for="exampleInputEmail1">Total fee</label>
+									    <input class="form-control" disabled readonly th:value="${whr.total_fee}">
+									</div>
+									
+									<div class="form-group col-6">
+									    <label for="employeeName">Employee</label>
+									    <input class="form-control" disabled readonly th:value="${whr.employee_name}">
+									</div>
+
 							    </div>
 							    <div class="card-footer">
 							    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
@@ -81,8 +96,9 @@
 								         	<th>STT</th>
 								            <th>Price</th>
 								            <th>Quantity</th>
-								            <th>Shipping_fee</th>
 								            <th>Product</th>
+								            <th>Conversion</th>								            
+								            <th>Status</th>
 								            <th>
 								            </th>
 								        </tr>
@@ -100,10 +116,13 @@
 								                <span th:text="${item.quantity}"></span>
 								            </td>
 								            <td>
-								                <span th:text="${#numbers.formatCurrency(item.shipping_fee)}"></span>
+								                <span th:text="${item.product_name}"></span>
 								            </td>
 								            <td>
-								                <span th:text="${item.product_name}"></span>
+								                <span th:text="${item.conversion_id}"></span>
+								            </td>								            								            
+								            <td>
+								                <span th:text="${item.status}"></span>
 								            </td>
 								            <td>
 								                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhDetail(id=${item.id})}" class="btn btn-warning">Update</a>
@@ -125,10 +144,6 @@
 											    <label for="wh_price">Warehouse Price</label>
 											    <input id="wh_price" type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
 											</div>
-											<div class="form-group col-md-6">
-											    <label for="shipping_fee">Shipping Fee</label>
-											    <input id="shipping_fee" type="number" name="shipping_fee" class="form-control" placeholder="Enter Shipping Fee" step="0.01" required>
-											</div>
 	                                        <div class="form-group col-md-6">
 	                                            <label for="product_id">Product</label>
 	                                            <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
@@ -143,7 +158,6 @@
 								        <button type="submit" class="btn btn-primary">Submit</button>
 								    </div>
 								</form>
-
                             </div>
                         </div>
                     </div>
