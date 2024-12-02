@@ -11,8 +11,6 @@ public class Order_detail {
 	private String Product_name;
 	private String Img;
 	private String Unit_name;
-	
-	
 	public Order_detail(int id, int stock_id, int order_id, String status, Double price, int product_Id, int quantity,
 			String product_name, String img) {
 		super();
@@ -109,5 +107,5 @@ public class Order_detail {
 		this.Unit_name = unit_name;
 	}
 	
-
 }
+

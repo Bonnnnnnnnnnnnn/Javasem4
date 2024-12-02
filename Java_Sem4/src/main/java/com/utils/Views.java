@@ -331,9 +331,7 @@ public final class Views {
 	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
 	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
 	public static String COL_RETURN_ORDER_MESSAGE = "Message";
-
 	public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
-	// 25.RETURN ORDER DETAIL
 
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";
@@ -384,7 +382,6 @@ public final class Views {
 	public static String COL_EMPLOYEE_WAREHOUSE_ID = "Id";
 	public static String COL_EMPLOYEE_WAREHOUS_EMPLOYEE_ID = "Employee_Id";
 	public static String COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID = "Warehouse_Id";
-
 
 	// Bảng Comments
 	public static final String TBL_COMMENTS = "comments";
