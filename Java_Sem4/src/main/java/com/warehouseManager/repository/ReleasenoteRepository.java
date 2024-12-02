@@ -30,7 +30,6 @@ public class ReleasenoteRepository {
 	private JdbcTemplate jdbcTemplate;
 	
 
-
 	//update employee_id bang request
 	public void updateEmployeeId(int requestId, int employeeId, int warehouseId) {
 	    String sql = "UPDATE Request SET Employee_Id = ?, Warehouse_Id = ? WHERE Id = ?";
@@ -88,7 +87,7 @@ public class ReleasenoteRepository {
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            String countSql = String.format(
-	                    "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'Shipping' AND %s = ?",
+	                    "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'waiting for shipping' AND %s = ?",
 	                    Views.TBL_REQUEST, 
 	                    Views.COL_REQUEST_EMPLOYEE_ID, 
 	                    Views.COL_REQUEST_ORDERID, 
@@ -586,11 +585,8 @@ public class ReleasenoteRepository {
 		    int totalRequestedQuantity = QuantityRequested(requestId);
 		    
 		    if (totalQuantityExported >= totalRequestedQuantity) {
-		        String sql = "UPDATE Request SET Status = 'Shipping' WHERE Id = ?";
-		        jdbcTemplate.update(sql, requestId);
-		        
-		        String sql2 = "UPDATE Warehouse_releasenote SET Status = 'Shipping' WHERE Request_Id = ?";
-		        jdbcTemplate.update(sql2, requestId);
+		        String sql = "UPDATE Request SET Status = 'waiting for shipping' WHERE Id = ?";
+		        jdbcTemplate.update(sql, requestId);		      
 		        
 		        return true;
 		    } else { 
@@ -617,7 +613,7 @@ public class ReleasenoteRepository {
 
 		    if(totalReleasedQuantity >= totalOrderQuantity) {
 
-		    	String sql = "UPDATE [Order] SET Status = 'Shipping' WHERE Id = ?";
+		    	String sql = "UPDATE [Order] SET Status = 'waiting for shipping' WHERE Id = ?";
 		    	jdbcTemplate.update(sql, orderId);
 		    	return true;
 		    } else {
@@ -627,22 +623,19 @@ public class ReleasenoteRepository {
 		    return false;
 		}
 	  
-	  public boolean isRleComplete(int ReleaseDetailId, int orderId) {
-		    int totalReleasedQuantity = QuantityByReleaseNoteId(ReleaseDetailId);
+	  //update status order_detail.
+	  public boolean isRleComplete(int releaseDetailId, int orderId) {
+		    int totalReleasedQuantity = QuantityByReleaseNoteId(releaseDetailId);
 		    int totalOrderQuantity = QuantityOrder(orderId);
 		    
-		    if(totalReleasedQuantity >= totalOrderQuantity) {
+		    String status = (totalReleasedQuantity >= totalOrderQuantity) ? "Completed" : "Processing";
 
-		    	String sql = "UPDATE Warehouse_releasenote SET Status = 'Shipping' WHERE Order_Id = ?";
-		    	jdbcTemplate.update(sql, orderId);
+		    String sql = "UPDATE Order_detail SET Status = ? WHERE Order_Id = ?";
+		    jdbcTemplate.update(sql, status, orderId);
 
-		    	return true;
-		    } else {
-		    	String sql = "UPDATE Warehouse_releasenote SET Status = 'Processing' WHERE Order_Id = ?";
-		    	jdbcTemplate.update(sql, orderId);
-		    }
-		    return false;
+		    return totalReleasedQuantity >= totalOrderQuantity;
 		}
+
 	  
 	  // update quantity_exported
 	  public int updateQuantityExported(int wgrnId, int requestId, int idProduct) {

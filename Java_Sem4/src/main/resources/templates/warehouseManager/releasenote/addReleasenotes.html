@@ -107,7 +107,7 @@
                                         </tr>
                                         <tr>
                                             <td><label for="statusWr">Status</label></td>
-                                            <td><input type="text" name="statusWr" value="Processing" class="form-control" readonly></td>
+                                            <td><input type="text" name="statusWr" value="Completed" class="form-control" readonly></td>
                                         </tr>
                                     </tbody>
                                     
@@ -152,7 +152,7 @@
 								            </td>
 								            <td>
 								            	<input type="number" name="quantity[]" value="0" class="form-control quantityInput">
-								            	<input type="hidden" name="status[]" value="Processing" class="statusInput">
+								            	<input type="hidden" name="status[]" value="Completed" class="statusInput">
 								            </td>
 								            </tr>							            
 								        </tbody>
@@ -198,11 +198,12 @@
 	        } else if (quantityValue > remainingQuantity) {
 	            alert("Quantity entered exceeds remaining quantity! Please enter a valid quantity.");
 	            e.target.value = remainingQuantity; // Đặt lại giá trị của input về số lượng còn lại	            
-	        } else if (quantityValue === remainingQuantity) { 
-	            statusInput.value = "Completed"; // Cập nhật status khi quantity nhập bằng remaining quantity      
+	        } else if(quantityValue === remainingQuantity) {
+	        	statusInput.value = "Completed";
 	        } else {
-	            statusInput.value = "Processing"; 
-	        }       	        
+	        	statusInput.value = "Processing";
+	        }
+	                 	        	              	        
 	    });
 	});
 	

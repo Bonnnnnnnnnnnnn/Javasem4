@@ -88,15 +88,21 @@
                         
                         <div class="card-footer">
                             <a href="/warehouseManager/showOrderRequestinWarehouse" class="btn btn-primary">Back to List</a>
-                                <div style="display: inline;">
-								    <a th:href="@{/warehouseManager/showAddWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId})}" 
-								       class="btn btn-primary">Create slip</a>
-								</div>
-								<div style="display: inline;">
-								    <a th:href="@{/warehouseManager/showAddAllWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId}, name=${request.name})}" 
-   										class="btn btn-primary">Create All slip</a>
-
-								</div>
+							
+							    <div style="display: inline;">
+							        <a th:href="@{/warehouseManager/showAddWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId})}" 
+							           class="btn btn-primary"
+							           th:classappend="${request.statusRequest == 'waiting for shipping' ? ' disabled' : ''}"
+							           th:attr="disabled=${request.statusRequest == 'waiting for shipping' ? 'true' : null}">Create slip</a>
+							    </div>
+							
+							    <div style="display: inline;">
+							        <a th:href="@{/warehouseManager/showAddAllWarehouseRelesenote(employeeId=${employeeId}, requestId=${requestId}, name=${request.name})}" 
+							           class="btn btn-primary"
+							           th:classappend="${request.statusRequest == 'waiting for shipping' ? ' disabled' : (request.statusRequest == 'Processing' ? ' disabled' : '')}"
+							           th:attr="disabled=${request.statusRequest == 'waiting for shipping' || request.statusRequest == 'Processing' ? 'true' : null}">Create All slip</a>
+							    </div>
+							
                         </div>
                     </div>
                 </div>

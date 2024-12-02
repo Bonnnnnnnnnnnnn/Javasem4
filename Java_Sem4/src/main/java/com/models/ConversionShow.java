@@ -5,6 +5,18 @@ public class ConversionShow {
 	private String FromUnitName;
 	private int ConverSionQuantity;
 	
+	
+	
+	public ConversionShow(String fromUnitName, int converSionQuantity) {
+		super();
+		FromUnitName = fromUnitName;
+		ConverSionQuantity = converSionQuantity;
+	}
+	
+	public ConversionShow() {
+		super();
+	}
+
 	public String getFromUnitName() {
 		return FromUnitName;
 	}

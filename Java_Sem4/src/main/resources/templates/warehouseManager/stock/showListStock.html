@@ -46,9 +46,8 @@
                                         <tr>
                                             <th>Product Name</th>
                                             <th>Unit</th>
-                                            <th>Price</th>
-                                            <th>Date</th>
-                                            <th>Shipping fee</th>
+                                            <th>quantity</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -60,14 +59,9 @@
                                                 <span th:text="${detail.unitName}"></span>
                                             </td>
                                             <td>
-                                            	<span th:text="${detail.WhPrice}"></span>
+                                            	<span th:text="${detail.Quantity}"></span>
                                             </td>
-                                            <td>
-                                                <span th:text="${detail.date}"></span>
-                                            </td>                                     
-                                            <td>
-                                                <span th:text="${detail.shippingFee}"></span>
-                                            </td>
+
                                         </tr>
                                     </tbody>
                                 </table>

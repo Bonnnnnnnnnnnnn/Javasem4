@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.models.Employee;
 import com.models.Stock;
+import com.models.StockSumByWarehouseId;
 import com.utils.Views;
 import com.warehouseManager.repository.StockRepository;
 
@@ -26,17 +27,12 @@ public class StockController {
 	@GetMapping("/showStock")
 	public String showStock(HttpSession session, Model model) {
 		
-		Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+		
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+		
+		    List<StockSumByWarehouseId> stock = repst.findAllStock(warehouseId);
 
-		if(loggedInEmployee != null) {
-			int employeeId = loggedInEmployee.getId();
-		    List<Stock> stock = repst.findAllStock(employeeId,warehouseId);
-		    System.out.println("employeeId: " + employeeId);
-		    System.out.println("warehouseId: " + warehouseId);
-
-		    model.addAttribute("stocks", stock);
-		}	
+		    model.addAttribute("stocks", stock);	
 	    
 		return Views.SHOW_STOCK;
 	}

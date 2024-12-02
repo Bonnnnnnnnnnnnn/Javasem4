@@ -408,7 +408,7 @@ public class ReleasenoteController {
 	        rele.isRequestComplete(requestId);
 	    }
 		
-		return "redirect:showWareReleasenote";
+		return "redirect:insufficientOutputDetail?id=" + requestId;
 	}
 
 	
@@ -516,7 +516,13 @@ public class ReleasenoteController {
 	                    detail.setId_product(id_product.get(i));
 	                    detail.setQuantity_exported(quantity_Ex.get(i));
 	                    detail.setQuantity_requested(quantity_Rq.get(i));
-	                    detail.setStatus(status != null && i < status.size() ? status.get(i) : null); 
+	                    String currentStatus; 
+	                    if (quantity_Ex.get(i) >= quantity_Rq.get(i)) {
+	                        currentStatus = "Completed";
+	                    } else {
+	                        currentStatus = "Processing";
+	                    }
+	                    detail.setStatus(currentStatus);
 	                    rqdts.add(detail);
 	    			}
 	    		}
@@ -527,16 +533,14 @@ public class ReleasenoteController {
 		        int requestId = rq.getId();
 		        for (int i = 0; i < id_product.size(); i++) {
 		            int idProduct = id_product.get(i); 
-		            rele.updateStatusRequestDetail(requestId, idProduct); 
+		            rele.updateStatusRequestDetail(requestId, idProduct);		            
 		        }
+		        return "redirect:insufficientOutputDetail?id=" + requestId;
 		      }
-	        }
-	        
-	       rele.isRleComplete(releaseNoteId, id);
-
-	    }
-		
-		return "redirect:showWareReleasenote";
+	        }	
+	        rele.isRleComplete(releaseNoteId,id);
+	    }		
+		return "redirect:orderInWarehouseDetail?id=" + id;
 	}
 	
     // delete order

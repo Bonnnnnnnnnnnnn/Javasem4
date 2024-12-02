@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href=@{/css/showOrderInWarehouseDetail.css}>
+
 </head>
 <body>
 
@@ -81,14 +82,19 @@
                         <div class="card-footer">
                             <a href="/warehouseManager/showOrderInWarehouse" class="btn btn-primary">Back to List</a>
                                 <div style="display: inline;">
-								    <a th:href="@{/warehouseManager/showAddOrderRelesenote(employeeId=${employeeId}, id=${id})}" 
-								       class="btn btn-primary">Create slip</a>
-								</div>
-								<div style="display: inline;">
-							    	<a th:href="@{/warehouseManager/showAddAllOrderRelesenote(employeeId=${employeeId}, id=${id}, orderID=${order.orderID})}" 
-  										class="btn btn-primary">Create All slip</a>
-
-								</div>	
+							        <a th:href="@{/warehouseManager/showAddOrderRelesenote(employeeId=${employeeId}, id=${id})}" 
+							           class="btn btn-primary"
+							           th:classappend="${order.status == 'waiting for shipping' ? ' disabled' : ''}"
+							           th:attr="disabled=${order.status == 'waiting for shipping' ? 'true' : null}">Create slip</a>
+							    </div>
+							
+							    <!-- Create All slip button -->
+							    <div style="display: inline; ">
+							        <a th:href="@{/warehouseManager/showAddAllOrderRelesenote(employeeId=${employeeId}, id=${id}, orderID=${order.orderID})}" 
+							           class="btn btn-primary"
+							           th:classappend="${order.status == 'waiting for shipping' ? ' disabled' : (order.status == 'Processing' ? ' disabled' : '')}"
+							           th:attr="disabled=${order.status == 'waiting for shipping' || order.status == 'Processing' ? 'true' : null}">Create All slip</a>
+							    </div>	
                         </div>
                     </div>
                 </div>
