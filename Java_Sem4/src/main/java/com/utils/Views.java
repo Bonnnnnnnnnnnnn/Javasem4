@@ -271,6 +271,7 @@ public final class Views {
 	public static String COL_PRODUCT_SPE_DES = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCTID= "Product_Id";
 	//22.COUPON
+
 	public static final String TBL_DISCOUNT = "tbl_discount";
     public static final String COL_DISCOUNT_ID = "id";
     public static final String COL_DISCOUNT_CODE = "code";
@@ -280,6 +281,7 @@ public final class Views {
     public static final String COL_DISCOUNT_MIN_ORDER_VALUE = "min_order_value";
     public static final String COL_DISCOUNT_MAX_DISCOUNT_AMOUNT = "max_discount_amount";
     public static final String COL_DISCOUNT_STATUS = "status";
+
 	//23.FEEDBACK
 	public static final String TBL_FEEDBACK = "Feedback";
 	public static final String COL_FEEDBACK_ID = "Id";
@@ -294,8 +296,10 @@ public final class Views {
 	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
 	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
 	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
+
 	public static String REPLY_COMMENT = "businessManager/Comment/Replycomment";
 	
+
 	public static String TBL_REQUEST = "Request";
 	public static String COL_REQUEST_ID = "Id";
 	public static String COL_REQUEST_NAME = "Name";
@@ -308,7 +312,9 @@ public final class Views {
 	//25.REQUEST DETAIL
 	public static String SHOW_ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
 	public static String SHOW_REQUEST_IN_WAREHOUSE_DETAIL = "warehouseManager/orderRequest/showRequestInWarehouseDetail";
+
 	public static String SHOW_INSUFFICIENT_OUTPUT_DETAIL = "warehouseManager/OrderAndRequest/showInsufficientOutputDetail";
+
 
 	public static String TBL_REQUEST_DETAIL = "Request_detail";
 	public static String COL_REQUEST_DETAIL_ID = "id";
@@ -318,10 +324,12 @@ public final class Views {
 	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
 	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
 	//25.RETURN ORDER
+
 	public static String PRORESS_RETURN_ORDER = "businessManager/ReturnOrder/Showlistorder";
 	public static String RETURN_BS_ORDER_DETAIL = "businessManager/ReturnOrder/showreorderde";
 	public static String PRORESS_RETURN_ORDER_COMPLETE = "businessManager/ReturnOrder/Showlistordercomplete";
 	
+
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
 	public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
@@ -332,6 +340,7 @@ public final class Views {
 	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
 	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
 	public static String COL_RETURN_ORDER_MESSAGE = "Message";
+
 	//25.RETURN ORDER DETAIL
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";
@@ -361,6 +370,7 @@ public final class Views {
 	public static String CUS_CONTACTPAGE = "customer/contact";
 
 	//21.Product_Img
+	public static String PRODUCT_IMAGES_SHOWADDPI ="admin/product/showAddPImg";
 	public static String TBL_PRODUCT_IMG = "product_img";
 	public static String COL_PRODUCT_IMG_ID = "Id";
 	public static String COL_PRODUCT_IMG_URL = "Img_url";
@@ -400,4 +410,5 @@ public final class Views {
     public static final String COL_BANNED_KEYWORD_IS_ACTIVE = "is_active";
     public static final String COL_BANNED_KEYWORD_CREATED_AT = "created_at";
     public static final String COL_BANNED_KEYWORD_UPDATED_AT = "updated_at";
+
 }

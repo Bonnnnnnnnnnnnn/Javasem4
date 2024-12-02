@@ -23,8 +23,6 @@ public class ConversionController {
 	
 	@Autowired
 	private ConversionRepository con;
-
-	
     
     @GetMapping("/addConversion")
     public String addConversionForm(Model model) {

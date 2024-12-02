@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -23,8 +24,10 @@ import com.models.ghn.Ward;
 @Repository
 public class GHNService {
 	private static final String TOKEN = "858b9bf9-ab01-11ef-81b6-5e2e958f07fa";
+
 	@Autowired
 	private Environment env;
+
 	public List<Province> getProvinces() {
 	    try {
 	        String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
@@ -44,7 +47,9 @@ public class GHNService {
 	            entity,
 	            String.class
 	        );
+
 	        
+
 	        
 	        // Gọi API với model Province
 	        ResponseEntity<GHNResponse<List<Province>>> response = restTemplate.exchange(
@@ -53,6 +58,7 @@ public class GHNService {
 	            entity,
 	            new ParameterizedTypeReference<GHNResponse<List<Province>>>() {}
 	        );
+
 	                
 	        
 	        if (response.getBody() != null && response.getBody().getData() != null) {
@@ -63,6 +69,7 @@ public class GHNService {
 //	                System.out.println("Province Code: " + p.getCode());
 //	                System.out.println("----------------");
 //	            });
+
 	            return provinces;
 	        }
 	        
@@ -96,12 +103,14 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<District> district = response.getBody().getData();
+
 //	            district.forEach(p -> {
 //	                System.out.println("district ID: " + p.getDistrictId());
 //	                System.out.println("district Name: " + p.getDistrictName());
 //	                System.out.println("district Code: " + p.getCode());
 //	                System.out.println("----------------");
 //	            });
+
 	            return district;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {
@@ -137,11 +146,13 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<Ward> ward = response.getBody().getData();
+
 //	            ward.forEach(p -> {
 //	                System.out.println("Ward ID: " + p.getWardCode());
 //	                System.out.println("Ward Name: " + p.getWardName());
 //	                System.out.println("----------------");
 //	            });
+
 	            return ward;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {
@@ -174,7 +185,9 @@ public class GHNService {
                 HttpMethod.POST,
                 entity,
                 String.class
+
             );          
+
             
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(rawResponse.getBody());
@@ -229,6 +242,7 @@ public class GHNService {
             System.out.println("Tạo shop thất bại!");
         }
     }
+
     public ShippingFeeResponse calculateFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
         try {
             String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
@@ -250,17 +264,20 @@ public class GHNService {
                 totalHeight += item.getHeight() * quantity;
                 totalInsuranceValue += item.getPrice() * quantity * usdToVndRate;
             }
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("from_district_id", fromDistrictId);
             requestBody.put("to_district_id", toDistrictId);
             requestBody.put("service_type_id", 2);
             
           
+
             requestBody.put("weight", totalWeight);
             requestBody.put("length", maxLength);
             requestBody.put("width", maxWidth);
             requestBody.put("height", totalHeight);
             requestBody.put("insurance_value", (int)totalInsuranceValue);
+
             
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             
@@ -283,10 +300,12 @@ public class GHNService {
             return null;
         }
     }
+
     public double calculateShippingFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
    
         
         ShippingFeeResponse fee = calculateFee(fromDistrictId, toDistrictId,listc);
+
         
         if (fee != null) {
             return fee.getTotal();

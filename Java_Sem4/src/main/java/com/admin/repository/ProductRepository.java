@@ -1,7 +1,9 @@
 package com.admin.repository;
 
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +42,8 @@ public class ProductRepository {
 	public ProductRepository(JdbcTemplate jdbc) {
 		this.dbpro = jdbc;
 	}
+	
+	// show product
 	public List<Product> findAll(PageView itemPage) {
 	    try {
 	        String str_query = String.format(
@@ -82,7 +86,8 @@ public class ProductRepository {
 	        return Collections.emptyList();
 	    }
 	}
-
+	
+	//show đơn vị
 	public List<Unit> findAllUnit() {
     	try {
     		String sql = "SELECT * FROM Unit";
@@ -92,6 +97,7 @@ public class ProductRepository {
 			return Collections.emptyList();
 		}      
     }
+	// show thương hiệu
     public List<Brand> findAllBrand() {
     	try {
     		String sql = "SELECT * FROM Brand";
@@ -101,6 +107,7 @@ public class ProductRepository {
 			return Collections.emptyList();
 		}      
     }
+    // lấy theo id
     public Product findIdProT(int id) {
         try {
             String sql = "SELECT * FROM Product WHERE Id = ?";
@@ -115,7 +122,7 @@ public class ProductRepository {
             return null;
         }
     }
-
+    //lấy list theo id
     public List<Product> findAllProductIds() {
         try {
             String sql = "SELECT Id FROM Product";
@@ -130,7 +137,7 @@ public class ProductRepository {
         }
     }
 
-
+    // lấy danh mục
     public List<Category_Product> findAllCategory(){
     	try {
         	String sql = "SELECT * FROM Product_category";
@@ -141,6 +148,7 @@ public class ProductRepository {
 		}
     }
     
+    // lấy theo id để show chi tiết sản phẩm
     public Product findId(int id) {
         try {
             String sql = "SELECT p.*, b.Name AS brand_name, c.Cate_name AS category_name, "
@@ -159,10 +167,10 @@ public class ProductRepository {
                 pro.setCate_id(rs.getInt("Cate_id"));
                 pro.setUnit_id(rs.getInt("Unit_Id"));
                 pro.setProduct_name(rs.getString("Product_name"));
-                pro.setDescription(rs.getString("Description"));
-                pro.setImg(rs.getString("Img"));
+                pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));  // Sử dụng hằng số
+                pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));  // Sử dụng hằng số
                 pro.setPrice(rs.getDouble("Price"));
-                pro.setWarranty_period(rs.getInt("Warranty_period"));
+                pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));  // Sử dụng hằng số
                 pro.setBrandName(rs.getString("brand_name"));
                 pro.setCategoryName(rs.getString("category_name"));
                 pro.setStatus(rs.getString("Status"));
@@ -178,6 +186,7 @@ public class ProductRepository {
             return null;
         }
     }
+    // add sản phẩm
     public boolean saveProduct(Product pro) {
         try {
             String sql = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Unit_Id, Price, Img, Status, Description, Warranty_period) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -190,6 +199,8 @@ public class ProductRepository {
             return false;
         }
     }
+    
+    //kiểm tra product
     @SuppressWarnings("deprecation")
 	public String getProductImageById(int idpro) {
     	try {
@@ -203,6 +214,7 @@ public class ProductRepository {
         
     }
 
+    // xóa product
     public String deleteProduct(int idpro, String folderName, String fileName) {   
         try {
         	String sql = "DELETE FROM Product WHERE Id = ?";
@@ -223,84 +235,12 @@ public class ProductRepository {
             return "Failed to delete product: " + e.getMessage();
         }
     }
-    public String deleteById(int idpro) {
-        String fileName = null;
-        try {
-            fileName = getProductImageById(idpro);
-            String sql = "DELETE FROM Product WHERE Id = ?";
-            Object[] params = {idpro};
-            int[] types = {Types.INTEGER};
-            int rowsAffected = dbpro.update(sql, params, types);
-
-            if (rowsAffected > 0) {
-                return fileName;
-            } else {
-                System.out.println("No rows affected, deletion failed for product ID: " + idpro);
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null; 
-        }
-    }
-
-    public boolean updateProduct(Product pro) 
-    {   
-        try {
-        	String sql = "UPDATE Product SET Product_name = ?, Cate_Id = ?, Brand_Id = ?, Unit_Id = ?, Price = ?, Img = ?, Status = ?, Description = ?, Warranty_period = ? WHERE Id = ?";
-            Object[] params = {
-                pro.getProduct_name(),
-                pro.getCate_id(),
-                pro.getBrand_id(),
-                pro.getUnit_id(),
-                pro.getPrice(),
-                pro.getImg(),
-                pro.getStatus(),
-                pro.getDescription(),
-                pro.getWarranty_period(),
-                pro.getId()
-            };
-            int rowsAffected = dbpro.update(sql, params);
-            return rowsAffected > 0;
-        } catch (DataAccessException ex) {
-            ex.printStackTrace();
-            return false;
-        }
-    }
     
-    //product_specifications
-    
-    public List<Product_specifications> findListPs(int psId) {
-        try {
-            String sql = "SELECT ps.*, p.Product_name AS product_name " +
-                         "FROM product_specifications ps " +
-                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
-                         "WHERE ps.Product_id = ?";
-
-            return dbpro.query(sql, new Product_specifications_mapper(), psId);
-
-        } catch (DataAccessException e) {
-            System.err.println("erro Product ID: " + psId);
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
-    public Product_specifications findPsById(int id) {
-        try {
-            String sql = "SELECT ps.*, p.Product_name AS product_name " +
-                         "FROM product_specifications ps " +
-                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
-                         "WHERE ps.Id = ?";
-            return dbpro.queryForObject(sql, new Product_specifications_mapper(), id);
-        } catch (DataAccessException e) {
-            System.err.println("Error when getting product specifications with ID: " + id + " - " + e.getMessage());
-            return null;
-        }
-    }
-
+    //thêm sản phẩm và các hàm ....
     @Transactional
-    public boolean saveProductWithDetails(Product pro, Product_specifications specification, List<Product_img> images, Product_price_change priceChange) {
+    public boolean saveProductWithDetails(Product pro, List<Product_specifications> specifications, List<Product_img> images, Product_price_change priceChange) {
         try {
+            // Lưu Product
             String sql1 = "INSERT INTO Product (Product_name, Cate_Id, Brand_Id, Unit_Id, " +
                     "Price, Img, Status, Description, Warranty_period, Weight, Width, Height, Length) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -325,10 +265,12 @@ public class ProductRepository {
             int generatedProductId = keyHolder.getKey().intValue();
             pro.setId(generatedProductId);
 
-            // Lưu Product_specifications
-            if (specification != null) {
+            // Lưu nhiều Product_specifications
+            if (specifications != null && !specifications.isEmpty()) {
                 String sql2 = "INSERT INTO product_specifications (Name_spe, Des_spe, Product_id) VALUES (?, ?, ?)";
-                dbpro.update(sql2, specification.getName_spe(), specification.getDes_spe(), generatedProductId);
+                for (Product_specifications spec : specifications) {
+                    dbpro.update(sql2, spec.getName_spe(), spec.getDes_spe(), generatedProductId);
+                }
             }
 
             // Lưu nhiều Product_img
@@ -353,7 +295,118 @@ public class ProductRepository {
             return false;
         }
     }
-    public boolean updateProSpe(Product_specifications ps) {
+    
+    // sửa product với price_change
+    @Transactional
+    public boolean updateProductAndPrice(Product pro, double newPrice) {
+        try {
+            String sqlGetCurrentPrice = "SELECT Price FROM Product WHERE Id = ?";
+            Double currentPrice = dbpro.queryForObject(sqlGetCurrentPrice, Double.class, pro.getId());
+            String sqlUpdateProduct = """
+                UPDATE Product 
+                SET Product_name = ?, Cate_Id = ?, Brand_Id = ?, Unit_Id = ?, 
+                    Price = ?, Img = ?, Status = ?, Description = ?, Warranty_period = ?, 
+                    Length = ?, Width = ?, Height = ?, Weight = ? 
+                WHERE Id = ?
+            """;
+            Object[] productParams = {
+                pro.getProduct_name(),
+                pro.getCate_id(),
+                pro.getBrand_id(),
+                pro.getUnit_id(),
+                pro.getPrice(),
+                pro.getImg(),
+                pro.getStatus(),
+                pro.getDescription(),
+                pro.getWarranty_period(),
+                pro.getLength(),
+                pro.getWidth(),
+                pro.getHeight(),
+                pro.getWeight(),
+                pro.getId()
+            };
+            int rowsProduct = dbpro.update(sqlUpdateProduct, productParams);
+            if (rowsProduct == 0) {
+                throw new RuntimeException("Unable to update product information.");
+            }
+            if (pro.getPrice() != currentPrice) {
+                String sqlUpdatePreviousPrice = """
+                    UPDATE Product_price_change 
+                    SET Date_end = ? 
+                    WHERE Product_Id = ? AND Date_end IS NULL
+                """;
+                int rowsUpdatedPrice = dbpro.update(sqlUpdatePreviousPrice, LocalDateTime.now(), pro.getId());
+                if (rowsUpdatedPrice == 0) {
+                    System.err.println("No previous price record found to update Date_end.");
+                    throw new RuntimeException("Unable to update the end date for the previous price.");
+                }
+                String sqlInsertNewPrice = """
+                    INSERT INTO Product_price_change (Product_Id, Price, Date_start, Date_end) 
+                    VALUES (?, ?, ?, NULL)
+                """;
+                int rowsPrice = dbpro.update(sqlInsertNewPrice, pro.getId(), newPrice, LocalDateTime.now());
+
+                if (rowsPrice == 0) {
+                    System.err.println("Unable to add price change record.");
+                    throw new RuntimeException("Unable to add price change record.");
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Update failed, transaction has been rolled back.");
+        }
+    }
+
+
+    
+    //product_specifications =========================================================
+    
+    // show list theo id
+    public List<Product_specifications> findListPs(int psId) {
+        try {
+            String sql = "SELECT ps.*, p.Product_name AS product_name " +
+                         "FROM product_specifications ps " +
+                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
+                         "WHERE ps.Product_id = ?";
+
+            return dbpro.query(sql, new Product_specifications_mapper(), psId);
+
+        } catch (DataAccessException e) {
+            System.err.println("erro Product ID: " + psId);
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    
+    // lấy id show update
+    public Product_specifications findPsById(int id) {
+        try {
+            String sql = "SELECT ps.*, p.Product_name AS product_name, ps.des_spe " +
+                         "FROM product_specifications ps " +
+                         "LEFT JOIN Product p ON ps.Product_id = p.Id " +
+                         "WHERE ps.Id = ?";
+            return dbpro.queryForObject(sql, new Product_specifications_mapper(), id);
+        } catch (DataAccessException e) {
+            System.err.println("Error when getting product specifications with ID: " + id + " - " + e.getMessage());
+            return null;
+        }
+    }
+    
+    //return về detail product
+    public Integer getProductIdBySpecificationId(int id) {
+    	try {
+    		String sql = "SELECT Product_id FROM product_specifications WHERE Id = ?";
+            return dbpro.queryForObject(sql, Integer.class, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+        
+    }
+    
+    //update bản product_spe
+    public boolean updatePs(Product_specifications ps) {
     	try {
     		String sql = "UPDATE product_specifications SET Name_spe = ?, Des_spe = ?, Product_id = ? WHERE Id = ?";
 			int row = dbpro.update(sql,ps.getName_spe(),ps.getDes_spe(),ps.getProduct_id(),ps.getId());
@@ -363,6 +416,8 @@ public class ProductRepository {
 			return false;
 		}
     }
+    
+    // xóa product_spe
     public boolean deletePs(int idps) {
     	try {
     		String sql = "DELETE FROM product_specifications WHERE Id = ?";
@@ -375,6 +430,24 @@ public class ProductRepository {
 			return false;
 		}
     }
+
+    // thêm product_spe
+    public boolean addProPs(Product_specifications ps) {
+        try {
+            String sql = "INSERT INTO product_specifications (Product_id,Name_spe,Des_spe) VALUES (?, ?, ?)";
+            int rowsAffected = dbpro.update(sql, ps.getProduct_id(), ps.getName_spe(),ps.getDes_spe());
+            		
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
+    //Product_img ==========================================================================
+    
+    // show Product_img  theo id 
     public List<Product_img> findListImages(int productId) {
         try {
             String sql = "SELECT pi.*, p.Product_name AS product_name " +
@@ -389,6 +462,86 @@ public class ProductRepository {
             return Collections.emptyList();
         }
     }
+    
+    //thêm nhiều ảnh product
+    public boolean addProDetails(List<Product_img> imageList) {
+        String sql = "INSERT INTO product_img (Product_Id, Img_url) VALUES (?, ?)";
+        List<Object[]> batchArgs = new ArrayList<>();
+        
+        for (Product_img pi : imageList) {
+            batchArgs.add(new Object[]{pi.getProduct_id(), pi.getImg_url()});
+        }
+        try {
+            int[] rowsAffected = dbpro.batchUpdate(sql, batchArgs);
+            return Arrays.stream(rowsAffected).allMatch(rows -> rows > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Integer getProductIdByimgId(int id) {
+    	try {
+    		String sql = "SELECT Product_id FROM product_img WHERE Id = ?";
+            return dbpro.queryForObject(sql, Integer.class, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+        
+    }
+    public void deleteImageById(Integer imageId) {
+        String sql = "DELETE FROM product_img WHERE Id = ?";
+        dbpro.update(sql, imageId);
+    }
+
+ // xóa product_imgaes
+    public String deletePi(int idpi, String folderName, String fileName) {
+        try {
+            // Xóa bản ghi trong cơ sở dữ liệu
+            String sql = "DELETE FROM product_img WHERE Id = ?";
+            Object[] params = {idpi};
+            int[] types = {Types.INTEGER};
+            int rowsAffected = dbpro.update(sql, params, types);
+            if (rowsAffected > 0) {
+                // Kiểm tra fileName có hợp lệ không
+                if (fileName != null && !fileName.isEmpty()) {
+                    // Xóa file từ thư mục uploads/imgDetail
+                    String deleteFileResult = FileUtils.deleteFile(folderName, fileName);
+                    System.out.println(deleteFileResult);  // In ra kết quả xóa tệp
+                    if ("file deleted".equals(deleteFileResult)) {
+                        return "Product image file deleted successfully!";
+                    } else {
+                        return "Product deleted, but failed to delete image file: " + deleteFileResult;
+                    }
+                } else {
+                    return "Failed to delete image: Invalid file name.";
+                }
+            } else {
+                return "Failed to delete product: No rows affected";
+            }
+        } catch (Exception e) {
+            return "Failed to delete product: " + e.getMessage();
+        }
+    }
+
+
+    @SuppressWarnings("deprecation")
+	public String getProImageById(int imageId) {
+	    try {
+	        String sql = "SELECT Img_url FROM product_img WHERE Id = ?";
+	        Object[] params = {imageId};
+	        return dbpro.queryForObject(sql, params, String.class);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+    
+    
+    //Product_price_change ===========================================================
+    
+    // show Product_price_change theo id
     public List<Product_price_change> findListProductPriceChanges(int productId) {
         try {
             String sql = "SELECT ppc.*, p.Product_name AS product_name " +
@@ -403,6 +556,5 @@ public class ProductRepository {
             return Collections.emptyList();
         }
     }
-
 
 }

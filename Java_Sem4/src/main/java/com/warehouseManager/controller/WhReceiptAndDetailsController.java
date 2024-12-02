@@ -139,7 +139,7 @@ public class WhReceiptAndDetailsController {
 			wrd.setProduct_id(product_id);
 			
 			repwd.addWhDetail(wrd);
-			return "redirect:showWhReceiptDetail?id=" + wh_receipt_id ;
+			return "redirect:showWhReceiptDetail?id=" + wh_receipt_id;
 		}
 		@GetMapping("showUpdateWhDetail")
 		public String showUpdateWhDetail(@RequestParam String id ,Model model) {
