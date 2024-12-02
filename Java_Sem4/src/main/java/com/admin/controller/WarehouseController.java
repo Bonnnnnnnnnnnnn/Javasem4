@@ -197,7 +197,7 @@ public class WarehouseController {
 	    try {
 	        int idwh = Integer.parseInt(iddtwh); 
 	        Warehouse wh = repwh.findId(idwh);
-	        List<Employee> availableEmployees = repwh.showEmpAll(idwh);
+	        List<Employee> availableEmployees = repwh.showEmpAll();
 	        model.addAttribute("employees", availableEmployees);
 	        model.addAttribute("warehouse", wh);
 	        return Views.EMPLOYEE_WAREHOUSE_SHOWWAREHOUSEMANAGEMENTLEVEL;
@@ -232,7 +232,7 @@ public class WarehouseController {
 	        int idupp = Integer.parseInt(idup);
 	        Warehouse wh = repwh.findId(idwh);
 	        Employee_warehouse ew = repwh.findByEmpwhId(idupp);;
-	        List<Employee> availableEmployees = repwh.showEmpAll(idwh);
+	        List<Employee> availableEmployees = repwh.showEmpAll();
 
 	        model.addAttribute("employees", availableEmployees);
 	        model.addAttribute("warehouse", wh);

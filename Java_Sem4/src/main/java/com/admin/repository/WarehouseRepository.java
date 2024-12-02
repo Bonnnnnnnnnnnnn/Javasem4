@@ -208,7 +208,7 @@ public class WarehouseRepository {
 	    }
 	}
 
-	public List<Employee> showEmpAll(int warehouseId) {
+	public List<Employee> showEmpAll() {
 	    try {
 	        String sql = """
 	            SELECT e.*, r.Name AS role_name 
@@ -216,10 +216,10 @@ public class WarehouseRepository {
 	            LEFT JOIN Role r ON e.Role_Id = r.Id
 	            WHERE r.Name NOT IN ('admin', 'businessManager')
 	            AND NOT EXISTS (
-	                SELECT 1 
-	                FROM employee_warehouse ew 
-	                WHERE ew.Employee_Id = e.Id 
-	                AND ew.Warehouse_Id = ?
+	                SELECT 1
+    FROM employee_warehouse ew 
+    WHERE ew.employee_id = e.Id
+	                
 	            )
 	        """;
 
@@ -233,7 +233,7 @@ public class WarehouseRepository {
 	            emp.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
 	            emp.setRole_name(rs.getString("role_name"));
 	            return emp;
-	        }, warehouseId);
+	        });
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching employees: " + e.getMessage());
 	        return new ArrayList<>();
