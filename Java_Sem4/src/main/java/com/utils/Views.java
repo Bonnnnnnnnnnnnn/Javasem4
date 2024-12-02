@@ -74,7 +74,6 @@ public final class Views {
 	public static String COL_PRICE_CHANGE_PRICE = "Price";
 	public static String COL_PRICE_CHANGE_DATE_START = "Date_start";
 	public static String COL_PRICE_CHANGE_DATE_END = "Date_end";
-
 	
 	//7.STOCK
 	public static String SHOW_STOCK = "warehouseManager/stock/showListStock";
@@ -315,11 +314,12 @@ public final class Views {
 	public static String COL_REQUEST_DETAIL_QUANTITY_REQUESTED = "Quantity_requested";
 	public static String COL_REQUEST_DETAIL_QUANTITY_EXPORTED = "Quantity_exported";
 	public static String COL_REQUEST_DETAIL_REQUEST_ID = "Request_Id";
-	
+
 	public static String PRORESS_RETURN_ORDER = "businessManager/ReturnOrder/Showlistorder";
 	public static String RETURN_BS_ORDER_DETAIL = "businessManager/ReturnOrder/showreorderde";
 	public static String PRORESS_RETURN_ORDER_COMPLETE_ID = "businessManager/ReturnOrder/Showlistordercompleteid";
 	public static String PRORESS_RETURN_ORDER_COMPLETE = "businessManager/ReturnOrder/Showlistordercomplete";
+
 
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
@@ -332,7 +332,7 @@ public final class Views {
 	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
 	public static String COL_RETURN_ORDER_MESSAGE = "Message";
 	public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
-	// 25.RETURN ORDER DETAIL
+
 	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
 	public static String COL_RETURN_DETAIL_ID = "Id";
 	public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
@@ -362,7 +362,6 @@ public final class Views {
 
 	//21.Product_Img
 	public static String PRODUCT_IMAGES_SHOWADDPI ="admin/product/showAddPImg";
-
 
 	public static String TBL_PRODUCT_IMG = "product_img";
 	public static String COL_PRODUCT_IMG_ID = "Id";
@@ -461,4 +460,5 @@ public final class Views {
 	public static String COL_TAX_HISTORY_NOTE = "Note";
 	public static String COL_TAX_HISTORY_CREATED_AT = "Created_At";
 	public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
+
 }

@@ -99,7 +99,6 @@ public class Order_detail {
 	public void setImg(String img) {
 		Img = img;
 	}
-<<<<<<< HEAD
 	
 	public String getUnit_name() {
 		return Unit_name;
@@ -108,7 +107,5 @@ public class Order_detail {
 		this.Unit_name = unit_name;
 	}
 	
-=======
-
->>>>>>> thuan_dev
 }
+

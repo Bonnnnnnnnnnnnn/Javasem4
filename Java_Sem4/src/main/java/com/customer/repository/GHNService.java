@@ -30,7 +30,6 @@ public class GHNService {
 	private Environment env;
 
 	public List<Province> getProvinces() {
-
 		try {
 			String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
 
@@ -52,7 +51,6 @@ public class GHNService {
 
 			if (response.getBody() != null && response.getBody().getData() != null) {
 				List<Province> provinces = response.getBody().getData();
-
 //	            provinces.forEach(p -> {
 //	                System.out.println("Province ID: " + p.getProvinceId());
 //	                System.out.println("Province Name: " + p.getProvinceName());
@@ -142,7 +140,6 @@ public class GHNService {
 					});
 			if (response.getBody() != null && response.getBody().getData() != null) {
 				List<Ward> ward = response.getBody().getData();
-
 //	            ward.forEach(p -> {
 //	                System.out.println("Ward ID: " + p.getWardCode());
 //	                System.out.println("Ward Name: " + p.getWardName());
