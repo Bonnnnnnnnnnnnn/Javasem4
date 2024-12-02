@@ -7,6 +7,7 @@ public class ExpenseHistory {
     private int id;
     private int expenseTypeId;
     private Double amount;
+    private ExpenseType type; 
     private LocalDate startDate;
     private LocalDate endDate;
     private String note;
@@ -20,6 +21,12 @@ public class ExpenseHistory {
     
     
     
+	public ExpenseType getType() {
+		return type;
+	}
+	public void setType(ExpenseType type) {
+		this.type = type;
+	}
 	public ExpenseHistory() {
 		super();
 	}

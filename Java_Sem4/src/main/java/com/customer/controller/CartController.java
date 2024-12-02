@@ -1,7 +1,5 @@
 package com.customer.controller;
 
-
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,128 +27,130 @@ public class CartController {
 	@Autowired
 	private CartRepository rep;
 	@Autowired
-    private CouponRepository repcp;
+	private CouponRepository repcp;
+
 	@GetMapping("/showcart")
-	public String showpage(Model model, HttpServletRequest request,
-	        HttpServletResponse response) {	
+	public String showpage(Model model, HttpServletRequest request, HttpServletResponse response) {
 		// Yêu cầu không lưu cache
-	    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	    response.setHeader("Pragma", "no-cache");
-	    response.setDateHeader("Expires", 0);
-		request.getSession().setAttribute("appliedcouponid",null);
+		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+		response.setHeader("Pragma", "no-cache");
+		response.setDateHeader("Expires", 0);
+		request.getSession().setAttribute("appliedcouponid", null);
 		request.getSession().setAttribute("cameFromCart", true);
 		List<Shopping_cart> listc = rep.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
 		double totalCartValue = 0.00;
-	    for (Shopping_cart cartItem : listc) {
-	        totalCartValue += cartItem.getPrice() * cartItem.getQuantity(); 
-	    }
-	    model.addAttribute("totalCartValue", totalCartValue);
+		for (Shopping_cart cartItem : listc) {
+			totalCartValue += cartItem.getPrice() * cartItem.getQuantity();
+		}
+		model.addAttribute("totalCartValue", totalCartValue);
 		model.addAttribute("carts", listc);
 		return Views.CUS_CARTPAGE;
 	}
+
 	@PostMapping("/addtocart")
-	@ResponseBody  
+	@ResponseBody
 	public String addToCart(@RequestParam int id, HttpServletRequest request) {
-	    if (request.getSession().getAttribute("logined") == null) {
-	        return "{\"status\": \"false\"}"; 
-	    }
+		if (request.getSession().getAttribute("logined") == null) {
+			return "{\"status\": \"false\"}";
+		}
 
-	    Shopping_cart cart = new Shopping_cart();
-	    cart.setCustomer_id((int) request.getSession().getAttribute("logined"));
-	    cart.setProduct_id(id);
-	    cart.setQuantity(1);
+		Shopping_cart cart = new Shopping_cart();
+		cart.setCustomer_id((int) request.getSession().getAttribute("logined"));
+		cart.setProduct_id(id);
+		cart.setQuantity(1);
 
-	    boolean success = rep.addToCartOrUpdate(cart);
+		boolean success = rep.addToCartOrUpdate(cart);
 
-	    if (success) {
-	        return "{\"status\": \"success\"}"; 
-	    } else {
-	        return "{\"status\": \"failed\"}"; 
-	    }
+		if (success) {
+			return "{\"status\": \"success\"}";
+		} else {
+			return "{\"status\": \"failed\"}";
+		}
 	}
-	@PostMapping("/pluscart")
-	@ResponseBody  
-	public String pluscart(@RequestParam int id, HttpServletRequest request) {
-	    
-	    boolean success = rep.plusProductQuantityInCart(id);
 
-	    if (success) {
-	        return "{\"status\": \"success\"}";
-	    } else {
-	        return "{\"status\": \"failed\"}"; 
-	    }
+	@PostMapping("/pluscart")
+	@ResponseBody
+	public String pluscart(@RequestParam int id, HttpServletRequest request) {
+
+		boolean success = rep.plusProductQuantityInCart(id);
+
+		if (success) {
+			return "{\"status\": \"success\"}";
+		} else {
+			return "{\"status\": \"failed\"}";
+		}
 	}
 
 	@PostMapping("/minuscart")
-	@ResponseBody  
+	@ResponseBody
 	public String minuscart(@RequestParam int id, HttpServletRequest request) {
-	    
-	    boolean success = rep.minusProductQuantityInCart(id);
 
-	    if (success) {
-	        return "{\"status\": \"success\"}"; 
-	    } else {
-	        return "{\"status\": \"failed\"}"; 
-	    }
+		boolean success = rep.minusProductQuantityInCart(id);
+
+		if (success) {
+			return "{\"status\": \"success\"}";
+		} else {
+			return "{\"status\": \"failed\"}";
+		}
 	}
+
 	@PostMapping("/deletecartbyid")
-	@ResponseBody  
+	@ResponseBody
 	public String deletecartbyid(@RequestParam int id, HttpServletRequest request) {
-	    
-	    boolean success = rep.deleteCartById(id);
 
-	    if (success) {
-	        return "{\"status\": \"success\"}"; 
-	    } else {
-	        return "{\"status\": \"failed\"}"; 
-	    }
+		boolean success = rep.deleteCartById(id);
+
+		if (success) {
+			return "{\"status\": \"success\"}";
+		} else {
+			return "{\"status\": \"failed\"}";
+		}
 	}
+
 	@PostMapping("/addtocartwq")
-	@ResponseBody  
-	public String addtocartwq(@RequestParam("id") int id,
-            @RequestParam("quantity") int quantity, 
-            HttpServletRequest request) {
+	@ResponseBody
+	public String addtocartwq(@RequestParam("id") int id, @RequestParam("quantity") int quantity,
+			HttpServletRequest request) {
 		if (request.getSession().getAttribute("logined") == null) {
-	        return "{\"status\": \"false\"}"; 
-	    }
+			return "{\"status\": \"false\"}";
+		}
 
-	    Shopping_cart cart = new Shopping_cart();
-	    cart.setCustomer_id((int) request.getSession().getAttribute("logined"));
-	    cart.setProduct_id(id);
-	    cart.setQuantity(quantity);
+		Shopping_cart cart = new Shopping_cart();
+		cart.setCustomer_id((int) request.getSession().getAttribute("logined"));
+		cart.setProduct_id(id);
+		cart.setQuantity(quantity);
 
-	    boolean success = rep.addToCartOrUpdate(cart);
+		boolean success = rep.addToCartOrUpdate(cart);
 
-	    if (success) {
-	        return "{\"status\": \"success\"}"; 
-	    } else {
-	        return "{\"status\": \"failed\"}"; 
-	    }
+		if (success) {
+			return "{\"status\": \"success\"}";
+		} else {
+			return "{\"status\": \"failed\"}";
+		}
 	}
-	
+
 	@PostMapping("/size")
-	@ResponseBody  
+	@ResponseBody
 	public String size(HttpServletRequest request) {
-	    
-	    List<Shopping_cart> listc = rep.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
-	    int size = listc.size();
-	    
-	    return "{\"status\": " + size + "}"; 
-	}
 
+		List<Shopping_cart> listc = rep.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
+		int size = listc.size();
+
+		return "{\"status\": " + size + "}";
+	}
 
 	@GetMapping("/validatediscount")
 	public ResponseEntity<Coupon> validateCoupon(@RequestParam("code") String code) {
-	    // Tìm coupon bằng mã code
-	    Coupon coupon = repcp.findCouponByCode(code);
-	    
-	    // Nếu coupon không tìm thấy, trả về null
-	    if (coupon == null) {
-	        return ResponseEntity.ok().body(null);  // Trả về null
-	    }
+		// Tìm coupon bằng mã code
+		Coupon coupon = repcp.findCouponByCode(code);
 
-	    // Nếu tìm thấy coupon, trả về đối tượng coupon
-	    return ResponseEntity.ok(coupon);
+		// Nếu coupon không tìm thấy, trả về null
+		if (coupon == null) {
+			return ResponseEntity.ok().body(null); // Trả về null
+		}
+
+		// Nếu tìm thấy coupon, trả về đối tượng coupon
+		return ResponseEntity.ok(coupon);
 	}
 
 }

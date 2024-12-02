@@ -60,6 +60,41 @@
                     </table>
                 </div>
             </div>
+            <div class="row">
+            <div class="col-12">
+					    <nav th:if="${pv.total_page > 1}"> <!-- Only show the pagination if there's more than one page -->
+					        <ul class="pagination justify-content-center">
+					            <!-- First Page -->
+					            <li class="page-item">
+					                <a class="page-link" th:href="@{/admin/tax/showtax(cp=1)}" title="First page">&laquo;</a>
+					            </li>
+					
+					            <!-- Previous Page -->
+					            <li class="page-item" th:if="${pv.page_current > 1}">
+					                <a class="page-link" th:href="@{/admin/tax/showtax(cp=${pv.page_current - 1})}" title="Previous page">&lt;</a>
+					            </li>
+					
+					            <!-- Page Number Links -->
+					            <li th:each="i : ${#numbers.sequence(0, pv.total_page - 1)}"
+					                th:if="${(i >= pv.page_current - 2) && (i <= pv.page_current) && (pv.total_page > 1)}"
+					                th:class="${i + 1 == pv.page_current ? 'active page-item' : 'page-item'}">
+					                <a class="page-link" th:href="@{/admin/tax/showtax(cp=${i + 1})}"
+					                   th:text="${i + 1}"></a>
+					            </li>
+					
+					            <!-- Next Page -->
+					            <li class="page-item" th:if="${pv.page_current < pv.total_page}">
+					                <a class="page-link" th:href="@{/admin/tax/showtax(cp=${pv.page_current + 1})}" title="Next page">&gt;</a>
+					            </li>
+					
+					            <!-- Last Page -->
+					            <li class="page-item" th:if="${pv.total_page > 1}">
+					                <a class="page-link" th:href="@{/admin/tax/showtax(cp=${pv.total_page})}" title="Last page">&raquo;</a>
+					            </li>
+					        </ul>
+					    </nav>
+					</div>
+            </div>
         </div>
     </section>
 </div>

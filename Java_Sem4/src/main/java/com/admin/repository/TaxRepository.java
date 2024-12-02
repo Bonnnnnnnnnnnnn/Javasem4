@@ -18,193 +18,146 @@ import com.utils.Views;
 
 @Repository
 public class TaxRepository {
-    @Autowired
-    private JdbcTemplate db;
+	@Autowired
+	private JdbcTemplate db;
 
-    public List<TaxHistory> findAll(PageView pageView) {
-        try {
-            // Base query
-            StringBuilder str_query = new StringBuilder(
-                String.format("SELECT * FROM %s ORDER BY %s DESC",
-                    Views.TBL_TAX_HISTORY,
-                    Views.COL_TAX_HISTORY_PERIOD_START)
-            );
+	public List<TaxHistory> findAll(PageView pageView) {
+		try {
+			// Base query
+			StringBuilder str_query = new StringBuilder(String.format("SELECT * FROM %s ORDER BY %s DESC",
+					Views.TBL_TAX_HISTORY, Views.COL_TAX_HISTORY_PERIOD_START));
 
-            List<Object> params = new ArrayList<>();
+			List<Object> params = new ArrayList<>();
 
-            // Query đếm tổng số records
-            String countQuery = String.format("SELECT COUNT(*) FROM %s", Views.TBL_TAX_HISTORY);
-            int count = db.queryForObject(countQuery, Integer.class);
-            
-            // Tính total page
-            int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
-            pageView.setTotal_page(total_page);
+			// Query đếm tổng số records
+			String countQuery = String.format("SELECT COUNT(*) FROM %s", Views.TBL_TAX_HISTORY);
+			int count = db.queryForObject(countQuery, Integer.class);
 
-            // Thêm phân trang nếu được enable
-            if (pageView.isPaginationEnabled()) {
-                str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-                params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
-                params.add(pageView.getPage_size());
-            }
+			// Tính total page
+			int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
+			pageView.setTotal_page(total_page);
 
-            // Thực hiện query và map kết quả
-            return db.query(str_query.toString(), new TaxHistoryMapper(), params.toArray());
+			// Thêm phân trang nếu được enable
+			if (pageView.isPaginationEnabled()) {
+				str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+				params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
+				params.add(pageView.getPage_size());
+			}
 
-        } catch (DataAccessException e) {
-            System.err.println("Error in findAll: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
+			// Thực hiện query và map kết quả
+			return db.query(str_query.toString(), new TaxHistoryMapper(), params.toArray());
 
-    public List<TaxHistory> findByPeriod(LocalDate start, LocalDate end, PageView pageView) {
-        try {
-            // Base query với điều kiện period
-            StringBuilder str_query = new StringBuilder(
-                String.format("SELECT * FROM %s WHERE 1=1", Views.TBL_TAX_HISTORY)
-            );
+		} catch (DataAccessException e) {
+			System.err.println("Error in findAll: " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
 
-            List<Object> params = new ArrayList<>();
+	public List<TaxHistory> findByPeriod(LocalDate start, LocalDate end, PageView pageView) {
+		try {
+			// Base query với điều kiện period
+			StringBuilder str_query = new StringBuilder(
+					String.format("SELECT * FROM %s WHERE 1=1", Views.TBL_TAX_HISTORY));
 
-            // Thêm điều kiện cho ngày bắt đầu
-            if (start != null) {
-                str_query.append(String.format(" AND %s >= ?", Views.COL_TAX_HISTORY_PERIOD_START));
-                params.add(start);
-            }
+			List<Object> params = new ArrayList<>();
 
-            // Thêm điều kiện cho ngày kết thúc
-            if (end != null) {
-                str_query.append(String.format(" AND %s <= ?", Views.COL_TAX_HISTORY_PERIOD_START));
-                params.add(end);
-            }
+			// Thêm điều kiện cho ngày bắt đầu
+			if (start != null) {
+				str_query.append(String.format(" AND %s >= ?", Views.COL_TAX_HISTORY_PERIOD_START));
+				params.add(start);
+			}
 
-            str_query.append(" ORDER BY %s DESC".formatted(Views.COL_TAX_HISTORY_PERIOD_START));
+			// Thêm điều kiện cho ngày kết thúc
+			if (end != null) {
+				str_query.append(String.format(" AND %s <= ?", Views.COL_TAX_HISTORY_PERIOD_START));
+				params.add(end);
+			}
 
-            // Query đếm với điều kiện period
-            String countQuery = String.format(
-                "SELECT COUNT(*) FROM %s WHERE 1=1", Views.TBL_TAX_HISTORY
-            );
+			str_query.append(" ORDER BY %s DESC".formatted(Views.COL_TAX_HISTORY_PERIOD_START));
 
-            if (start != null) {
-                countQuery += String.format(" AND %s >= ?", Views.COL_TAX_HISTORY_PERIOD_START);
-            }
-            if (end != null) {
-                countQuery += String.format(" AND %s <= ?", Views.COL_TAX_HISTORY_PERIOD_START);
-            }
+			// Query đếm với điều kiện period
+			String countQuery = String.format("SELECT COUNT(*) FROM %s WHERE 1=1", Views.TBL_TAX_HISTORY);
 
-            // Đếm số lượng bản ghi
-            int count = db.queryForObject(countQuery, Integer.class, params.toArray());
+			if (start != null) {
+				countQuery += String.format(" AND %s >= ?", Views.COL_TAX_HISTORY_PERIOD_START);
+			}
+			if (end != null) {
+				countQuery += String.format(" AND %s <= ?", Views.COL_TAX_HISTORY_PERIOD_START);
+			}
 
-            // Tính tổng số trang
-            int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
-            pageView.setTotal_page(total_page);
+			// Đếm số lượng bản ghi
+			int count = db.queryForObject(countQuery, Integer.class, params.toArray());
 
-            // Thêm phân trang nếu được enable
-            if (pageView.isPaginationEnabled()) {
-                str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-                params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
-                params.add(pageView.getPage_size());
-            }
+			// Tính tổng số trang
+			int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
+			pageView.setTotal_page(total_page);
 
-            // Thực hiện query và map kết quả
-            return db.query(str_query.toString(), new TaxHistoryMapper(), params.toArray());
+			// Thêm phân trang nếu được enable
+			if (pageView.isPaginationEnabled()) {
+				str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+				params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
+				params.add(pageView.getPage_size());
+			}
 
-        } catch (DataAccessException e) {
-            System.err.println("Error in findByPeriod: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
+			// Thực hiện query và map kết quả
+			return db.query(str_query.toString(), new TaxHistoryMapper(), params.toArray());
 
-    public TaxHistory findById(int id) {
-        try {
-            String sql = String.format("SELECT * FROM %s WHERE %s = ?", 
-                Views.TBL_TAX_HISTORY, 
-                Views.COL_TAX_HISTORY_ID);
-            return db.queryForObject(sql, new TaxHistoryMapper(), id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-    
-    public void save(TaxHistory tax) {
-        String sql = String.format(
-            "INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            Views.TBL_TAX_HISTORY,
-            Views.COL_TAX_HISTORY_TYPE,
-            Views.COL_TAX_HISTORY_PERIOD_START,
-            Views.COL_TAX_HISTORY_PERIOD_END,
-            Views.COL_TAX_HISTORY_REVENUE,
-            Views.COL_TAX_HISTORY_RATE,
-            Views.COL_TAX_HISTORY_AMOUNT,
-            Views.COL_TAX_HISTORY_STATUS,
-            Views.COL_TAX_HISTORY_PAYMENT_DATE,
-            Views.COL_TAX_HISTORY_NOTE,
-            Views.COL_TAX_HISTORY_CREATED_BY
-        );
+		} catch (DataAccessException e) {
+			System.err.println("Error in findByPeriod: " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
 
-        db.update(sql,
-            tax.getTaxType(),
-            tax.getPeriodStart(),
-            tax.getPeriodEnd(),
-            tax.getRevenueAmount(),
-            tax.getTaxRate(),
-            tax.getTaxAmount(),
-            tax.getPaymentStatus(),
-            tax.getPaymentDate(),
-            tax.getNote(),
-            tax.getCreatedBy()
-        );
-    }
-    
-    public Double calculateRevenue(LocalDate startDate, LocalDate endDate) {
-        String sql = String.format(
-            "SELECT " +
-            "    (SELECT COALESCE(SUM(%s), 0) " +  
-            "     FROM [%s] " +
-            "     WHERE %s BETWEEN ? AND ? " +
-            "     AND %s = 'Completed') - " +
-            "    (SELECT COALESCE(SUM(%s), 0) " + 
-            "     FROM %s " +
-            "     WHERE %s BETWEEN ? AND ? " +
-            "     AND %s = 'Completed') as Total_Revenue",
-            Views.COL_ORDER_TOTALAMOUNT,        
-            Views.TBL_ORDER,                    
-            Views.COL_ORDER_DATE,               
-            Views.COL_ORDER_STATUS,             
-            Views.COL_RETURN_ORDER_FINAL_AMOUNT, 
-            Views.TBL_RETURN_ORDER,             
-            Views.COL_RETURN_ORDER_DATE,        
-            Views.COL_RETURN_ORDER_STATUS       
-        );
+	public TaxHistory findById(int id) {
+		try {
+			String sql = String.format("SELECT * FROM %s WHERE %s = ?", Views.TBL_TAX_HISTORY,
+					Views.COL_TAX_HISTORY_ID);
+			return db.queryForObject(sql, new TaxHistoryMapper(), id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 
-        try {
-            return db.queryForObject(sql, Double.class, 
-                startDate, endDate, startDate, endDate);
-        } catch (DataAccessException e) {
-            System.err.println("Error calculating revenue: " + e.getMessage());
-            return 0.0;
-        }
-    }
-    
-    
-    public void updateStatus(TaxHistory tax) {
-        String sql = String.format(
-            "UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
-            Views.TBL_TAX_HISTORY,
-            Views.COL_TAX_HISTORY_STATUS,
-            Views.COL_TAX_HISTORY_PAYMENT_DATE,
-            Views.COL_TAX_HISTORY_ID
-        );
+	public void save(TaxHistory tax) {
+		String sql = String.format(
+				"INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				Views.TBL_TAX_HISTORY, Views.COL_TAX_HISTORY_TYPE, Views.COL_TAX_HISTORY_PERIOD_START,
+				Views.COL_TAX_HISTORY_PERIOD_END, Views.COL_TAX_HISTORY_REVENUE, Views.COL_TAX_HISTORY_RATE,
+				Views.COL_TAX_HISTORY_AMOUNT, Views.COL_TAX_HISTORY_STATUS, Views.COL_TAX_HISTORY_PAYMENT_DATE,
+				Views.COL_TAX_HISTORY_NOTE, Views.COL_TAX_HISTORY_CREATED_BY);
 
-        try {
-            db.update(sql,
-                tax.getPaymentStatus(),
-                tax.getPaymentDate(),
-                tax.getId()
-            );
-        } catch (DataAccessException e) {
-            System.err.println("Error updating tax status: " + e.getMessage());
-            throw e;
-        }
-    }
-    
+		db.update(sql, tax.getTaxType(), tax.getPeriodStart(), tax.getPeriodEnd(), tax.getRevenueAmount(),
+				tax.getTaxRate(), tax.getTaxAmount(), tax.getPaymentStatus(), tax.getPaymentDate(), tax.getNote(),
+				tax.getCreatedBy());
+	}
+
+	public Double calculateRevenue(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format(
+				"SELECT " + "    (SELECT COALESCE(SUM(%s), 0) " + "     FROM [%s] " + "     WHERE %s BETWEEN ? AND ? "
+						+ "     AND %s = 'Completed') - " + "    (SELECT COALESCE(SUM(%s), 0) " + "     FROM %s "
+						+ "     WHERE %s BETWEEN ? AND ? " + "     AND %s = 'Completed') as Total_Revenue",
+				Views.COL_ORDER_TOTALAMOUNT, Views.TBL_ORDER, Views.COL_ORDER_DATE, Views.COL_ORDER_STATUS,
+				Views.COL_RETURN_ORDER_FINAL_AMOUNT, Views.TBL_RETURN_ORDER, Views.COL_RETURN_ORDER_DATE,
+				Views.COL_RETURN_ORDER_STATUS);
+
+		try {
+			return db.queryForObject(sql, Double.class, startDate, endDate, startDate, endDate);
+		} catch (DataAccessException e) {
+			System.err.println("Error calculating revenue: " + e.getMessage());
+			return 0.0;
+		}
+	}
+
+	public void updateStatus(TaxHistory tax) {
+		String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?", Views.TBL_TAX_HISTORY,
+				Views.COL_TAX_HISTORY_STATUS, Views.COL_TAX_HISTORY_PAYMENT_DATE, Views.COL_TAX_HISTORY_ID);
+
+		try {
+			db.update(sql, tax.getPaymentStatus(), tax.getPaymentDate(), tax.getId());
+		} catch (DataAccessException e) {
+			System.err.println("Error updating tax status: " + e.getMessage());
+			throw e;
+		}
+	}
+
 }

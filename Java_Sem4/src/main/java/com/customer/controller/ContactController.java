@@ -12,31 +12,29 @@ import com.utils.Views;
 
 import jakarta.mail.MessagingException;
 
-
-
 @Controller
 @RequestMapping("contact")
 public class ContactController {
-	
+
 	@Autowired
 	EmailService emailservice;
+
 	@GetMapping("")
 	public String showpage() {
-            
-			return Views.CUS_CONTACTPAGE;
+
+		return Views.CUS_CONTACTPAGE;
 	}
+
 	@PostMapping("sendc")
-	public String sendc(
-			@RequestParam("name") String name,
-			@RequestParam("email") String email,
+	public String sendc(@RequestParam("name") String name, @RequestParam("email") String email,
 			@RequestParam("message") String message) {
-		
-            try {
-				emailservice.sendcontact(name, email, message);
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
-			return Views.CUS_CONTACTPAGE;
+
+		try {
+			emailservice.sendcontact(name, email, message);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		return Views.CUS_CONTACTPAGE;
 	}
-	
+
 }

@@ -3,17 +3,18 @@ package com.models;
 import java.time.LocalDate;
 
 public class Coupon {
-    private int Id; 
-    private String Code; 
-    private Double DiscountPercentage; 
-    private Double DiscountAmount; 
-    private LocalDate ExpiryDate; 
-    private Double MinOrderValue; 
-    private Double MaxDiscountAmount; 
-    private String Status; 
+	private int Id;
+	private String Code;
+	private Double DiscountPercentage;
+	private Double DiscountAmount;
+	private LocalDate ExpiryDate;
+	private Double MinOrderValue;
+	private Double MaxDiscountAmount;
+	private String Status;
 
-    // Constructors
-    public Coupon() {}
+	// Constructors
+	public Coupon() {
+	}
 
 	public Coupon(int id, String code, Double discountPercentage, Double discountAmount, LocalDate expiryDate,
 			Double minOrderValue, Double maxDiscountAmount, String status) {
@@ -91,6 +92,5 @@ public class Coupon {
 	public void setStatus(String status) {
 		Status = status;
 	}
-    
-    
+
 }

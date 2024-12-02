@@ -5,24 +5,22 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Province {
-    @JsonProperty("ProvinceID")
-    private Integer provinceId;
-    
-    @JsonProperty("ProvinceName")
-    private String provinceName;
-    
-    @JsonProperty("CountryID")
-    private Integer countryId;
-    
-    @JsonProperty("Code")
-    private String code;
-    
-    @JsonProperty("NameExtension")
-    private List<String> nameExtension;
+	@JsonProperty("ProvinceID")
+	private Integer provinceId;
 
-    
-    
-    public Province(Integer provinceId, String provinceName, Integer countryId, String code,
+	@JsonProperty("ProvinceName")
+	private String provinceName;
+
+	@JsonProperty("CountryID")
+	private Integer countryId;
+
+	@JsonProperty("Code")
+	private String code;
+
+	@JsonProperty("NameExtension")
+	private List<String> nameExtension;
+
+	public Province(Integer provinceId, String provinceName, Integer countryId, String code,
 			List<String> nameExtension) {
 		super();
 		this.provinceId = provinceId;
@@ -31,27 +29,27 @@ public class Province {
 		this.code = code;
 		this.nameExtension = nameExtension;
 	}
-    
+
 	public Province() {
 		super();
 	}
 
 	// Getters và Setters
-    public Integer getProvinceId() {
-        return provinceId;
-    }
+	public Integer getProvinceId() {
+		return provinceId;
+	}
 
-    public void setProvinceId(Integer provinceId) {
-        this.provinceId = provinceId;
-    }
+	public void setProvinceId(Integer provinceId) {
+		this.provinceId = provinceId;
+	}
 
-    public String getProvinceName() {
-        return provinceName;
-    }
+	public String getProvinceName() {
+		return provinceName;
+	}
 
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
+	public void setProvinceName(String provinceName) {
+		this.provinceName = provinceName;
+	}
 
 	public Integer getCountryId() {
 		return countryId;
@@ -77,5 +75,4 @@ public class Province {
 		this.nameExtension = nameExtension;
 	}
 
-    
 }

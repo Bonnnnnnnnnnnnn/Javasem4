@@ -29,153 +29,137 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/admin/tax")
 public class TaxController {
-    @Autowired
-    private TaxRepository taxRepo;
+	@Autowired
+	private TaxRepository taxRepo;
 
-    @GetMapping("/showtax")
-    public String showtax(
-            Model model, 
-            HttpSession session,
-            @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
-        
-        try {
-            PageView pv = new PageView();
-            pv.setPage_current(cp);
-            pv.setPage_size(8);
+	@GetMapping("/showtax")
+	public String showtax(Model model, HttpSession session,
+			@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 
-            // Lấy danh sách thuế mà không cần lọc
-            List<TaxHistory> taxList = taxRepo.findAll(pv);
+		try {
+			PageView pv = new PageView();
+			pv.setPage_current(cp);
+			pv.setPage_size(8);
 
-            model.addAttribute("taxList", taxList);
-            model.addAttribute("pageView", pv);
+			// Lấy danh sách thuế mà không cần lọc
+			List<TaxHistory> taxList = taxRepo.findAll(pv);
 
-            return Views.TAX_SHOWTAXPAGE;
+			model.addAttribute("taxList", taxList);
+			model.addAttribute("pv", pv);
 
-        } catch (Exception e) {
-            System.err.println("Error in showtax: " + e.getMessage());
-            return "redirect:/admin/tax/showtax";
-        }
-    }
+			return Views.TAX_SHOWTAXPAGE;
 
-    @GetMapping("/clear-filter")
-    @ResponseBody
-    public ResponseEntity<?> clearFilter(HttpSession session) {
-        session.removeAttribute("taxFilterStart");
-        session.removeAttribute("taxFilterEnd");
-        return ResponseEntity.ok().build();
-    }
-    @PostMapping("/add")
-    @ResponseBody
-    public ResponseEntity<?> addTax(@RequestBody TaxHistory tax,HttpServletRequest request) {
-        try {
-            // Validate dữ liệu
-            if (tax.getPeriodEnd().isBefore(tax.getPeriodStart())) {
-                return ResponseEntity.badRequest()
-                    .body("End date cannot be before start date");
-            }
-  
-        	 Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
-            // Set các giá trị mặc định
-            tax.setPaymentStatus("Pending");
-            tax.setCreatedAt(LocalDateTime.now());
-            
-            tax.setCreatedBy(emp.getId());
+		} catch (Exception e) {
+			System.err.println("Error in showtax: " + e.getMessage());
+			return "redirect:/admin/tax/showtax";
+		}
+	}
 
-            // Lưu vào database
-            taxRepo.save(tax);
+	@GetMapping("/clear-filter")
+	@ResponseBody
+	public ResponseEntity<?> clearFilter(HttpSession session) {
+		session.removeAttribute("taxFilterStart");
+		session.removeAttribute("taxFilterEnd");
+		return ResponseEntity.ok().build();
+	}
 
-            return ResponseEntity.ok("Tax added successfully");
+	@PostMapping("/add")
+	@ResponseBody
+	public ResponseEntity<?> addTax(@RequestBody TaxHistory tax, HttpServletRequest request) {
+		try {
+			if (tax.getPeriodEnd().isBefore(tax.getPeriodStart())) {
+				return ResponseEntity.badRequest().body("End date cannot be before start date");
+			}
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body("Error adding tax: " + e.getMessage());
-        }
-    }
-    @GetMapping("/calculate-revenue")
-    @ResponseBody
-    public ResponseEntity<?> calculateRevenue(
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
-        try {
-            // Validate dates
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            
-            // Check if end date is after start date
-            if (end.isBefore(start)) {
-                return ResponseEntity.badRequest()
-                    .body("End date cannot be before start date");
-            }
-            
-            // Calculate revenue
-            Double revenue = taxRepo.calculateRevenue(start, end);
-            return ResponseEntity.ok(revenue);
-            
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest()
-                .body("Invalid date format");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body("Error calculating revenue: " + e.getMessage());
-        }
-    }
-    
-    @GetMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<TaxHistory> getTaxById(@PathVariable int id) {
-        TaxHistory tax = taxRepo.findById(id);
-        if (tax != null) {
-            return ResponseEntity.ok(tax);
-        }
-        return ResponseEntity.notFound().build();
-    }
+			Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
+			tax.setPaymentStatus("Pending");
+			tax.setCreatedAt(LocalDateTime.now());
 
-    @PostMapping("/{id}/pay")
-    @ResponseBody
-    public ResponseEntity<?> markAsPaid(@PathVariable int id) {
-        try {
-            TaxHistory tax = taxRepo.findById(id);
-            if (tax == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            if (!"Pending".equals(tax.getPaymentStatus())) {
-                return ResponseEntity.badRequest()
-                    .body("This tax is already processed");
-            }
-            
-            tax.setPaymentStatus("Paid");
-            tax.setPaymentDate(LocalDate.now());
-            taxRepo.updateStatus(tax);
-            
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body("Error updating tax: " + e.getMessage());
-        }
-    }
+			tax.setCreatedBy(emp.getId());
 
-    @PostMapping("/{id}/cancel")
-    @ResponseBody
-    public ResponseEntity<?> cancelTax(@PathVariable int id) {
-        try {
-            TaxHistory tax = taxRepo.findById(id);
-            if (tax == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            if (!"Pending".equals(tax.getPaymentStatus())) {
-                return ResponseEntity.badRequest()
-                    .body("This tax is already processed");
-            }
-            
-            tax.setPaymentStatus("Cancelled");
-            taxRepo.updateStatus(tax);
-            
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body("Error cancelling tax: " + e.getMessage());
-        }
-    }
+			taxRepo.save(tax);
+
+			return ResponseEntity.ok("Tax added successfully");
+
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error adding tax: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/calculate-revenue")
+	@ResponseBody
+	public ResponseEntity<?> calculateRevenue(@RequestParam String startDate, @RequestParam String endDate) {
+		try {
+			LocalDate start = LocalDate.parse(startDate);
+			LocalDate end = LocalDate.parse(endDate);
+
+			if (end.isBefore(start)) {
+				return ResponseEntity.badRequest().body("End date cannot be before start date");
+			}
+
+			// Calculate revenue
+			Double revenue = taxRepo.calculateRevenue(start, end);
+			return ResponseEntity.ok(revenue);
+
+		} catch (DateTimeParseException e) {
+			return ResponseEntity.badRequest().body("Invalid date format");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error calculating revenue: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/{id}")
+	@ResponseBody
+	public ResponseEntity<TaxHistory> getTaxById(@PathVariable int id) {
+		TaxHistory tax = taxRepo.findById(id);
+		if (tax != null) {
+			return ResponseEntity.ok(tax);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@PostMapping("/{id}/pay")
+	@ResponseBody
+	public ResponseEntity<?> markAsPaid(@PathVariable int id) {
+		try {
+			TaxHistory tax = taxRepo.findById(id);
+			if (tax == null) {
+				return ResponseEntity.notFound().build();
+			}
+
+			if (!"Pending".equals(tax.getPaymentStatus())) {
+				return ResponseEntity.badRequest().body("This tax is already processed");
+			}
+
+			tax.setPaymentStatus("Paid");
+			tax.setPaymentDate(LocalDate.now());
+			taxRepo.updateStatus(tax);
+
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error updating tax: " + e.getMessage());
+		}
+	}
+
+	@PostMapping("/{id}/cancel")
+	@ResponseBody
+	public ResponseEntity<?> cancelTax(@PathVariable int id) {
+		try {
+			TaxHistory tax = taxRepo.findById(id);
+			if (tax == null) {
+				return ResponseEntity.notFound().build();
+			}
+
+			if (!"Pending".equals(tax.getPaymentStatus())) {
+				return ResponseEntity.badRequest().body("This tax is already processed");
+			}
+
+			tax.setPaymentStatus("Cancelled");
+			taxRepo.updateStatus(tax);
+
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error cancelling tax: " + e.getMessage());
+		}
+	}
 }

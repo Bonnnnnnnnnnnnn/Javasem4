@@ -69,12 +69,11 @@
 					    </h5>
 					    <div class="bg-light p-4 mb-30">
 					        <div th:each="item : ${brands}" class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-					            <input type="checkbox" 
-					                   class="custom-control-input" 
-					                   th:id="'brand-' + ${item.id}" 
-					                   th:name="'brands'" 
-					                   th:value="${item.id}"
-					                   th:checked="${#lists.contains(selectedBrands, item.id)}"> <!-- Check if this brand is in the selected brands -->
+								<input type="checkbox" class="custom-control-input"
+									th:id="'brand-' + ${item.id}" th:name="'brands'"
+									th:value="${item.id}"
+									th:checked="${#lists.contains(selectedBrands, item.id)}">
+								<!-- Check if this brand is in the selected brands -->
 					            <label class="custom-control-label" 
 					                   th:text="${item.name}" 
 					                   th:for="'brand-' + ${item.id}"></label>

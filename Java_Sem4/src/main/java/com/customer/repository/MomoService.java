@@ -25,234 +25,214 @@ import com.models.momo.OrderInfoModel;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @Service
 public class MomoService {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 	@Autowired
-    private MomoConfig momoConfig;
+	private MomoConfig momoConfig;
 	@Autowired
 	private Environment env;
 	private static final Logger logger = LoggerFactory.getLogger(MomoService.class);
-	public MomoCreatePaymentResponseModel createPayment(OrderInfoModel model,Order or) {
-	    try {
-	        String requestId = String.valueOf(System.currentTimeMillis());
-	        String OrderId = String.valueOf(System.currentTimeMillis());
-	        // Tạo chuỗi raw data
-	        String rawData = "accessKey=" + momoConfig.getAccessKey() +
-	            "&amount=" + model.getAmount() +
-	            "&extraData=" +  
-	            "&ipnUrl=" + momoConfig.getNotifyUrl() +
-	            "&orderId=" + OrderId +
-	            "&orderInfo=" + model.getOrderInfo() +
-	            "&partnerCode=" + momoConfig.getPartnerCode() +
-	            "&redirectUrl=" + momoConfig.getReturnUrl() +
-	            "&requestId=" + requestId +
-	            "&requestType=captureWallet";  // Sửa requestType
-	                
-	        String signature = generateHMAC(rawData, momoConfig.getSecretKey());
 
-	        // Log để debug
-	        System.out.println("Raw Data: " + rawData);
-	        System.out.println("Generated Signature: " + signature);
+	public MomoCreatePaymentResponseModel createPayment(OrderInfoModel model, Order or) {
+		try {
+			String requestId = String.valueOf(System.currentTimeMillis());
+			String OrderId = String.valueOf(System.currentTimeMillis());
+			// Tạo chuỗi raw data
+			String rawData = "accessKey=" + momoConfig.getAccessKey() + "&amount=" + model.getAmount() + "&extraData="
+					+ "&ipnUrl=" + momoConfig.getNotifyUrl() + "&orderId=" + OrderId + "&orderInfo="
+					+ model.getOrderInfo() + "&partnerCode=" + momoConfig.getPartnerCode() + "&redirectUrl="
+					+ momoConfig.getReturnUrl() + "&requestId=" + requestId + "&requestType=captureWallet"; // Sửa
+																											// requestType
 
-	        // Tạo request body
-	        Map<String, Object> requestData = new HashMap<>();  // Đổi lại thành Object
-	        requestData.put("partnerCode", momoConfig.getPartnerCode());
-	        requestData.put("accessKey", momoConfig.getAccessKey());
-	        requestData.put("requestId", requestId);
-	        requestData.put("amount", model.getAmount());  // Gửi số nguyên
-	        requestData.put("orderId", OrderId);
-	        requestData.put("orderInfo", model.getOrderInfo());
-	        requestData.put("redirectUrl", momoConfig.getReturnUrl());
-	        requestData.put("ipnUrl", momoConfig.getNotifyUrl());
-	        requestData.put("extraData", "");
-	        requestData.put("requestType", "captureWallet");  // Sửa requestType
-	        requestData.put("signature", signature);
-	        requestData.put("lang", "vi");
+			String signature = generateHMAC(rawData, momoConfig.getSecretKey());
 
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_JSON);
-	        
-	        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestData, headers);
-	        
-	        // Log request body
-	        System.out.println("Request Body: " + new ObjectMapper().writeValueAsString(requestData));
-	        
-	        ResponseEntity<MomoCreatePaymentResponseModel> response = 
-	            restTemplate.postForEntity(
-	            		momoConfig.getMomoApiUrl(),
-	                request, 
-	                MomoCreatePaymentResponseModel.class
-	            );
-	        return response.getBody();
-	        
-	    } catch (Exception e) {
-	        System.err.println("Error creating payment: " + e.getMessage());
-	        e.printStackTrace();
-	        throw new RuntimeException("Failed to create MoMo payment: " + e.getMessage(), e);
-	    }
+			// Log để debug
+			System.out.println("Raw Data: " + rawData);
+			System.out.println("Generated Signature: " + signature);
+
+			// Tạo request body
+			Map<String, Object> requestData = new HashMap<>(); // Đổi lại thành Object
+			requestData.put("partnerCode", momoConfig.getPartnerCode());
+			requestData.put("accessKey", momoConfig.getAccessKey());
+			requestData.put("requestId", requestId);
+			requestData.put("amount", model.getAmount()); // Gửi số nguyên
+			requestData.put("orderId", OrderId);
+			requestData.put("orderInfo", model.getOrderInfo());
+			requestData.put("redirectUrl", momoConfig.getReturnUrl());
+			requestData.put("ipnUrl", momoConfig.getNotifyUrl());
+			requestData.put("extraData", "");
+			requestData.put("requestType", "captureWallet"); // Sửa requestType
+			requestData.put("signature", signature);
+			requestData.put("lang", "vi");
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestData, headers);
+
+			// Log request body
+			System.out.println("Request Body: " + new ObjectMapper().writeValueAsString(requestData));
+
+			ResponseEntity<MomoCreatePaymentResponseModel> response = restTemplate
+					.postForEntity(momoConfig.getMomoApiUrl(), request, MomoCreatePaymentResponseModel.class);
+			return response.getBody();
+
+		} catch (Exception e) {
+			System.err.println("Error creating payment: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException("Failed to create MoMo payment: " + e.getMessage(), e);
+		}
 	}
+
 	private String generateHMAC(String data, String secretKey) {
-	    try {
-	        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-	        SecretKeySpec secret_key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-	        sha256_HMAC.init(secret_key);
-	        byte[] bytes = sha256_HMAC.doFinal(data.getBytes(StandardCharsets.UTF_8));
-	        
-	        StringBuilder sb = new StringBuilder();
-	        for (byte b : bytes) {
-	            sb.append(String.format("%02x", b));
-	        }
-	        return sb.toString();
-	    } catch (Exception e) {
-	        throw new RuntimeException("Failed to generate HMAC", e);
-	    }
+		try {
+			Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secret_key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+			sha256_HMAC.init(secret_key);
+			byte[] bytes = sha256_HMAC.doFinal(data.getBytes(StandardCharsets.UTF_8));
+
+			StringBuilder sb = new StringBuilder();
+			for (byte b : bytes) {
+				sb.append(String.format("%02x", b));
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to generate HMAC", e);
+		}
 	}
 
+	public MomoExecuteResponseModel paymentExecute(Map<String, String> params) {
+		return new MomoExecuteResponseModel(params.get("amount"), params.get("orderId"), params.get("orderInfo"));
+	}
 
-    public MomoExecuteResponseModel paymentExecute(Map<String, String> params) {
-        return new MomoExecuteResponseModel (
-            params.get("amount"),
-            params.get("orderId"),
-            params.get("orderInfo")
-        );
-    }
-    public void processPayment(Order or, HttpServletResponse response) {
-        try {
-        	double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
-            if (or.getTotalAmount() < 1000 || or.getTotalAmount()  > 50000000) {
-                sendErrorResponse(response, "Số tiền phải từ 1,000đ đến 50,000,000đ");
-                return;
-            }
+	public void processPayment(Order or, HttpServletResponse response) {
+		try {
+			double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
+			if (or.getTotalAmount() < 1000 || or.getTotalAmount() > 50000000) {
+				sendErrorResponse(response, "Số tiền phải từ 1,000đ đến 50,000,000đ");
+				return;
+			}
 
-            // Tạo order info model
-            OrderInfoModel orderInfoModel = new OrderInfoModel();
-            orderInfoModel.setOrderInfo(or.getOrderID());
-            orderInfoModel.setAmount((int)Math.round(or.getTotalAmount() * usdToVndRate));
-            
-            // Gọi API MoMo
-            MomoCreatePaymentResponseModel momoResponse = createPayment(orderInfoModel,or);
+			// Tạo order info model
+			OrderInfoModel orderInfoModel = new OrderInfoModel();
+			orderInfoModel.setOrderInfo(or.getOrderID());
+			orderInfoModel.setAmount((int) Math.round(or.getTotalAmount() * usdToVndRate));
 
-            // Kiểm tra response
-            if (momoResponse == null) {
-                sendErrorResponse(response, "Không nhận được phản hồi từ MoMo");
-                return;
-            }
-            
-            // Kiểm tra error code
-            Integer errorCode = momoResponse.getErrorCode();
-            if (errorCode != null && errorCode != 0) {
-                sendErrorResponse(response, "Lỗi từ MoMo: " + momoResponse.getLocalMessage());
-                return;
-            }
-            
-            // Redirect nếu có payUrl
-            String payUrl = momoResponse.getPayUrl();
-            if (payUrl != null && !payUrl.isEmpty()) {
-                response.sendRedirect(payUrl);
-            } else {
-                sendErrorResponse(response, "Không nhận được URL thanh toán");
-            }
-            
-        } catch (Exception e) {
-            logger.error("Error processing MoMo payment", e);
-            sendErrorResponse(response, "Có lỗi xảy ra: " + e.getMessage());
-        }
-    }
+			// Gọi API MoMo
+			MomoCreatePaymentResponseModel momoResponse = createPayment(orderInfoModel, or);
 
+			// Kiểm tra response
+			if (momoResponse == null) {
+				sendErrorResponse(response, "Không nhận được phản hồi từ MoMo");
+				return;
+			}
 
-    private void sendErrorResponse(HttpServletResponse response, String message) {
-        try {
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write(message);
-        } catch (IOException e) {
-            logger.error("Error sending error response", e);
-        }
-    }
-   
-    public boolean refundPayment(Order order, String description) {
-        try {
-            String requestId = String.valueOf(System.currentTimeMillis());
-            String orderId = String.valueOf(System.currentTimeMillis());
-            double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
-            // Chuyển đổi số tiền sang đúng format
-            long amount = Math.round(order.getTotalAmount()*usdToVndRate);
-            
-            // Log để debug
-            logger.info("Refund request:");
-            logger.info("Transaction ID: " + order.getTransactionId());
-            logger.info("Amount: " + amount);
-            logger.info("Order ID: " + orderId);
-            
-            // Tạo raw signature
-            StringBuilder rawSignature = new StringBuilder();
-            rawSignature.append("accessKey=").append(momoConfig.getAccessKey())
-                .append("&amount=").append(amount)
-                .append("&description=").append(description)
-                .append("&orderId=").append(orderId)
-                .append("&partnerCode=").append(momoConfig.getPartnerCode())
-                .append("&requestId=").append(requestId)
-                .append("&transId=").append(order.getTransactionId());
+			// Kiểm tra error code
+			Integer errorCode = momoResponse.getErrorCode();
+			if (errorCode != null && errorCode != 0) {
+				sendErrorResponse(response, "Lỗi từ MoMo: " + momoResponse.getLocalMessage());
+				return;
+			}
 
-            // Log raw signature
-            logger.info("Raw signature: " + rawSignature.toString());
-            
-            String signature = generateHMAC(rawSignature.toString(), momoConfig.getSecretKey());
-            
-            // Tạo request body
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("partnerCode", momoConfig.getPartnerCode());
-            requestBody.put("orderId", orderId);
-            requestBody.put("requestId", requestId);
-            requestBody.put("amount", amount);
-            requestBody.put("transId", order.getTransactionId());
-            requestBody.put("description", description);
-            requestBody.put("signature", signature);
-            requestBody.put("lang", "vi");
+			// Redirect nếu có payUrl
+			String payUrl = momoResponse.getPayUrl();
+			if (payUrl != null && !payUrl.isEmpty()) {
+				response.sendRedirect(payUrl);
+			} else {
+				sendErrorResponse(response, "Không nhận được URL thanh toán");
+			}
 
-            // Log request body
-            logger.info("Request body: " + new ObjectMapper().writeValueAsString(requestBody));
+		} catch (Exception e) {
+			logger.error("Error processing MoMo payment", e);
+			sendErrorResponse(response, "Có lỗi xảy ra: " + e.getMessage());
+		}
+	}
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+	private void sendErrorResponse(HttpServletResponse response, String message) {
+		try {
+			response.setContentType("text/plain;charset=UTF-8");
+			response.getWriter().write(message);
+		} catch (IOException e) {
+			logger.error("Error sending error response", e);
+		}
+	}
 
-            ResponseEntity<Map> response = restTemplate.postForEntity(
-                    momoConfig.getRefundUrl(),
-                    request,
-                    Map.class
-                );
+	public boolean refundPayment(Order order, String description) {
+		try {
+			String requestId = String.valueOf(System.currentTimeMillis());
+			String orderId = String.valueOf(System.currentTimeMillis());
+			double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
+			// Chuyển đổi số tiền sang đúng format
+			long amount = Math.round(order.getTotalAmount() * usdToVndRate);
 
-                Map<String, Object> responseBody = response.getBody();
-                logger.info("MoMo refund response: " + responseBody);
+			// Log để debug
+			logger.info("Refund request:");
+			logger.info("Transaction ID: " + order.getTransactionId());
+			logger.info("Amount: " + amount);
+			logger.info("Order ID: " + orderId);
 
-                if (responseBody != null) {
-                    String resultCode = String.valueOf(responseBody.get("resultCode"));
-                    
-                    // Log chi tiết response
-                    logger.info("Result code: " + resultCode);
-                    logger.info("Message: " + responseBody.get("message"));
-                    
-                    switch (resultCode) {
-                        case "0":   
-                        case "21":  
-                        case "37": 
-                        case "42":
-                            return true;
-                            
-                        default:
-                            logger.error("Refund failed with code: " + resultCode);
-                            return false;
-                    }
-                }
-                return false;
+			// Tạo raw signature
+			StringBuilder rawSignature = new StringBuilder();
+			rawSignature.append("accessKey=").append(momoConfig.getAccessKey()).append("&amount=").append(amount)
+					.append("&description=").append(description).append("&orderId=").append(orderId)
+					.append("&partnerCode=").append(momoConfig.getPartnerCode()).append("&requestId=").append(requestId)
+					.append("&transId=").append(order.getTransactionId());
 
-        } catch (Exception e) {
-            logger.error("Error processing refund: " + e.getMessage(), e);
-            return false;
-        }
-    }
+			// Log raw signature
+			logger.info("Raw signature: " + rawSignature.toString());
+
+			String signature = generateHMAC(rawSignature.toString(), momoConfig.getSecretKey());
+
+			// Tạo request body
+			Map<String, Object> requestBody = new HashMap<>();
+			requestBody.put("partnerCode", momoConfig.getPartnerCode());
+			requestBody.put("orderId", orderId);
+			requestBody.put("requestId", requestId);
+			requestBody.put("amount", amount);
+			requestBody.put("transId", order.getTransactionId());
+			requestBody.put("description", description);
+			requestBody.put("signature", signature);
+			requestBody.put("lang", "vi");
+
+			// Log request body
+			logger.info("Request body: " + new ObjectMapper().writeValueAsString(requestBody));
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+			ResponseEntity<Map> response = restTemplate.postForEntity(momoConfig.getRefundUrl(), request, Map.class);
+
+			Map<String, Object> responseBody = response.getBody();
+			logger.info("MoMo refund response: " + responseBody);
+
+			if (responseBody != null) {
+				String resultCode = String.valueOf(responseBody.get("resultCode"));
+
+				// Log chi tiết response
+				logger.info("Result code: " + resultCode);
+				logger.info("Message: " + responseBody.get("message"));
+
+				switch (resultCode) {
+				case "0":
+				case "21":
+				case "37":
+				case "42":
+					return true;
+
+				default:
+					logger.error("Refund failed with code: " + resultCode);
+					return false;
+				}
+			}
+			return false;
+
+		} catch (Exception e) {
+			logger.error("Error processing refund: " + e.getMessage(), e);
+			return false;
+		}
+	}
 }
