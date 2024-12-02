@@ -130,7 +130,7 @@ public class ReleasenoteController {
 		model.addAttribute("details", details);
 		model.addAttribute("employeeId", employeeId);
 		model.addAttribute("requestId", id);
-	    return Views.SHOW_ORDER_REQUEST_IN_WAREHOUSE_DETAIL;
+	    return "";
 	}
 
 	

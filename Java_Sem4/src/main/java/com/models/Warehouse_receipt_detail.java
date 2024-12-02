@@ -4,12 +4,12 @@ public class Warehouse_receipt_detail {
 	private int Id;
 	private int Wh_receipt_id;
 	private double Wh_price;
-	private int Quantity;
 	private int Product_id;
+	private int Conversion_id;
+	private int Quantity;
 	private double Shipping_fee;
 	private String Product_name;
 	private String formattedPrice;
-
 
 	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,double shipping_fee,int product_id) {
 		Id = id;
@@ -17,11 +17,18 @@ public class Warehouse_receipt_detail {
 		Product_id = product_id;
 		Shipping_fee = shipping_fee;
 		Wh_price = wh_price;
+		Product_id = product_id;
 		Quantity = quantity;
 	}
 	public Warehouse_receipt_detail() {
 	}
 	
+	public int getConversion_id() {
+		return Conversion_id;
+	}
+	public void setConversion_id(int conversion_id) {
+		Conversion_id = conversion_id;
+	}
 	public int getId() {
 		return Id;
 	}
@@ -58,6 +65,7 @@ public class Warehouse_receipt_detail {
 	public void setProduct_id(int product_id) {
 		Product_id = product_id;
 	}
+
 	public String getProduct_name() {
 		return Product_name;
 	}

@@ -86,14 +86,26 @@ public class WarehouseRepository {
 	}
 	public boolean saveWh(Warehouse wh) {
 		try {
-			String sql = "INSERT INTO Warehouse (Name,Address,Wh_type_Id) VALUES (?,?,?)";
-			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id());
+			String sql = "INSERT INTO Warehouse (Name,Address,Wh_type_Id,Ward_id,Province_id,District_Id) VALUES (?,?,?,?,?,?)";
+			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id(),wh.getWard_Id(),wh.getProvince_Id(),wh.getDistrict_Id());
 			return row >0;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
+	
+	public boolean updatewh(Warehouse wh) {
+		try {
+			String sql = "UPDATE Warehouse SET Name = ?,Address = ?,Wh_type_Id = ?,Ward_id = ?,Province_id = ?,District_Id = ? WHERE Id = ?";
+			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id(),wh.getWard_Id(),wh.getProvince_Id(),wh.getDistrict_Id(),wh.getId());
+			return row > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public boolean deleteWh(int id) {
 		try {
 			String sql = "DELETE FROM Warehouse WHERE Id = ?";
@@ -112,40 +124,21 @@ public class WarehouseRepository {
 			return false;
 		}
 	}
-//	public Warehouse findId(int id) {
-//	    try {
-//	        String sql = "SELECT w.*, wt.name AS type_name, e.first_name AS manager_first_name, e.last_name AS manager_last_name " +
-//	                     "FROM Warehouse w " +
-//	                     "JOIN Warehouse_type wt ON w.wh_type_id = wt.id " +
-//	                     "LEFT JOIN Employee_warehouse ew ON ew.Warehouse_Id = w.id " +
-//	                     "LEFT JOIN Employee e ON ew.Employee_Id = e.Id " +
-//	                     "WHERE w.id = ?";
-//	        
-//	        return dbwh.queryForObject(sql, (rs, rowNum) -> {
-//	            Warehouse wh = new Warehouse();
-//	            wh.setId(rs.getInt(Views.COL_WAREHOUSE_ID));
-//	            wh.setName(rs.getString(Views.COL_WAREHOUSE_NAME));
-//	            wh.setAddress(rs.getString(Views.COL_WAREHOUSE_ADDRESS));
-//	            wh.setWh_type_id(rs.getInt(Views.COL_WAREHOUSE_TYPE_WAREHOUSE_ID));
-//	            wh.setTypeName(rs.getString("type_name"));
-//	            wh.setManagerFirstName(rs.getString("manager_first_name"));
-//	            wh.setManagerLastName(rs.getString("manager_last_name"));
-//	            return wh;
-//	        }, id);
-//	    } catch (Exception e) {
-//	        e.printStackTrace();
-//	        return null;
-//	    }
-//	}
+	
 	public Warehouse findId(int id) {
 	    try {
-	        String sql = "SELECT w.*, wt.name AS type_name, " +
-	                     "e.first_name AS manager_first_name, e.last_name AS manager_last_name " +
-	                     "FROM Warehouse w " +
-	                     "JOIN Warehouse_type wt ON w.wh_type_id = wt.id " +
-	                     "LEFT JOIN Employee_warehouse ew ON ew.Warehouse_Id = w.id " +
-	                     "LEFT JOIN Employee e ON ew.Employee_Id = e.Id " +
-	                     "WHERE w.id = ?";
+	        String sql = """
+	              SELECT w.*, 
+	                     wt.name AS type_name, 
+	                     e.first_name AS manager_first_name, 
+	                     e.last_name AS manager_last_name,
+	                     w.Province_Id, w.District_Id, w.Ward_Id
+	              FROM Warehouse w
+	              JOIN Warehouse_type wt ON w.wh_type_id = wt.id
+	              LEFT JOIN Employee_warehouse ew ON ew.Warehouse_Id = w.id
+	              LEFT JOIN Employee e ON ew.Employee_Id = e.Id
+	              WHERE w.id = ?
+	        """;
 
 	        return dbwh.query(sql, (rs) -> {
 	            if (rs.next()) {
@@ -155,6 +148,9 @@ public class WarehouseRepository {
 	                warehouse.setAddress(rs.getString("address"));
 	                warehouse.setWh_type_id(rs.getInt("wh_type_id"));
 	                warehouse.setTypeName(rs.getString("type_name"));
+	                warehouse.setProvince_Id(rs.getInt("Province_Id"));
+	                warehouse.setDistrict_Id(rs.getInt("District_Id"));
+	                warehouse.setWard_Id(rs.getInt("Ward_Id"));
 
 	                List<Employee> managers = new ArrayList<>();
 	                do {
@@ -179,18 +175,11 @@ public class WarehouseRepository {
 	        return null;
 	    }
 	}
-	public boolean updatewh(Warehouse wh) {
-		try {
-			String sql = "UPDATE Warehouse SET Name = ?,Address = ?,Wh_type_Id = ? WHERE Id = ?";
-			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id(),wh.getId());
-			return row > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+
 	
-	//Employee Warehouse 
+	
+	
+	//Employee Warehouse ==================================================================
 	public List<Employee_warehouse> findAllEw() {
 	    try {
 	        String sql = "SELECT ew.Id, ew.Employee_Id, " +
@@ -208,19 +197,18 @@ public class WarehouseRepository {
 	    }
 	}
 
-	public List<Employee> showEmpAll(int warehouseId) {
+	public List<Employee> showEmpAll() {
 	    try {
 	        String sql = """
-	            SELECT e.*, r.Name AS role_name 
-	            FROM Employee e
-	            LEFT JOIN Role r ON e.Role_Id = r.Id
-	            WHERE r.Name NOT IN ('admin', 'businessManager')
-	            AND NOT EXISTS (
-	                SELECT 1 
-	                FROM employee_warehouse ew 
-	                WHERE ew.Employee_Id = e.Id 
-	                AND ew.Warehouse_Id = ?
-	            )
+	              SELECT e.*, r.Name AS role_name
+	              FROM Employee e
+	              LEFT JOIN Role r ON e.Role_Id = r.Id
+	              WHERE r.Name NOT IN ('admin', 'businessManager')
+	              AND NOT EXISTS (
+	                  SELECT 1
+	                  FROM employee_warehouse ew
+	                  WHERE ew.employee_id = e.Id
+	              )
 	        """;
 
 	        return dbwh.query(sql, (rs, rowNum) -> {
@@ -233,12 +221,13 @@ public class WarehouseRepository {
 	            emp.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
 	            emp.setRole_name(rs.getString("role_name"));
 	            return emp;
-	        }, warehouseId);
+	        });
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching employees: " + e.getMessage());
 	        return new ArrayList<>();
 	    }
 	}
+
 	@SuppressWarnings("deprecation")
 	public List<Employee> findAvailableEmployeesForWarehouse(int warehouseId, int excludeEmployeeId) {
 	    String sql = """

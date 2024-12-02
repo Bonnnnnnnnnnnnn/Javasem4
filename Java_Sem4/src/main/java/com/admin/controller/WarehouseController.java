@@ -71,35 +71,6 @@ public class WarehouseController {
 	    return Views.WAREHOUSE_SHOWWAREHOUSEDETAILS;
 	}
 	
-	// thêm kho
-	@GetMapping("showAddWarehouse")
-	public String showAddWarehouse(Model model) {
-	    try {
-	        Warehouse wh = new Warehouse();
-	        List<Province> province = ghn.getProvinces();
-	        model.addAttribute("provinces", province);
-	        model.addAttribute("new_item", wh);
-	        model.addAttribute("types", repwh.findAllType());
-	        return Views.WAREHOUSE_SHOWADDWAREHOUSE;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        model.addAttribute("error", "Có lỗi xảy ra khi hiển thị trang thêm warehouse.");
-	        return Views.WAREHOUSE_SHOWADDWAREHOUSE;
-	    }
-	}
-	@PostMapping("addWh")
-	public String addWh(@RequestParam String name,
-							@RequestParam String address,
-							@RequestParam int wh_type_id) {
-		Warehouse wh = new Warehouse();
-		wh.setName(name);
-		wh.setAddress(address);
-		wh.setWh_type_id(wh_type_id);
-		
-		repwh.saveWh(wh);
-		return "redirect:showWarehouse";
-	}
-	
 	// Lấy API của tên huyện
 	@GetMapping("districts")
     public ResponseEntity<List<District>> getDistricts(@RequestParam("provinceId") int provinceId) {
@@ -121,7 +92,7 @@ public class WarehouseController {
 	public ResponseEntity<List<Ward>> getWards(@RequestParam("districtId") int districtId) {
 	    try {
 	        List<Ward> wards = ghn.getWards(districtId);
-	        if (wards.isEmpty()) {
+	        if (wards.isEmpty()) { 
 	            return ResponseEntity.noContent().build();
 	        }
 	        return ResponseEntity.ok(wards);
@@ -130,6 +101,42 @@ public class WarehouseController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
+	
+	// thêm kho
+	@GetMapping("showAddWarehouse")
+	public String showAddWarehouse(Model model) {
+	    try {
+	        Warehouse wh = new Warehouse();
+	        List<Province> province = ghn.getProvinces();
+	        model.addAttribute("provinces", province);
+	        model.addAttribute("new_item", wh);
+	        model.addAttribute("types", repwh.findAllType());
+	        return Views.WAREHOUSE_SHOWADDWAREHOUSE;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "Có lỗi xảy ra khi hiển thị trang thêm warehouse.");
+	        return Views.WAREHOUSE_SHOWADDWAREHOUSE;
+	    }
+	}
+	@PostMapping("addWh")
+	public String addWh(@RequestParam("name") String name,
+							@RequestParam("address") String address,
+							@RequestParam("wh_type_id") int wh_type_id,
+							@RequestParam("wardId") int wardId,
+							@RequestParam("provinceId") int provinceId,
+							@RequestParam("districtId") int districtId) {
+		Warehouse wh = new Warehouse();
+		wh.setName(name);
+		wh.setAddress(address);
+		wh.setWh_type_id(wh_type_id);
+		wh.setWard_Id(wardId);
+		wh.setProvince_Id(provinceId);
+		wh.setDistrict_Id(districtId);
+		
+		repwh.saveWh(wh);
+		return "redirect:showWarehouse";
+	}
+	
 	
 	// xóa kho đó 
 	@GetMapping("deleteWh")
@@ -152,6 +159,8 @@ public class WarehouseController {
 	public String showUpdateWarehouse(Model model, @RequestParam("id") String id) {
 	    try {
 	        int idwh = Integer.parseInt(id);
+	        List<Province> province = ghn.getProvinces();
+	        model.addAttribute("provinces", province);
 	        model.addAttribute("up_item", repwh.findId(idwh));
 	        model.addAttribute("types", repwh.findAllType());
 	        return Views.WAREHOUSE_SHOWUPDATEWAREHOUSE;
@@ -167,11 +176,17 @@ public class WarehouseController {
 	public String updateWh(@RequestParam("name") String name,
 							@RequestParam("address") String address,
 							@RequestParam("wh_type_id") int wh_type_id,
+							@RequestParam("ward_Id") int ward_id,
+							@RequestParam("province_Id") int province_id,
+							@RequestParam("district_Id") int district_Id,
 							@RequestParam("id") int id) {
 		Warehouse wh = new Warehouse();
 		wh.setName(name);
 		wh.setAddress(address);
 		wh.setWh_type_id(wh_type_id);
+		wh.setWard_Id(ward_id);
+		wh.setProvince_Id(province_id);
+		wh.setDistrict_Id(district_Id);
 		wh.setId(id);
 		repwh.updatewh(wh);
 		return "redirect:showWarehouse";
@@ -197,7 +212,7 @@ public class WarehouseController {
 	    try {
 	        int idwh = Integer.parseInt(iddtwh); 
 	        Warehouse wh = repwh.findId(idwh);
-	        List<Employee> availableEmployees = repwh.showEmpAll(idwh);
+	        List<Employee> availableEmployees = repwh.showEmpAll();
 	        model.addAttribute("employees", availableEmployees);
 	        model.addAttribute("warehouse", wh);
 	        return Views.EMPLOYEE_WAREHOUSE_SHOWWAREHOUSEMANAGEMENTLEVEL;
@@ -232,7 +247,7 @@ public class WarehouseController {
 	        int idupp = Integer.parseInt(idup);
 	        Warehouse wh = repwh.findId(idwh);
 	        Employee_warehouse ew = repwh.findByEmpwhId(idupp);;
-	        List<Employee> availableEmployees = repwh.showEmpAll(idwh);
+	        List<Employee> availableEmployees = repwh.showEmpAll();
 
 	        model.addAttribute("employees", availableEmployees);
 	        model.addAttribute("warehouse", wh);
