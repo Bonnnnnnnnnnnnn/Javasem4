@@ -17,7 +17,7 @@ public class Warehouse_receipt_detail_mapper implements RowMapper<Warehouse_rece
 		item.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
 		item.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
 		item.setConversion_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION));
-		item.setShipping_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE));
+		item.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS));
 		item.setProduct_name(rs.getString("product_name"));
 		return item;
 	}

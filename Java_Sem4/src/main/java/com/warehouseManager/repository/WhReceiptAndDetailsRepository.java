@@ -15,16 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.mapper.Conversion_mapper;
 import com.mapper.Product_mapper;
 import com.mapper.Warehouse_mapper;
 import com.mapper.Warehouse_receipt_detail_mapper;
 import com.mapper.Warehouse_recript_mapper;
+import com.models.Conversion;
+import com.models.Employee;
 import com.models.PageView;
 import com.models.Product;
 import com.models.Warehouse;
 import com.models.Warehouse_receipt;
 import com.models.Warehouse_receipt_detail;
 import com.utils.Views;
+
+import jakarta.servlet.http.HttpSession;
 
 @Repository
 public class WhReceiptAndDetailsRepository {
@@ -38,13 +43,16 @@ public class WhReceiptAndDetailsRepository {
 	
 	public List<Warehouse_receipt> findAll(PageView ItemPage) {
 	    try {
-	        String str_query = String.format("SELECT wr.%s as id, wr.%s as name, wr.%s as Wh_Id, wr.%s as date, wr.%s as status, w.%s as wh_name " +
+	        String str_query = String.format("SELECT wr.%s as id, wr.%s as name, wr.%s as Wh_Id, wr.%s as date, wr.%s as status, " +
+	                "w.%s as wh_name, wr.%s as shipping_fee, wr.%s as other_fee, wr.%s as total_fee, wr.%s as employee_id " + // Added column here
 	                "FROM %s wr " +
 	                "INNER JOIN %s w ON wr.%s = w.%s " +
 	                "ORDER BY wr.%s DESC",
 	                Views.COL_WAREHOUSE_RECEIPT_ID, Views.COL_WAREHOUSE_RECEIPT_NAME, 
 	                Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_RECEIPT_DATE,
 	                Views.COL_WAREHOUSE_RECEIPT_STATUS, Views.COL_WAREHOUSE_NAME,
+	                Views.COL_WAREHOUSE_RECEIPT_SHIPPINGFEE, Views.COL_WAREHOUSE_RECEIPT_OTHERFEE, Views.COL_WAREHOUSE_RECEIPT_TOTALFEE, // Add new columns
+	                Views.COL_WAREHOUSE_RECEIPT_EMP_ID,
 	                Views.TBL_WAREHOUSE_RECEIPT,
 	                Views.TBL_WAREHOUSE,
 	                Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
@@ -66,6 +74,8 @@ public class WhReceiptAndDetailsRepository {
 	        return Collections.emptyList();
 	    }
 	}
+
+
 	public List<Product> findAllPro(){
 		try {
 			String sql = "SELECT * FROM Product";
@@ -100,54 +110,92 @@ public class WhReceiptAndDetailsRepository {
 	
 	public Warehouse_receipt findId(int id) {
 	    try {
-	        String sql = "SELECT wr.*, w.Name AS warehouse_name "
-	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT + " wr "
-	                   + "LEFT JOIN Warehouse w ON wr." + Views.COL_WAREHOUSE_RECEIPT_IDWH + " = w.Id "
-	                   + "WHERE wr." + Views.COL_WAREHOUSE_RECEIPT_ID + " = ?";
+	    	String sql = "SELECT wr.*, w.Name AS warehouse_name, " +
+	                "wr.Shipping_fee, " +
+	                "wr.Other_fee, " +
+	                "wr.Total_fee, " +
+	                "wr.Employee_Id, " +
+	                "e.First_name AS employee_first_name, " +
+	                "e.Last_name AS employee_last_name " +
+	                "FROM Warehouse_receipt wr " +
+	                "LEFT JOIN Warehouse w ON wr.Wh_Id = w.Id " +
+	                "LEFT JOIN Employee e ON wr.Employee_Id = e.Id " +
+	                "WHERE wr.Id = ?";
 
-	        return dbwhd.queryForObject(sql, (rs, rowNum) -> {
-	            Warehouse_receipt wr = new Warehouse_receipt();
-	            wr.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_ID));
-	            wr.setName(rs.getString(Views.COL_WAREHOUSE_RECEIPT_NAME));
-	            wr.setWh_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_IDWH));
-	            wr.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_STATUS));
-	            Timestamp timestamp = rs.getTimestamp(Views.COL_WAREHOUSE_RECEIPT_DATE);
-	            if (timestamp != null) {
-	                wr.setDate(timestamp.toLocalDateTime());
-	            }
-	            wr.setWh_name(rs.getString("warehouse_name"));
-	            return wr;
-	        }, id);
+
+
+	    	return dbwhd.queryForObject(sql, (rs, rowNum) -> {
+	    	    Warehouse_receipt wr = new Warehouse_receipt();
+	    	    wr.setId(rs.getInt("Id"));
+	    	    wr.setName(rs.getString("Name"));
+	    	    wr.setWh_id(rs.getInt("Wh_Id"));
+	    	    wr.setStatus(rs.getString("Status"));
+	    	    Timestamp timestamp = rs.getTimestamp("Date");
+	    	    if (timestamp != null) {
+	    	        wr.setDate(timestamp.toLocalDateTime());
+	    	    }
+	    	    wr.setWh_name(rs.getString("warehouse_name"));
+	    	    wr.setShipping_fee(rs.getDouble("Shipping_fee"));
+	    	    wr.setOther_fee(rs.getDouble("Other_fee"));
+	    	    wr.setTotal_fee(rs.getDouble("Total_fee"));
+	    	    wr.setEmployee_id(rs.getInt("Employee_Id"));
+	    	    String employeeFullName = rs.getString("employee_first_name") + " " + rs.getString("employee_last_name");
+	    	    wr.setEmployee_name(employeeFullName);
+	    	    
+	    	    return wr;
+	    	}, id);
+
 	    } catch (EmptyResultDataAccessException e) {
-	        System.err.println("No warehouse receipt found with ID: " + id);
+	        System.err.println("Không tìm thấy biên nhận kho với ID: " + id);
 	        return null;
 	    } catch (DataAccessException e) {
-	        System.err.println("Error fetching warehouse receipt with ID: " + id + " - " + e.getMessage());
+	        System.err.println("Lỗi khi truy vấn biên nhận kho với ID: " + id + " - " + e.getMessage());
 	        return null;
 	    }
 	}
 
+
 	
 	public boolean updateWhRe(Warehouse_receipt whr) {
-		try {
-			String sql = "UPDATE Warehouse_receipt SET Name = ? ,Wh_Id = ? ,Date = ? ,Status = ? WHERE Id= ?";
-			Object[] params = {whr.getName() , whr.getWh_id(),whr.getDate() , whr.getStatus() , whr.getId()};
-			int row = dbwhd.update(sql,params);
-			return row > 0 ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    try {
+	        String sql = "UPDATE Warehouse_receipt SET Name = ?, Wh_Id = ?, Date = ?, Status = ?, " +
+	                     "Shipping_fee = ?, Other_fee = ?, Total_fee = ?, Employee_id = ? WHERE Id = ?";
+	        
+	        Object[] params = {
+	            whr.getName(), 
+	            whr.getWh_id(),
+	            whr.getDate(),
+	            whr.getStatus(),
+	            whr.getShipping_fee(),
+	            whr.getOther_fee(),
+	            whr.getTotal_fee(),
+	            whr.getEmployee_id(),
+	            whr.getId()
+	        };
+
+	        int row = dbwhd.update(sql, params);
+	        return row > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 	
 	@Transactional
 	public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
 	    try {
-	        String sql1 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT + " (" +
-	                Views.COL_WAREHOUSE_RECEIPT_NAME + ", " +
-	                Views.COL_WAREHOUSE_RECEIPT_IDWH + ", " +
-	                Views.COL_WAREHOUSE_RECEIPT_DATE + ", " + 
-	                Views.COL_WAREHOUSE_RECEIPT_STATUS + ") VALUES (?, ?, ? ,? )";
+	    	String sql1 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT + " (" +
+	    	        Views.COL_WAREHOUSE_RECEIPT_NAME + ", " +
+	    	        Views.COL_WAREHOUSE_RECEIPT_IDWH + ", " +
+	    	        Views.COL_WAREHOUSE_RECEIPT_DATE + ", " + 
+	    	        Views.COL_WAREHOUSE_RECEIPT_STATUS + ", " + 
+	    	        Views.COL_WAREHOUSE_RECEIPT_SHIPPINGFEE + ", " + 
+	    	        Views.COL_WAREHOUSE_RECEIPT_OTHERFEE + ", " + 
+	    	        Views.COL_WAREHOUSE_RECEIPT_TOTALFEE + ", " + 
+	    	        Views.COL_WAREHOUSE_RECEIPT_EMP_ID + ") " +
+	    	        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
 	        
 	        KeyHolder keyHolder = new GeneratedKeyHolder();
 	        int result1 = dbwhd.update(connection -> {
@@ -156,6 +204,10 @@ public class WhReceiptAndDetailsRepository {
 	            ps.setInt(2, receipt.getWh_id());
 	            ps.setDate(3, java.sql.Date.valueOf(receipt.getDate().toLocalDate()));
 	            ps.setString(4, receipt.getStatus());
+	            ps.setDouble(5, receipt.getShipping_fee());
+	            ps.setDouble(6, receipt.getOther_fee());
+	            ps.setDouble(7, receipt.getTotal_fee());
+	            ps.setInt(8, receipt.getEmployee_id());
 	            return ps;
 	        }, keyHolder);
 
@@ -165,7 +217,10 @@ public class WhReceiptAndDetailsRepository {
 	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
 	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
 	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + " , " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + "  ) VALUES (?, ?, ? , ?)";
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " , " +
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " , " +
+	                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ") VALUES (?, ?, ?, ?, ?, ?)";
+
 	        
 	        for (Warehouse_receipt_detail detail : details) {
 	            detail.setWh_receipt_id(generatedId);
@@ -173,8 +228,9 @@ public class WhReceiptAndDetailsRepository {
 	                detail.getWh_receipt_id(),
 	                detail.getWh_price(),
 	                detail.getQuantity(),
-	                detail.getProduct_id()
-	                
+	                detail.getProduct_id(),
+	                detail.getConversion_id(),
+	                detail.getStatus()
 	            );
 	        }
 	        return result1 > 0;  
@@ -206,12 +262,22 @@ public class WhReceiptAndDetailsRepository {
 	    }
 	    return prefix + String.format("%03d", nextNumber);
 	}
+	public int getEmployeeIdFromSession(HttpSession session) {
+	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+	    if (loggedInEmployee != null) {
+	        return loggedInEmployee.getId();
+	    }
+	    return 0;
+	}
 
-
-	// Phần Warehouse_receipt_detail
 	
+
+	// Phần Warehouse_receipt_detail ====================================================
+	
+	//show list chi tiết phiếu nhập kho
 	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId) {
-	    String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
+	    String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS 
+	    		   + ", wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " "
 	               + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
 	               + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id "
 	               + "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
@@ -224,25 +290,36 @@ public class WhReceiptAndDetailsRepository {
 	        wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
 	        wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
 	        wrd.setProduct_name(rs.getString("product_name"));
-	        wrd.setShipping_fee(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE));
+	        wrd.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS));
+	        wrd.setConversion_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION));
 
-	        System.out.println("Retrieved detail: " + wrd.getProduct_name() + ", ID: " + wrd.getId());
 	        return wrd;
 	    }, whReceiptId);
 
-	    if (details.isEmpty()) {
-	        System.out.println("No details found for receipt ID: " + whReceiptId);
-	    } else {
-	        for (Warehouse_receipt_detail detail : details) {
-	            System.out.println("Detail: " + detail.getProduct_name() + ", Quantity: " + detail.getQuantity() + ", Shipping Fee: " + detail.getShipping_fee());
-	        }
-	    }
 
 	    return details; 
 	}
+
+	public List<Conversion> findAllcon() {
+	    try {
+	        String sql = "SELECT c.*, u1.Name AS from_unit_name, u2.Name AS to_unit_name " +
+	                     "FROM Conversion c " +
+	                     "INNER JOIN Unit u1 ON c.from_unit_id = u1.Id " +
+	                     "INNER JOIN Unit u2 ON c.to_unit_id = u2.Id";
+	                     
+	        return dbwhd.query(sql, new Conversion_mapper());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
+
+	
+	//lấy id show phiếu nhập kho để sửa
 	public Warehouse_receipt_detail findIdDetail(int id) {
 	    try {
-	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_SHIPPING_FEE + " "
+	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ", wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " "
 	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
 	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id "
 	                   + "WHERE wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " = ?";
@@ -257,10 +334,11 @@ public class WhReceiptAndDetailsRepository {
 	    }
 	}
 
+	//sửa chi tiết phiếu nhập kho
 	public boolean updateWhDetails(Warehouse_receipt_detail wrd) {
 		try {
-			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Status = ?,Product_id = ? WHERE Id= ?";
-			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getShipping_fee() ,wrd.getProduct_id(), wrd.getId()};
+			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Status = ?,Product_id = ?,conversion_Id = ? WHERE Id= ?";
+			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getStatus() ,wrd.getProduct_id(),wrd.getConversion_id(), wrd.getId()};
 			int row = dbwhd.update(sql,params);
 			return row > 0 ;
 		} catch (Exception e) {
@@ -268,10 +346,12 @@ public class WhReceiptAndDetailsRepository {
 			return false;
 		}
 	}
+	
+	// thêm chi viết phiếu nhập kho
 	public boolean addWhDetail(Warehouse_receipt_detail wrd) {
 	    try {
-	        String sql = "INSERT INTO Warehouse_receipt_detail (Wh_receiptId,Wh_price,Quantity,Shipping_fee,Product_id) VALUES (?, ?, ?, ? , ?)";
-	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getShipping_fee(),wrd.getProduct_id()};
+	        String sql = "INSERT INTO Warehouse_receipt_detail (Wh_receiptId,Wh_price,Quantity,Status,Product_id,conversion_Id) VALUES (?, ?, ?, ? , ?,?)";
+	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getStatus(),wrd.getProduct_id(),wrd.getConversion_id()};
 			int row = dbwhd.update(sql,params);
 			return row > 0 ;
 	    } catch (Exception e) {

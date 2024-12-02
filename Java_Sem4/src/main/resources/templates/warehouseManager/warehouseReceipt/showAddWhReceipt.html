@@ -37,24 +37,43 @@
                                 <!-- Add Warehouse receipt details-->
                                     <h3>Warehouse Receipt</h3>
                                     <div class="card-body row">
-                                        <div class="form-group col-md-4">
+                                    <input type="hidden" id="employeeId" name="employeeId" th:value="${employeeId}" >
+                                        <div class="form-group col-md-6">
                                             <label for="name">Name</label>
                                             <input type="text" id="name" name="name" class="form-control" disabled>
                                         </div>
-                                        <div class="form-group col-md-4">
+                                        
+                                        <div class="form-group col-md-6">
                                             <label for="wh_id">Warehouse</label>
                                             <select id="wh_id" name="wh_id" class="form-control" required>
                                                 <option value="" disabled selected>Select Warehouse</option>
                                                 <option th:each="item : ${warehouses}" th:value="${item.id}" th:text="${item.name}"></option>
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-4">
+                                        
+                                        <div class="form-group col-md-6">
                                             <label for="exampleInputEmail1">Status</label>
                                             <select name="status" id="status" class="form-control" required>
                                                 <option value="Not completed yet">Not completed yet</option>
                                                 <option value="Entered">Entered</option>
                                             </select>
                                         </div>
+                                        
+                                        <div class="form-group col-md-6">
+                                            <label for="name">Shipping fee</label>
+                                            <input type="text" id="shippingFee" name="shippingFee" class="form-control" placeholder="Enter shipping fee" required>
+                                        </div>
+                                        
+                                        <div class="form-group col-md-6">
+                                            <label for="name">Order fee</label>
+                                            <input type="text" id="otherFee" name="otherFee" class="form-control" placeholder="Enter order fee" required>
+                                        </div>
+                                        
+                                        <div class="form-group col-md-6">
+                                            <label for="name">total fee</label>
+                                            <input type="text" id="totalFee" name="totalFee" class="form-control" placeholder="Enter total fee" required>
+                                        </div>
+
                                     </div>
                              </div>
                              <div style="border-top: 2px solid #ccc; margin: 20px 0;"></div>
@@ -69,10 +88,6 @@
 										    <label for="wh_price">Warehouse Price</label>
 										    <input id="wh_price" type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
 										</div>
-										<div class="form-group col-md-6">
-										    <label for="shipping_fee">Shipping Fee</label>
-										    <input id="shipping_fee" type="number" name="shipping_fee" class="form-control" placeholder="Enter Shipping Fee" step="0.01" required>
-										</div>
                                         <div class="form-group col-md-6">
                                             <label for="product_id">Product</label>
                                             <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
@@ -81,6 +96,23 @@
                                                 <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
                                             </select>
                                         </div>
+                                         <div class="form-group col-md-6">
+                                            <label for="status">Status Details</label>
+                                            <select id="statusDetails" name="statusDetails" class="form-control" required>
+                                                <option value="" disabled selected>Status Details</option>
+                                                <option th:value="Active" th:text="Active"></option>
+                                            </select>
+                                        </div>
+										<div class="form-group col-md-6">
+										    <label for="conversion_id">Conversion</label>
+										    <select id="conversionId" name="conversionId" class="form-control" required>
+										        <option value="" disabled selected>Select Conversion</option>
+										        <option th:each="item : ${conversions}" 
+										                th:value="${item.id}" 
+										                th:text="${item.fromUnitName} + ' ' + ${item.toUnitName}"></option>
+										    </select>
+										</div>
+
                                     </div>
                                 </div>
                                 <div class="card-footer">
