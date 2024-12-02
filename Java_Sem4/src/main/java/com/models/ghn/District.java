@@ -5,24 +5,22 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class District {
-    @JsonProperty("DistrictID")
-    private Integer districtId;
-    
-    @JsonProperty("DistrictName")
-    private String districtName;
-    
-    @JsonProperty("ProvinceID")
-    private Integer provinceId;
-    
-    @JsonProperty("Code")
-    private String code;
-    
-    @JsonProperty("NameExtension")
-    private List<String> nameExtension;
-    
-    
-    
-    public District(Integer districtId, String districtName, Integer provinceId, String code,
+	@JsonProperty("DistrictID")
+	private Integer districtId;
+
+	@JsonProperty("DistrictName")
+	private String districtName;
+
+	@JsonProperty("ProvinceID")
+	private Integer provinceId;
+
+	@JsonProperty("Code")
+	private String code;
+
+	@JsonProperty("NameExtension")
+	private List<String> nameExtension;
+
+	public District(Integer districtId, String districtName, Integer provinceId, String code,
 			List<String> nameExtension) {
 		super();
 		this.districtId = districtId;
@@ -37,21 +35,21 @@ public class District {
 	}
 
 	// Getters và Setters
-    public Integer getDistrictId() {
-        return districtId;
-    }
+	public Integer getDistrictId() {
+		return districtId;
+	}
 
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
-    }
+	public void setDistrictId(Integer districtId) {
+		this.districtId = districtId;
+	}
 
-    public String getDistrictName() {
-        return districtName;
-    }
+	public String getDistrictName() {
+		return districtName;
+	}
 
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
-    }
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
+	}
 
 	public Integer getProvinceId() {
 		return provinceId;
@@ -77,5 +75,4 @@ public class District {
 		this.nameExtension = nameExtension;
 	}
 
-    
 }

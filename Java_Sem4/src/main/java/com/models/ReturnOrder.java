@@ -15,6 +15,8 @@ public class ReturnOrder {
     private Order order;
     private String message;
     private String customerName;
+    private int Employee_id;
+    private Employee Employee;
     private List<ReturnOrderDetail> returnDetails;
 	public ReturnOrder(int id, int orderId, LocalDate returnDate, String status, String note, double totalAmount,
 			double discountAmount, double finalAmount, String customerName, List<ReturnOrderDetail> returnDetails) {
@@ -30,6 +32,32 @@ public class ReturnOrder {
 		this.returnDetails = returnDetails;
 	}
 	
+	
+	
+	public int getEmployee_id() {
+		return Employee_id;
+	}
+
+
+
+	public void setEmployee_id(int employee_id) {
+		Employee_id = employee_id;
+	}
+
+
+
+	public Employee getEmployee() {
+		return Employee;
+	}
+
+
+
+	public void setEmployee(Employee employee) {
+		Employee = employee;
+	}
+
+
+
 	public String getMessage() {
 		return message;
 	}

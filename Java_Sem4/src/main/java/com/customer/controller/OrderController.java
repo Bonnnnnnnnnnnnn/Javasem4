@@ -31,105 +31,98 @@ import jakarta.servlet.http.HttpServletRequest;
 public class OrderController {
 	@Autowired
 	OrderRepository repo;
-	
+
 	@Autowired
 	Order_detailRepository repod;
-	
-	 @Autowired
-	  ReturnOrderRepository returnOrderRepository;
+
+	@Autowired
+	ReturnOrderRepository returnOrderRepository;
 	@Autowired
 	MomoService momoser;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
 	@GetMapping("/showorder")
-	public String showpage(Model model, 
-            @RequestParam(name = "cp", required = false, defaultValue = "1") int cp, 
-            HttpServletRequest request) {
+	public String showpage(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp,
+			HttpServletRequest request) {
 
-			PageView pv = new PageView();
-			pv.setPage_current(cp);
-			pv.setPage_size(5);
-			int idlogined = (int)request.getSession().getAttribute("logined");
-			List<Order> listo = repo.getOrdersByCustomerId(pv, idlogined, null, null, null);
-			model.addAttribute("listo", listo);
-			model.addAttribute("pv", pv);
-			return Views.CUS_ORDEREDPAGE;
-			}
+		PageView pv = new PageView();
+		pv.setPage_current(cp);
+		pv.setPage_size(5);
+		int idlogined = (int) request.getSession().getAttribute("logined");
+		List<Order> listo = repo.getOrdersByCustomerId(pv, idlogined, null, null, null);
+		model.addAttribute("listo", listo);
+		model.addAttribute("pv", pv);
+		return Views.CUS_ORDEREDPAGE;
+	}
+
 	@GetMapping("/showdetailor")
-	public String showdetailor(Model model,
-			@RequestParam int id,
-            HttpServletRequest request) {
-			model.addAttribute("order",repo.getOrderById(id));
-			model.addAttribute("orderdetail",repod.findAllOrderDetailsByOrderId(id));
-			ReturnOrder returnOrder = returnOrderRepository.findReturnOrderByOrderId(id);
-		    model.addAttribute("hasReturnOrder", returnOrder != null);
-		    if (returnOrder != null) {
-		        List<ReturnOrderDetail> returnOrderDetails = 
-		            returnOrderRepository.findReturnOrderDetailsByReturnOrderId(returnOrder.getId());
-		        model.addAttribute("returnOrder", returnOrder);
-		        model.addAttribute("returnOrderDetails", returnOrderDetails);
-		    }
-			return Views.CUS_ORDEREDDETAILPAGE;
-			}
+	public String showdetailor(Model model, @RequestParam int id, HttpServletRequest request) {
+		model.addAttribute("order", repo.getOrderById(id));
+		model.addAttribute("orderdetail", repod.findAllOrderDetailsByOrderId(id));
+		ReturnOrder returnOrder = returnOrderRepository.findReturnOrderByOrderId(id);
+		model.addAttribute("hasReturnOrder", returnOrder != null);
+		if (returnOrder != null) {
+			List<ReturnOrderDetail> returnOrderDetails = returnOrderRepository
+					.findReturnOrderDetailsByReturnOrderId(returnOrder.getId());
+			model.addAttribute("returnOrder", returnOrder);
+			model.addAttribute("returnOrderDetails", returnOrderDetails);
+		}
+		return Views.CUS_ORDEREDDETAILPAGE;
+	}
+
 	@GetMapping("/gocancel/{id}")
-	public String gocancel(
-	    @PathVariable int id,
-	    RedirectAttributes redirectAttributes
-	) {
-	    try {
-	        Order order = repo.getOrderById(id);
-	        if (order == null) {
-	            throw new RuntimeException("Không tìm thấy đơn hàng");
-	        }
+	public String gocancel(@PathVariable int id, RedirectAttributes redirectAttributes) {
+		try {
+			Order order = repo.getOrderById(id);
+			if (order == null) {
+				throw new RuntimeException("Không tìm thấy đơn hàng");
+			}
 
-	        // Log để debug
-	        logger.info("Order status: " + order.getPay_status());
-	        logger.info("Transaction ID: " + order.getTransactionId());
-	        logger.info("Total amount: " + order.getTotalAmount());
+			// Log để debug
+			logger.info("Order status: " + order.getPay_status());
+			logger.info("Transaction ID: " + order.getTransactionId());
+			logger.info("Total amount: " + order.getTotalAmount());
 
-	        String status = order.getPay_status().trim().toLowerCase();
-	        
-	        if ("not pay yet".equals(status)) {
-	            repo.updateOrderStatusToCanceled(id, "Canceled");
-	            redirectAttributes.addFlashAttribute("message", "Đã hủy đơn hàng thành công");
-	            
-	        } else if ("paid".equals(status)) {
-	            // Kiểm tra transaction_id
-	            if (order.getTransactionId() == null || order.getTransactionId().isEmpty()) {
-	                throw new RuntimeException("Không tìm thấy mã giao dịch MoMo");
-	            }
+			String status = order.getPay_status().trim().toLowerCase();
 
-	            // Chuyển đổi số tiền sang đúng format (nhân 1000 vì MoMo tính bằng VND)
-	            long amount = Math.round(order.getTotalAmount());
+			if ("not pay yet".equals(status)) {
+				repo.updateOrderStatusToCanceled(id, "Canceled");
+				redirectAttributes.addFlashAttribute("message", "Đã hủy đơn hàng thành công");
 
-	            // Log thông tin trước khi refund
-	            logger.info("Attempting refund for order: " + id);
-	            logger.info("Transaction ID: " + order.getTransactionId());
-	            logger.info("Amount to refund: " + amount);
+			} else if ("paid".equals(status)) {
+				// Kiểm tra transaction_id
+				if (order.getTransactionId() == null || order.getTransactionId().isEmpty()) {
+					throw new RuntimeException("Không tìm thấy mã giao dịch MoMo");
+				}
 
-	            boolean refundSuccess = momoser.refundPayment(
-	                order,
-	                "Refund order: " + order.getOrderID()
-	            );
+				// Chuyển đổi số tiền sang đúng format (nhân 1000 vì MoMo tính bằng VND)
+				long amount = Math.round(order.getTotalAmount());
 
-	            if (refundSuccess) {
-	                repo.updateOrderStatusToCanceled(id, "Canceled");
-	                repo.updateOrderpaymentstatus(id,"Refunded");
-	                redirectAttributes.addFlashAttribute("message", 
-	                    "Đã hủy đơn hàng và hoàn tiền thành công");
-	            } else {
-	                throw new RuntimeException("Không thể hoàn tiền, vui lòng liên hệ CSKH");
-	            }
-	        } else {
-	            throw new RuntimeException("Không thể hủy đơn hàng ở trạng thái: " + order.getPay_status());
-	        }
-	        
-	        return "redirect:/order/showdetailor?id=" + id;
-	        
-	    } catch (Exception e) {
-	        logger.error("Error cancelling order: " + e.getMessage(), e);
-	        redirectAttributes.addFlashAttribute("error", e.getMessage());
-	        return "redirect:/order/showdetailor?id=" + id;
-	    }
-}
+				// Log thông tin trước khi refund
+				logger.info("Attempting refund for order: " + id);
+				logger.info("Transaction ID: " + order.getTransactionId());
+				logger.info("Amount to refund: " + amount);
+
+				boolean refundSuccess = momoser.refundPayment(order, "Refund order: " + order.getOrderID());
+
+				if (refundSuccess) {
+					repo.updateOrderStatusToCanceled(id, "Canceled");
+					repo.updateOrderpaymentstatus(id, "Refunded");
+					redirectAttributes.addFlashAttribute("message", "Đã hủy đơn hàng và hoàn tiền thành công");
+				} else {
+					throw new RuntimeException("Không thể hoàn tiền, vui lòng liên hệ CSKH");
+				}
+			} else {
+				throw new RuntimeException("Không thể hủy đơn hàng ở trạng thái: " + order.getPay_status());
+			}
+
+			return "redirect:/order/showdetailor?id=" + id;
+
+		} catch (Exception e) {
+			logger.error("Error cancelling order: " + e.getMessage(), e);
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:/order/showdetailor?id=" + id;
+		}
+	}
 }

@@ -1,7 +1,5 @@
 package com.customer.controller;
 
-
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +18,31 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("search")
 public class SearchController {
-	
+
 	@Autowired
 	ShoppingpageRepository rep;
-	
+
 	@GetMapping("/product")
 	@ResponseBody
 	public List<Product> searchproduct(@RequestParam String stringsearch) {
-	    PageView pv = new PageView();
-	    pv.setPage_current(1);
-	    pv.setPage_size(12);
-	    
-	    int[] idCategories = new int[0];
-	    int[] idBrands = new int[0];
-	    
-	    String[] statuses = {"NewRelease","Active","OutOfStock"}; 
+		PageView pv = new PageView();
+		pv.setPage_current(1);
+		pv.setPage_size(12);
 
-	    
-	    List<Product> listp = rep.findAllpaging(pv, stringsearch, idCategories, idBrands, statuses);
-	   
-	    return listp;
+		int[] idCategories = new int[0];
+		int[] idBrands = new int[0];
+
+		String[] statuses = { "NewRelease", "Active", "OutOfStock" };
+
+		List<Product> listp = rep.findAllpaging(pv, stringsearch, idCategories, idBrands, statuses);
+
+		return listp;
 	}
+
 	@GetMapping("/gosppws")
 	public String gosppws(@RequestParam String search, HttpServletRequest request) {
 		request.getSession().setAttribute("gosppws", search);
-	    return "redirect:/shoppingpage";
+		return "redirect:/shoppingpage";
 	}
-	
+
 }

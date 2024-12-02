@@ -6,70 +6,71 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "momo")
 public class MomoConfig {
-    private String partnerCode;
-    private String accessKey;
-    private String secretKey;
-    private String returnUrl;
-    private String notifyUrl;
-    private String momoApiUrl;
-    private String requestType;
-    private String refundUrl;
-    // Getters and Setters
-    public String getPartnerCode() {
-        return partnerCode;
-    }
+	private String partnerCode;
+	private String accessKey;
+	private String secretKey;
+	private String returnUrl;
+	private String notifyUrl;
+	private String momoApiUrl;
+	private String requestType;
+	private String refundUrl;
 
-    public void setPartnerCode(String partnerCode) {
-        this.partnerCode = partnerCode;
-    }
+	// Getters and Setters
+	public String getPartnerCode() {
+		return partnerCode;
+	}
 
-    public String getAccessKey() {
-        return accessKey;
-    }
+	public void setPartnerCode(String partnerCode) {
+		this.partnerCode = partnerCode;
+	}
 
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
+	public String getAccessKey() {
+		return accessKey;
+	}
 
-    public String getSecretKey() {
-        return secretKey;
-    }
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
 
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
+	public String getSecretKey() {
+		return secretKey;
+	}
 
-    public String getReturnUrl() {
-        return returnUrl;
-    }
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
 
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
-    }
+	public String getReturnUrl() {
+		return returnUrl;
+	}
 
-    public String getNotifyUrl() {
-        return notifyUrl;
-    }
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
 
-    public void setNotifyUrl(String notifyUrl) {
-        this.notifyUrl = notifyUrl;
-    }
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
 
-    public String getMomoApiUrl() {
-        return momoApiUrl;
-    }
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
 
-    public void setMomoApiUrl(String momoApiUrl) {
-        this.momoApiUrl = momoApiUrl;
-    }
+	public String getMomoApiUrl() {
+		return momoApiUrl;
+	}
 
-    public String getRequestType() {
-        return requestType;
-    }
+	public void setMomoApiUrl(String momoApiUrl) {
+		this.momoApiUrl = momoApiUrl;
+	}
 
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
-    }
+	public String getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(String requestType) {
+		this.requestType = requestType;
+	}
 
 	public String getRefundUrl() {
 		return refundUrl;
@@ -78,6 +79,5 @@ public class MomoConfig {
 	public void setRefundUrl(String refundUrl) {
 		this.refundUrl = refundUrl;
 	}
-    
-    
+
 }

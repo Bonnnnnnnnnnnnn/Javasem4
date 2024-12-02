@@ -1,13 +1,13 @@
 package com.models.momo;
 
 public class OrderInfoModel {
-	private String FullName ;
-	private String OrderId ;
-	private String OrderInfo ;
-	private int Amount ;
-	private String Idproject ;
-	private String Memberid ;
-	
+	private String FullName;
+	private String OrderId;
+	private String OrderInfo;
+	private int Amount;
+	private String Idproject;
+	private String Memberid;
+
 	public OrderInfoModel() {
 	}
 
@@ -68,7 +68,5 @@ public class OrderInfoModel {
 	public void setMemberid(String memberid) {
 		Memberid = memberid;
 	}
-	
-	
-	
+
 }

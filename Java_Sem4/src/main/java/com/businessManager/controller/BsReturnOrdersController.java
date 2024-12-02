@@ -63,10 +63,31 @@ public class BsReturnOrdersController {
 	        return Views.PRORESS_RETURN_ORDER;
 	    }
 	}
+	@GetMapping("/showreturnlistcompletebyempod")
+	public String showreturnlistcompletebyempod(Model model,
+	        @RequestParam(name = "cp", required = false, defaultValue = "1") int cp,
+	        HttpServletRequest request) {
+	    try {
+	    	Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
+	        PageView pv = new PageView();
+	        pv.setPage_current(cp);
+	        pv.setPage_size(8); 
+	        
+	        List<ReturnOrder> returnOrders = repreor.findProcessedReturnOrdersByEmployee(pv,emp.getId());
+	        model.addAttribute("returnOrders", returnOrders);
+	        model.addAttribute("pv", pv);
+	        
+	        return Views.PRORESS_RETURN_ORDER_COMPLETE_ID;
+	        
+	    } catch (Exception e) {
+	        return Views.PRORESS_RETURN_ORDER_COMPLETE_ID;
+	    }
+	}
 	@GetMapping("/showreturnlistcomplete")
 	public String showreturnlistcomplete(Model model,
 	        @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    try {
+	    	
 	        PageView pv = new PageView();
 	        pv.setPage_current(cp);
 	        pv.setPage_size(8); 
@@ -109,10 +130,12 @@ public class BsReturnOrdersController {
 	@PostMapping("/reject")
 	@ResponseBody
 	public Map<String, Object> rejectReturnOrder(@RequestParam("id") int returnOrderId,
-	                                           @RequestParam("message") String message) {
+	                                           @RequestParam("message") String message,
+	                                           HttpServletRequest request) {
 	    Map<String, Object> response = new HashMap<>();
 	    try {
-	        boolean updated = repreor.updateStatusAndMessage(returnOrderId, "Rejected", message);
+	    	Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
+	        boolean updated = repreor.updateStatusAndMessage(returnOrderId, "Rejected", message,emp.getId());
 	        response.put("success", updated);
 	        if (updated) {
 	            
@@ -130,10 +153,12 @@ public class BsReturnOrdersController {
 	@PostMapping("/accept")
 	@ResponseBody
 	public Map<String, Object> acceptReturnOrder(@RequestParam("id") int returnOrderId,
-	                                          @RequestParam("message") String message) {
+	                                          @RequestParam("message") String message,
+	                                          HttpServletRequest request) {
 	    Map<String, Object> response = new HashMap<>();
 	    try {
-	        boolean updated = repreor.updateStatusAndMessage(returnOrderId, "Accepted", message);
+	    	Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
+	        boolean updated = repreor.updateStatusAndMessage(returnOrderId, "Accepted", message,emp.getId());
 	        response.put("success", updated);
 	        if (updated) {
 	           
@@ -147,5 +172,14 @@ public class BsReturnOrdersController {
 	    }
 	    return response;
 	}
-
+	@GetMapping("/getReturnDetails")
+	@ResponseBody
+	public ReturnOrder getReturnDetails(@RequestParam("id") int id) {
+	    ReturnOrder returnOrder = repreor.findReturnOrderById(id);
+	    // Load return details if needed
+	    List<ReturnOrderDetail> details = repreor.findReturnOrderDetailsByReturnOrderId(returnOrder.getId());
+	    
+	    returnOrder.setReturnDetails(details);
+	    return returnOrder;
+	}
 }

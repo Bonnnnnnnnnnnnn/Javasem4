@@ -21,68 +21,69 @@ import com.models.Comment;
 @Controller
 @RequestMapping("comment")
 public class CommentController {
-	
+
 	@Autowired
 	AccountRepository repacc;
-	
-    @Autowired
-    CommentRepository commentRepository;
 
-    @PostMapping("/add")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> addComment(@RequestBody Comment comment, HttpServletRequest request) {
-        if (request.getSession().getAttribute("logined") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+	@Autowired
+	CommentRepository commentRepository;
 
-        Integer customerId = (Integer) request.getSession().getAttribute("logined");
-        comment.setCustomerId(customerId);
+	@PostMapping("/add")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> addComment(@RequestBody Comment comment, HttpServletRequest request) {
+		if (request.getSession().getAttribute("logined") == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 
-        Comment insertedComment = commentRepository.insertComment(comment);
-        
-        if (insertedComment != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("commentId", insertedComment.getId());
-            response.put("content", insertedComment.getContent());
-            response.put("customerName", insertedComment.getCustomerFirstName() + " " + insertedComment.getCustomerLastName());
-            
-            // Format LocalDate
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            response.put("createdAt", insertedComment.getCreatedAt().format(formatter));
-            
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+		Integer customerId = (Integer) request.getSession().getAttribute("logined");
+		comment.setCustomerId(customerId);
 
-    @PostMapping("/reply")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> replyComment(@RequestBody Comment comment, HttpServletRequest request) {
-        if (request.getSession().getAttribute("logined") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+		Comment insertedComment = commentRepository.insertComment(comment);
 
-        Integer customerId = (Integer) request.getSession().getAttribute("logined");
-        comment.setCustomerId(customerId);
+		if (insertedComment != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("commentId", insertedComment.getId());
+			response.put("content", insertedComment.getContent());
+			response.put("customerName",
+					insertedComment.getCustomerFirstName() + " " + insertedComment.getCustomerLastName());
 
-        Comment insertedReply = commentRepository.insertComment(comment);
-        
-        if (insertedReply != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("commentId", insertedReply.getId());
-            response.put("content", insertedReply.getContent());
-            response.put("customerName", insertedReply.getCustomerFirstName() + " " + insertedReply.getCustomerLastName());
-            
-            // Format LocalDate
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            response.put("createdAt", insertedReply.getCreatedAt().format(formatter));
-            
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+			// Format LocalDate
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			response.put("createdAt", insertedComment.getCreatedAt().format(formatter));
 
-    
+			return ResponseEntity.ok(response);
+		} else {
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@PostMapping("/reply")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> replyComment(@RequestBody Comment comment, HttpServletRequest request) {
+		if (request.getSession().getAttribute("logined") == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		Integer customerId = (Integer) request.getSession().getAttribute("logined");
+		comment.setCustomerId(customerId);
+
+		Comment insertedReply = commentRepository.insertComment(comment);
+
+		if (insertedReply != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("commentId", insertedReply.getId());
+			response.put("content", insertedReply.getContent());
+			response.put("customerName",
+					insertedReply.getCustomerFirstName() + " " + insertedReply.getCustomerLastName());
+
+			// Format LocalDate
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			response.put("createdAt", insertedReply.getCreatedAt().format(formatter));
+
+			return ResponseEntity.ok(response);
+		} else {
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
 }
