@@ -30,42 +30,6 @@ public class GHNService {
 	private Environment env;
 
 	public List<Province> getProvinces() {
-<<<<<<< HEAD
-	    try {
-	        String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
-	        
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.set("Token", TOKEN);
-	        headers.setContentType(MediaType.APPLICATION_JSON);
-	        
-	        HttpEntity<String> entity = new HttpEntity<>(headers);
-	        
-	        RestTemplate restTemplate = new RestTemplate();
-	        
-	        // Thêm log để xem response JSON thực tế
-	        ResponseEntity<String> rawResponse = restTemplate.exchange(
-	            apiUrl,
-	            HttpMethod.GET,
-	            entity,
-	            String.class
-	        );
-
-	        
-
-	        
-	        // Gọi API với model Province
-	        ResponseEntity<GHNResponse<List<Province>>> response = restTemplate.exchange(
-	            apiUrl,
-	            HttpMethod.GET,
-	            entity,
-	            new ParameterizedTypeReference<GHNResponse<List<Province>>>() {}
-	        );
-
-	                
-	        
-	        if (response.getBody() != null && response.getBody().getData() != null) {
-	            List<Province> provinces = response.getBody().getData();
-=======
 		try {
 			String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
 
@@ -87,26 +51,13 @@ public class GHNService {
 
 			if (response.getBody() != null && response.getBody().getData() != null) {
 				List<Province> provinces = response.getBody().getData();
->>>>>>> thuan_dev
 //	            provinces.forEach(p -> {
 //	                System.out.println("Province ID: " + p.getProvinceId());
 //	                System.out.println("Province Name: " + p.getProvinceName());
 //	                System.out.println("Province Code: " + p.getCode());
 //	                System.out.println("----------------");
 //	            });
-<<<<<<< HEAD
 
-	            return provinces;
-	        }
-	        
-	        return new ArrayList<>();
-	        
-	    } catch (Exception e) {
-	        System.out.println("Error: " + e.getMessage());
-	        e.printStackTrace();
-	        return new ArrayList<>();
-	    }
-=======
 				return provinces;
 			}
 
@@ -117,33 +68,11 @@ public class GHNService {
 			e.printStackTrace();
 			return new ArrayList<>();
 		}
->>>>>>> thuan_dev
+
 	}
 
 	public List<District> getDistricts(Integer provinceId) {
-<<<<<<< HEAD
-        try {
-            String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Token", TOKEN);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            // Tạo request body
-            HttpEntity<String> entity = new HttpEntity<>("{\"province_id\":" + provinceId + "}", headers);
-            
-            RestTemplate restTemplate = new RestTemplate();
-            
-            ResponseEntity<GHNResponse<List<District>>> response = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.POST,  // GHN dùng POST cho API này
-                entity,
-                new ParameterizedTypeReference<GHNResponse<List<District>>>() {}
-            );
-            if (response.getBody() != null && response.getBody().getData() != null) {
-	            List<District> district = response.getBody().getData();
 
-=======
 		try {
 			String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
 
@@ -166,52 +95,14 @@ public class GHNService {
 					});
 			if (response.getBody() != null && response.getBody().getData() != null) {
 				List<District> district = response.getBody().getData();
->>>>>>> thuan_dev
+
 //	            district.forEach(p -> {
 //	                System.out.println("district ID: " + p.getDistrictId());
 //	                System.out.println("district Name: " + p.getDistrictName());
 //	                System.out.println("district Code: " + p.getCode());
 //	                System.out.println("----------------");
 //	            });
-<<<<<<< HEAD
 
-	            return district;
-	        }
-            if (response.getBody() != null && response.getBody().getData() != null) {
-                return response.getBody().getData();
-            }
-            
-            return new ArrayList<>();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Ward> getWards(Integer districtId) {
-        try {
-            String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Token", TOKEN);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            // Tạo request body
-            HttpEntity<String> entity = new HttpEntity<>("{\"district_id\":" + districtId + "}", headers);
-            
-            RestTemplate restTemplate = new RestTemplate();
-            
-            ResponseEntity<GHNResponse<List<Ward>>> response = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.POST,  // GHN dùng POST cho API này
-                entity,
-                new ParameterizedTypeReference<GHNResponse<List<Ward>>>() {}
-            );
-            if (response.getBody() != null && response.getBody().getData() != null) {
-	            List<Ward> ward = response.getBody().getData();
-
-=======
 				return district;
 			}
 			if (response.getBody() != null && response.getBody().getData() != null) {
@@ -249,175 +140,12 @@ public class GHNService {
 					});
 			if (response.getBody() != null && response.getBody().getData() != null) {
 				List<Ward> ward = response.getBody().getData();
->>>>>>> thuan_dev
 //	            ward.forEach(p -> {
 //	                System.out.println("Ward ID: " + p.getWardCode());
 //	                System.out.println("Ward Name: " + p.getWardName());
 //	                System.out.println("----------------");
 //	            });
-<<<<<<< HEAD
 
-	            return ward;
-	        }
-            if (response.getBody() != null && response.getBody().getData() != null) {
-                return response.getBody().getData();
-            }
-            
-            return new ArrayList<>();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-	
-    public StoreResponse createStore(StoreRequest request) {
-        try {
-            String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/v2/shop/register";
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Token", TOKEN);
-            headers.set("shop_id", String.valueOf(request.getShop_id()));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            HttpEntity<StoreRequest> entity = new HttpEntity<>(request, headers);
-            RestTemplate restTemplate = new RestTemplate();
-            
-            // Log raw response để xem format JSON thực tế
-            ResponseEntity<String> rawResponse = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.POST,
-                entity,
-                String.class
-
-            );          
-
-            
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(rawResponse.getBody());
-            System.out.println("Response code: " + rootNode.get("code").asInt());
-            System.out.println("Response message: " + rootNode.get("message").asText());
-            if (rootNode.has("data")) {
-                JsonNode dataNode = rootNode.get("data");
-                System.out.println("Store Data: " + dataNode.toString());
-            }
-            
-            ResponseEntity<GHNResponse<StoreResponse>> response = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<GHNResponse<StoreResponse>>() {}
-            );
-            
-            if (response.getBody() != null && response.getBody().getData() != null) {
-                StoreResponse storeResponse = response.getBody().getData();
-                // Log để kiểm tra
-                System.out.println("Parsed Store ID: " + storeResponse.getShopId());
-                System.out.println("Parsed Name: " + storeResponse.getName());
-                return storeResponse;
-            }
-            
-            return null;
-            
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
-    public void testCreateStore() {
-        // Tạo request object
-        StoreRequest request = new StoreRequest();
-        request.setName("Kho Test GHN1");
-        request.setPhone("0987654321");
-        request.setAddress("123 Đường Test");
-        request.setWard_code("420302");
-        request.setDistrict_id(1837);
-        request.setShop_id(32);
-        
-        
-        StoreResponse response = createStore(request);
-        
-        // In thông tin kho
-        if (response != null) {
-            System.out.println("=== THÔNG TIN SHOP VỪA TẠO ===");
-            System.out.println("Shop ID: " + response.getShopId());
-        } else {
-            System.out.println("Tạo shop thất bại!");
-        }
-    }
-
-    public ShippingFeeResponse calculateFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
-        try {
-            String apiUrl = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
-            double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Token", TOKEN);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-         
-            int totalWeight = 0;
-            int maxLength = 0;    
-            int maxWidth = 0;     
-            int totalHeight = 0; 
-            double totalInsuranceValue = 0;
-            for(Shopping_cart item : listc) {
-                int quantity = item.getQuantity();
-                totalWeight += item.getWeight() * quantity;
-                maxLength = Math.max(maxLength, item.getLength());
-                maxWidth = Math.max(maxWidth, item.getWidth());
-                totalHeight += item.getHeight() * quantity;
-                totalInsuranceValue += item.getPrice() * quantity * usdToVndRate;
-            }
-
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("from_district_id", fromDistrictId);
-            requestBody.put("to_district_id", toDistrictId);
-            requestBody.put("service_type_id", 2);
-            
-          
-
-            requestBody.put("weight", totalWeight);
-            requestBody.put("length", maxLength);
-            requestBody.put("width", maxWidth);
-            requestBody.put("height", totalHeight);
-            requestBody.put("insurance_value", (int)totalInsuranceValue);
-
-            
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-            
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<GHNResponse<ShippingFeeResponse>> response = restTemplate.exchange(
-                apiUrl,
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<GHNResponse<ShippingFeeResponse>>() {}
-            );
-            
-            if (response.getBody() != null) {
-                return response.getBody().getData();
-            }
-            
-            return null;
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public double calculateShippingFee(int fromDistrictId, int toDistrictId,List<Shopping_cart> listc) {
-   
-        
-        ShippingFeeResponse fee = calculateFee(fromDistrictId, toDistrictId,listc);
-
-        
-        if (fee != null) {
-            return fee.getTotal();
-        }
-        
-        return 0;
-    }
-=======
 				return ward;
 			}
 			if (response.getBody() != null && response.getBody().getData() != null) {
@@ -559,7 +287,6 @@ public class GHNService {
 
 		return 0;
 	}
->>>>>>> thuan_dev
 }
 
 class ShippingFeeResponse {
