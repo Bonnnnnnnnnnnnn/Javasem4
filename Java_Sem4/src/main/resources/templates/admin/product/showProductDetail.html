@@ -38,134 +38,6 @@
 				    </li>
 				</ul>
               </div>
-<<<<<<< HEAD
-
-              <form th:object="${product}" >
-
-			    <div class="card-body row">
-			    
-			    	<div class="form-group col-md-2">
-						<label for="exampleInputPassword1">Image</label>
-						<img th:if="${product.img != null}"
-                     th:src="@{/uploads/{imageName}(imageName=${product.img})}"
-                     style="width:55%;">
-                     </div>
-			    	<div class="form-group col-md-4">	
-			        </div>
-			        
-			        <div class="form-group col-md-6">
-					    <label for="phone">Description</label>
-					    <textarea id="description" disabled readonly th:field="*{description}" class="form-control"></textarea>
-					</div>
-					<div class="form-group col-md-6">
-					    <label for="title">Price</label>
-					    <input type="text" id="price" disabled readonly th:value="${formattedPrice}" class="form-control">
-					</div>
-			        <div class="form-group col-md-6">
-			          	<label for="title">Product Name</label>
-			            <input type="text" id="proName" disabled readonly th:value="${product.product_name}" class="form-control">
-			        </div>
-			        
-					<div class="form-group col-md-6">
-					    <label for="phone">Warranty period</label>
-							<input type="text" disabled readonly  th:value="${product.warranty_period} + ' ' + months" class="form-control">
-					</div>
-					
-					<div class="form-group col-6">
-					    <label for="conversion">Unit</label>
-					    <input class="form-control" disabled readonly th:value="${product.unit_name}">
-					</div>
-
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Brand</label>
-					    <input class="form-control" disabled readonly th:value="${product.brandName}">
-					</div>
-					
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Category</label>
-					    <input class="form-control" disabled readonly th:value="${product.categoryName}">
-					</div>
-					
-					<div class="form-group col-6 ">
-					    <label for="exampleInputEmail1">Status</label>
-					    <input class="form-control" disabled readonly th:value="${product.status}">
-					</div>	
-					<div class="form-group col-6 ">
-					</div>
-					<div class="form-group col-3">
-					    <label for="conversion">Length</label>
-					    <input class="form-control" disabled readonly th:value="${product.length} + ' ' + (cm)">
-					</div>
-
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Height</label>
-					    <input class="form-control" disabled readonly th:value="${product.height} + ' ' + (cm)">
-					</div>
-					
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Width</label>
-					    <input class="form-control" disabled readonly th:value="${product.width} + ' ' + (cm)">
-					</div>
-					
-					<div class="form-group col-3 ">
-					    <label for="exampleInputEmail1">Weight</label>
-					    <input class="form-control" disabled readonly th:value="${product.weight} + ' ' + (g)">
-					</div>				
-			    </div>
-			    <div class="card-footer">
-			    	<a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
-			        <a th:href="@{/admin/product/showUpdateProduct(id=${product.id})}" class="btn btn-success">Update</a>
- 					<a th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
-					<a href="javascript:void(0)" class="btn btn-success Conversion" 
-					   th:data-product-id="${product.id}" 
-					   th:data-unit-name="${product.unit_name}"				   
-					   th:data-unit-id="${product.unit_id}">
-					   Add Conversion
-					</a>
- 					
-			    </div>
-				</form>
-                    
-                    <!-- /.post -->
-                  </div>
-                  
-				   <div class="tab-pane" id="productimage-tab">
-				    <h3>Product Images</h3>
-				    <div class="row">
-				        <div th:each="img : ${images}" class="col-md-3 mb-3">
-				            <div class="card">
-				                <img th:src="@{/uploads/{imageName}(imageName=${img.img_url})}" 
-				                     class="card-img-top" alt="Product Image" style="width:100%; height: auto;">
-				                <div class="card-body">
-				                    <p class="card-text" th:text="${img.product_name}"></p>
-				                    <a th:href="@{/admin/product/deleteImage(id=${img.id})}" class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
-				                </div>
-				            </div>
-				        </div>
-				        <div th:if="${#lists.isEmpty(images)}" class="col-12 text-center">
-				            <p>No product images found.</p>
-				        </div>
-				    </div>
-				</div>
-
-
-                  <div class="tab-pane " id="productSpecifications-tab">
-                    <table class="table table-hover text-nowrap">
-                  <thead>
-                    <tr class="text-center">
-                    	<th>STT</th>
-						<th>Name specification</th>
-						<th>Description specification</th>
-						<th>
-							<a th:href="@{/admin/product/showAddPs(id=${product.id})}" class="btn btn-primary">Add product specification</a>
-						</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-					    <tr th:if="${#lists.isEmpty(ps)}" class="text-center">
-					        <td colspan="5">No units found</td>
-					    </tr>
-=======
               <div class="card-body">
                 <div class="tab-content">
 	                <div class="tab-pane active" id="productimage-tab">
@@ -201,7 +73,6 @@
 	                    <!-- Post -->
 	                    <form th:object="${product}">
 					    <div class="card-body row">
->>>>>>> trongdev
 					    
 					    	<div class="form-group col-md-2">
 								<label for="exampleInputPassword1">Image</label>
@@ -362,56 +233,7 @@
         </div>
         </section>
         
-        <section class="content-header">
-      <div class="container-fluid">
-	<div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Conversion</h3>
-              </div>
-              <form>
-              
-              <table class="table table-hover text-nowrap">
-              	<thead>
-              			<tr class="text-center">
-				            <th>Product Name</th>
-				            <th>From unit</th>
-				            <th>To unit</th>
-				            <th>conversion rate</th>
-				            
-				        </tr>
-				</thead>
-				<tbody>
-							<tr th:each="item : ${conversions}" class="text-center">
-							            <td>
-                                            <span th:text="${item.productName}"></span>
-                                        </td>		
-                                        <td>
-                                            <span th:text="${item.fromUnitName}"></span>
-                                        </td>		
-                                        <td>
-                                            <span th:text="${item.toUnitName}"></span>
-                                        </td>				            		            
-                                        <td>
-                                            <span th:text="${item.conversion_rate}"></span>
-                                        </td>	
-                                           <td>
-								            <button class="btn btn-danger btn-sm" 
-								                    onclick="deleteConversion('${item.id}')">
-								                X
-								            </button>
-								        </td> 					    
-							</tr>
-				 </tbody>
-              </table>
-
-				</form>
-            </div>
-          </div>
-        </div>
-        </div>
-        </section>
+        
         </div>
         <div th:replace="admin/layout/footer_admin"></div>
           <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
