@@ -16,36 +16,31 @@ import com.interceptor.AuthInterceptor;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-//    @Autowired
-//    private HeaderInterceptor headerInterceptor;
-//    @Autowired
-//    private CartInterceptor cartInterceptor;
-//    
-//    
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new AuthInterceptor())
-//			  .addPathPatterns("/admin/**", "/warehouseManager/**" ,"/businessManager/**", "/role/**")
-//			  .excludePathPatterns("login", "/access-denied");
-//        registry.addInterceptor(headerInterceptor)
-//                .addPathPatterns("/", 
-//                                 "/shoppingpage/**", 
-//                                 "/detailproduct/**", 
-//                                 "/account/**", 
-//                                 "/cart/**",
-//                                 "/order/**",
-//                                 "/checkout/**",
-//                                 "/contact/**"); 
-//        registry.addInterceptor(cartInterceptor)
-//        .addPathPatterns("/cart/**"); 
-//       
-//    }
+    @Autowired
+    private HeaderInterceptor headerInterceptor;
+    @Autowired
+    private CartInterceptor cartInterceptor;
+    
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AuthInterceptor())
+			  .addPathPatterns("/admin/**", "/warehouseManager/**" ,"/businessManager/**", "/role/**")
+			  .excludePathPatterns("login", "/access-denied");
+        registry.addInterceptor(headerInterceptor)
+                .addPathPatterns("/", 
+                                 "/shoppingpage/**", 
+                                 "/detailproduct/**", 
+                                 "/account/**", 
+                                 "/cart/**",
+                                 "/order/**",
+                                 "/checkout/**",
+                                 "/contact/**"); 
+        registry.addInterceptor(cartInterceptor)
+        .addPathPatterns("/cart/**"); 
+      
+    }
 
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//		registry.addInterceptor(new AuthInterceptor())
-//			.addPathPatterns("/admin/**", "/warehouseManager/**" ,"/businessManager/**", "/role/**")
-//			.excludePathPatterns("login", "/access-denied");
-//	}
+	
 }
 

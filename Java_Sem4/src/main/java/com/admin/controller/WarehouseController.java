@@ -122,7 +122,7 @@ public class WarehouseController {
 	public String addWh(@RequestParam("name") String name,
 							@RequestParam("address") String address,
 							@RequestParam("wh_type_id") int wh_type_id,
-							@RequestParam("wardId") int wardId,
+							@RequestParam("wardId") String wardId,
 							@RequestParam("provinceId") int provinceId,
 							@RequestParam("districtId") int districtId) {
 		Warehouse wh = new Warehouse();
@@ -176,7 +176,7 @@ public class WarehouseController {
 	public String updateWh(@RequestParam("name") String name,
 							@RequestParam("address") String address,
 							@RequestParam("wh_type_id") int wh_type_id,
-							@RequestParam("ward_Id") int ward_id,
+							@RequestParam("ward_Id") String ward_id,
 							@RequestParam("province_Id") int province_id,
 							@RequestParam("district_Id") int district_Id,
 							@RequestParam("id") int id) {

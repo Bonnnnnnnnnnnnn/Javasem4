@@ -11,7 +11,9 @@ public class Coupon {
 	private Double MinOrderValue;
 	private Double MaxDiscountAmount;
 	private String Status;
-
+	private int Employee_Id;
+	private Employee Employee;
+	
 	// Constructors
 	public Coupon() {
 	}
@@ -27,6 +29,22 @@ public class Coupon {
 		MinOrderValue = minOrderValue;
 		MaxDiscountAmount = maxDiscountAmount;
 		Status = status;
+	}
+
+	public int getEmployee_Id() {
+		return Employee_Id;
+	}
+
+	public void setEmployee_Id(int employee_Id) {
+		Employee_Id = employee_Id;
+	}
+
+	public Employee getEmployee() {
+		return Employee;
+	}
+
+	public void setEmployee(Employee employee) {
+		Employee = employee;
 	}
 
 	public int getId() {
