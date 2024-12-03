@@ -155,33 +155,6 @@ public class WhReceiptAndDetailsRepository {
 	}
 
 
-	
-	public boolean updateWhRe(Warehouse_receipt whr) {
-	    try {
-	        String sql = "UPDATE Warehouse_receipt SET Name = ?, Wh_Id = ?, Date = ?, Status = ?, " +
-	                     "Shipping_fee = ?, Other_fee = ?, Total_fee = ?, Employee_id = ? WHERE Id = ?";
-	        
-	        Object[] params = {
-	            whr.getName(), 
-	            whr.getWh_id(),
-	            whr.getDate(),
-	            whr.getStatus(),
-	            whr.getShipping_fee(),
-	            whr.getOther_fee(),
-	            whr.getTotal_fee(),
-	            whr.getEmployee_id(),
-	            whr.getId()
-	        };
-
-	        int row = dbwhd.update(sql, params);
-	        return row > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
-
-	
 	@Transactional
 	public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
 	    try {

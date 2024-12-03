@@ -59,9 +59,9 @@
 				
 									<div class="form-group col-md-6">
 									    <label for="phone">Date time</label>
-											<input type="text" disabled readonly th:value="${whr.date}" class="form-control">
+									    <input type="text" disabled readonly th:value="${#temporals.format(whr.date, 'HH:mm dd/MM/yyyy')}" class="form-control">
 									</div>
-									
+
 									<div class="form-group col-6 ">
 									    <label for="exampleInputEmail1">Shipping fee</label>
 									    <input class="form-control" disabled readonly th:value="${whr.shipping_fee}">

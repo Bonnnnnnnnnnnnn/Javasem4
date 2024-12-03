@@ -150,7 +150,7 @@ public class WarehouseRepository {
 	                warehouse.setTypeName(rs.getString("type_name"));
 	                warehouse.setProvince_Id(rs.getInt("Province_Id"));
 	                warehouse.setDistrict_Id(rs.getInt("District_Id"));
-	                warehouse.setWard_Id(rs.getInt("Ward_Id"));
+	                warehouse.setWard_Id(rs.getString("Ward_Id"));
 
 	                List<Employee> managers = new ArrayList<>();
 	                do {

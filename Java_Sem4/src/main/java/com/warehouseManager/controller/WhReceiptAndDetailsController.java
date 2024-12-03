@@ -141,44 +141,6 @@ public class WhReceiptAndDetailsController {
 	        return receiptName;
 	    }
 
-		 //sửa phiếu nhập kho
-		 @GetMapping("showUpdateWhReceipt")
-		 public String showUpdateWhReceipt(@RequestParam String id, Model model) {
-		     try {
-		         int idwhr = Integer.parseInt(id);
-		         Warehouse_receipt whr = repwd.findId(idwhr);    
-		         model.addAttribute("up_item", whr);
-		         model.addAttribute("warehouses", repwd.findAllWh());
-		         return Views.UPDATE_WAREHOUSE_RECEIPT;
-		     } catch (Exception e) {
-		         e.printStackTrace();
-		         return "error";
-		     }
-		 }
-
-		@PostMapping("updateWhReceipt")
-		public String updateWhReceipt( @RequestParam("name") String name,
-								        @RequestParam("wh_id") int wh_id, 
-								        @RequestParam("status") String status,
-								        @RequestParam("shippingFee") double ShippingFee,
-								        @RequestParam("otherFee") double otherFee, 
-								        @RequestParam("totalFee") double totalFee,
-								        @RequestParam("employeeId") int employeeId,
-								        @RequestParam("id") int id,Model model) {
-			Warehouse_receipt receipt = new Warehouse_receipt();
-		    receipt.setName(name);
-		    receipt.setWh_id(wh_id);
-		    receipt.setStatus(status);
-		    receipt.setShipping_fee(ShippingFee);
-		    receipt.setOther_fee(otherFee);
-		    receipt.setTotal_fee(totalFee);
-		    receipt.setEmployee_id(employeeId);
-		    receipt.setDate(LocalDateTime.now()); 
-		    receipt.setId(id);
-		    
-		    repwd.updateWhRe(receipt);
-			return "redirect:showWhReceipt";
-		}
 		//view chung với chi tiết phiếu
 		@PostMapping("addWhReceiptDetail")
 		public String addWhReceiptDetail(@RequestParam("wh_receipt_id") int wh_receipt_id,
