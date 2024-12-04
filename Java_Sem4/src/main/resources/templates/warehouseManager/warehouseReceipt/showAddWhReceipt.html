@@ -71,7 +71,7 @@
                              </div>
                              <div style="border-top: 2px solid #ccc; margin: 20px 0;"></div>
                             <div class="tab-pane" id="Warehousedetailsreceipt">
-							    <div id="detailsContainer">
+							    <div id="detailsContainer" data-receipt-counter="0">
 							        <div class="detail-group">
 							             <h3 class="receipt-title"></h3>
 							            <div class="card-body row detail-group">
@@ -90,21 +90,22 @@
 							                        <option th:value="Active" th:text="Active"></option>
 							                    </select>
 							                </div>
+											 <div class="form-group col-md-2">
+									            <label for="conversionId">Conversion ID</label>
+									            <input type="text" id="conversionId" name="conversionId" class="form-control conversionId" required readonly>
+									        </div>
+									
 											<div class="form-group col-md-2">
-										        <label for="conversionId">Conversion ID</label>
-										        <input type="text" id="conversionId" name="conversionId" class="form-control" required readonly>
-										    </div>
-											<div class="form-group col-md-2">
-											        <label for="product_id">Product</label>
-											        <select id="product_id" name="product_id" class="form-control" required onchange="fetchConversionId()">
-											            <option value="" disabled selected>Select Product</option>
-											            <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
-											        </select>
-											 </div>
-											<div class="form-group col-md-2">
-											    <label for="product_id">Search Product</label>
-											    <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
-											</div>
+									            <label for="product_id">Product</label>
+									            <select class="product_id form-control" id="product_id" name="product_id" required onchange="fetchConversionId(this)">
+									                <option value="" disabled selected>Select Product</option>
+									                <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
+									            </select>
+									        </div>
+								 			<div class="form-group col-md-2">
+									            <label for="searchProduct">Search Product</label>
+									            <input type="text" placeholder="Search Product" class="form-control" onkeyup="filterProducts(this)">
+									        </div>
 							            </div>
 							        </div>
 							    </div>

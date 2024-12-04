@@ -13,15 +13,14 @@ $(document).ready(function() {
        });
    });
    //tìm kiếm product trong select
-   function filterProducts() {
-       const input = document.getElementById('searchProduct');
-       const filter = input.value.toLowerCase();
+   function filterProducts(inputElement) {
+       const filter = inputElement.value.toLowerCase();
+       const detailGroup = inputElement.closest('.detail-group');
+       const select = detailGroup.querySelector('.product_id');
        
-       const select = document.getElementById('product_id');
        const options = select.options;
-       
-       let found = false;
 
+       let found = false;
        for (let i = 1; i < options.length; i++) { 
            const option = options[i];
            const txtValue = option.textContent || option.innerText;
@@ -32,23 +31,19 @@ $(document).ready(function() {
                option.style.display = "none";
            }
        }
-       
-       if (!found) {
+
+       const noResultOption = select.querySelector('option[value="noresult"]');
+       if (!found && !noResultOption) {
            const noResultOption = document.createElement('option');
+           noResultOption.value = "noresult";
            noResultOption.textContent = 'No matching products';
            noResultOption.disabled = true;
-           noResultOption.style.display = "";
            select.appendChild(noResultOption);
-       } else {
-           const noResultOption = select.querySelector('option[disabled][style*="display:"]');
-           if (noResultOption) {
-               select.removeChild(noResultOption);
-           }
+       } else if (found && noResultOption) {
+           select.removeChild(noResultOption);
        }
    }
 
-
-	   // Giới hạn cho shipping_fee
 	   const shippingFeeInput = document.getElementById('shipping_fee');
 	   shippingFeeInput.addEventListener('blur', function (e) {
 	       let input = e.target.value;
@@ -103,13 +98,14 @@ $(document).ready(function() {
 	           alert('Maximum warehouse price allowed is 100,000.');
 	       }
 	   });
-	   // add thêm cột để nhập hàng
+	   // Thêm nhóm chi tiết mới và xử lý sự kiện chọn sản phẩm trong nhóm đó
 	   function addDetailGroup() {
 	       const detailsContainer = document.getElementById('detailsContainer');
-
+	       
 	       let receiptCounter = parseInt(detailsContainer.getAttribute('data-receipt-counter')) || 0;
 
 	       receiptCounter++;
+	       
 	       const originalReceiptGroup = detailsContainer.querySelector('.detail-group').cloneNode(true);
 
 	       const existingTitle = originalReceiptGroup.querySelector('.receipt-title');
@@ -121,7 +117,6 @@ $(document).ready(function() {
 	           newTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
 	           originalReceiptGroup.insertBefore(newTitle, originalReceiptGroup.firstChild);
 	       }
-
 	       const inputs = originalReceiptGroup.querySelectorAll('input, select');
 	       inputs.forEach(input => {
 	           input.value = '';
@@ -129,31 +124,40 @@ $(document).ready(function() {
 	               input.selectedIndex = 0;
 	           }
 	       });
-
+	       const productSelect = originalReceiptGroup.querySelector('.product_id');
+	       if (productSelect) {
+	           productSelect.setAttribute('onchange', 'fetchConversionId(this)');
+	       }
 	       const separator = document.createElement('hr');
 	       separator.classList.add('separator');
-
 	       detailsContainer.appendChild(separator);
 	       detailsContainer.appendChild(originalReceiptGroup);
 	       detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
 	   }
 
-	   function fetchConversionId() {
-	           var productId = document.getElementById("product_id").value;
-	           
-	           if (productId) {
-	               fetch('getConversionByProductId/' + productId)
-	                   .then(response => response.json())
-	                   .then(data => {
-	                       if (data && data.conversionId) {
-	                           document.getElementById("conversionId").value = data.conversionId;
-	                       }
-	                   })
-	                   .catch(error => {
-	                       console.error('Error fetching conversion:', error);
-	                   });
-	           }
+	   function fetchConversionId(selectElement) {
+	       const productId = selectElement.value;
+
+	       if (productId) {
+	           fetch('getConversionByProductId/' + productId)
+	               .then(response => response.json())
+	               .then(data => {
+	                   const conversionIdInput = selectElement.closest('.detail-group').querySelector('.conversionId');
+	                   if (data && data.conversionId) {
+	                       conversionIdInput.value = data.conversionId;
+	                   } else {
+	                       conversionIdInput.value = '';
+	                   }
+	               })
+	               .catch(error => {
+	                   console.error('Error fetching conversion:', error);
+	               });
+	       } else {
+	           const conversionIdInput = selectElement.closest('.detail-group').querySelector('.conversionId');
+	           conversionIdInput.value = '';
 	       }
+	   }
+
 
 
 
