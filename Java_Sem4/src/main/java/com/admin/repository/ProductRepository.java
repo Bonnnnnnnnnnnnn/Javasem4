@@ -65,8 +65,6 @@ public class ProductRepository {
 	                Views.COL_PRODUCT_ID
 	        );
 
-	        System.out.println("Generated Query: " + str_query);
-
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = dbpro.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_PRODUCT, Integer.class);
 	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());

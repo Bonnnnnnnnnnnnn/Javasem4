@@ -10,6 +10,9 @@ public class Warehouse_receipt_detail {
 	private String Status;
 	private String Product_name;
 	private String formattedPrice;
+	private int Conversion_rate;
+	private String toUnitName;
+	private String fromUnitName;
 
 	public Warehouse_receipt_detail(int id, int wh_receipt_id, double wh_price, int quantity,String status,int product_id) {
 		Id = id;
@@ -77,6 +80,24 @@ public class Warehouse_receipt_detail {
 	}
 	public void setStatus(String status) {
 		Status = status;
+	}
+	public int getConversion_rate() {
+		return Conversion_rate;
+	}
+	public void setConversion_rate(int conversion_rate) {
+		Conversion_rate = conversion_rate;
+	}
+	public String getToUnitName() {
+		return toUnitName;
+	}
+	public void setToUnitName(String toUnitName) {
+		this.toUnitName = toUnitName;
+	}
+	public String getFromUnitName() {
+		return fromUnitName;
+	}
+	public void setFromUnitName(String fromUnitName) {
+		this.fromUnitName = fromUnitName;
 	}
 
 

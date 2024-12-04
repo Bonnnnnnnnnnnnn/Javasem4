@@ -1,5 +1,6 @@
+  <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <link rel="stylesheet" th:href="@{/css/pagination.css}">
-<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
 <div th:replace="warehouseManager/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
     <section class="content-header">
@@ -40,7 +41,8 @@
 				            <th>Warehouse Receipt Note</th>
 				            <th>Status </th>
 				            <th>
-				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse receipt</a>
+				                <a th:href="@{/warehouseManager/warehouseReceipt/showAddWhReceipt}" class="btn btn-primary">Add Warehouse Receipt</a>
+				                
 				            </th>
 				        </tr>
 				    </thead>
@@ -103,4 +105,7 @@
   
 <div th:replace="warehouseManager/layout/footer_admin"></div>
 </body>
+  </html>
+  
+  
 

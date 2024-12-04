@@ -23,7 +23,6 @@ public final class Views {
 	public static String TBL_CONVERSION = "Conversion";
 	public static String COL_CONVERSION_ID = "Id";
 	public static String COL_CONVERSION_PRODUCT_ID ="Product_Id";
-
 	public static String COL_CONVERSION_FROM_UNIT_ID = "From_unit_id";
 	public static String COL_CONVERSION_TO_UNIT_ID ="To_unit_id";
 	public static String COL_CONVERSION_RATE = "Conversion_rate";
@@ -95,6 +94,7 @@ public final class Views {
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Product_Id";
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION = "Conversion_Id";
+	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION_RATE = "Conversion_rate";
 	public static String COL_WAREHOUSE_RECEIPT_DETAILS_STATUS = "Status";
 	
 	//9.WAREHOUSE_RECEIPT 

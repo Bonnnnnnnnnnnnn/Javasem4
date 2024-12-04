@@ -1,22 +1,24 @@
 package com.warehouseManager.controller;
 
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.models.Conversion;
 import com.models.PageView;
 import com.models.Warehouse_receipt;
 import com.models.Warehouse_receipt_detail;
@@ -33,14 +35,15 @@ public class WhReceiptAndDetailsController {
 
 		//show phiếu nhập kho
 		@GetMapping("showWhReceipt")
-		public String showWhReceipt(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+		public String showWhReceipt(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp, HttpSession session) {
 		    try {
 		        PageView pv = new PageView();
 		        pv.setPage_current(cp);
 		        pv.setPage_size(10);
-		        List<Warehouse_receipt> whr = repwd.findAll(pv);
+		        int employeeId = repwd.getEmployeeIdFromSession(session);
+		        List<Warehouse_receipt> whr = repwd.findAll(pv, employeeId);
 		        model.addAttribute("whrs", whr);
-		        model.addAttribute("pv", pv);  
+		        model.addAttribute("pv", pv);
 		        return Views.SHOW_WAREHOUSE_RECEIPT;
 		    } catch (Exception e) {
 		        e.printStackTrace();
@@ -71,12 +74,13 @@ public class WhReceiptAndDetailsController {
 		public String showAddWhReceipt(Model model, HttpSession session) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
-		        
-		        Warehouse_receipt whr = new Warehouse_receipt();
-		        model.addAttribute("new_item", whr);
-		        model.addAttribute("warehouses", repwd.findAllWh());
+		        Integer warehouseId = repwd.findWarehouseIdByEmployeeId(employeeId);
+		        if (warehouseId == null) {
+		            model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
+		            return "error";
+		        }
+		        model.addAttribute("whId", warehouseId);
 		        model.addAttribute("products", repwd.findAllPro());
-		        model.addAttribute("conversions",repwd.findAllcon());
 		        model.addAttribute("employeeId", employeeId);
 
 		        return Views.ADD_WAREHOUSE_RECEIPT;
@@ -85,7 +89,28 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
+		@GetMapping("getConversionByProductId/{productId}")
+		@ResponseBody
+		public ResponseEntity<Map<String, Object>> getConversionByProductId(@PathVariable int productId) {
+		    Map<String, Object> response = new HashMap<>();
+		    try {
+		        // Gọi hàm để tìm conversion cho productId
+		        Conversion conversion = repwd.findConversionByProductId(productId);
 
+		        // Kiểm tra nếu có conversion
+		        if (conversion != null) {
+		            response.put("conversionId", conversion.getId()); // Trả về conversionId
+		            return ResponseEntity.ok(response);
+		        } else {
+		            response.put("conversionId", null); // Nếu không tìm thấy conversion
+		            return ResponseEntity.ok(response);
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        response.put("error", "Unable to fetch conversion.");
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		    }
+		}
 
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(
@@ -133,6 +158,7 @@ public class WhReceiptAndDetailsController {
 		    
 		    return "redirect:showWhReceipt";
 		}
+		
 		//randum tên phiếu
 		 @GetMapping("/generateReceiptName")
 	    @ResponseBody
@@ -140,7 +166,7 @@ public class WhReceiptAndDetailsController {
 	        String receiptName = repwd.generateReceiptName();
 	        return receiptName;
 	    }
-
+		 
 		//view chung với chi tiết phiếu
 		@PostMapping("addWhReceiptDetail")
 		public String addWhReceiptDetail(@RequestParam("wh_receipt_id") int wh_receipt_id,
@@ -176,7 +202,6 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
-
 		@PostMapping("updateWhDetail")
 		public String updateWhDetail(@RequestParam("wh_price") String wh_priceStr, 
 		                              @RequestParam("quantity") String quantityStr, 

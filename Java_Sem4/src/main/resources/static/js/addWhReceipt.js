@@ -1,26 +1,4 @@
-$(document).ready(function() {
-    let detailCount = 1;
 
-    $('#addDetailButton').click(function() {
-        detailCount++;
-        const detailHtml = `
-		<div id="detailsContainer">
-            <h3>Warehouse Receipt Details ${detailCount}</h3>
-			<div class="detail-entry row">
-	            <div class="form-group col-md-6">
-	                <label for="quantity">Quantity</label>
-	                <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" required>
-	            </div>
-	            <div class="form-group col-md-6">
-	                <label for="wh_price">Warehouse Price</label>
-	                <input type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
-	            </div>
-			</div>
-		</div>
-        `;
-        $('#detailsContainer').append(detailHtml);
-    });
-});
 $(document).ready(function() {
        $.ajax({
            url: '/warehouseManager/warehouseReceipt/generateReceiptName',
@@ -34,23 +12,41 @@ $(document).ready(function() {
            }
        });
    });
+   //tìm kiếm product trong select
    function filterProducts() {
-       let input = document.getElementById('searchProduct');
-       let filter = input.value.toLowerCase();
+       const input = document.getElementById('searchProduct');
+       const filter = input.value.toLowerCase();
        
-       let select = document.getElementById('product_id');
-       let options = select.getElementsByTagName('option');
+       const select = document.getElementById('product_id');
+       const options = select.options;
        
+       let found = false;
+
        for (let i = 1; i < options.length; i++) { 
-           let option = options[i];
-           let txtValue = option.textContent || option.innerText;
-           if (txtValue.toLowerCase().indexOf(filter) > -1) {
-               option.style.display = ""; 
+           const option = options[i];
+           const txtValue = option.textContent || option.innerText;
+           if (txtValue.toLowerCase().includes(filter)) {
+               option.style.display = "";
+               found = true;
            } else {
-               option.style.display = "none"; 
+               option.style.display = "none";
+           }
+       }
+       
+       if (!found) {
+           const noResultOption = document.createElement('option');
+           noResultOption.textContent = 'No matching products';
+           noResultOption.disabled = true;
+           noResultOption.style.display = "";
+           select.appendChild(noResultOption);
+       } else {
+           const noResultOption = select.querySelector('option[disabled][style*="display:"]');
+           if (noResultOption) {
+               select.removeChild(noResultOption);
            }
        }
    }
+
 
 	   // Giới hạn cho shipping_fee
 	   const shippingFeeInput = document.getElementById('shipping_fee');
@@ -98,7 +94,6 @@ $(document).ready(function() {
 	           e.target.value = '';
 	       }
 	   });
-
 	   wh_priceInput.addEventListener('input', function (e) {
 	       e.target.value = e.target.value.replace(/[^0-9.]/g, '');
 
@@ -108,5 +103,58 @@ $(document).ready(function() {
 	           alert('Maximum warehouse price allowed is 100,000.');
 	       }
 	   });
+	   // add thêm cột để nhập hàng
+	   function addDetailGroup() {
+	       const detailsContainer = document.getElementById('detailsContainer');
+
+	       let receiptCounter = parseInt(detailsContainer.getAttribute('data-receipt-counter')) || 0;
+
+	       receiptCounter++;
+	       const originalReceiptGroup = detailsContainer.querySelector('.detail-group').cloneNode(true);
+
+	       const existingTitle = originalReceiptGroup.querySelector('.receipt-title');
+	       if (existingTitle) {
+	           existingTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
+	       } else {
+	           const newTitle = document.createElement('h3');
+	           newTitle.classList.add('receipt-title');
+	           newTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
+	           originalReceiptGroup.insertBefore(newTitle, originalReceiptGroup.firstChild);
+	       }
+
+	       const inputs = originalReceiptGroup.querySelectorAll('input, select');
+	       inputs.forEach(input => {
+	           input.value = '';
+	           if (input.tagName === 'SELECT') {
+	               input.selectedIndex = 0;
+	           }
+	       });
+
+	       const separator = document.createElement('hr');
+	       separator.classList.add('separator');
+
+	       detailsContainer.appendChild(separator);
+	       detailsContainer.appendChild(originalReceiptGroup);
+	       detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
+	   }
+
+	   function fetchConversionId() {
+	           var productId = document.getElementById("product_id").value;
+	           
+	           if (productId) {
+	               fetch('getConversionByProductId/' + productId)
+	                   .then(response => response.json())
+	                   .then(data => {
+	                       if (data && data.conversionId) {
+	                           document.getElementById("conversionId").value = data.conversionId;
+	                       }
+	                   })
+	                   .catch(error => {
+	                       console.error('Error fetching conversion:', error);
+	                   });
+	           }
+	       }
+
+
 
 

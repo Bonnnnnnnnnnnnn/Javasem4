@@ -1,5 +1,6 @@
+  <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <link rel="stylesheet" th:href="@{/css/addProduct.css}">
-<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
     <div th:replace="admin/layout/header_admin"></div>
     <div class="content-wrapper" style="min-height: 1302.4px;">
         <section class="content-header">
@@ -146,8 +147,9 @@
         </section>
     </div>
     <div th:replace="admin/layout/footer_admin"></div>
-
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
      <script th:src="@{/js/showdetailimg.js}"></script>
     <script th:src="@{/js/addProduct.js}"></script>
 </body>
+  </html>
+  

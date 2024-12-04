@@ -4,16 +4,18 @@ public class Conversion {
 	private int Id;
 	private int From_unit_id;
 	private int To_unit_id;
+	private int Product_id;
 	private int Conversion_rate;
 	private String FromUnitName;
 	private String ToUnitName;
 	public Conversion() {
 	}
-	public Conversion(int id, int from_unit_id, int to_unit_id, int conversion_rate) {
+	public Conversion(int id, int from_unit_id, int to_unit_id, int conversion_rate,int product_id) {
 		Id = id;
 		From_unit_id = from_unit_id;
 		To_unit_id = to_unit_id;
 		Conversion_rate = conversion_rate;
+		Product_id = product_id;
 	}
 	public int getId() {
 		return Id;
@@ -50,6 +52,12 @@ public class Conversion {
 	}
 	public void setToUnitName(String toUnitName) {
 		ToUnitName = toUnitName;
+	}
+	public int getProduct_id() {
+		return Product_id;
+	}
+	public void setProduct_id(int product_id) {
+		Product_id = product_id;
 	}
 
 }

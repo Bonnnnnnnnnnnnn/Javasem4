@@ -34,11 +34,6 @@
                                      Warehouse details receipt
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#AddWarehousedetailsreceipt" data-toggle="tab">
-                                     Add Warehouse details receipt
-                                </a>
-                            </li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -85,7 +80,6 @@
 							    </div>
 							    <div class="card-footer">
 							    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
-							        <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhReceipt(id=${whr.id})}" class="btn btn-warning">Update</a>
 							    </div>
 							</form>
                             </div>
@@ -96,8 +90,8 @@
 								         	<th>STT</th>
 								            <th>Price</th>
 								            <th>Quantity</th>
-								            <th>Product</th>
-								            <th>Conversion</th>								            
+								            <th>Quantity Stock</th>
+								            <th>Product</th>						            
 								            <th>Status</th>
 								            <th>
 								            </th>
@@ -113,51 +107,23 @@
 								                <span th:text="${#numbers.formatCurrency(item.wh_price)}"></span>
 								            </td>
 								            <td>
-								                <span th:text="${item.quantity}"></span>
+								                <span th:text="${item.quantity} + ' ' + ${item.toUnitName}"></span>
+								            </td>
+								            <td>
+								                <span th:text="${item.conversion_rate} + ' ' + ${item.fromUnitName}"></span>
 								            </td>
 								            <td>
 								                <span th:text="${item.product_name}"></span>
-								            </td>
-								            <td>
-								                <span th:text="${item.conversion_id}"></span>
-								            </td>								            								            
+								            </td>							            								            
 								            <td>
 								                <span th:text="${item.status}"></span>
-								            </td>
-								            <td>
-								                <a th:href="@{/warehouseManager/warehouseReceipt/showUpdateWhDetail(id=${item.id})}" class="btn btn-warning">Update</a>
 								            </td>
 								        </tr>
 								    </tbody>
 								</table>
-                            </div>
-                            <div class="tab-pane" id="AddWarehousedetailsreceipt">
-								<form action="addWhReceiptDetail" method="post">
-								    <div id="detailsContainer">
-								        <div class="card-body row">
-								            <input type="hidden" name="wh_receipt_id" th:value="${whr.id}">
-								            <div class="form-group col-md-6">
-	                                            <label for="quantity">Quantity</label>
-	                                            <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" required>
-	                                        </div>
-	                                        <div class="form-group col-md-6">
-											    <label for="wh_price">Warehouse Price</label>
-											    <input id="wh_price" type="number" name="wh_price" class="form-control" placeholder="Enter Warehouse Price" step="0.01" required>
-											</div>
-	                                        <div class="form-group col-md-6">
-	                                            <label for="product_id">Product</label>
-	                                            <input type="text" id="searchProduct" placeholder="Search Product" class="form-control" onkeyup="filterProducts()">
-	                                            <select id="product_id" name="product_id" class="form-control" required>
-	                                                <option value="" disabled selected>Select Product</option>
-	                                                <option th:each="item : ${products}" th:value="${item.id}" th:text="${item.product_name}"></option>
-	                                            </select>
-	                                        </div>
-								        </div>
-								    </div>
-								    <div class="card-footer">
-								        <button type="submit" class="btn btn-primary">Submit</button>
-								    </div>
-								</form>
+								<div class="card-footer">
+							    	<a th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}" class="btn btn-danger">Back to List</a>
+							    </div>
                             </div>
                         </div>
                     </div>
