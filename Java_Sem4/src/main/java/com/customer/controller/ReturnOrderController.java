@@ -55,7 +55,7 @@ public class ReturnOrderController {
 			double totalDiscount = originalOrder.getDiscount();
 			returnOrder.setTotalAmount(totalAmount);
 			returnOrder.setDiscountAmount(totalDiscount);
-			returnOrder.setFinalAmount(totalAmount - totalDiscount);
+			returnOrder.setFinalAmount(totalAmount + totalDiscount);
 
 			int returnOrderId = returnOrderRepository.insertReturnOrder(returnOrder);
 			if (returnOrderId == 0) {
