@@ -81,7 +81,7 @@
     <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <form th:action="@{/warehouseManager/addRelesenoteByOrder}" method="post" enctype="multipart/form-data" class="w-100">
+            <form th:action="@{/warehouseManager/addRelesenoteByOrder}" method="post" onsubmit="return validateForm()" enctype="multipart/form-data" class="w-100">
                 <div class="row">
                     <div class="col-md-6"> 
                         <div class="card card-primary" style="margin-top: 30px;">
@@ -203,6 +203,19 @@
 	    });
 	});
 
+	function validateForm() {
+	    const quantities = document.querySelectorAll('input[name="quantity[]"]');
+	    
+	    
+	    const allZero = Array.from(quantities).every(input => parseInt(input.value, 10) === 0);
+
+	    if (allZero) {
+	        alert("Please enter at least one quantity greater than 0 before submitting.");
+	        return false; 
+	    }
+	    
+	    return true; 
+	}
 </script>
  
 </body>

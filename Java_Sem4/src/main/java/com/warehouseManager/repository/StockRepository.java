@@ -37,7 +37,8 @@ public class StockRepository {
                     p.Product_name,
                     u.Name AS Unit_Name, 
                     wh.Id AS Warehouse_Id,
-                    SUM(st.Quantity) AS Total_Quantity                   
+                    SUM(st.Quantity) AS Total_Quantity,
+                    AVG(wrd.Wh_price) AS Average_Wh_price                   
                 FROM 
                     stock st
                     JOIN Product p ON st.Id_product = p.Id
@@ -63,14 +64,14 @@ public class StockRepository {
                     String productName = rs.getString("Product_name");
                     String unitName = rs.getString("Unit_Name");
                     int quantity = rs.getInt("Total_Quantity");
-
+                    Double price = rs.getDouble("Average_Wh_price");
 
                     StockSumByWarehouseId stock = new StockSumByWarehouseId();
                     stock.setProductId(productId);
                     stock.setProductName(productName);
                     stock.setUnitName(unitName);
                     stock.setQuantity(quantity);
-
+                    stock.setPrice(price);
                     stockList.add(stock);
                 }
                 return stockList;
@@ -78,10 +79,7 @@ public class StockRepository {
         });
 
         for (StockSumByWarehouseId stock : stocks) {
-            System.out.println("--------------");
-            System.out.println("name: " + stock.getProductName());
-            System.out.println("getUnitName: " + stock.getUnitName());
-            System.out.println("getQuantity: " + stock.getQuantity());
+        	System.out.println("Product: " + stock.getProductName());
 
             String sql1 = """
                     SELECT c.*, u.[Name] as fromName, u1.[Name] as toName 
@@ -108,12 +106,11 @@ public class StockRepository {
                 int convertedQuantity = (int) (stock.getQuantity() / cs.getConversion_rate());
 
                 ConversionShow conversionShow = new ConversionShow(cs.getFromUnitName(), convertedQuantity);
-                System.out.println("zzzz: " + convertedQuantity);
-                System.out.println("gggggg: " + cs.getFromUnitName());
+
+                System.out.println("  From: " + conversionShow.getFromUnitName() + " -> " + conversionShow.getConverSionQuantity());
 
                 conversionshows.add(conversionShow);
             }
-
             stock.setConversions(conversionshows);
         }
 
@@ -121,7 +118,33 @@ public class StockRepository {
     }
 
 	
-
+    public List<Stock> findStock(int warehouseId) {
+    	 String sql = String.format(""" 
+    	 		SELECT 
+			    st.*,
+			    p.Product_name,
+				p.id,
+				u.Name,
+			    wrd.Wh_price,
+			    ew.Employee_Id,
+			    ew.Warehouse_Id,
+			    wh.Name,
+			    whr.Shipping_fee,
+			    whr.Date
+			FROM 
+			    stock st
+			    JOIN Product p ON st.Id_product = p.Id
+				JOIN Unit u ON p.Unit_id = u.Id
+			    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+			    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+			    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+			    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+			WHERE 			    
+			     ew.Warehouse_Id = ?;
+    	 		""",warehouseId);
+    	 return jdbcTemplate.query(sql,new Stock_mapper(), warehouseId);    
+    	 }
+    
     
     public List<Map<String, Object>> getInventoryStats() {
         String sql = """

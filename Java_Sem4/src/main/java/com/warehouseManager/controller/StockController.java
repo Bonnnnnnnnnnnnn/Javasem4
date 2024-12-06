@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.models.ConversionShow;
 import com.models.Employee;
 import com.models.Stock;
 import com.models.StockSumByWarehouseId;
@@ -31,7 +32,6 @@ public class StockController {
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 		
 		    List<StockSumByWarehouseId> stock = repst.findAllStock(warehouseId);
-
 		    model.addAttribute("stocks", stock);	
 	    
 		return Views.SHOW_STOCK;

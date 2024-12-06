@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.businessManager.repository.RequestOrderRepository;
 import com.models.Employee;
@@ -368,17 +369,20 @@ public class ReleasenoteController {
 			@RequestParam(required = false) List<Integer> id_product,
 			@RequestParam(required = false) List<Integer> quantity, 
 			@RequestParam(required = false) List<String> status,
-			Model model) {
+			Model model, HttpSession session,RedirectAttributes redirectAttributes) {
 		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+
 		Warehouse_releasenote releasenote = new Warehouse_releasenote();
 		releasenote.setName(name);
 		releasenote.setDate(LocalDateTime.now());
 		releasenote.setStatusWr(statusWr);
 		releasenote.setRequest_id(requestId);
 		releasenote.setEmployee_Id(employeeId);
+		
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
-			for (int i = 0; i < id_product.size(); i++) {			
+			for (int i = 0; i < id_product.size(); i++) {					
 
 				Warehouse_rn_detail detail = new Warehouse_rn_detail();
 				detail.setId_product(id_product.get(i));
@@ -387,10 +391,14 @@ public class ReleasenoteController {
 				details.add(detail);
 			}
 		}
-		
-		boolean isSaved = rele.addWarehouseReleasenote(releasenote, details);
-		
 
+		boolean isSaved = rele.addWarehouseReleasenote(releasenote, details, warehouseId);
+		
+		if (!isSaved) {
+			redirectAttributes.addFlashAttribute("error",  "Inventory quantity is not enough for export");
+	        return "redirect:showAddWarehouseRelesenote?employeeId=" + employeeId + "&requestId=" + requestId;
+	    }
+		
 	    if (isSaved) {
 	        int releaseNoteId = releasenote.getId(); 
 	        
@@ -405,11 +413,9 @@ public class ReleasenoteController {
 	            rele.updateStatusRequestDetail(requestId, idProduct); 
 	        }
 	        
-	        
-	        rele.isRequestComplete(requestId);
-	    }
-		
-		return "redirect:insufficientOutputDetail?id=" + requestId;
+	        rele.isRequestComplete(requestId);        
+	    }	
+	    return "redirect:insufficientOutputDetail?id=" + requestId;
 	}
 
 	

@@ -2,6 +2,7 @@ package com.warehouseManager.repository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -433,45 +434,133 @@ public class ReleasenoteRepository {
 
 
 	//add warehouse_releasenote theo RequestId
-    @Transactional
-    public boolean addWarehouseReleasenote(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
-        try {
-            String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Request_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            int result1 = jdbcTemplate.update(connection -> {
-                var ps = connection.prepareStatement(sql1, new String[] { "Id" });
-                ps.setString(1, releasenote.getName());
-                ps.setDate(2, java.sql.Date.valueOf(releasenote.getDate().toLocalDate()));
-                ps.setString(3, releasenote.getStatusWr());
-                ps.setInt(4, releasenote.getRequest_id());
-                ps.setInt(5, releasenote.getEmployee_Id());
-                return ps;
-            }, keyHolder);
+	@Transactional
+	public boolean addWarehouseReleasenote(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details, int warehouseId) {
+	    try {
+	    	String sqlCheckStock = """
+	                SELECT 
+					    SUM(st.Quantity) AS TotalStock
+					FROM 
+					        stock st
+					    JOIN Product p ON st.Id_product = p.Id
+						JOIN Unit u ON p.Unit_id = u.Id
+					    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+					    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+					    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+					    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+					WHERE 
+					    st.Id_product = ?
+					    AND ew.Warehouse_Id = ?
+	            """;
+	    	
+	        for (Warehouse_rn_detail detail : details) {
+	            
+	            Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, detail.getId_product(), warehouseId);
 
-            int generatedId = keyHolder.getKey().intValue();
-            
-            releasenote.setId(generatedId);
+	            
+	            if (totalStock == null || totalStock < detail.getQuantity()) {
+	            	
+	                return false;
+	            }
+	        }
+	        
+	        String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Request_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+	        int result1 = jdbcTemplate.update(connection -> {
+	            var ps = connection.prepareStatement(sql1, new String[] { "Id" });
+	            ps.setString(1, releasenote.getName());
+	            ps.setDate(2, java.sql.Date.valueOf(releasenote.getDate().toLocalDate()));
+	            ps.setString(3, releasenote.getStatusWr());
+	            ps.setInt(4, releasenote.getRequest_id());
+	            ps.setInt(5, releasenote.getEmployee_Id());
+	            return ps;
+	        }, keyHolder);
 
-            String sql2 = "INSERT INTO Warehouse_rn_detail (Wgrn_Id, Status, Id_product, Quantity) VALUES ( ?, ?, ?, ?)";
-            for (Warehouse_rn_detail detail : details) {
-                detail.setWgrn_id(generatedId);
-                jdbcTemplate.update(sql2,
-                    detail.getWgrn_id(),
-                    detail.getStatus(),
-                    detail.getId_product(),
-                    detail.getQuantity()
-                );
-                
-                String sql3 = "UPDATE Stock SET Quantity = Quantity - ? WHERE Id_product = ?";
-                jdbcTemplate.update(sql3, detail.getQuantity(), detail.getId_product());
-            }
-            
-            return result1 > 0;  
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+	        int generatedId = keyHolder.getKey().intValue();
+	        releasenote.setId(generatedId);
+	        
+
+
+	        String sql2 = "INSERT INTO Warehouse_rn_detail (Wgrn_Id, Status, Id_product, Quantity) VALUES (?, ?, ?, ?)";
+	        for (Warehouse_rn_detail detail : details) {
+	            detail.setWgrn_id(generatedId);
+	            jdbcTemplate.update(sql2,
+	                detail.getWgrn_id(),
+	                detail.getStatus(),
+	                detail.getId_product(),
+	                detail.getQuantity()
+	            );
+
+	            int remainingQuantity = detail.getQuantity();
+
+	            String sqlGetStocks = """
+	                    SELECT 
+	                        st.Id AS Id,
+	                        st.Id_product,
+	                        st.Quantity,
+	                        ew.Warehouse_Id as warehouseId
+	                    FROM 
+	                        stock st
+	                        JOIN Product p ON st.Id_product = p.Id
+	                        JOIN Unit u ON p.Unit_id = u.Id
+	                        JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+	                        JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+	                        JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+	                        JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+	                    WHERE  
+	                        st.Id_product = ?
+	                        AND ew.Warehouse_Id = ?
+	                    ORDER BY st.Quantity DESC
+	                """;
+	            List<Map<String, Object>> stockList = jdbcTemplate.queryForList(sqlGetStocks, detail.getId_product(), warehouseId);
+
+	            for (Map<String, Object> stock : stockList) {
+	                Integer stockQuantity = (Integer) stock.get("Quantity");
+	                Integer stockId = (Integer) stock.get("Id");
+
+	                if (stockQuantity == null || stockId == null || stockQuantity <= 0) {
+	                    continue; 
+	                }
+
+	                int quantityToDeduct = Math.min(stockQuantity, remainingQuantity);
+	                String sqlUpdateStock = """
+						UPDATE st
+						SET st.Quantity = st.Quantity - ?
+					FROM 
+					        stock st
+					    JOIN Product p ON st.Id_product = p.Id
+						JOIN Unit u ON p.Unit_id = u.Id
+					    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+					    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+					    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+					    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+					WHERE st.Id = ?	
+					    AND st.Id_product = ?
+					    AND ew.Warehouse_Id = ?
+	                    """;
+	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
+
+	                remainingQuantity -= quantityToDeduct;
+
+	                if (remainingQuantity == 0) {                    
+	                    break; 
+	                }
+	            }
+
+	            
+	            if (remainingQuantity > 0) {
+	                return false; 
+	            }
+	        }
+
+	        return result1 > 0; 
+	    } catch (DataAccessException e) {
+	        e.printStackTrace();
+	        return false; 
+	    }
+	}
+
+
     
 	//add warehouse_releasenote theo OrderId
 

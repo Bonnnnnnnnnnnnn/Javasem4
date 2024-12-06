@@ -8,18 +8,17 @@ public class StockSumByWarehouseId {
     private String productName;
     private String unitName;
     private int quantity;
-    private int price;
+    private Double price;
     private List<ConversionShow> conversions;
 
     // Constructor
-    public StockSumByWarehouseId(int productId, String productName, String unitName, int quantity, int price) {
+    public StockSumByWarehouseId(int productId, String productName, String unitName, int quantity, Double price) {
         this.productId = productId;
         this.productName = productName;
         this.unitName = unitName;
         this.quantity = quantity;
         this.price = price;
     }
-    
     
 
     public StockSumByWarehouseId() {
@@ -72,22 +71,12 @@ public class StockSumByWarehouseId {
         this.quantity = quantity;
     }
 
-    public int getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    @Override
-    public String toString() {
-        return "StockSumByWarehouseId{" +
-                "productId=" + productId +
-                ", productName='" + productName + '\'' +
-                ", unitName='" + unitName + '\'' +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                '}';
-    }
 }
