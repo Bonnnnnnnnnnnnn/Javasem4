@@ -38,7 +38,7 @@ public class RequestOrderController {
     		@RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
 	    PageView pv = new PageView();
 	    pv.setPage_current(cp);
-	    pv.setPage_size(5);
+	    pv.setPage_size(10);
         List<Request> request = rele.findAllByEmployeeIdIsNull(pv);
         model.addAttribute("requests", request);
 		model.addAttribute("pv",pv);
@@ -79,6 +79,7 @@ public class RequestOrderController {
         request.setName(name);
         request.setDate(LocalDateTime.now());
         request.setStatusRequest(statusRequest);
+        System.out.println("employee: " + request.getEmployee_Id());
 
         List<Request_detail> details = new ArrayList<>();
         if (id_product != null && !id_product.isEmpty()) {

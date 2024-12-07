@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -76,22 +75,27 @@ public class ReleasenoteRepository {
 	public List<Request> findAllByEmployeeId(PageView itemPage, int employeeId, int warehouseId) {
 	    try {
 	        
-	        String sql = String.format(
-	                "SELECT * FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'Confirm' AND %s = ? ORDER BY %s DESC",
-	                Views.TBL_REQUEST, 
-	                Views.COL_REQUEST_EMPLOYEE_ID, 
-	                Views.COL_REQUEST_ORDERID, 
-	                Views.COL_REQUEST_TYPE, 
-	                Views.COL_REQUEST_STATUS, 
-	                Views.COL_REQUEST_WAREHOUSE, 
-	                Views.COL_REQUEST_ID);
+	    	String sql = String.format(
+	    		    "SELECT * FROM %s WHERE %s = ? AND (%s IS NULL OR %s = 0) AND %s IS NULL AND %s = 'Confirm' AND %s = ? ORDER BY %s ASC",
+	    		    Views.TBL_REQUEST, 
+	    		    Views.COL_REQUEST_EMPLOYEE_ID, 
+	    		    Views.COL_REQUEST_ORDERID, 
+	    		    Views.COL_REQUEST_ORDERID,
+                    Views.COL_REQUEST_TYPE, 
+	    		    Views.COL_REQUEST_STATUS, 
+	    		    Views.COL_REQUEST_WAREHOUSE, 
+	    		    Views.COL_REQUEST_ID
+	    		);
+
+
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            String countSql = String.format(
-	                    "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s IS NULL AND %s IS NULL AND %s = 'waiting for shipping' AND %s = ?",
+	                    "SELECT COUNT(*) FROM %s WHERE %s = ? AND (%s IS NULL OR %s = 0) AND %s IS NULL AND %s = 'Confirm' AND %s = ?",
 	                    Views.TBL_REQUEST, 
 	                    Views.COL_REQUEST_EMPLOYEE_ID, 
-	                    Views.COL_REQUEST_ORDERID, 
+	                    Views.COL_REQUEST_ORDERID,
+	                    Views.COL_REQUEST_ORDERID,
 	                    Views.COL_REQUEST_TYPE, 
 	                    Views.COL_REQUEST_STATUS, 
 	                    Views.COL_REQUEST_WAREHOUSE);
@@ -120,7 +124,7 @@ public class ReleasenoteRepository {
 	public List<Request> findAllByEmployeeIdAndType(PageView itemPage, int employeeId) {
 	    try {
 	        String sql = String.format(
-	                "SELECT * FROM %s WHERE %s = ? AND (%s = 'Request' OR %s = 'Order') AND %s = 'Processing' ORDER BY %s DESC",
+	                "SELECT * FROM %s WHERE %s = ? AND (%s = 'Request' OR %s = 'Order') AND %s = 'Processing' ORDER BY %s ASC",
 	                Views.TBL_REQUEST, Views.COL_REQUEST_EMPLOYEE_ID, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_TYPE, Views.COL_REQUEST_STATUS, Views.COL_REQUEST_ID);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
@@ -211,21 +215,24 @@ public class ReleasenoteRepository {
 	// hien thi bang request khi employee_id = null
 	public List<Request> findAllByEmployeeIdIsNull(PageView itemPage) {
 	    try {
-	        String sql = String.format(
-	            "SELECT * FROM %s WHERE %s IS NULL AND %s IS NULL AND %s = 'Pending Approval' ORDER BY %s DESC",
-	            Views.TBL_REQUEST, 
-	            Views.COL_REQUEST_EMPLOYEE_ID, 
-	            Views.COL_REQUEST_WAREHOUSE, 
-	            Views.COL_REQUEST_STATUS,
-	            Views.COL_REQUEST_ID 
-	        );
+	    	String sql = String.format(
+	    		    "SELECT * FROM %s WHERE (%s IS NULL OR %s = 0) AND %s IS NULL AND %s = 'Pending Approval' ORDER BY %s ASC",
+	    		    Views.TBL_REQUEST, 
+	    		    Views.COL_REQUEST_EMPLOYEE_ID, 
+	    		    Views.COL_REQUEST_EMPLOYEE_ID, 
+	    		    Views.COL_REQUEST_WAREHOUSE, 
+	    		    Views.COL_REQUEST_STATUS,
+	    		    Views.COL_REQUEST_ID
+	    		);
+
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = jdbcTemplate.queryForObject(
 	                String.format(
-	                    "SELECT COUNT(*) FROM %s WHERE %s IS NULL AND %s IS NULL AND %s = 'Pending Approval'",
+	                    "SELECT COUNT(*) FROM %s WHERE (%s IS NULL OR %s = 0) AND %s IS NULL AND %s = 'Pending Approval'",
 	                    Views.TBL_REQUEST, 
-	                    Views.COL_REQUEST_EMPLOYEE_ID, 
+	                    Views.COL_REQUEST_EMPLOYEE_ID,
+	                    Views.COL_REQUEST_EMPLOYEE_ID,
 	                    Views.COL_REQUEST_WAREHOUSE, 
 	                    Views.COL_REQUEST_STATUS
 	                ),
@@ -255,9 +262,15 @@ public class ReleasenoteRepository {
 	// hien thi bang order khi employee_id = null
 	public List<Order> findAllOrderByEmployeeIdIsNull(PageView itemPage, int warehouseId) {
 	    try {
-	        String sql = String.format(
-	                "SELECT * FROM [%s] WHERE %s IS NULL AND %s = 'Waiting for confirmation' AND %s = ? ORDER BY %s DESC",
-	                Views.TBL_ORDER, Views.COL_ORDER_EMPLOYEE, Views.COL_ORDER_STATUS, Views.COL_ORDER_WAREHOUSE_ID, Views.COL_ORDER_ID);
+	    	String sql = String.format(
+	    		    "SELECT * FROM [%s] WHERE (%s IS NULL OR %s = 0) AND %s = 'Waiting for confirmation' AND %s = ? ORDER BY %s ASC",
+	    		    Views.TBL_ORDER, 
+	    		    Views.COL_ORDER_EMPLOYEE, 
+	    		    Views.COL_ORDER_EMPLOYEE, 
+	    		    Views.COL_ORDER_STATUS, 
+	    		    Views.COL_ORDER_WAREHOUSE_ID, 
+	    		    Views.COL_ORDER_ID
+	    		);
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            String countSql = String.format(
@@ -436,7 +449,8 @@ public class ReleasenoteRepository {
 	//add warehouse_releasenote theo RequestId
 	@Transactional
 	public boolean addWarehouseReleasenote(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details, int warehouseId) {
-	    try {
+	   
+		try {
 	    	String sqlCheckStock = """
 	                SELECT 
 					    SUM(st.Quantity) AS TotalStock
@@ -510,7 +524,7 @@ public class ReleasenoteRepository {
 	                    WHERE  
 	                        st.Id_product = ?
 	                        AND ew.Warehouse_Id = ?
-	                    ORDER BY st.Quantity DESC
+	                    ORDER BY st.Quantity ASC
 	                """;
 	            List<Map<String, Object>> stockList = jdbcTemplate.queryForList(sqlGetStocks, detail.getId_product(), warehouseId);
 
@@ -565,10 +579,35 @@ public class ReleasenoteRepository {
 	//add warehouse_releasenote theo OrderId
 
     @Transactional
-    public boolean addWarehouseReleasenoteByOrder(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details) {
+    public boolean addWarehouseReleasenoteByOrder(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details, int warehouseId) {
         try {
-        	
-        	
+        	String sqlCheckStock = """
+	                SELECT 
+					    SUM(st.Quantity) AS TotalStock
+					FROM 
+					        stock st
+					    JOIN Product p ON st.Id_product = p.Id
+						JOIN Unit u ON p.Unit_id = u.Id
+					    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+					    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+					    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+					    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+					WHERE 
+					    st.Id_product = ?
+					    AND ew.Warehouse_Id = ?
+	            """;
+	    	
+	        for (Warehouse_rn_detail detail : details) {
+	            
+	            Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, detail.getId_product(), warehouseId);
+
+	            
+	            if (totalStock == null || totalStock < detail.getQuantity()) {
+	            	
+	                return false;
+	            }
+	        }
+        	       	
             String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Order_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int result1 = jdbcTemplate.update(connection -> {
@@ -595,8 +634,65 @@ public class ReleasenoteRepository {
                     detail.getQuantity()
                 );
                 
-                String sql3 = "UPDATE Stock SET Quantity = Quantity - ? WHERE Id_product = ?";
-                jdbcTemplate.update(sql3, detail.getQuantity(), detail.getId_product());
+                int remainingQuantity = detail.getQuantity();
+
+	            String sqlGetStocks = """
+	                    SELECT 
+	                        st.Id AS Id,
+	                        st.Id_product,
+	                        st.Quantity,
+	                        ew.Warehouse_Id as warehouseId
+	                    FROM 
+	                        stock st
+	                        JOIN Product p ON st.Id_product = p.Id
+	                        JOIN Unit u ON p.Unit_id = u.Id
+	                        JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+	                        JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+	                        JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+	                        JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+	                    WHERE  
+	                        st.Id_product = ?
+	                        AND ew.Warehouse_Id = ?
+	                    ORDER BY st.Quantity ASC
+	                """;
+	            
+	            List<Map<String, Object>> stockList = jdbcTemplate.queryForList(sqlGetStocks, detail.getId_product(), warehouseId);
+
+	            for (Map<String, Object> stock : stockList) {
+	                Integer stockQuantity = (Integer) stock.get("Quantity");
+	                Integer stockId = (Integer) stock.get("Id");
+
+	                if (stockQuantity == null || stockId == null || stockQuantity <= 0) {
+	                    continue; 
+	                }
+
+	                int quantityToDeduct = Math.min(stockQuantity, remainingQuantity);
+	                String sqlUpdateStock = """
+						UPDATE st
+						SET st.Quantity = st.Quantity - ?
+					FROM 
+					        stock st
+					    JOIN Product p ON st.Id_product = p.Id
+						JOIN Unit u ON p.Unit_id = u.Id
+					    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+					    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+					    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+					    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+					WHERE st.Id = ?	
+					    AND st.Id_product = ?
+					    AND ew.Warehouse_Id = ?
+	                    """;
+	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
+
+	                remainingQuantity -= quantityToDeduct;
+
+	                if (remainingQuantity == 0) {                    
+	                    break; 
+	                }
+	            }
+	            if (remainingQuantity > 0) {
+	                return false; 
+	            }
             }
             
             return result1 > 0;  

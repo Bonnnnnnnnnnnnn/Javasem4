@@ -476,7 +476,7 @@ public class ReleasenoteController {
 			@RequestParam(required = false) List<Integer> quantity_Ex,
 			@RequestParam(required = false) List<Integer> quantity_Rq,
 			@RequestParam(required = false) List<String> status,
-			Model model) {
+			Model model, HttpSession session,RedirectAttributes redirectAttributes) {
 				
 
 		Warehouse_releasenote releasenote = new Warehouse_releasenote();
@@ -485,7 +485,10 @@ public class ReleasenoteController {
 		releasenote.setStatusWr(statusWr);
 		releasenote.setOrder_id(id);
 		releasenote.setEmployee_Id(employeeId);
-
+		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+				
+		
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
 			for (int i = 0; i < id_product.size(); i++) {
@@ -499,7 +502,12 @@ public class ReleasenoteController {
 			}
 		}
 
-		boolean isSaved = rele.addWarehouseReleasenoteByOrder(releasenote, details);
+		boolean isSaved = rele.addWarehouseReleasenoteByOrder(releasenote, details,warehouseId);
+		
+		if (!isSaved) {
+			redirectAttributes.addFlashAttribute("error",  "Inventory quantity is not enough for export");
+	        return "redirect:showAddOrderRelesenote?employeeId=" + employeeId + "&id=" + id;
+	    }
 					
 	    if (isSaved) {
 	        int releaseNoteId = releasenote.getId(); 	        
