@@ -1,6 +1,8 @@
 package com.warehouseManager.repository;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Collections;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -156,66 +159,139 @@ public class WhReceiptAndDetailsRepository {
 	        return null;
 	    }
 	}
-
-	//thêm 
-	@Transactional
-	public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
+	
+	// Hàm lấy conversion_rate cho product_id từ bảng Conversion
+	private int getConversionRateByProductId(int productId) {
+	    String sql = "SELECT " + Views.COL_CONVERSION_RATE + 
+	                 " FROM " + Views.TBL_CONVERSION + 
+	                 " WHERE " + Views.COL_CONVERSION_PRODUCT_ID + " = ?";
 	    try {
-	    	String sql1 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT + " (" +
-	    	        Views.COL_WAREHOUSE_RECEIPT_NAME + ", " +
-	    	        Views.COL_WAREHOUSE_RECEIPT_IDWH + ", " +
-	    	        Views.COL_WAREHOUSE_RECEIPT_DATE + ", " + 
-	    	        Views.COL_WAREHOUSE_RECEIPT_STATUS + ", " + 
-	    	        Views.COL_WAREHOUSE_RECEIPT_SHIPPINGFEE + ", " + 
-	    	        Views.COL_WAREHOUSE_RECEIPT_OTHERFEE + ", " + 
-	    	        Views.COL_WAREHOUSE_RECEIPT_TOTALFEE + ", " + 
-	    	        Views.COL_WAREHOUSE_RECEIPT_EMP_ID + ") " +
-	    	        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-	        
-	        KeyHolder keyHolder = new GeneratedKeyHolder();
-	        int result1 = dbwhd.update(connection -> {
-	            var ps = connection.prepareStatement(sql1, new String[] { Views.COL_WAREHOUSE_RECEIPT_ID });
-	            ps.setString(1, receipt.getName());
-	            ps.setInt(2, receipt.getWh_id());
-	            ps.setDate(3, java.sql.Date.valueOf(receipt.getDate().toLocalDate()));
-	            ps.setString(4, receipt.getStatus());
-	            ps.setDouble(5, receipt.getShipping_fee());
-	            ps.setDouble(6, receipt.getOther_fee());
-	            ps.setDouble(7, receipt.getTotal_fee());
-	            ps.setInt(8, receipt.getEmployee_id());
-	            return ps;
-	        }, keyHolder);
-
-	        int generatedId = keyHolder.getKey().intValue();
-
-	        String sql2 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
-	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + " , " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " , " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " , " +
-	                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ") VALUES (?, ?, ?, ?, ?, ?)";
-
-	        
-	        for (Warehouse_receipt_detail detail : details) {
-	            detail.setWh_receipt_id(generatedId);
-	            dbwhd.update(sql2,
-	                detail.getWh_receipt_id(),
-	                detail.getWh_price(),
-	                detail.getQuantity(),
-	                detail.getProduct_id(),
-	                detail.getConversion_id(),
-	                detail.getStatus()
-	            );
+	        List<Integer> conversionRates = dbwhd.queryForList(sql, Integer.class, productId);
+	        if (conversionRates.isEmpty()) {
+	            return 0;
 	        }
-	        return result1 > 0;  
+	        return conversionRates.get(0);
+
 	    } catch (DataAccessException e) {
 	        e.printStackTrace();
-	        return false;
+	        return 0;
 	    }
 	}
-	
+
+		
+		@SuppressWarnings("deprecation")
+		public List<Conversion> getAllConversions(int productId) {
+		    String sql = "SELECT c.*, u_from.Name AS fromUnitName, u_to.Name AS toUnitName " +
+		                 "FROM " + Views.TBL_CONVERSION + " c " +
+		                 "LEFT JOIN " + Views.TBL_UNIT + " u_from ON c.From_unit_id = u_from.Id " +
+		                 "LEFT JOIN " + Views.TBL_UNIT + " u_to ON c.To_unit_id = u_to.Id " +
+		                 "WHERE c.Product_id = ?";
+
+		    return dbwhd.query(sql, new Object[]{productId}, new RowMapper<Conversion>() {
+		        @Override
+		        public Conversion mapRow(ResultSet rs, int rowNum) throws SQLException {
+		            Conversion conversion = new Conversion();
+		            conversion.setId(rs.getInt(Views.COL_CONVERSION_ID));
+		            conversion.setProduct_id(rs.getInt(Views.COL_CONVERSION_PRODUCT_ID));
+		            conversion.setFrom_unit_id(rs.getInt(Views.COL_CONVERSION_FROM_UNIT_ID));
+		            conversion.setTo_unit_id(rs.getInt(Views.COL_CONVERSION_TO_UNIT_ID));
+		            conversion.setConversion_rate(rs.getInt(Views.COL_CONVERSION_RATE));
+		            
+		            conversion.setFromUnitName(rs.getString("fromUnitName"));
+		            conversion.setToUnitName(rs.getString("toUnitName"));
+		            
+		            return conversion;
+		        }
+		    });
+		}
+
+
+		
+	//thêm 3 bản Warehouse_receipt , Warehouse_receipt_detail và stock
+		@Transactional
+		public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
+		    try {
+		    	//tính tổng totalfee
+		        double totalFee = details.stream()
+		                .mapToDouble(detail -> detail.getQuantity() * detail.getWh_price())
+		                .sum();
+		        totalFee += receipt.getShipping_fee() + receipt.getOther_fee();
+		        receipt.setTotal_fee(totalFee);
+
+		        // Thêm dữ liệu vào bảng Warehouse_receipt
+		        String sql1 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT + " (" +
+		                Views.COL_WAREHOUSE_RECEIPT_NAME + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_IDWH + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DATE + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_STATUS + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_SHIPPINGFEE + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_OTHERFEE + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_TOTALFEE + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_EMP_ID + ") " +
+		                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+		        KeyHolder keyHolder = new GeneratedKeyHolder();
+		        int result1 = dbwhd.update(connection -> {
+		            var ps = connection.prepareStatement(sql1, new String[]{Views.COL_WAREHOUSE_RECEIPT_ID});
+		            ps.setString(1, receipt.getName());
+		            ps.setInt(2, receipt.getWh_id());
+		            ps.setDate(3, java.sql.Date.valueOf(receipt.getDate().toLocalDate()));
+		            ps.setString(4, receipt.getStatus());
+		            ps.setDouble(5, receipt.getShipping_fee());
+		            ps.setDouble(6, receipt.getOther_fee());
+		            ps.setDouble(7, receipt.getTotal_fee());
+		            ps.setInt(8, receipt.getEmployee_id());
+		            return ps;
+		        }, keyHolder);
+
+		        int generatedIdRe = keyHolder.getKey().intValue();
+
+		        // Thêm dữ liệu vào bảng Warehouse_receipt_detail và cập nhật bảng Stock
+		        String sql2 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
+		                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + ", " +
+		                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ") VALUES (?, ?, ?, ?, ?, ?)";
+
+		        for (Warehouse_receipt_detail detail : details) {
+		            int conversionRate = getConversionRateByProductId(detail.getProduct_id());
+		            int originalQuantity = detail.getQuantity();
+		            int convertedQuantity = originalQuantity * conversionRate;
+
+		            detail.setWh_receipt_id(generatedIdRe);
+
+		            // Thêm vào bảng Warehouse_receipt_detail
+		            dbwhd.update(sql2,
+		                    detail.getWh_receipt_id(),
+		                    detail.getWh_price(),
+		                    detail.getQuantity(),
+		                    detail.getProduct_id(),
+		                    detail.getConversion_id(),
+		                    detail.getStatus()
+		            );
+
+		            // Thêm vào bảng Stock và cập nhật số lượng
+		            String sql3 = "INSERT INTO " + Views.TBL_STOCK + " (" +
+		                    Views.COL_STOCK_PRODUCT_ID + ", " +
+		                    Views.COL_STOCK_QUANTITY + ", " +
+		                    Views.COL_STOCK_STATUS + ", " + Views.COL_STOCK_WARERCDT_ID + ") VALUES (?, ?, ?, ?)";
+		            dbwhd.update(sql3,
+		                    detail.getProduct_id(),
+		                    convertedQuantity,
+		                    detail.getStatus(),
+		                    generatedIdRe
+		            );
+		        }
+		        return result1 > 0;
+		    } catch (DataAccessException e) {
+		        e.printStackTrace();
+		        return false;
+		    }
+		}
+
+
 	//randum tên phiếu nhập kho 
 	public String generateReceiptName() {
 	    String prefix = "ES01/";
@@ -295,79 +371,31 @@ public class WhReceiptAndDetailsRepository {
 	    return details;
 	}
 
-	public Conversion findConversionByProductId(int productId) {
-	    Conversion conversion = null;
-	    try {
-	        String sql = "SELECT c.* FROM " + Views.TBL_CONVERSION + " c " +
-	                     "WHERE c." + Views.COL_CONVERSION_PRODUCT_ID + " = ?";
-	        
-	        List<Conversion> conversions = dbwhd.query(sql, (rs, rowNum) -> {
-	        	Conversion item = new Conversion();
-	    		item.setId(rs.getInt(Views.COL_CONVERSION_ID));
-	    		item.setConversion_rate(rs.getInt(Views.COL_CONVERSION_RATE));
-	    		item.setFrom_unit_id(rs.getInt(Views.COL_CONVERSION_FROM_UNIT_ID));
-	    		item.setTo_unit_id(rs.getInt(Views.COL_CONVERSION_TO_UNIT_ID));    
-	    		item.setProduct_id(rs.getInt(Views.COL_PRODUCT_ID));
-
-	    		return item;
-	        }, productId);
-
-	        if (!conversions.isEmpty()) {
-	            conversion = conversions.get(0); 
-	        }
-	    } catch (Exception e) {
-	        System.err.println("Error while fetching conversion by product ID: " + e.getMessage());
-	        e.printStackTrace();
-	    }
-	    return conversion;
-	}
-
-
-
-
+//	public Conversion findConversionByProductId(int productId) {
+//	    Conversion conversion = null;
+//	    try {
+//	        String sql = "SELECT c.* FROM " + Views.TBL_CONVERSION + " c " +
+//	                     "WHERE c." + Views.COL_CONVERSION_PRODUCT_ID + " = ?";
+//	        
+//	        List<Conversion> conversions = dbwhd.query(sql, (rs, rowNum) -> {
+//	        	Conversion item = new Conversion();
+//	    		item.setId(rs.getInt(Views.COL_CONVERSION_ID));
+//	    		item.setConversion_rate(rs.getInt(Views.COL_CONVERSION_RATE));
+//	    		item.setFrom_unit_id(rs.getInt(Views.COL_CONVERSION_FROM_UNIT_ID));
+//	    		item.setTo_unit_id(rs.getInt(Views.COL_CONVERSION_TO_UNIT_ID));    
+//	    		item.setProduct_id(rs.getInt(Views.COL_PRODUCT_ID));
+//
+//	    		return item;
+//	        }, productId);
+//
+//	        if (!conversions.isEmpty()) {
+//	            conversion = conversions.get(0); 
+//	        }
+//	    } catch (Exception e) {
+//	        System.err.println("Error while fetching conversion by product ID: " + e.getMessage());
+//	        e.printStackTrace();
+//	    }
+//	    return conversion;
+//	}
 	
-	//lấy id show phiếu nhập kho để sửa
-	public Warehouse_receipt_detail findIdDetail(int id) {
-	    try {
-	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ", wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " "
-	                   + "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd "
-	                   + "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id "
-	                   + "WHERE wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " = ?";
-
-	        return dbwhd.queryForObject(sql, new Warehouse_receipt_detail_mapper(), id);
-	    } catch (EmptyResultDataAccessException e) {
-	        System.err.println("No warehouse receipt detail found with ID: " + id);
-	        return null;
-	    } catch (DataAccessException e) {
-	        System.err.println("Error fetching warehouse receipt detail with ID: " + id + " - " + e.getMessage());
-	        return null;
-	    }
-	}
-
-	//sửa chi tiết phiếu nhập kho
-	public boolean updateWhDetails(Warehouse_receipt_detail wrd) {
-		try {
-			String sql = "UPDATE Warehouse_receipt_detail SET Wh_receiptId = ? ,Wh_price = ? ,Quantity = ?,Status = ?,Product_id = ?,conversion_Id = ? WHERE Id= ?";
-			Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getStatus() ,wrd.getProduct_id(),wrd.getConversion_id(), wrd.getId()};
-			int row = dbwhd.update(sql,params);
-			return row > 0 ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	// thêm chi viết phiếu nhập kho
-	public boolean addWhDetail(Warehouse_receipt_detail wrd) {
-	    try {
-	        String sql = "INSERT INTO Warehouse_receipt_detail (Wh_receiptId,Wh_price,Quantity,Status,Product_id,conversion_Id) VALUES (?, ?, ?, ? , ?,?)";
-	        Object[] params = {wrd.getWh_receipt_id() , wrd.getWh_price(),wrd.getQuantity(),wrd.getStatus(),wrd.getProduct_id(),wrd.getConversion_id()};
-			int row = dbwhd.update(sql,params);
-			return row > 0 ;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
-
 }

@@ -40,4 +40,10 @@ public class LoginEmployee {
 		    default: return "redirect:/login?error=role";      
 		}
 	}	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(HttpSession session) {
+	    session.invalidate();
+	    return "redirect:login";
+	}
+
 }

@@ -2,6 +2,7 @@ package com.warehouseManager.controller;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
-		
+
 		// thêm phiếu nhập kho và chi tiết
 		@GetMapping("showAddWhReceipt")
 		public String showAddWhReceipt(Model model, HttpSession session) {
@@ -89,36 +90,13 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
-		@GetMapping("getConversionByProductId/{productId}")
-		@ResponseBody
-		public ResponseEntity<Map<String, Object>> getConversionByProductId(@PathVariable int productId) {
-		    Map<String, Object> response = new HashMap<>();
-		    try {
-		        // Gọi hàm để tìm conversion cho productId
-		        Conversion conversion = repwd.findConversionByProductId(productId);
-
-		        // Kiểm tra nếu có conversion
-		        if (conversion != null) {
-		            response.put("conversionId", conversion.getId()); // Trả về conversionId
-		            return ResponseEntity.ok(response);
-		        } else {
-		            response.put("conversionId", null); // Nếu không tìm thấy conversion
-		            return ResponseEntity.ok(response);
-		        }
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        response.put("error", "Unable to fetch conversion.");
-		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		    }
-		}
 
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(
 		        @RequestParam("wh_id") int wh_id,
 		        @RequestParam("status") String status,
 		        @RequestParam("shippingFee") double shippingFee,
-		        @RequestParam("otherFee") double otherFee, 
-		        @RequestParam("totalFee") double totalFee,
+		        @RequestParam(value = "otherFee", defaultValue = "0") double otherFee, 
 		        @RequestParam("employeeId") int employeeId,
 		        @RequestParam List<Integer> quantity,
 		        @RequestParam List<Double> wh_price,
@@ -134,7 +112,6 @@ public class WhReceiptAndDetailsController {
 		    receipt.setStatus(status);
 		    receipt.setShipping_fee(shippingFee);
 		    receipt.setOther_fee(otherFee);
-		    receipt.setTotal_fee(totalFee);
 		    receipt.setEmployee_id(employeeId);
 		    receipt.setDate(LocalDateTime.now());
 	
@@ -166,67 +143,17 @@ public class WhReceiptAndDetailsController {
 	        String receiptName = repwd.generateReceiptName();
 	        return receiptName;
 	    }
-		 
-		//view chung với chi tiết phiếu
-		@PostMapping("addWhReceiptDetail")
-		public String addWhReceiptDetail(@RequestParam("wh_receipt_id") int wh_receipt_id,
-									        @RequestParam("wh_price") double wh_price, 
-									        @RequestParam("quantity") int quantity,
-									        @RequestParam("conversionId") int conversionId,
-									        @RequestParam("status") String status,
-									        @RequestParam("product_id") int product_id) {
-			Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
-			wrd.setWh_receipt_id(wh_receipt_id);
-			wrd.setWh_price(wh_price);
-			wrd.setQuantity(quantity);
-			wrd.setConversion_id(conversionId);
-			wrd.setStatus(status);
-			wrd.setProduct_id(product_id);
-			
-			repwd.addWhDetail(wrd);
-			return "redirect:showWhReceiptDetail?id=" + wh_receipt_id;
-		}
 		
-		//sửa chi tiết phiếu nhập 
-		@GetMapping("showUpdateWhDetail")
-		public String showUpdateWhDetail(@RequestParam String id, Model model) {
+		 // lấy đơn vị theo product
+		@GetMapping("/getConversions")
+		@ResponseBody
+		public List<Conversion> getConversions(@RequestParam("id") int productId) {
 		    try {
-		        int idwhr = Integer.parseInt(id);
-		        Warehouse_receipt_detail whrd = repwd.findIdDetail(idwhr);    
-		        model.addAttribute("detail", whrd);
-		        model.addAttribute("products", repwd.findAllPro());
-		        model.addAttribute("wh_receipt_id", whrd.getWh_receipt_id());
-		        return Views.UPDATE_WAREHOUSE_RECEIPT_DETAIL;
+		        return repwd.getAllConversions(productId);
 		    } catch (Exception e) {
 		        e.printStackTrace();
-		        return "error";
+		        return Collections.emptyList();
 		    }
 		}
-		@PostMapping("updateWhDetail")
-		public String updateWhDetail(@RequestParam("wh_price") String wh_priceStr, 
-		                              @RequestParam("quantity") String quantityStr, 
-		                              @RequestParam("product_id") int product_id,
-		                              @RequestParam("conversionId") int conversionId,
-								      @RequestParam("status") String status,
-		                              @RequestParam("wh_receipt_id") int wh_receipt_id,
-		                              @RequestParam("id") int id) {
-		    double wh_price = Double.parseDouble(wh_priceStr.replace(",", "."));
-		    int quantity = Integer.parseInt(quantityStr);
-		    
-		    Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
-		    wrd.setWh_receipt_id(wh_receipt_id);
-		    wrd.setWh_price(wh_price);
-		    wrd.setQuantity(quantity);
-			wrd.setConversion_id(conversionId);
-			wrd.setStatus(status);
-		    wrd.setProduct_id(product_id);
-		    wrd.setId(id);
-		    
-		    repwd.updateWhDetails(wrd);
-		    
-		    return "redirect:showWhReceiptDetail?id=" + wh_receipt_id ;
-		}
-
-
 
 }
