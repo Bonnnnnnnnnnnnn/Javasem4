@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/stockAll.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+	table {
+    width: 100%;
+    table-layout: fixed; 
+	}
+	
+	table th, table td {
+	    text-align: center;
+	    padding: 10px;
+	    min-width: 150px; 
+	    overflow: hidden; 
+	    word-wrap: break-word; 
+	}
+	.conversion-div {
+    display: none; /* Ẩn theo mặc định */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+	
+/* Container chung */
+.conversion-container {
+    border: 1px solid #007bff;
+    padding: 15px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    text-align: left;
+}
+
+/* Container chung */
+.conversion-container {
+    border: 1px solid #007bff;
+    padding: 15px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    text-align: left;
+}
+
+
+/* Định dạng danh sách */
+.conversion-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.conversion-container ul li {
+    margin-bottom: 15px; /* Khoảng cách giữa các mục */
+    display: flex; /* Sử dụng Flexbox để căn chỉnh */
+    align-items: center; /* Căn giữa nội dung trong hàng */
+    justify-content: flex-start; /* Canh trái các mục */
+}
+
+/* Nhãn (Unit) */
+.conversion-label {
+    color: #000;
+    font-weight: bold;
+    width: 100px; /* Nhãn "Unit" sát lề trái */
+    text-align: left;
+}
+
+/* Nhãn Quantity sẽ có margin-left */
+.quantity-label {
+    color: #28a745; /* Màu xanh cho giá trị */
+    font-weight: 500;
+    margin-left: 18px; /* Khoảng cách từ "Quantity" đến lề trái */
+}
+
+/* Giá trị */
+.conversion-value {
+    color: #28a745;
+    font-weight: 500;
+    flex: 1; /* Giá trị tự động giãn đầy khoảng còn lại */
+}
+
+.no-conversion-message {
+    text-align: center;
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+}
+
+    </style>
+</head>
+<body>
+
+<div th:replace="warehouseManager/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
+                                <input type="text" id="searchInput" class="form-control float-right" placeholder="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-default" id="searchButton">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <div id="stockTableContainer">
+
+                            </div>
+                            <nav aria-label="Page navigation">
+								<ul id="pagination" class="pagination" style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+								</ul>                            
+							</nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div th:replace="warehouseManager/layout/footer_admin"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script th:inline="javascript">
+var data = /*[[${stocks}]]*/ {}; // Dữ liệu từ backend
+var pageSize = 8; // Số sản phẩm mỗi trang
+var currentPage = 0; // Trang hiện tại
+
+// Hàm để render bảng với dữ liệu phân trang
+function renderStockTable(stocks) {
+    let tableHtml = `
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr class="text-center">
+                    <th>Product Name</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Conversion</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    stocks.forEach(stock => {
+        tableHtml += `
+            <tr class="text-center">
+                <td>${stock.productName}</td>
+                <td>${stock.unitName}</td>
+                <td>${stock.whPrice}</td>
+                <td>${stock.quantity}</td>
+                <td>
+                <button type="button" class="btn btn-primary btn-conversion" 
+                    data-product-id="${stock.productId}">
+                    Show Conversion
+                </button>
+                <div class="conversion-div conversion-container" style="display: none;">
+                    <ul>
+                        ${stock.listconversion.length > 0 
+                            ? stock.listconversion.map(conversion => `
+                                <li>
+                                    <span class="conversion-label">Unit: ${conversion.fromUnitName}</span> 
+                                    <span class="quantity-label">Quantity: ${conversion.converSionQuantity}</span>
+                                </li>
+                            `).join('')
+                            : `<li class="no-conversion-message">No Conversion Available</li>`
+                        }
+                    </ul>
+                </div>
+            </td>
+
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    document.getElementById('stockTableContainer').innerHTML = tableHtml;
+    //click out
+    document.addEventListener('click', function(event) {
+        var conversionDivs = document.querySelectorAll('.conversion-div');
+        conversionDivs.forEach(function(conversionDiv) {
+            if (!conversionDiv.contains(event.target) && !event.target.classList.contains('btn-conversion')) {               
+                conversionDiv.style.display = 'none';
+            } else {
+            }
+        });
+    });
+    //click button
+    document.querySelectorAll('.btn-conversion').forEach(button => {
+        button.addEventListener('click', function() {
+            const conversionDiv = this.nextElementSibling;
+            conversionDiv.style.display = (conversionDiv.style.display === 'none') ? 'block' : 'none';
+        });
+    });
+}
+
+
+function renderPagination(totalPages, currentPage) {
+    let paginationHtml = '';
+
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage(${currentPage - 1})">&lt;</button>
+        </li>
+    `;
+
+
+    if (currentPage > 2) {
+        paginationHtml += `
+            <li class="page-item"><button class="page-link" onclick="loadPage(0)">1</button></li>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+        `;
+    }
+
+
+    for (let i = Math.max(0, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <button class="page-link" onclick="loadPage(${i})">${i + 1}</button>
+            </li>
+        `;
+    }
+
+
+    if (currentPage < totalPages - 3) {
+        paginationHtml += `
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item"><button class="page-link" onclick="loadPage(${totalPages - 1})">${totalPages}</button></li>
+        `;
+    }
+
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage(${currentPage + 1})">&gt;</button>
+        </li>
+    `;
+
+    document.getElementById('pagination').innerHTML = paginationHtml;
+}
+
+
+function loadPage(page) {
+    if (page < 0 || page >= Math.ceil(data.length / pageSize)) return;
+
+    currentPage = page;
+    const startIndex = page * pageSize;
+    const endIndex = startIndex + pageSize;
+    const pageData = data.slice(startIndex, endIndex); 
+
+    renderStockTable(pageData);
+
+    const totalPages = Math.ceil(data.length / pageSize);
+    renderPagination(totalPages, currentPage); 
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadPage(currentPage); 
+});
+</script>
+
+
+</body>
+</html>

@@ -1,3 +1,65 @@
+.conversion-container {
+    background-color: #f8f9fa; 
+    border: 1px solid #dee2e6; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    padding: 10px; 
+    margin-top: 8px; 
+    max-width: 260px;
+    text-align: left; 
+}
+
+
+.conversion-container ul {
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+}
+
+
+.conversion-container li {
+    display: flex; 
+    justify-content: space-between; 
+    padding: 5px 5px; 
+    border-bottom: 1px solid #dee2e6; 
+}
+
+
+.conversion-container li:last-child {
+    border-bottom: none;
+}
+
+
+.conversion-label {
+    font-weight: 600;
+    color: #495057; 
+}
+
+
+.quantity-label {
+    font-weight: 500;
+    color: #6c757d; 
+}
+
+
+.no-conversion-message {
+    text-align: center;
+    color: #dc3545;
+    font-style: italic;
+}
+	table {
+    width: 100%;
+    table-layout: fixed; 
+	}
+	
+	table th, table td {
+	    text-align: center;
+	    padding: 10px;
+	    min-width: 150px; 
+	    overflow: hidden; 
+	    word-wrap: break-word; 
+	}
+
 .conversion-div {
     position: absolute;
     background-color: white;
@@ -5,9 +67,9 @@
     border-radius: 5px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
     padding: 10px;
-    display: none; /* Ẩn mặc định */
-    z-index: 999; /* Đảm bảo div nằm trên các phần tử khác */
-    width: 300px; /* Chiều rộng khung */
+    display: none; 
+    z-index: 999; 
+    width: 300px; 
 }
 .conversion-div h5 {
     margin-top: 0;
@@ -18,7 +80,7 @@
     display: block;
     margin-top: 10px;
 }
-/* Style cho thẻ table */
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -27,7 +89,7 @@ table {
     margin: 20px 0;
 }
 
-/* Style cho thẻ thead */
+
 thead th {
     background-color: #4F4F4F;
     color: white;
@@ -36,27 +98,27 @@ thead th {
     border: 1px solid #ddd;
 }
 
-/* Style cho thẻ tbody */
+
 tbody tr {
     border: 1px solid #ddd;
     transition: background-color 0.2s ease;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Màu nền cho hàng chẵn */
+    background-color: #f9f9f9; 
 }
 
 tbody tr:hover {
-    background-color: #f1f1f1; /* Hiệu ứng khi rê chuột */
+    background-color: #f1f1f1; 
 }
 
-/* Style cho các ô dữ liệu */
+
 td {
     padding: 10px;
     border: 1px solid #ddd;
 }
 
-/* Style cho phần tìm kiếm */
+
 .input-group {
     margin-bottom: 15px;
 }
@@ -76,12 +138,12 @@ td {
     color: white;
 }
 
-/* Căn chỉnh phần tìm kiếm ở trung tâm */
+
 .card-header .input-group {
     margin: 0 auto;
 }
 
-/* Căn chỉnh tiêu đề bảng */
+
 .card-title {
     font-size: 18px;
     font-weight: bold;
@@ -89,7 +151,10 @@ td {
     margin-bottom: 15px;
 }
 
-/* Đảm bảo bảng phản hồi tốt trên màn hình nhỏ */
 .table-responsive {
     overflow-x: auto;
 }
+.nav-pills .nav-link.active {
+	background-color: #1874CD !important;
+}
+

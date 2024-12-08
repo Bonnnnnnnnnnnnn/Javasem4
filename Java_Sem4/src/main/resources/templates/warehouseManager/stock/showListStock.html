@@ -7,96 +7,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href=@{/css/stockAll.css}>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+
+ 
+    </style>
 </head>
 <body>
 
 <div th:replace="warehouseManager/layout/header_admin"></div>
 <div class="content-wrapper" style="min-height: 1302.4px;">
-    <!-- <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Stock</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Stock</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Information</h3>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="table-container">
 
-                                <table class="table table-bordered table-sm mt-3">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th>Product Name</th>
-                                            <th>Unit</th>
-                                            <th>Price</th>		                                            
-                                            <th>quantity</th>
-                                            <th>Conversions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="detail : ${stocks}" class="text-center">
-                                            <td>
-                                                <span th:text="${detail.productName}"></span>
-                                            </td>
-                                            <td>
-                                                <span th:text="${detail.unitName}"></span>
-                                            </td>
-                                            <td>
-                                            	<span th:text="${detail.Price}"></span>
-                                            </td>                                            
-                                            <td>
-                                            	<span th:text="${detail.Quantity}"></span>
-                                            </td>
-											<td>
-							                    <button type="button" class="btn btn-primary btn-conversion" 
-								                        data-product-id="${detail.id}">
-								                    Show Conversion
-								                </button>
-								                <div class="conversion-div" style="display: none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-								                    <h5>Conversions</h5>
-								                    <ul>
-								                        <li th:each="conversion : ${detail.conversions}">
-								                            <span th:text="${conversion.FromUnitName}">Unit</span>:
-								                            <span th:text="${conversion.ConverSionQuantity}">Quantity</span>
-								                        </li>
-								                    </ul>
-								                </div>
-							            </td>										
-                                      </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> -->
 			        <section class="content">
 			      <div class="container-fluid">
 			        <div class="row">
 			          <div class="col-12">
 			            <div class="card">
-			              <div class="card-header">
-			                <h3 class="card-title">Stock</h3>
+			              <div class="card-header">			                
 			                <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
 			                    <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
 			                    <div class="input-group-append">
@@ -107,111 +33,289 @@
 			                </div>
 			              </div>
 			              <!-- /.card-header -->
-			              <div class="card-body table-responsive p-0">
-			                <table class="table table-hover text-nowrap">
-			                  <thead>
-			                    <tr class="text-center">
-			                        <th>Product Name</th>
-			                        <th>Unit</th>
-			                        <th>Price</th>		                                            
-			                        <th>quantity</th>
-			                        
-			                    </tr>
-			                  </thead>
-			                  <tbody id="warehouseTable">
-							        
-										<tr th:each="detail : ${stocks}" class="text-center">
-										    <td>
-                                                <span th:text="${detail.productName}"></span>
-                                            </td>
-                                            <td>
-                                                <span th:text="${detail.unitName}"></span>
-                                            </td>
-                                            <td>
-                                            	<span th:text="${detail.Price}"></span>
-                                            </td>                                            
-                                            <td>
-                                            	<span th:text="${detail.Quantity}"></span>
-                                            </td>
-										</tr>
-							    </tbody>
-			                </table>
-			                
-<!-- 			                <table style="margin-left:42%">
-							   <tfoot id="paginationFooter">
-							        <tr class="pagination">
-							            <td>
-							                <a th:href="@{/warehouseManager/showWareReleasenote(cp=1)}" title="First page">&laquo;</a>
-							            </td>
-							            <td th:if="${pv.Page_current > 1}">
-							                <a th:href="@{/warehouseManager/showWareReleasenote(cp=${pv.Page_current - 1})}" title="Previous page">&lt;</a>
-							            </td>
-							            <td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
-							                th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
-							                <a th:href="@{/warehouseManager/showWareReleasenote(cp=${i + 1})}"
-							                   th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
-							                    <span th:text="${i + 1}"></span>
-							                </a>
-							            </td>
-							            <td th:if="${pv.Page_current < pv.Total_page}">
-							                <a th:href="@{/warehouseManager/showWareReleasenote(cp=${pv.Page_current + 1})}" title="Next page">&gt;</a>
-							            </td>
-							            <td>
-							                <a th:href="@{/warehouseManager/showWareReleasenote(cp=${pv.Total_page})}" title="Last page">&raquo;</a>
-							            </td>
-							        </tr>
-							    </tfoot>
-							</table> -->
-							
+			              <div class="card-header p-2" >
+			                <ul class="nav nav-pills">
+			                	<li class="nav-item" >
+							        <a class="nav-link active" href="#stocklist" data-toggle="pill">inventory list</a>
+							    </li>
+							    <li class="nav-item">
+							        <a class="nav-link" href="#sotcklistdetail" data-toggle="pill">detailed inventory list</a>
+							    </li>
+							</ul>
 			              </div>
+			              <div class="card-body">
+						    <div class="tab-content">
+						        <!-- Tab for Inventory List -->
+						        <div class="tab-pane fade show active" id="stocklist">
+						            <div id="stockTableContainer1"></div>
+										<nav aria-label="Page navigation">
+										    <ul id="pagination1" class="pagination" style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;"></ul>
+										</nav>
+						        </div>
+						
+						        <!-- Tab for Detailed Inventory List -->
+						        <div class="tab-pane fade" id="sotcklistdetail">
+						            <div id="stockTableContainer2">
+
+		                            </div>
+		                            <nav aria-label="Page navigation">
+										<ul id="pagination2" class="pagination" style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+										</ul>                            
+									</nav>
+						        </div>
+						    </div>
+						</div>
+
 			            </div>
 			          </div>
 			        </div>
 			      </div>
 			    </section>
-    		</div>
+    		</div>    		
+    		
 
 <div th:replace="warehouseManager/layout/footer_admin"></div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Chọn tất cả các nút Show Conversion
-    const conversionButtons = document.querySelectorAll(".btn-conversion");
+<script th:inline="javascript">
+var data1 = /*[[${stocks}]]*/ {}; 
+var data2 = /*[[${stockdetail}]]*/ {};
 
-    conversionButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            // Lấy vị trí của nút
-            const buttonRect = this.getBoundingClientRect();
+var pageSize1 = 8; 
+var currentPage1 = 0;
+
+function renderStockTable1(stockList) {
+    let tableHtml = `
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr class="text-center">
+                    <th>Product Name</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Conversion</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    stockList.forEach(stock => {
+        tableHtml += `
+            <tr class="text-center">
+                <td>${stock.productName}</td>
+                <td>${stock.unitName}</td>
+                <td>${stock.price}</td>
+                <td>${stock.quantity}</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-conversion1" 
+                        data-product-id="${stock.productId}">
+                        Show Conversion
+                    </button>
+                    <div class="conversion-div conversion-container" style="display: none;">
+                        <ul>
+                            ${stock.conversions.length > 0 
+                                ? stock.conversions.map(conversion => `
+                                    <li>
+                                        <span class="conversion-label">Unit: ${conversion.fromUnitName}</span> 
+                                        <span class="quantity-label">Quantity: ${conversion.converSionQuantity}</span>
+                                    </li>
+                                `).join('')
+                                : `<li class="no-conversion-message">No Conversion Available</li>`
+                            }
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    document.getElementById('stockTableContainer1').innerHTML = tableHtml;
+
+    // Click button for table 1
+    document.querySelectorAll('#stockTableContainer1 .btn-conversion1').forEach(button => {
+        button.addEventListener('click', function(event) {
+        	event.stopPropagation();
             const conversionDiv = this.nextElementSibling;
-
             if (conversionDiv) {
-                // Cập nhật vị trí của div
-                conversionDiv.style.left = `${buttonRect.left}px`;
-                conversionDiv.style.top = `${buttonRect.bottom + window.scrollY + 10}px`; // Thêm khoảng cách phía dưới nút
-
-                // Hiển thị div
-                conversionDiv.style.display = "block";
+                conversionDiv.style.display = (conversionDiv.style.display === 'none') ? 'block' : 'none';
             }
         });
     });
-
-    // Đóng div khi nhấn nút Close
-    const closeButtons = document.querySelectorAll(".btn-close-conversion");
-
-    closeButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            // Ẩn div
-            const conversionDiv = this.parentElement;
-            conversionDiv.style.display = "none";
+    
+    document.addEventListener('click', function(event) {
+        const conversionDivs = document.querySelectorAll('.conversion-div');
+        const buttons = document.querySelectorAll('.btn-conversion1');
+        
+        conversionDivs.forEach(conversionDiv => {           
+            if (!conversionDiv.contains(event.target) && !event.target.classList.contains('btn-conversion1')) {
+                conversionDiv.style.display = 'none';  
+            }
         });
     });
+    
+}
+
+function renderPagination1(totalPages, currentPage) {
+    let paginationHtml = '';
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage1(${currentPage - 1})">&lt;</button>
+        </li>
+    `;
+
+    for (let i = 0; i < totalPages; i++) {
+        paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <button class="page-link" onclick="loadPage1(${i})">${i + 1}</button>
+            </li>
+        `;
+    }
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage1(${currentPage + 1})">&gt;</button>
+        </li>
+    `;
+
+    document.getElementById('pagination1').innerHTML = paginationHtml;
+}
+
+function loadPage1(page) {
+    if (page < 0 || page >= Math.ceil(data1.length / pageSize1)) return;
+
+    currentPage1 = page;
+    const startIndex = page * pageSize1;
+    const endIndex = startIndex + pageSize1;
+    const pageData = data1.slice(startIndex, endIndex);
+
+    renderStockTable1(pageData);
+
+    const totalPages = Math.ceil(data1.length / pageSize1);
+    renderPagination1(totalPages, currentPage1);
+}
+
+var pageSize2 = 8;
+var currentPage2 = 0;
+
+function renderStockTable2(stockList) {
+    let tableHtml = `
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr class="text-center">
+                    <th>Product Name</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Conversion</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    stockList.forEach(stock => {
+        tableHtml += `
+            <tr class="text-center">
+                <td>${stock.productName}</td>
+                <td>${stock.unitName}</td>
+                <td>${stock.whPrice}</td>
+                <td>${stock.quantity}</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-conversion2" 
+                        data-product-id="${stock.product_id}">
+                        Show Conversion
+                    </button>
+                    <div class="conversion-div conversion-container" style="display: none;">
+                        <ul>
+                            ${stock.listconversion.length > 0 
+                                ? stock.listconversion.map(conversion => `
+                                    <li>
+                                        <span class="conversion-label">Unit: ${conversion.fromUnitName}</span> 
+                                        <span class="quantity-label">Quantity: ${conversion.converSionQuantity}</span>
+                                    </li>
+                                `).join('')
+                                : `<li class="no-conversion-message">No Conversion Available</li>`
+                            }
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    document.getElementById('stockTableContainer2').innerHTML = tableHtml;
+
+    // Click button for table 2
+    document.querySelectorAll('#stockTableContainer2 .btn-conversion2').forEach(button => {
+        button.addEventListener('click', function(even) {
+        	event.stopPropagation();
+            const conversionDiv = this.nextElementSibling;
+            if (conversionDiv) {
+                conversionDiv.style.display = (conversionDiv.style.display === 'none') ? 'block' : 'none';
+            }
+        });
+    });
+    
+    document.addEventListener('click', function(event) {
+        const conversionDivs = document.querySelectorAll('.conversion-div');
+        const buttons = document.querySelectorAll('.btn-conversion2');
+        
+        conversionDivs.forEach(conversionDiv => {           
+            if (!conversionDiv.contains(event.target) && !event.target.classList.contains('btn-conversion2')) {
+                conversionDiv.style.display = 'none';  
+            }
+        });
+    });
+}
+
+function renderPagination2(totalPages, currentPage) {
+    let paginationHtml = '';
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage2(${currentPage - 1})">&lt;</button>
+        </li>
+    `;
+
+    for (let i = 0; i < totalPages; i++) {
+        paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <button class="page-link" onclick="loadPage2(${i})">${i + 1}</button>
+            </li>
+        `;
+    }
+
+    paginationHtml += `
+        <li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="loadPage2(${currentPage + 1})">&gt;</button>
+        </li>
+    `;
+
+    document.getElementById('pagination2').innerHTML = paginationHtml;
+}
+
+function loadPage2(page) {
+    if (page < 0 || page >= Math.ceil(data2.length / pageSize2)) return;
+
+    currentPage2 = page;
+    const startIndex = page * pageSize2;
+    const endIndex = startIndex + pageSize2;
+    const pageData = data2.slice(startIndex, endIndex);
+
+    renderStockTable2(pageData);
+
+    const totalPages = Math.ceil(data2.length / pageSize2);
+    renderPagination2(totalPages, currentPage2);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadPage1(currentPage1); 
+    loadPage2(currentPage2); 
 });
-
-
-
-
 </script>
+
 </body>
 </html>

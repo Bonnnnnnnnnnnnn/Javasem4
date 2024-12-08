@@ -77,9 +77,8 @@ public class StockRepository {
                 return stockList;
             }
         });
-
+        
         for (StockSumByWarehouseId stock : stocks) {
-        	System.out.println("Product: " + stock.getProductName());
 
             String sql1 = """
                     SELECT c.*, u.[Name] as fromName, u1.[Name] as toName 
@@ -107,8 +106,6 @@ public class StockRepository {
 
                 ConversionShow conversionShow = new ConversionShow(cs.getFromUnitName(), convertedQuantity);
 
-                System.out.println("  From: " + conversionShow.getFromUnitName() + " -> " + conversionShow.getConverSionQuantity());
-
                 conversionshows.add(conversionShow);
             }
             stock.setConversions(conversionshows);
@@ -116,34 +113,72 @@ public class StockRepository {
 
         return stocks;
     }
+    
 
-	
-    public List<Stock> findStock(int warehouseId) {
-    	 String sql = String.format(""" 
-    	 		SELECT 
-			    st.*,
-			    p.Product_name,
-				p.id,
-				u.Name,
-			    wrd.Wh_price,
-			    ew.Employee_Id,
-			    ew.Warehouse_Id,
-			    wh.Name,
-			    whr.Shipping_fee,
-			    whr.Date
-			FROM 
-			    stock st
-			    JOIN Product p ON st.Id_product = p.Id
-				JOIN Unit u ON p.Unit_id = u.Id
-			    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
-			    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
-			    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
-			    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
-			WHERE 			    
-			     ew.Warehouse_Id = ?;
-    	 		""",warehouseId);
-    	 return jdbcTemplate.query(sql,new Stock_mapper(), warehouseId);    
-    	 }
+    public List<Stock> findStockDetail(int warehouseId) {
+        String sql = String.format("""
+                SELECT 
+                    st.*,
+                    p.Product_name,
+                    p.id,
+                    u.Name,
+                    wrd.Wh_price,
+                    ew.Employee_Id,
+                    ew.Warehouse_Id,
+                    wh.Name,
+                    whr.Shipping_fee,
+                    whr.Date
+                FROM 
+                    stock st
+                    JOIN Product p ON st.Id_product = p.Id
+                    JOIN Unit u ON p.Unit_id = u.Id
+                    JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
+                    JOIN Warehouse_receipt whr ON wrd.Wh_receiptId = whr.Id
+                    JOIN Warehouse wh ON whr.Wh_Id = wh.Id
+                    JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
+                WHERE 
+                    ew.Warehouse_Id = ?;
+                """, warehouseId);
+
+        List<Stock> stocks = jdbcTemplate.query(sql, new Stock_mapper(), warehouseId);
+
+        for (Stock stock : stocks) {
+
+            String sql1 = """
+                     SELECT c.*, u.[Name] as fromName, u1.[Name] as toName 
+                    FROM Conversion c
+                    JOIN Unit u ON c.From_unit_id = u.Id
+                    JOIN Unit u1 ON c.To_unit_id = u1.Id
+                    WHERE c.Product_Id = ?;
+                    """;
+
+            List<Conversion> conversions = jdbcTemplate.query(sql1, (rs, rowNum) -> {
+                Conversion conversion = new Conversion();
+                conversion.setId(rs.getInt("Id"));
+                conversion.setFrom_unit_id(rs.getInt("From_unit_id"));
+                conversion.setTo_unit_id(rs.getInt("To_unit_id"));
+                conversion.setConversion_rate(rs.getInt("Conversion_rate"));
+                conversion.setFromUnitName(rs.getString("fromName"));
+                conversion.setToUnitName(rs.getString("toName"));
+                return conversion;
+            }, stock.getProduct_id());
+
+            List<ConversionShow> conversionshows = new ArrayList<>();
+            for (Conversion cs : conversions) {
+                int convertedQuantity = (int) (stock.getQuantity() / cs.getConversion_rate());
+
+                ConversionShow conversionShow = new ConversionShow(cs.getFromUnitName(), convertedQuantity);
+
+                conversionshows.add(conversionShow);
+            }
+
+            stock.setListconversion(conversionshows);
+        }
+
+        return stocks;
+    }
+
+    
     
     
     public List<Map<String, Object>> getInventoryStats() {

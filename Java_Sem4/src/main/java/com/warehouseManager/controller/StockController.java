@@ -32,9 +32,24 @@ public class StockController {
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 		
 		    List<StockSumByWarehouseId> stock = repst.findAllStock(warehouseId);
+		    List<Stock> stockdetail = repst.findStockDetail(warehouseId);
+
+		    model.addAttribute("stocks", stock);	
+		    model.addAttribute("stockdetail", stockdetail);	
+
+		return Views.SHOW_STOCK;
+	}
+	
+	@GetMapping("/showStockDetail")
+	public String showStockDetail(HttpSession session, Model model) {
+		
+		
+		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+		
+		    List<Stock> stock = repst.findStockDetail(warehouseId);
 		    model.addAttribute("stocks", stock);	
 	    
-		return Views.SHOW_STOCK;
+		return Views.SHOW_STOCK_DETAIL;
 	}
 	
 	@GetMapping("/inventory-stats")
