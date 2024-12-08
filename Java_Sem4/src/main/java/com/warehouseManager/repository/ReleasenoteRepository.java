@@ -1,6 +1,7 @@
 package com.warehouseManager.repository;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mapper.Order_mapper;
 import com.mapper.Request_mapper;
+import com.mapper.Request_detail_mapper;
 import com.mapper.Warehouse_releasenote_mapper;
 import com.models.Order;
 import com.models.Order_detail;
@@ -467,16 +469,24 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	            """;
 	    	
-	        for (Warehouse_rn_detail detail : details) {
-	            
-	            Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, detail.getId_product(), warehouseId);
+	    	Map<Integer, Integer> productQuantities = new HashMap<>();
 
-	            
-	            if (totalStock == null || totalStock < detail.getQuantity()) {
-	            	
-	                return false;
-	            }
-	        }
+	    	for (Warehouse_rn_detail detail : details) {
+	    	    productQuantities.merge(detail.getId_product(), detail.getQuantity(), Integer::sum);
+	    	    
+	    	}
+
+
+	    	for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+	    	    Integer productId = entry.getKey();
+	    	    Integer requiredQuantity = entry.getValue();
+
+	    	    Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, productId, warehouseId);
+	    	    if (totalStock == null || totalStock < requiredQuantity) {
+	    	        return false;
+	    	    }
+	    	}
+
 	        
 	        String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Request_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
 	        KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -573,10 +583,9 @@ public class ReleasenoteRepository {
 	        return false; 
 	    }
 	}
-
-
+	
     
-	//add warehouse_releasenote theo OrderId
+	//add warehouse_releasenote with OrderId
 
     @Transactional
     public boolean addWarehouseReleasenoteByOrder(Warehouse_releasenote releasenote, List<Warehouse_rn_detail> details, int warehouseId) {
@@ -597,16 +606,23 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	            """;
 	    	
-	        for (Warehouse_rn_detail detail : details) {
-	            
-	            Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, detail.getId_product(), warehouseId);
+	    	Map<Integer, Integer> productQuantities = new HashMap<>();
 
-	            
-	            if (totalStock == null || totalStock < detail.getQuantity()) {
-	            	
-	                return false;
-	            }
-	        }
+	    	for (Warehouse_rn_detail detail : details) {
+	    	    productQuantities.merge(detail.getId_product(), detail.getQuantity(), Integer::sum);
+	    	    
+	    	}
+
+
+	    	for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+	    	    Integer productId = entry.getKey();
+	    	    Integer requiredQuantity = entry.getValue();
+
+	    	    Integer totalStock = jdbcTemplate.queryForObject(sqlCheckStock, Integer.class, productId, warehouseId);
+	    	    if (totalStock == null || totalStock < requiredQuantity) {
+	    	        return false;
+	    	    }
+	    	}
         	       	
             String sql1 = "INSERT INTO Warehouse_releasenote (Name, Date, Status, Order_Id, Employee_Id) VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -634,6 +650,8 @@ public class ReleasenoteRepository {
                     detail.getQuantity()
                 );
                 
+                
+				
                 int remainingQuantity = detail.getQuantity();
 
 	            String sqlGetStocks = """
@@ -690,9 +708,12 @@ public class ReleasenoteRepository {
 	                    break; 
 	                }
 	            }
+
+	            
 	            if (remainingQuantity > 0) {
 	                return false; 
 	            }
+				 
             }
             
             return result1 > 0;  
@@ -822,67 +843,56 @@ public class ReleasenoteRepository {
 		}
 
 	  
-	  // update quantity_exported
-	  public int updateQuantityExported(int wgrnId, int requestId, int idProduct) {
-		    String sql = "SELECT SUM(" + Views.COL_WAREHOUSE_RN_DETAIL_QUANTITY + ") " +
-		                 "FROM " + Views.TBL_WAREHOUSE_RN_DETAIL + " " +
-		                 "WHERE " + Views.COL_WAREHOUSE_RN_DETAIL_PRODUCTID + " = ? " +
-		                 "AND " + Views.COL_WAREHOUSE_RNOTE_ID + " = ?"; 
-
-		    Integer totalQuantity = jdbcTemplate.queryForObject(sql, Integer.class, idProduct, wgrnId);
-		    if (totalQuantity == null) {
-		        totalQuantity = 0;
-		    }
-
-		    String updateSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
-                  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " = COALESCE(" +
-                  Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + ", 0) + ? " +
-                  "WHERE " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ? " +
-                  "AND " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ?";
-		    		    
-		    jdbcTemplate.update(updateSql, totalQuantity, idProduct, requestId);  
-		    
-		    return totalQuantity;
-		}
 
 	  
 	  //total quantity_requested
-	  public int getQuantityRequested(int requestId, int idProduct) {
+	  public int getQuantityRequested(int id, int requestId, int idProduct) {
 		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED + " " +
 		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
-		                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
+		                 "WHERE " + Views.COL_REQUEST_DETAIL_ID + " = ? AND " +
+		                  Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
 		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
 
-		    Integer quantityRequested = jdbcTemplate.queryForObject(sql, Integer.class, requestId, idProduct);
+		    Integer quantityRequested = jdbcTemplate.queryForObject(sql, Integer.class, id, requestId, idProduct);
 
 		    return (quantityRequested != null) ? quantityRequested : 0;
 		}
 
 	  //total quantity_exported
-	  public int getQuantityExported(int requestId, int idProduct) {
-		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_EXPORTED + " " +
-		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
-		                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
-		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
+	  public int getQuantityExported(int id, int requestId, int idProduct) {
+		  String checkSql = "SELECT Quantity_exported FROM Request_detail WHERE id = ? AND Request_Id = ? AND Id_product = ?";
 
-		    Integer quantityExported = jdbcTemplate.queryForObject(sql, Integer.class, requestId, idProduct);
+		    Integer quantityExported = jdbcTemplate.queryForObject(checkSql, Integer.class,id, requestId, idProduct);
 
 		    return (quantityExported != null) ? quantityExported : 0;
 		}
+	 //find_id
+	 public List<Request_detail> getRequestDetailsByRequestId(int requestId) {
+		    String sql = "SELECT * FROM Request_detail WHERE Request_Id = ?";
+		    return jdbcTemplate.query(sql, new Request_detail_mapper(), requestId);
+		}
 
+	 //update_request_detail
+	 public void updateQuantityExportedz(int id, int productId, int requestId, int quantityToAdd) {
+		    String sql = "UPDATE Request_detail " +
+		                 "SET Quantity_exported = Quantity_exported + ? " +
+		                 "WHERE id = ? AND Id_product = ? AND Request_Id = ?";
+		    jdbcTemplate.update(sql, quantityToAdd, id, productId, requestId);
+		}
 	  //update status request_detail
-	  public int updateStatusRequestDetail(int requestId,int idProduct) {
-		    int totalQuantityRequested = getQuantityRequested(requestId,idProduct);
-		    int totalQuantityExported = getQuantityExported(requestId,idProduct);
+	  public int updateStatusRequestDetail(int id, int requestId, int idProduct ) {
+		    int totalQuantityRequested = getQuantityRequested(id, requestId, idProduct);
+		    int totalQuantityExported = getQuantityExported(id, requestId, idProduct);
 
 		    if (totalQuantityExported >= totalQuantityRequested) {
-		        String updateStatusSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
-		                                 Views.COL_REQUEST_DETAIL_STATUS + " = 'Completed' " + 
-		                                 "WHERE " + Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? AND "
-		                                 + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
-		        jdbcTemplate.update(updateStatusSql, requestId, idProduct);
-		    } 
-		    		    
+		    	String updateStatusSql = "UPDATE " + Views.TBL_REQUEST_DETAIL + " SET " +
+                        Views.COL_REQUEST_DETAIL_STATUS + " = 'Completed' " + 
+                        "WHERE " + Views.COL_REQUEST_DETAIL_ID + " =? AND " +
+                        Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? AND " +
+                        Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
+		    			jdbcTemplate.update(updateStatusSql, id, requestId, idProduct);
+		    }
+
 		    return totalQuantityRequested;
 		}
 

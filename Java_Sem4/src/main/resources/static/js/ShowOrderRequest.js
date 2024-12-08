@@ -17,7 +17,7 @@ function loadPage(pageNumber) {
 }
 
 function goToDetail(id) {
-      window.location.href = '/businessManager/updateOrderDetail?id=' + id;
+      window.location.href = '/businessManager/showOrderDetailForm?id=' + id;
   }
 
 function confirmDelete() {

@@ -123,8 +123,8 @@
 							        <table class="table table-bordered table-sm mt-3">
 							            <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 1;">
 							                <tr>
-							                    <th style="width: 29%;">Product Name</th>
-							                    <th style="width: 19%;">Unit</th>
+							                    <th style="width: 30%;">Product Name</th>
+							                    <th style="width: 20%;">Unit</th>
 							                    <th style="width: 25%;">Quantity Request</th>
 							                    <th style="width: 26%;">Quantity Exported</th>
 							                </tr>
@@ -179,34 +179,27 @@
 <script>
 	document.querySelectorAll('input[name="quantity_Ex[]"]').forEach(input => {
 	    input.addEventListener('input', function (e) {
-	        const quantityValue = parseInt(e.target.value, 10); // Chuyển đổi giá trị input thành số nguyên
+	        const quantityValue = parseInt(e.target.value, 10); 
 	
-	        // Kiểm tra xem quantityValue có phải là NaN không
+	        
 	        if (isNaN(quantityValue)) {
 	            alert("Invalid input! Please enter a valid number.");
-	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu nhập không hợp lệ
-	            return; // Dừng xử lý nếu giá trị không hợp lệ
+	            e.target.value = 0; 
+	            return; 
 	        }
 	
-	        const row = e.target.closest('tr'); // Lấy hàng chứa input
-	        const remainingQuantity = parseInt(row.querySelector('.remainingQuantity').textContent, 10); // Giá trị remainingQuantity
+	        const row = e.target.closest('tr'); 
+	        const remainingQuantity = parseInt(row.querySelector('.remainingQuantity').textContent, 10); 
 	        const statusInput = row.querySelector('input[name="status[]"]');
 	
-	        // Kiểm tra nếu quantityValue là số âm
+	        
 	        if (quantityValue < 0) {
 	            alert("Quantity entered cannot be a negative number! Please enter a valid quantity.");
-	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu số âm
+	            e.target.value = 0; 
 	        } else if (quantityValue > remainingQuantity) {
 	            alert("Quantity entered exceeds remaining quantity! Please enter a valid quantity.");
-	            e.target.value = remainingQuantity; // Đặt lại giá trị của input về số lượng còn lại
-	        } else if(quantityValue === remainingQuantity) {
-	        	statusInput.value = "Completed";
-	        	console.log('status1: ' + statusInput.value);
-
-	        } else {
-	        	statusInput.value = "Processing";
-	        	console.log('status2: ' + statusInput.value);
-	        }
+	            e.target.value = remainingQuantity; 
+	        } 	      
 	    });
 	});
 

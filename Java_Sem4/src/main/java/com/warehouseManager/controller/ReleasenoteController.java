@@ -92,7 +92,7 @@ public class ReleasenoteController {
 			model.addAttribute("orders", orders);
 			model.addAttribute("pv",pv);		
 		}else {
-			System.out.println("login zzzz");
+			return "employee/login";
 		}
 
 		return Views.SHOW_ORDER_WAREHOUSE_RELEASENOTE;
@@ -152,7 +152,7 @@ public class ReleasenoteController {
 			
 			rele.updateStatusToProcessing(requestId);
 		} else {
-			System.out.println("login");
+			return "employee/login";
 		}
 		return "redirect:/warehouseManager/ShowOrderRequest";
 	}
@@ -169,7 +169,7 @@ public class ReleasenoteController {
 			rele.updateStatusInOrder(OrderId);
 			
 		} else {
-			System.out.println("login");
+			return "employee/login";
 		}
 		return "redirect:/warehouseManager/ShowInforOrder";
 	}
@@ -191,7 +191,7 @@ public class ReleasenoteController {
 			model.addAttribute("orders", orders);
 			model.addAttribute("pv",pv);
 		} else {
-			model.addAttribute("error", "login");
+			return "employee/login";
 		}
 
 		return Views.SHOW_ORDER_IN_WAREHOUSE_RELEASENOTE;
@@ -383,14 +383,46 @@ public class ReleasenoteController {
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
 			for (int i = 0; i < id_product.size(); i++) {					
-
-				Warehouse_rn_detail detail = new Warehouse_rn_detail();
-				detail.setId_product(id_product.get(i));
-				detail.setQuantity(quantity.get(i));
-				detail.setStatus(status.get(i));
-				details.add(detail);
+				if (quantity.get(i) > 0) { 
+		            Warehouse_rn_detail detail = new Warehouse_rn_detail();
+		            detail.setId_product(id_product.get(i));
+		            detail.setQuantity(quantity.get(i));
+		            detail.setStatus(status.get(i));
+		            details.add(detail);
+		            		            
+		        }
 			}
 		}
+		
+		
+		List<Request_detail> rsdetail = new ArrayList<>();
+
+		if (id_product != null && !id_product.isEmpty()) { 
+
+		    List<Request_detail> rsdetails = rele.getRequestDetailsByRequestId(requestId);
+
+		    List<Integer> requestDetailIds = rsdetails.stream()
+		                                            .map(Request_detail::getId)
+		                                            .collect(Collectors.toList());
+
+		    for (int i = 0; i < id_product.size(); i++) { 
+		        Request_detail detail = new Request_detail();
+
+		        int productId = id_product.get(i); 
+		        int quantityExported = quantity.get(i); 
+		        if (requestDetailIds.size() > i) {
+		            int detailId = requestDetailIds.get(i);
+		            detail.setId(detailId);                
+		            detail.setQuantity_exported(quantityExported); 
+		            detail.setId_product(productId); 
+
+		            rsdetail.add(detail);
+
+		            rele.updateQuantityExportedz(detailId, productId, requestId, quantityExported);
+		        } 
+		    }
+		}
+	 
 
 		boolean isSaved = rele.addWarehouseReleasenote(releasenote, details, warehouseId);
 		
@@ -400,18 +432,26 @@ public class ReleasenoteController {
 	    }
 		
 	    if (isSaved) {
-	        int releaseNoteId = releasenote.getId(); 
-	        
-	        for (int i = 0; i < id_product.size(); i++) {
-	            int idProduct = id_product.get(i); 
-	            int wgrnId = releaseNoteId;
-	            rele.updateQuantityExported(wgrnId,requestId, idProduct);
-	        }
-	        
-	        for (int i = 0; i < id_product.size(); i++) {
-	            int idProduct = id_product.get(i); 
-	            rele.updateStatusRequestDetail(requestId, idProduct); 
-	        }
+			
+
+	        if (id_product != null && !id_product.isEmpty()) {
+	        	List<Request_detail> rsdetails = rele.getRequestDetailsByRequestId(requestId);
+
+			    List<Integer> requestDetailIdss = rsdetails.stream()
+			                                            .map(Request_detail::getId)
+			                                            .collect(Collectors.toList());
+		        for (int i = 0; i < id_product.size(); i++) {
+			        
+
+		            int idProduct = id_product.get(i);
+		            if (requestDetailIdss.size() > i) {
+			            int detailId = requestDetailIdss.get(i);
+			                            
+			            
+			            rele.updateStatusRequestDetail(detailId, requestId, idProduct); 
+		            }
+		        }	        	
+	        }    	
 	        
 	        rele.isRequestComplete(requestId);        
 	    }	
@@ -492,13 +532,13 @@ public class ReleasenoteController {
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
 			for (int i = 0; i < id_product.size(); i++) {
-
+				if (quantity_Ex.get(i) > 0) {
 				Warehouse_rn_detail detail = new Warehouse_rn_detail();
 				detail.setId_product(id_product.get(i));
 				detail.setQuantity(quantity_Ex.get(i));				
 				detail.setStatus(status.get(i));
-
 				details.add(detail);
+				}
 			}
 		}
 
@@ -526,7 +566,7 @@ public class ReleasenoteController {
 	        	List<Request_detail> rqdts = new ArrayList<>();
 	    		if (id_product != null && !id_product.isEmpty()) {
 	    			for (int i = 0; i < id_product.size(); i++) {
-
+	    				
 	    				Request_detail detail = new Request_detail();
 	                    detail.setId_product(id_product.get(i));
 	                    detail.setQuantity_exported(quantity_Ex.get(i));
@@ -544,14 +584,14 @@ public class ReleasenoteController {
 	    		
 	    	boolean saveRs = repoder.addRequestOrderWithDetails(rq, rqdts);
 	    	
-		    if (saveRs) {		        
-		        int requestId = rq.getId();
-		        for (int i = 0; i < id_product.size(); i++) {
-		            int idProduct = id_product.get(i); 
-		            rele.updateStatusRequestDetail(requestId, idProduct);		            
-		        }
-		        return "redirect:insufficientOutputDetail?id=" + requestId;
-		      }
+			
+			if (saveRs) {
+				
+				int requestId = rq.getId();				
+			
+				return "redirect:insufficientOutputDetail?id=" + requestId; 
+				}
+			 
 	        }	
 	        rele.isRleComplete(releaseNoteId,id);
 	    }		

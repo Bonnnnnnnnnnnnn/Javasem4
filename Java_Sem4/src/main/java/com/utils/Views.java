@@ -291,7 +291,7 @@ public final class Views {
 	// 24.REQUEST
 	public static String ADD_ORDER_REQUEST = "businessManager/OrderRequest/addOrderRequest";
 	public static String SHOW_ORDER_REQUEST = "businessManager/OrderRequest/orderRequest";
-	public static String UPDATE_ORDER_REQUEST = "businessManager/OrderRequest/updateOrderRequest";
+	public static String SHOW_ORDER_REQUEST_DETAIL_BUNISS = "businessManager/OrderRequest/showOrderRequestDetail";
 	public static String ORDER_REQUEST_DETAIL = "businessManager/OrderRequest/orderRequestDetail";
 
 	public static String REPLY_COMMENT = "businessManager/Comment/Replycomment";

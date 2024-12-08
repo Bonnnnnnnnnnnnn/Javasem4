@@ -107,18 +107,17 @@ public class RequestOrderController {
     }
 
 
-    @GetMapping("/updateOrderDetail")
-    public String showUpdateOrderDetailForm(
+    @GetMapping("/showOrderDetailForm")
+    public String showOrderDetailForm(
             @RequestParam("id") int id,
             Model model) {
 
-        Request request = repoder.findRequestById(id);
-        List<Request_detail> details = repoder.findDetailsByRequestId(id);
+  	  Request request = repoder.findRequestById(id); 
+  	  List<Request_detail> details = rele.findDetailsByRequestId(id);
+  	  model.addAttribute("request", request); 
+  	  model.addAttribute("details", details);	
 
-        model.addAttribute("requests", request);
-        model.addAttribute("details", details);
-
-        return Views.UPDATE_ORDER_REQUEST; 
+        return Views.SHOW_ORDER_REQUEST_DETAIL_BUNISS; 
     }
     
 

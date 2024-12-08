@@ -181,31 +181,25 @@
 <script>
 	document.querySelectorAll('input[name="quantity[]"]').forEach(input => {
 	    input.addEventListener('input', function (e) {
-	        const quantityValue = parseInt(e.target.value, 10); // Chuyển đổi giá trị input thành số nguyên
+	        const quantityValue = parseInt(e.target.value, 10); 
 	
-	        // Kiểm tra xem quantityValue có phải là NaN không
 	        if (isNaN(quantityValue)) {
 	            alert("Invalid input! Please enter a valid number.");
-	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu nhập không hợp lệ
-	            return; // Dừng xử lý nếu giá trị không hợp lệ
+	            e.target.value = 0;
+	            return; 
 	        }
 	
-	        const row = e.target.closest('tr'); // Lấy hàng chứa input
-	        const remainingQuantity = parseInt(row.querySelector('.remainingQuantity').textContent, 10); // Giá trị remainingQuantity
-	        const statusInput = row.querySelector('input[name="status[]"]'); // Lấy input `status` trong cùng hàng
+	        const row = e.target.closest('tr'); 
+	        const remainingQuantity = parseInt(row.querySelector('.remainingQuantity').textContent, 10); 
+	        const statusInput = row.querySelector('input[name="status[]"]'); 
 
 
-	        // Kiểm tra nếu quantityValue là số âm
 	        if (quantityValue < 0) {
 	            alert("Quantity entered cannot be a negative number! Please enter a valid quantity.");
-	            e.target.value = 0; // Đặt lại giá trị của input về 0 nếu số âm
+	            e.target.value = 0; 
 	        } else if (quantityValue > remainingQuantity) {
 	            alert("Quantity entered exceeds remaining quantity! Please enter a valid quantity.");
-	            e.target.value = remainingQuantity; // Đặt lại giá trị của input về số lượng còn lại	            
-	        } else if(quantityValue === remainingQuantity) {
-	        	statusInput.value = "Completed";
-	        } else {
-	        	statusInput.value = "Processing";
+	            e.target.value = remainingQuantity; 	            
 	        }
 	                 	        	              	        
 	    });
