@@ -1,6 +1,6 @@
 
-<body xmlns:th="http://www.thymeleaf.org">
-	
+<div xmlns:th="http://www.thymeleaf.org">
+
 	<style>
 .statistics-container {
 	background-color: #fff;
@@ -166,6 +166,20 @@
 	margin-bottom: 10px;
 	font-weight: bold;
 }
+
+.chart-container {
+	position: relative;
+	min-height: 500px;
+	width: 100%;
+	height: 60vh;
+}
+
+.period-note {
+	font-size: 12px;
+	color: #666;
+	font-style: italic;
+	font-weight: normal;
+}
 </style>
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<!-- Bootstrap 4 -->
@@ -214,13 +228,25 @@
 						<!-- Navigation Tabs -->
 						<ul class="nav nav-tabs mb-4">
 							<li class="nav-item"><a class="nav-link active"
-								data-toggle="tab" href="#revenueTab">Revenue</a></li>
+								data-toggle="tab" href="#revenueTab"> <i
+									class="fas fa-dollar-sign"></i> Revenue
+							</a></li>
 							<li class="nav-item"><a class="nav-link" data-toggle="tab"
-								href="#warehouseTab">Warehouse Analysis</a></li>
+								href="#warehouseTab"> <i class="fas fa-warehouse"></i>
+									Warehouse Analysis
+							</a></li>
 							<li class="nav-item"><a class="nav-link" data-toggle="tab"
-								href="#productsTab">Products Analysis</a></li>
+								href="#productsTab"> <i class="fas fa-box"></i> Products
+									Analysis
+							</a></li>
 							<li class="nav-item"><a class="nav-link" data-toggle="tab"
-								href="#mapTab">Geography</a></li>
+								href="#mapTab"> <i class="fas fa-map-marked-alt"></i>
+									Geography
+							</a></li>
+							<li class="nav-item"><a class="nav-link" data-toggle="tab"
+								href="#profitTab"> <i class="fas fa-chart-line"></i> Gross
+									Profit
+							</a></li>
 						</ul>
 
 						<!-- Tab Content -->
@@ -243,7 +269,7 @@
 							</div>
 
 							<!-- Products Analysis Tab -->
-							<div class="tab-pane fade" id="productsTab">
+							<div class="tab-pane fade" id="productsTab" role="tabpanel">
 								<!-- KPI Cards Row -->
 								<div class="row">
 									<!-- Summary Cards -->
@@ -252,7 +278,9 @@
 											<div class="col-md-3">
 												<div class="card">
 													<div class="card-body">
-														<h6 class="card-title">Best Product</h6>
+														<h6 class="card-title">
+															Best Product<span class="period-note"></span>
+														</h6>
 														<p class="card-text" id="bestProduct">-</p>
 														<small class="text-muted" id="bestProductRevenue">$0</small>
 													</div>
@@ -261,7 +289,9 @@
 											<div class="col-md-3">
 												<div class="card">
 													<div class="card-body">
-														<h6 class="card-title">Total Units Sold</h6>
+														<h6 class="card-title">
+															Total Units Sold<span class="period-note"></span>
+														</h6>
 														<p class="card-text" id="totalUnitsSold">0</p>
 													</div>
 												</div>
@@ -269,7 +299,9 @@
 											<div class="col-md-3">
 												<div class="card">
 													<div class="card-body">
-														<h6 class="card-title">Average Price</h6>
+														<h6 class="card-title">
+															Average Price<span class="period-note"></span>
+														</h6>
 														<p class="card-text" id="averagePrice">$0</p>
 													</div>
 												</div>
@@ -277,29 +309,51 @@
 											<div class="col-md-3">
 												<div class="card">
 													<div class="card-body">
-														<h6 class="card-title">Return Rate</h6>
+														<h6 class="card-title">
+															Return Rate<span class="period-note"></span>
+														</h6>
 														<p class="card-text" id="returnRate">0%</p>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-
-									<!-- Charts -->
-									<div class="col-12 mt-4">
+								</div>
+								<!-- Main Product Chart -->
+								<div class="row mb-4">
+									<div class="col-12">
 										<div class="card">
 											<div class="card-body">
-												<canvas id="productChart" height="300"></canvas>
+												<div class="chart-container"
+													style="position: relative; min-height: 400px; height: 50vh;">
+													<canvas id="productChart"></canvas>
+												</div>
 											</div>
 										</div>
 									</div>
+								</div>
 
+								<!-- Top Products Chart -->
+								<div class="row mb-4">
+									<div class="col-12">
+										<div class="card">
+											<div class="card-body">
+												<div class="chart-container"
+													style="position: relative; min-height: 400px; height: 50vh;">
+													<canvas id="topProductsChart"></canvas>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row mb-4">
 									<!-- Top Products Table -->
 									<div class="col-12 mt-4">
 										<div class="card">
 											<div class="card-body">
 												<h5 class="card-title">Top Products</h5>
-												<div class="table-container">
+												<div class="table-container"
+													style="max-height: 400px; overflow-y: auto;">
 													<table class="table">
 														<thead>
 															<tr>
@@ -318,16 +372,7 @@
 									</div>
 								</div>
 
-								<!-- Charts and Table Row -->
-								<div class="row">
-									<!-- Top Products Chart -->
-									<div class="col-md-8">
-										<div class="chart-container">
-											<canvas id="topProductsChart"></canvas>
-										</div>
-									</div>
 
-								</div>
 							</div>
 
 							<div class="tab-pane fade" id="warehouseTab">
@@ -376,23 +421,27 @@
 											<div class="card">
 												<div class="card-body">
 													<div id="vietnamMap" style="height: 600px;"></div>
-													
+
 												</div>
 											</div>
 										</div>
-										
+
 										<!-- Summary Stats -->
 										<div class="col-md-4">
 											<div class="card mb-3">
-												<div class="card-body">
-													<h5>Top Provinces</h5>
+												<div class="card-body top-provinces">
+													<h5>
+														Top Provinces <span class="geoperiod-note"></span>
+													</h5>
 													<div id="topRegionsTable"></div>
 												</div>
 											</div>
 
 											<div class="card">
-												<div class="card-body">
-													<h5>Summary</h5>
+												<div class="card-body summarygeo">
+													<h5>
+														Summary <span class="geoperiod-note"></span>
+													</h5>
 													<div class="summary-stats">
 														<div class="stat-item">
 															<label>Total Revenue:</label> <span
@@ -419,6 +468,73 @@
 												<div class="card-body">
 													<h5 id="districtTitle">District Details</h5>
 													<div id="districtTable"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row mt-4">
+										<div class="col-12">
+											<div id="provinceDetailChart" style="min-height: 400px;"></div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+							<div class="tab-pane fade" id="profitTab">
+								<div class="row">
+									<!-- Monthly Profit Overview -->
+									<div class="col-12">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Monthly Profit Overview</h5>
+												<div class="chart-container"
+													style="position: relative; min-height: 400px; height: 50vh;">
+													<canvas id="monthlyProfitChart"></canvas>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row mt-4">
+									<!-- Product Profit Analysis -->
+									<div class="col-12">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Product Profit Analysis</h5>
+												<div class="chart-container"
+													style="position: relative; min-height: 400px; height: 50vh;">
+													<canvas id="productProfitChart"></canvas>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row mt-4">
+									<!-- Detailed Profit Table -->
+									<div class="col-12">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Profit Details</h5>
+												<div class="table-container"
+													style="max-height: 400px; overflow-y: auto;">
+													<table class="table">
+														<thead>
+															<tr>
+																<th>Period</th>
+																<th>Product</th>
+																<th>Units</th>
+																<th>Revenue</th>
+																<th>Cost</th>
+																<th>Profit</th>
+																<th>Margin%</th>
+															</tr>
+														</thead>
+														<tbody id="profitDetailsTable">
+														</tbody>
+													</table>
 												</div>
 											</div>
 										</div>
@@ -547,7 +663,18 @@
 	        minute: '2-digit'
 	    });
 	}
-
+	function getPeriodDescription(period) {
+	    switch(period.toLowerCase()) {
+	        case 'monthly':
+	            return 'Showing data for last 12 months';
+	        case 'quarterly':
+	            return 'Showing data for last 4 quarters';
+	        case 'yearly':
+	            return 'Showing data for last 5 years';
+	        default:
+	            return '';
+	    }
+	}
 	function changePeriod(period) {
 	    currentPeriod = period;
 	    document.querySelectorAll('.period-btn').forEach(btn => {
@@ -564,35 +691,39 @@
 	        loadWarehouseData(period);
 	    } else if (activeTab.id === 'mapTab') {
 	        loadRevenueData(period);
+	    } else if (activeTab.id === 'profitTab') {
+	        loadProfitAnalysis(period);
 	    }
 	}
 
 	// Tab switching logic
 	$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-    const targetTab = e.target.getAttribute('href');
-    console.log('Switching to tab:', targetTab);
-    
-    if (targetTab === '#productsTab' && !productChart) {
-        loadProductStats(currentPeriod);
-    } else if (targetTab === '#revenueTab') {
-        loadChart(currentPeriod);
-    } else if (targetTab === '#warehouseTab') {
-        loadWarehouseData(currentPeriod);
-    } else if (targetTab === '#mapTab') {
-        if (!map) {
-            initMap(); 
-        }
-        loadRevenueData(currentPeriod);
-    }
-});
+	    const targetTab = e.target.getAttribute('href');
+	  
+	    
+	    if (targetTab === '#productsTab' && !productChart) {
+	        loadProductStats(currentPeriod);
+	    } else if (targetTab === '#revenueTab') {
+	        loadChart(currentPeriod);
+	    } else if (targetTab === '#warehouseTab') {
+	        loadWarehouseData(currentPeriod);
+	    } else if (targetTab === '#mapTab') {
+	        if (!map) {
+	            initMap(); 
+	        }
+	        loadRevenueData(currentPeriod);
+	    } else if (targetTab === '#profitTab') {
+	        loadProfitAnalysis(currentPeriod);
+	    }
+	});
 
 // Initial load
 $(document).ready(function() {
-    console.log('Document ready, initializing...');
+  
     const activeTab = document.querySelector('.tab-pane.active');
     
     if (activeTab) {
-        console.log('Initial active tab:', activeTab.id);
+      
         if (activeTab.id === 'productsTab') {
             loadProductStats(currentPeriod);
         } else if (activeTab.id === 'revenueTab') {
@@ -715,6 +846,12 @@ $(document).ready(function() {
                             text: `Revenue Statistics (${period.charAt(0).toUpperCase() + period.slice(1)})`,
                             font: { size: 16 }
                         },
+                        subtitle: {
+                            display: true,
+                            text: getPeriodDescription(currentPeriod),
+                            font: { size: 12, style: 'italic' },
+                            color: '#666666'
+                        },
                         legend: { position: 'top' },
                         tooltip: {
                             callbacks: {
@@ -776,7 +913,7 @@ $(document).ready(function() {
 	});
 	// ===== PRODUCTS TAB =====
 	let productChart = null;
-
+	let topProductsChart = null;
 	function loadProductStats(period = currentPeriod) {
 	    $("#loading").show();
 	    $.ajax({
@@ -790,6 +927,8 @@ $(document).ready(function() {
 	            updateProductChart(response.summaryTrend);
 	            updateTopProductsTable(response.topProducts);
 	            updateTopProductsChart(response.topProducts);
+	            const periodNote = getLatestPeriod(response.summaryTrend);
+	            $('.card-title .period-note').text(` (${periodNote})`);
 	        }
 	    })
 	    .fail(function(error) {
@@ -801,6 +940,25 @@ $(document).ready(function() {
 	    });
 	}
 
+	function getLatestPeriod(summaryTrend) {
+	    if (!summaryTrend || !summaryTrend.length) return '';
+	    
+	    // Lấy period cuối cùng từ summaryTrend
+	    const latestData = summaryTrend[summaryTrend.length - 1];
+	    const period = latestData.timePeriod; // hoặc tên field chứa period
+
+	    // Format period
+	    if (currentPeriod === 'monthly') {
+	        const [year, month] = period.split('-');
+	        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+	                          'July', 'August', 'September', 'October', 'November', 'December'];
+	        return monthNames[parseInt(month) - 1];
+	    } else if (currentPeriod === 'quarterly') {
+	        return period; // Giả sử đã format "Q4-2024"
+	    } else {
+	        return period; // Yearly
+	    }
+	}
 	function updateProductSummary(summary) {
 	    if (!summary) return;
 	    
@@ -809,8 +967,8 @@ $(document).ready(function() {
 	    $('#totalUnitsSold').text(formatNumber(summary.totalUnitsSold || 0));
 	    $('#averagePrice').text('$' + formatNumber(summary.averagePrice || 0, 2));
 	    $('#returnRate').text(formatNumber(summary.returnRate || 0, 1) + '%');
-	}
 
+	}
 	function updateProductChart(summaryTrend) {
 	    if (!summaryTrend || !summaryTrend.length) return;
 
@@ -819,56 +977,148 @@ $(document).ready(function() {
 	        productChart.destroy();
 	    }
 
-	    const sortedData = [...summaryTrend].sort((a, b) => {
-	        return new Date(a.timePeriod) - new Date(b.timePeriod);
-	    });
-
+	    // Chuẩn bị data
+	    const sortedData = [...summaryTrend].sort((a, b) => new Date(a.timePeriod) - new Date(b.timePeriod));
 	    const periods = sortedData.map(item => formatProductPeriodLabel(item.timePeriod));
 	    const unitsSold = sortedData.map(item => item.totalUnitsSold);
 	    const avgPrices = sortedData.map(item => item.averagePrice);
 	    const returnRates = sortedData.map(item => item.returnRate);
+	    const maxAveragePrice = Math.max(...sortedData.map(item => item.averagePrice));
+	    const calculateGridSpacing = (maxValue) => {
+	        // Các ngưỡng phổ biến cho khoảng chia
+	        const ranges = [
+	            { max: 10, spacing: 2 },
+	            { max: 20, spacing: 4 },
+	            { max: 50, spacing: 5 },
+	            { max: 100, spacing: 10 },
+	            { max: 200, spacing: 20 },
+	            { max: 500, spacing: 50 },
+	            { max: 1000, spacing: 100 },
+	            { max: 2000, spacing: 200 },
+	            { max: 5000, spacing: 500 },
+	            { max: 10000, spacing: 1000 }
+	        ];
 
-	    productChart = new Chart(ctx, {
-	        type: 'bar',
-	        data: {
-	            labels: periods,
-	            datasets: [
-	                {
-	                    label: 'Units Sold',
-	                    data: unitsSold,
-	                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-	                    borderColor: 'rgba(54, 162, 235, 1)',
-	                    borderWidth: 1,
-	                    yAxisID: 'y'
-	                },
-	                {
-	                    label: 'Average Price ($)',
-	                    data: avgPrices,
-	                    type: 'line',
-	                    borderColor: 'rgba(255, 99, 132, 1)',
-	                    tension: 0.1,
-	                    yAxisID: 'y1'
-	                },
-	                {
-	                    label: 'Return Rate (%)',
-	                    data: returnRates,
-	                    type: 'line',
-	                    borderColor: 'rgba(75, 192, 192, 1)',
-	                    tension: 0.1,
-	                    yAxisID: 'y2'
-	                }
-	            ]
+	        // Tìm khoảng chia phù hợp
+	        for (const range of ranges) {
+	            if (maxValue <= range.max) {
+	                return range.spacing;
+	            }
+	        }
+
+	        // Nếu lớn hơn 10000, tính toán động
+	        const magnitude = Math.pow(10, Math.floor(Math.log10(maxValue)));
+	        return Math.ceil(maxValue / 10 / magnitude) * magnitude;
+	    };
+
+	    const maxUnitsSold = Math.max(...unitsSold);
+	    const gridSpacing = calculateGridSpacing(maxUnitsSold);
+	    const yAxisMax = Math.ceil(maxUnitsSold / gridSpacing) * gridSpacing + (gridSpacing * 2);
+	    // Datasets configuration
+	    const datasets = [
+	        {
+	            label: 'Units Sold',
+	            data: unitsSold,
+	            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+	            borderColor: 'rgba(54, 162, 235, 1)',
+	            borderWidth: 1,
+	            yAxisID: 'y'
 	        },
-	        options: {
-	            responsive: true,
-	            maintainAspectRatio: false,
-	            interaction: {
-	                mode: 'index',
-	                intersect: false,
-	            },
+	        {
+	            label: 'Average Price ($)',
+	            data: avgPrices,
+	            type: 'line',
+	            borderColor: 'rgba(255, 99, 132, 1)',
+	            borderWidth: 2,
+	            fill: false,
+	            yAxisID: 'y1',
+	            datalabels: {
+	                display: false
+	            }
+	        },
+	        {
+	            label: 'Return Rate (%)',
+	            data: returnRates,
+	            type: 'line',
+	            borderColor: 'rgba(75, 192, 192, 1)',
+	            borderWidth: 2,
+	            fill: false,
+	            yAxisID: 'y2',
+	            datalabels: {
+	                display: false
+	            }
+	        }
+	    ];
+
+	    // Create chart
+	    productChart = new Chart(ctx, {
+    type: 'bar',
+    data: { 
+        labels: periods, 
+        datasets 
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Product Analysis',
+                font: {
+                    size: 16,
+                    weight: 'bold'
+                },
+                padding: {
+                    top: 10,
+                    bottom: 10
+                }
+            },
+            subtitle: {
+                display: true,
+                text: getPeriodDescription(currentPeriod),
+                font: { size: 12, style: 'italic' },
+                color: '#666666'
+            },
+            legend: {
+                position: 'top',
+                padding: {
+                    bottom: 30  // Thêm padding dưới legend
+                }
+            },
+            datalabels: {
+                color: '#666',
+                font: { 
+                    weight: 'bold',
+                    size: 11
+                },
+                formatter: function(value, context) {
+                    if (context.datasetIndex === 0) {
+                        return value;  // Units Sold in middle
+                    }
+                    return null;
+                },
+                align: 'center',
+                anchor: 'center'
+            }
+        },
+        layout: {
+            padding: {
+                top: 30,    // Giảm padding top vì đã thêm padding cho legend
+                right: 20,
+                bottom: 0,
+                left: 10
+            }
+        },
 	            scales: {
 	                x: {
-	                    reverse: false
+	                    reverse: false,
+	                    padding: {
+	                        top: 20  // Thêm padding phía trên cho x axis
+	                    }
 	                },
 	                y: {
 	                    type: 'linear',
@@ -876,35 +1126,246 @@ $(document).ready(function() {
 	                    title: {
 	                        display: true,
 	                        text: 'Units Sold'
+	                    },
+	                    min: 0,
+	                    max: yAxisMax,  // Sử dụng giá trị động
+	                    padding: {
+	                        top: 30
 	                    }
 	                },
 	                y1: {
 	                    type: 'linear',
 	                    position: 'right',
+	                    max: Math.ceil(maxAveragePrice * 1.3), 
 	                    title: {
 	                        display: true,
 	                        text: 'Average Price ($)'
 	                    },
 	                    grid: {
 	                        drawOnChartArea: false
+	                    },
+	                    padding: {
+	                        top: 30  // Thêm padding cho y axis
 	                    }
 	                },
 	                y2: {
 	                    type: 'linear',
 	                    position: 'right',
+	                    max: 100,
 	                    title: {
 	                        display: true,
 	                        text: 'Return Rate (%)'
 	                    },
 	                    grid: {
 	                        drawOnChartArea: false
+	                    },
+	                    padding: {
+	                        top: 30  // Thêm padding cho y axis
+	                    }
+	                }
+	            }
+	        },
+	        plugins: [ChartDataLabels, {
+	            id: 'revenueLabels',
+	            afterDatasetsDraw(chart, args, options) {
+	                const {ctx, data, scales} = chart;
+	                const unitsSold = data.datasets[0].data;
+	                const avgPrices = data.datasets[1].data;
+
+	                ctx.save();
+	                ctx.font = 'bold 11px Arial';
+	                ctx.textAlign = 'center';
+	                ctx.fillStyle = '#666';
+
+	                unitsSold.forEach((value, index) => {
+	                    if (value) {  // Only draw if there's a value
+	                        const revenue = value * avgPrices[index];
+	                        const xPos = scales.x.getPixelForValue(index);
+	                        const yPos = scales.y.getPixelForValue(value);
+
+	                        ctx.fillText(
+	                            '$' + revenue.toLocaleString(undefined, {
+	                                minimumFractionDigits: 2,
+	                                maximumFractionDigits: 2
+	                            }),
+	                            xPos,
+	                            yPos - 15
+	                        );
+	                    }
+	                });
+	                ctx.restore();
+	            }
+	        }]
+	    });
+	}
+	function updateTopProductsChart(topProducts) {
+	    if (!topProducts || !topProducts.length) return;
+
+	    const ctx = document.getElementById('topProductsChart');
+	    if (topProductsChart) {
+	        topProductsChart.destroy();
+	    }
+
+	    // Tổ chức data theo sản phẩm và tính toán
+	    const productTimelines = {};
+	    const periods = [...new Set(topProducts.map(item => item.timePeriod))].sort();
+	    const periodTotals = {};
+	    let totalRevenue = 0;
+
+	    // Tính tổng doanh thu từng period và tổng doanh thu
+	    periods.forEach(period => {
+	        const periodData = topProducts.filter(item => item.timePeriod === period);
+	        periodTotals[period] = periodData[0]?.periodTotalRevenue || 0;
+	        totalRevenue += periodTotals[period];
+	    });
+
+	    // Tổ chức dữ liệu cho từng sản phẩm
+	    topProducts.forEach(item => {
+	        if (!productTimelines[item.productName]) {
+	            productTimelines[item.productName] = {
+	                revenue: Array(periods.length).fill(0),
+	                totalRevenue: 0
+	            };
+	        }
+	        const periodIndex = periods.indexOf(item.timePeriod);
+	        productTimelines[item.productName].revenue[periodIndex] = item.revenue;
+	        productTimelines[item.productName].totalRevenue += item.revenue;
+	    });
+
+	    // Tạo datasets cho chart
+	    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+	    const datasets = Object.entries(productTimelines)
+	        .sort((a, b) => b[1].totalRevenue - a[1].totalRevenue)
+	        .slice(0, 5)
+	        .map(([name, data], index) => {
+	            const percentage = ((data.totalRevenue / totalRevenue) * 100).toFixed(1);
+	            return {
+	                label: `${name} (${percentage}%)`,
+	                data: data.revenue,
+	                borderColor: colors[index],
+	                backgroundColor: `${colors[index]}33`,
+	                fill: true,
+	                tension: 0.4,
+	                yAxisID: 'y'
+	            };
+	        });
+
+	    // Tạo chart
+	    topProductsChart = new Chart(ctx, {
+	        type: 'line',
+	        data: {
+	            labels: periods.map(p => formatProductPeriodLabel(p)),
+	            datasets: datasets
+	        },
+	        options: {
+	            responsive: true,
+	            maintainAspectRatio: false,
+	            layout: {
+	                padding: {
+	                    top: 20,
+	                    right: 25,
+	                    bottom: 20,
+	                    left: 25
+	                }
+	            },
+	            interaction: {
+	                mode: 'nearest',
+	                axis: 'x',
+	                intersect: false
+	            },
+	            plugins: {
+	                title: {
+	                    display: true,
+	                    text: `Top 5 Products Revenue Trends (Total: $${totalRevenue.toLocaleString()})`,
+	                    font: { 
+	                        size: 18,
+	                        weight: 'bold' 
+	                    },
+	                    padding: 20
+	                },
+	                subtitle: {
+                        display: true,
+                        text: getPeriodDescription(currentPeriod),
+                        font: { size: 12, style: 'italic' },
+                        color: '#666666'
+                    },
+	                legend: {
+	                    position: 'top',
+	                    labels: {
+	                        padding: 20,
+	                        usePointStyle: true,
+	                        pointStyle: 'circle'
+	                    }
+	                },
+	                tooltip: {
+	                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+	                    padding: 12,
+	                    titleFont: {
+	                        size: 14
+	                    },
+	                    bodyFont: {
+	                        size: 13
+	                    },
+	                    callbacks: {
+	                        label: function(context) {
+	                            const value = context.raw;
+	                            const period = periods[context.dataIndex];
+	                            const percentage = ((value / periodTotals[period]) * 100).toFixed(1);
+	                            return `${context.dataset.label.split(' (')[0]}: $${value.toLocaleString()} (${percentage}%)`;
+	                        },
+	                        afterBody: function(context) {
+	                            const period = periods[context[0].dataIndex];
+	                            return [`Total: $${periodTotals[period].toLocaleString()}`];
+	                        }
+	                    }
+	                }
+	            },
+	            scales: {
+	                x: {
+	                    title: {
+	                        display: true,
+	                        text: 'Time Period',
+	                        font: {
+	                            size: 14
+	                        },
+	                        padding: 10
+	                    },
+	                    grid: {
+	                        display: true,
+	                        color: 'rgba(0, 0, 0, 0.05)'
+	                    }
+	                },
+	                y: {
+	                    type: 'linear',
+	                    position: 'left',
+	                    title: {
+	                        display: true,
+	                        text: 'Revenue ($)',
+	                        font: {
+	                            size: 14
+	                        },
+	                        padding: 10
+	                    },
+	                    ticks: {
+	                        callback: function(value) {
+	                            return '$' + value.toLocaleString();
+	                        },
+	                        padding: 8
+	                    },
+	                    grid: {
+	                        color: 'rgba(0, 0, 0, 0.05)'
 	                    }
 	                }
 	            }
 	        }
 	    });
 	}
-
+	// Helper function nếu chưa có
+	function truncateString(str, length) {
+	    if (!str) return '';
+	    if (str.length <= length) return str;
+	    return str.substring(0, length - 3) + '...';
+	}
 	function updateTopProductsTable(topProducts) {
 	    if (!topProducts || !topProducts.length) return;
 
@@ -1074,6 +1535,12 @@ $(document).ready(function() {
 	                    text: `Warehouse Revenue Statistics (${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)})`,
 	                    font: { size: 16 }
 	                },
+	                subtitle: {
+                        display: true,
+                        text: getPeriodDescription(currentPeriod),
+                        font: { size: 12, style: 'italic' },
+                        color: '#666666'
+                    },
 	                legend: { position: 'right' },
 	                tooltip: {
 	                    callbacks: {
@@ -1202,9 +1669,8 @@ $(document).ready(function() {
 const REVENUE_BREAKS = [0, 5000, 10000, 15000, 20000];
 const REVENUE_COLORS = ['#fee5d9','#fcae91','#fb6a4a','#de2d26','#a50f15'];
 let currentData = [];
-// Global variable
+let provinceDetailChart;
 let map;
-//Mapping với tên không dấu
 const PROVINCE_MAPPING = {
     'vn-hc': {id: 202, name: 'Ho Chi Minh'},    
     'vn-hn': {id: 201, name: 'Ha Noi'},    
@@ -1260,30 +1726,34 @@ const PROVINCE_MAPPING = {
 };
 function initMap() {
     (async () => {
-    	const topology = await fetch(
-                "https://code.highcharts.com/mapdata/countries/vn/vn-all.topo.json"
-            ).then((response) => response.json());
-
-
-        
-
-        // Convert mapping to Highcharts data format
-        const data = Object.entries(PROVINCE_MAPPING).map(([key, value]) => ({
-            'hc-key': key,
-            'name': value.name,
-            'value': value.id
-        }));
+        const topology = await fetch(
+            "https://code.highcharts.com/mapdata/countries/vn/vn-all.topo.json"
+        ).then(response => response.json());
 
         map = Highcharts.mapChart("vietnamMap", {
-        	chart: {
+            chart: {
                 map: topology,
-                // Thêm các options cho zoom
-                zoomType: 'xy',        // Cho phép zoom cả chiều ngang và dọc
-                panning: true,         // Cho phép pan (kéo map)
-                panKey: 'shift'        // Giữ shift để pan
+                zoomType: 'xy',
+                panning: true,
+                panKey: 'shift'
             },
             title: {
                 text: "Revenue by Province"
+            },
+            plotOptions: {
+                series: {
+                    point: {
+                        events: {
+                            click: function() {
+                                // Tìm provinceId từ PROVINCE_MAPPING
+                                const provinceMapping = PROVINCE_MAPPING[this['hc-key']];
+                                if (provinceMapping) {
+                                    updateProvinceDetailChart(provinceMapping.id, this.name);
+                                }
+                            }
+                        }
+                    }
+                }
             },
             colorAxis: {
                 min: 0,
@@ -1300,10 +1770,10 @@ function initMap() {
             },
             mapNavigation: {
                 enabled: true,
-                enableButtons: true,   // Hiện nút zoom
-                enableDoubleClickZoom: true,  // Double click để zoom
-                enableMouseWheelZoom: true,   // Dùng chuột để zoom
-                enableTouchZoom: true,        // Zoom trên mobile
+                enableButtons: true,
+                enableDoubleClickZoom: true,
+                enableMouseWheelZoom: true,
+                enableTouchZoom: true,
                 buttonOptions: {
                     verticalAlign: 'bottom',
                     align: 'right',
@@ -1312,36 +1782,34 @@ function initMap() {
                     }
                 },
                 buttons: {
-                    // Tùy chỉnh nút zoom
                     zoomIn: {
                         text: '+',
-                        onclick: function() {
-                            this.mapZoom(0.5);
-                        }
+                        onclick: function() { this.mapZoom(0.5); }
                     },
                     zoomOut: {
                         text: '-',
-                        onclick: function() {
-                            this.mapZoom(2);
-                        }
+                        onclick: function() { this.mapZoom(2); }
                     },
-                    // Thêm nút reset zoom
                     resetZoom: {
                         text: '↺',
-                        onclick: function() {
-                            this.mapZoom(1);
-                        }
+                        onclick: function() { this.mapZoom(1); }
                     }
                 }
             },
             tooltip: {
-                pointFormat: '<b>{point.name}</b><br>' +
-                    'Revenue: {point.revenue:,.0f} $<br>' +
-                    'Orders: {point.orders}<br>' +
-                    'Customers: {point.customers}'
+                useHTML: true,
+                formatter: function() {
+                    const point = this.point;
+                    return `<b>${point.name}</b><br>
+                        Net Revenue: ${Highcharts.numberFormat(point.revenue || 0, 2)} $<br>
+                        Gross Revenue: ${Highcharts.numberFormat(point.grossRevenue || 0, 2)} $<br>
+                        Return Amount: ${Highcharts.numberFormat(point.returnAmount || 0, 2)} $<br>
+                        Orders: ${point.orders || 0}<br>
+                        Customers: ${point.customers || 0}`;
+                }
             },
             series: [{
-                data: [],  // Data rỗng ban đầu
+                data: [],
                 name: "Province",
                 states: {
                     hover: {
@@ -1361,20 +1829,19 @@ function initMap() {
 }
 
 function loadRevenueData(period) {
-    console.log('Loading data for period:', period);
+    
     
     fetch(`/admin/statistics/province-revenue/${period}`)
         .then(response => response.json())
-        .then(data => {
-            console.log('API Data received:', data);
-            currentData = data;
-            updateVisualization(data);
+        .then(response => {
+            currentData = response;
+            
+            updateVisualization(response.mapData);
         })
         .catch(error => {
             console.error('Error loading revenue data:', error);
         });
 }
-
 
 
 function updateVisualization(data) {
@@ -1383,29 +1850,247 @@ function updateVisualization(data) {
     updateTotalSummary(data);
 }
 function updateMapData(revenueData) {
-    // Convert data cho map
     const data = Object.entries(PROVINCE_MAPPING).map(([key, value]) => {
         const provinceData = revenueData.find(d => d.provinceId === value.id);
         return {
             'hc-key': key,
             'name': value.name,
-            'value': provinceData ? provinceData.revenue : 0,
-            'revenue': provinceData ? provinceData.revenue : 0,
+            'value': provinceData ? provinceData.netRevenue : 0,
+            'revenue': provinceData ? provinceData.netRevenue : 0,
+            'grossRevenue': provinceData ? provinceData.grossRevenue : 0,
+            'returnAmount': provinceData ? provinceData.returnAmount : 0,
             'orders': provinceData ? provinceData.totalOrders : 0,
             'customers': provinceData ? provinceData.uniqueCustomers : 0
         };
     });
 
-    // Update map data
     if (map && map.series[0]) {
-        map.series[0].setData(data, true); // true để animate transition
+        // Update data
+        map.series[0].setData(data, false);
+        
+        // Format period display
+        let periodDisplay;
+        if (revenueData && revenueData.length > 0) {
+            // Lấy timePeriod từ data đầu tiên
+            periodDisplay = revenueData[0].timePeriod;
+        }
+        
+        // Update title
+        map.setTitle({
+            text: `Revenue by Province (${periodDisplay || period})`
+        });
+        
+        map.redraw();
     }
 }
+function renderProvinceChart(container, provinceId) {
+    if (!currentData.historicalData[provinceId]) return;
+
+    const historicalData = currentData.historicalData[provinceId];
+    
+    Highcharts.chart(container, {
+        chart: {
+            type: 'line',
+            height: 150,
+            width: 200
+        },
+        title: {
+            text: 'Historical Revenue',
+            style: { fontSize: '10px' }
+        },
+        xAxis: {
+            categories: historicalData.map(d => d.timePeriod),
+            labels: { style: { fontSize: '8px' } }
+        },
+        yAxis: {
+            title: { text: null },
+            labels: { style: { fontSize: '8px' } }
+        },
+        series: [{
+            name: 'Revenue',
+            data: historicalData.map(d => d.netRevenue)
+        }],
+        credits: { enabled: false },
+        legend: { enabled: false }
+    });
+}
+function initProvinceDetailChart() {
+    provinceDetailChart = Highcharts.chart('provinceDetailChart', {
+        chart: {
+            type: 'line',
+            height: 400
+        },
+        title: {
+            text: 'Select a province to view revenue history',
+            style: {
+                fontSize: '16px'
+            }
+        },
+        subtitle: {
+            display: true,
+            text: getPeriodDescription(currentPeriod),
+            font: { size: 12, style: 'italic' },
+            color: '#666666'
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: 'Period'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Revenue ($)'
+            },
+            labels: {
+                formatter: function() {
+                    return '$' + Highcharts.numberFormat(this.value, 2);
+                }
+            }
+        },
+        series: [{
+            name: 'Net Revenue',
+            color: '#239A3B',
+            data: [],
+            dataLabels: {
+                enabled: true,
+                formatter: function() {
+                    return '$' + Highcharts.numberFormat(this.y, 2);
+                }
+            }
+        }, {
+            name: 'Gross Revenue',
+            color: '#7BC96F',
+            data: [],
+            dataLabels: {
+                enabled: true,
+                formatter: function() {
+                    return '$' + Highcharts.numberFormat(this.y, 2);
+                }
+            }
+        }, {
+            name: 'Return Amount',
+            color: '#DE2D26',
+            data: [],
+            dataLabels: {
+                enabled: true,
+                formatter: function() {
+                    return '$' + Highcharts.numberFormat(this.y, 2);
+                }
+            }
+        }],
+        tooltip: {
+            shared: true,
+            formatter: function() {
+                let tooltip = `<b>${this.x}</b><br/>`;
+                this.points.forEach(point => {
+                    tooltip += `${point.series.name}: $${Highcharts.numberFormat(point.y, 2)}<br/>`;
+                });
+                return tooltip;
+            }
+        },
+        plotOptions: {
+            series: {
+                label: {
+                    connectorAllowed: false
+                },
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {
+            enabled: true,
+            align: 'center',
+            verticalAlign: 'bottom'
+        },
+        credits: {
+            enabled: false
+        }
+    });
+}
+function updateProvinceDetailChart(provinceId, provinceName) {
+    if (!currentData?.historicalData) return;
+
+    // Lấy dữ liệu của tỉnh được chọn
+    const provinceData = currentData.historicalData[provinceId];
+    if (!provinceData || !provinceData.length) return;
+
+    // Xác định khoảng thời gian cần hiển thị
+    const sortedData = [...provinceData].sort((a, b) => a.timePeriod.localeCompare(b.timePeriod));
+    const firstPeriod = sortedData[0].timePeriod;
+    const lastPeriod = sortedData[sortedData.length - 1].timePeriod;
+
+    // Tạo mảng đầy đủ các period
+    let allPeriods = [];
+    if (currentPeriod === 'quarterly') {
+        // Xử lý cho quarterly
+        const [firstYear, firstQ] = firstPeriod.split('-Q').map(n => parseInt(n));
+        const [lastYear, lastQ] = lastPeriod.split('-Q').map(n => parseInt(n));
+        
+        let currentYear = firstYear;
+        let currentQ = firstQ;
+        
+        while (currentYear < lastYear || (currentYear === lastYear && currentQ <= lastQ)) {
+            allPeriods.push(`${currentYear}-Q${currentQ}`);
+            currentQ++;
+            if (currentQ > 4) {
+                currentQ = 1;
+                currentYear++;
+            }
+        }
+    } else {
+        // Xử lý cho monthly
+        const [firstYear, firstMonth] = firstPeriod.split('-').map(n => parseInt(n));
+        const [lastYear, lastMonth] = lastPeriod.split('-').map(n => parseInt(n));
+        
+        let currentYear = firstYear;
+        let currentMonth = firstMonth;
+        
+        while (currentYear < lastYear || (currentYear === lastYear && currentMonth <= lastMonth)) {
+            allPeriods.push(`${currentYear}-${String(currentMonth).padStart(2, '0')}`);
+            currentMonth++;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+            }
+        }
+    }
+
+    // Map dữ liệu với đầy đủ các period
+    const dataByPeriod = {};
+    provinceData.forEach(d => {
+        dataByPeriod[d.timePeriod] = d;
+    });
+
+    // Chuẩn bị dữ liệu cho chart
+    const netRevenue = allPeriods.map(period => dataByPeriod[period]?.netRevenue || 0);
+    const grossRevenue = allPeriods.map(period => dataByPeriod[period]?.grossRevenue || 0);
+    const returnAmount = allPeriods.map(period => dataByPeriod[period]?.returnAmount || 0);
+
+    // Cập nhật chart
+    provinceDetailChart.setTitle({ 
+        text: `Revenue History - ${provinceName}`
+    });
+    provinceDetailChart.setSubtitle({
+        text: getPeriodDescription(currentPeriod)
+    });
+
+    provinceDetailChart.xAxis[0].setCategories(allPeriods);
+    provinceDetailChart.series[0].setData(netRevenue, false);
+    provinceDetailChart.series[1].setData(grossRevenue, false);
+    provinceDetailChart.series[2].setData(returnAmount, true);
+}
+
+// Hàm helper để update chart
+
 function updateTopRegions(data) {
     const topProvinces = [...data]
-        .sort((a, b) => b.revenue - a.revenue)
+        .sort((a, b) => b.netRevenue - a.netRevenue)
         .slice(0, 5);
-
+    const latestData = data[0];
+    const periodDisplay = latestData.timePeriod;
+    document.querySelector('.top-provinces .geoperiod-note').textContent = `(${periodDisplay})`;
     document.getElementById('topRegionsTable').innerHTML = `
         <table class="table">
             <thead>
@@ -1419,18 +2104,19 @@ function updateTopRegions(data) {
                 ${topProvinces.map(p => `
                     <tr>
                         <td>${getProvinceName(p.provinceId)}</td>
-                        <td>${formatCurrency(p.revenue)}</td>
+                        <td>${formatCurrency(p.netRevenue)}</td>
                         <td>${p.totalOrders}</td>
                     </tr>
                 `).join('')}
             </tbody>
         </table>
     `;
+    
 }
 
 function updateTotalSummary(data) {
     const totals = data.reduce((acc, curr) => ({
-        revenue: acc.revenue + curr.revenue,
+        revenue: acc.revenue + curr.netRevenue,
         orders: acc.orders + curr.totalOrders,
         customers: acc.customers + curr.uniqueCustomers
     }), { revenue: 0, orders: 0, customers: 0 });
@@ -1438,13 +2124,249 @@ function updateTotalSummary(data) {
     document.getElementById('totalRegionRevenue').textContent = formatCurrency(totals.revenue);
     document.getElementById('totalRegionOrders').textContent = totals.orders;
     document.getElementById('totalRegionCustomers').textContent = totals.customers;
+    const latestData = data[0];
+    const periodDisplay = latestData.timePeriod;
+    document.querySelector('.summarygeo .geoperiod-note').textContent = `(${periodDisplay})`;
+}
+function getPeriodDisplay(period) {
+    // Giả sử period có format như "2024-12" hoặc "Q4-2024"
+    if (period.includes('-Q')) {
+        return period; // Quarterly
+    } else if (period.includes('-')) {
+        const [year, month] = period.split('-');
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+        return monthNames[parseInt(month) - 1];
+    } else {
+        return period; // Yearly
+    }
 }
 //Helper function để lấy tên tỉnh từ ID
 function getProvinceName(provinceId) {
     const province = Object.values(PROVINCE_MAPPING).find(p => p.id === provinceId);
     return province ? province.name : `Province ${provinceId}`;
 }
-// Initialize
-document.addEventListener('DOMContentLoaded', initMap);
+
+document.addEventListener('DOMContentLoaded', () => {
+    initProvinceDetailChart();
+});
+
+document.querySelectorAll('a[data-toggle="tab"]').forEach(tab => {
+    tab.addEventListener('click', function (e) {
+        const targetTab = this.getAttribute('href');
+        if (targetTab === '#mapTab') {
+            setTimeout(() => {
+                if (!map) {
+                    initMap();
+                } else {
+                    loadRevenueData(currentPeriod);
+                }
+            }, 100);
+        }
+    });
+});
+
+// Map Tab Initialization
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('#mapTab').classList.contains('active')) {
+        initMap(); 
+    }
+});
+
+function loadProfitAnalysis(period) {
+    if (period) currentPeriod = period;  // Update currentPeriod if provided
+    
+    fetch(`/admin/statistics/gross-profit/${currentPeriod}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Profit data:", data);  // Debug log
+            if (data) {
+                // Destroy existing charts
+                if (window.monthlyProfitChart) {
+                    window.monthlyProfitChart.destroy();
+                }
+                if (window.productProfitChart) {
+                    window.productProfitChart.destroy();
+                }
+                
+                // Update charts and table
+                updateMonthlyProfitChart(data.monthlySummary);
+                updateProductProfitChart(data.productPerformance);
+                updateProfitDetailsTable(data.productPerformance);
+                
+                // Update active button state
+                document.querySelectorAll('.period-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.period-btn[onclick*="${currentPeriod}"]`).classList.add('active');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error("Failed to load profit analysis");
+            
+            // Clear table on error
+            const tableBody = document.getElementById('profitDetailsTable');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="7">Error loading data. Please try again later.</td></tr>';
+            }
+        });
+}
+
+function updateMonthlyProfitChart(data) {
+    const ctx = document.getElementById('monthlyProfitChart').getContext('2d');
+    
+    data.sort((a, b) => a.period.localeCompare(b.period));
+    
+    window.monthlyProfitChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => d.period),
+            datasets: [{
+                label: 'Revenue',
+                data: data.map(d => d.revenue),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                order: 2
+            }, {
+                label: 'Cost',
+                data: data.map(d => d.cost),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                order: 3
+            }, {
+                label: 'Profit',
+                data: data.map(d => d.profit),
+                type: 'line',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false,
+                order: 1
+            }, {
+                label: 'Margin %',
+                data: data.map(d => d.margin),
+                type: 'line',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 2,
+                fill: false,
+                yAxisID: 'percentage',
+                order: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)'
+                    }
+                },
+                percentage: {
+                    position: 'right',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Margin %'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateProductProfitChart(data) {
+    const ctx = document.getElementById('productProfitChart').getContext('2d');
+    
+    const productData = {};
+    data.forEach(d => {
+        if (!productData[d.productName]) {
+            productData[d.productName] = {
+                revenue: 0,
+                cost: 0,
+                profit: 0,
+                units: 0
+            };
+        }
+        productData[d.productName].revenue += d.grossRevenue;
+        productData[d.productName].cost += d.totalCost;
+        productData[d.productName].profit += d.grossProfit;
+        productData[d.productName].units += d.quantitySold;
+    });
+    
+    const sortedData = Object.entries(productData)
+        .map(([name, data]) => ({
+            name,
+            ...data,
+            margin: (data.profit / data.revenue) * 100
+        }))
+        .sort((a, b) => b.profit - a.profit);
+    
+    window.productProfitChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sortedData.map(d => d.name),
+            datasets: [{
+                label: 'Cost',
+                data: sortedData.map(d => d.cost),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                stack: 'stack'
+            }, {
+                label: 'Profit',
+                data: sortedData.map(d => d.profit),
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                stack: 'stack'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateProfitDetailsTable(data) {
+    const tbody = $('#profitDetailsTable');
+    tbody.empty();
+    
+    data.forEach(row => {
+        tbody.append(`
+            <tr>
+                <td>${row.timePeriod}</td>
+                <td>${row.productName}</td>
+                <td>${formatNumber(row.quantitySold)}</td>
+                <td>$${formatNumber(row.grossRevenue)}</td>
+                <td>$${formatNumber(row.totalCost)}</td>
+                <td>$${formatNumber(row.grossProfit)}</td>
+                <td>${formatNumber(row.grossProfitMargin)}%</td>
+            </tr>
+        `);
+    });
+}
+
+
+
 	</script>
-</body>
+</div>
