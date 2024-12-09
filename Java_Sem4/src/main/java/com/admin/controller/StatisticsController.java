@@ -200,7 +200,6 @@ public class StatisticsController {
     }
     
     @GetMapping("/gross-profit/{period}")
-    
     public ResponseEntity<?> getGrossProfitStats(@PathVariable String period) {
         List<Map<String, Object>> rawData = repstat.getGrossProfitAnalysis(period);
         

@@ -490,7 +490,7 @@
 												<h5 class="card-title">Monthly Profit Overview</h5>
 												<div class="chart-container"
 													style="position: relative; min-height: 400px; height: 50vh;">
-													<canvas id="monthlyProfitChart"></canvas>
+													<canvas id="profitChart"></canvas>
 												</div>
 											</div>
 										</div>
@@ -553,18 +553,10 @@
 
 	<!-- Scripts -->
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"
-		integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw=="
-		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 	<script>
 	// ===== COMMON UTILITIES & INITIALIZATION =====
@@ -1067,10 +1059,10 @@ $(document).ready(function() {
         plugins: {
             title: {
                 display: true,
-                text: 'Product Analysis',
+                text: `Product Analysis (${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)})`,
                 font: {
                     size: 16,
-                    weight: 'bold'
+                    weight: 'bold'	
                 },
                 padding: {
                     top: 10,
@@ -1276,7 +1268,7 @@ $(document).ready(function() {
 	            plugins: {
 	                title: {
 	                    display: true,
-	                    text: `Top 5 Products Revenue Trends (Total: $${totalRevenue.toLocaleString()})`,
+	                    text: `Top 5 Products Revenue Trends (${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)})`,
 	                    font: { 
 	                        size: 18,
 	                        weight: 'bold' 
@@ -1385,8 +1377,11 @@ $(document).ready(function() {
 	        periodTotal[product.timePeriod].revenue += parseFloat(product.revenue || 0);
 	        periodTotal[product.timePeriod].unitsSold += parseInt(product.unitsSold || 0);
 	    });
-	    
-	    const rows = topProducts.map(product => {
+
+	    // Sort products by timePeriod in descending order
+	    const sortedProducts = [...topProducts].sort((a, b) => b.timePeriod.localeCompare(a.timePeriod));
+
+	    const rows = sortedProducts.map(product => {
 	        let rowHtml = '';
 	        
 	        if (currentPeriod !== product.timePeriod) {
@@ -1601,33 +1596,64 @@ $(document).ready(function() {
 	    const tableBody = document.getElementById('warehouseTableBody');
 	    if (!tableBody || !data.data.length) return;
 
-	    const sortedData = [...data.data].sort((a, b) => {
-	        if (a.timePeriod !== b.timePeriod) {
-	            return a.timePeriod.localeCompare(b.timePeriod);
+	    // Group data by period
+	    const groupedData = data.data.reduce((acc, item) => {
+	        if (!acc[item.timePeriod]) {
+	            acc[item.timePeriod] = {
+	                items: [],
+	                totalRevenue: 0,
+	                totalOrders: 0,
+	                totalUnits: 0
+	            };
 	        }
-	        return b.NetRevenue - a.NetRevenue;
-	    });
+	        acc[item.timePeriod].items.push(item);
+	        acc[item.timePeriod].totalRevenue += item.NetRevenue;
+	        acc[item.timePeriod].totalOrders += item.totalOrders;
+	        acc[item.timePeriod].totalUnits += item.totalUnits;
+	        return acc;
+	    }, {});
 
-	    let currentPeriod = null;
+	    // Sort periods in descending order
+	    const sortedPeriods = Object.keys(groupedData).sort((a, b) => b.localeCompare(a));
+
 	    let isEvenGroup = true;
+	    let html = '';
 
-	    tableBody.innerHTML = sortedData.map(item => {
-	        if (currentPeriod !== item.timePeriod) {
-	            currentPeriod = item.timePeriod;
-	            isEvenGroup = !isEvenGroup;
-	        }
-	        
-	        return `
-	            <tr class="${isEvenGroup ? 'even-period' : 'odd-period'}">
-	                <td>${item.timePeriod}</td>
-	                <td>${item.warehouseName}</td>
-	                <td>$${item.NetRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-	                <td>${item.totalOrders}</td>
-	                <td>${item.totalUnits}</td>
-	                <td>${item.percentage.toFixed(1)}%</td>
+	    sortedPeriods.forEach(period => {
+	        isEvenGroup = !isEvenGroup;
+	        const periodData = groupedData[period];
+
+	        // Add period summary row
+	        html += `
+	            <tr class="period-header ${isEvenGroup ? 'even-period' : 'odd-period'}">
+	                <td><strong>${period}</strong></td>
+	                <td><strong></strong></td>
+	                <td><strong>$${periodData.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></td>
+	                <td><strong>${periodData.totalOrders}</strong></td>
+	                <td><strong>${periodData.totalUnits}</strong></td>
+	                <td><strong></strong></td>
 	            </tr>
 	        `;
-	    }).join('');
+
+	        // Sort items within period by NetRevenue
+	        const sortedItems = periodData.items.sort((a, b) => b.NetRevenue - a.NetRevenue);
+
+	        // Add warehouse rows
+	        sortedItems.forEach(item => {
+	            html += `
+	                <tr class="${isEvenGroup ? 'even-period' : 'odd-period'}">
+	                    <td></td>
+	                    <td>${item.warehouseName}</td>
+	                    <td>$${item.NetRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+	                    <td>${item.totalOrders}</td>
+	                    <td>${item.totalUnits}</td>
+	                    <td>${item.percentage.toFixed(1)}%</td>
+	                </tr>
+	            `;
+	        });
+	    });
+
+	    tableBody.innerHTML = html;
 	}
 	function getColor(index, alpha) {
 	    const colors = [
@@ -2173,200 +2199,453 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function loadProfitAnalysis(period) {
-    if (period) currentPeriod = period;  // Update currentPeriod if provided
-    
-    fetch(`/admin/statistics/gross-profit/${currentPeriod}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Profit data:", data);  // Debug log
-            if (data) {
-                // Destroy existing charts
-                if (window.monthlyProfitChart) {
-                    window.monthlyProfitChart.destroy();
-                }
-                if (window.productProfitChart) {
-                    window.productProfitChart.destroy();
-                }
-                
-                // Update charts and table
-                updateMonthlyProfitChart(data.monthlySummary);
-                updateProductProfitChart(data.productPerformance);
-                updateProfitDetailsTable(data.productPerformance);
-                
-                // Update active button state
-                document.querySelectorAll('.period-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                document.querySelector(`.period-btn[onclick*="${currentPeriod}"]`).classList.add('active');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            toastr.error("Failed to load profit analysis");
-            
-            // Clear table on error
-            const tableBody = document.getElementById('profitDetailsTable');
-            if (tableBody) {
-                tableBody.innerHTML = '<tr><td colspan="7">Error loading data. Please try again later.</td></tr>';
-            }
-        });
+//===================================================================================
+
+let profitChart = null;
+let productProfitChart = null;
+
+function loadProfitAnalysis(period = 'monthly') {
+    currentPeriod = period;
+    $.ajax({
+        url: `/admin/statistics/gross-profit/${period}`,
+        method: "GET",
+        success: function(data) {
+            renderProfitChart(data.monthlySummary);
+            renderProductProfitChart(data.productPerformance); 
+            renderProfitDetailsTable(data.productPerformance); 
+        },
+        error: function(error) {
+            console.error("Error:", error);
+        }
+    });
 }
 
-function updateMonthlyProfitChart(data) {
-    const ctx = document.getElementById('monthlyProfitChart').getContext('2d');
+function renderProfitChart(summaryData) {
+    const ctx = document.getElementById('profitChart');
     
-    data.sort((a, b) => a.period.localeCompare(b.period));
-    
-    window.monthlyProfitChart = new Chart(ctx, {
+    const sortedData = [...summaryData].sort((a, b) => 
+        new Date(a.period) - new Date(b.period)
+    );
+
+    if (profitChart) {
+        profitChart.destroy();
+    }
+
+    profitChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: data.map(d => d.period),
-            datasets: [{
-                label: 'Revenue',
-                data: data.map(d => d.revenue),
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                order: 2
-            }, {
-                label: 'Cost',
-                data: data.map(d => d.cost),
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                order: 3
-            }, {
-                label: 'Profit',
-                data: data.map(d => d.profit),
-                type: 'line',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
-                fill: false,
-                order: 1
-            }, {
-                label: 'Margin %',
-                data: data.map(d => d.margin),
-                type: 'line',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 2,
-                fill: false,
-                yAxisID: 'percentage',
-                order: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Amount ($)'
+            labels: sortedData.map(item => formatPeriodLabel(item.period)),  // Sử dụng hàm mới
+            datasets: [
+                {
+                    label: 'Cost',
+                    data: sortedData.map(item => item.cost),
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    stack: 'Stack 0',
+                    order: 2,
+                    datalabels: {
+                        display: false
                     }
                 },
-                percentage: {
-                    position: 'right',
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Margin %'
+                {
+                    label: 'Revenue',
+                    data: sortedData.map(item => item.revenue),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    stack: 'Stack 0',
+                    order: 3,
+                    datalabels: {
+                        align: 'top',
+                        anchor: 'end',
+                        formatter: (value) => `$${value.toFixed(2)}`,
+                        font: { weight: 'bold', size: 11 },
+                        color: '#000'
+                    }
+                },
+                {
+                    label: 'Gross Profit',
+                    data: sortedData.map(item => item.profit),
+                    type: 'line',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    order: 1,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    datalabels: {
+                        align: 'center',
+                        formatter: value => `$${value.toFixed(2)}`,
+                        font: { weight: 'bold', size: 11 },
+                        color: '#000',
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        borderRadius: 4,
+                        padding: { top: 4, bottom: 4, left: 6, right: 6 }
                     }
                 }
-            }
-        }
-    });
-}
-
-function updateProductProfitChart(data) {
-    const ctx = document.getElementById('productProfitChart').getContext('2d');
-    
-    const productData = {};
-    data.forEach(d => {
-        if (!productData[d.productName]) {
-            productData[d.productName] = {
-                revenue: 0,
-                cost: 0,
-                profit: 0,
-                units: 0
-            };
-        }
-        productData[d.productName].revenue += d.grossRevenue;
-        productData[d.productName].cost += d.totalCost;
-        productData[d.productName].profit += d.grossProfit;
-        productData[d.productName].units += d.quantitySold;
-    });
-    
-    const sortedData = Object.entries(productData)
-        .map(([name, data]) => ({
-            name,
-            ...data,
-            margin: (data.profit / data.revenue) * 100
-        }))
-        .sort((a, b) => b.profit - a.profit);
-    
-    window.productProfitChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: sortedData.map(d => d.name),
-            datasets: [{
-                label: 'Cost',
-                data: sortedData.map(d => d.cost),
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                stack: 'stack'
-            }, {
-                label: 'Profit',
-                data: sortedData.map(d => d.profit),
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                stack: 'stack'
-            }]
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                datalabels: {
+                    display: true
+                },
+                title: {
+                    display: true,
+                    text: `Profit Analysis (${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)})`,
+                    font: { size: 16, weight: 'bold' }
+                },
+                subtitle: {
+                    display: true,
+                    text: getPeriodDescription(currentPeriod),
+                    font: { size: 12, style: 'italic' },
+                    color: '#666666'
+                },
+                legend: {
+                    position: 'top',
+                    align: 'center',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const dataIndex = context.dataIndex;
+                            const margin = sortedData[dataIndex].margin;
+                            
+                            if (context.dataset.label === 'Gross Profit') {
+                                return [
+                                    `Gross Profit: $${value.toFixed(2)}`,
+                                    `Margin: ${margin.toFixed(1)}%`
+                                ];
+                            }
+                            if (context.dataset.label === 'Revenue') {
+                                return [
+                                    `Revenue: $${value.toFixed(2)}`,
+                                    `Margin: ${margin.toFixed(1)}%`
+                                ];
+                            }
+                            if (context.dataset.label === 'Cost') {
+                                return [
+                                    `Cost: $${value.toFixed(2)}`,
+                                    `Cost %: ${(100 - margin).toFixed(1)}%`
+                                ];
+                            }
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Amount ($)'
-                    }
+                    },
+                    ticks: {
+                        callback: value => '$' + value.toFixed(2)
+                    },
+                    stacked: true
                 }
             }
         }
     });
 }
-
-function updateProfitDetailsTable(data) {
-    const tbody = $('#profitDetailsTable');
-    tbody.empty();
+function renderProductProfitChart(data) {
+    const ctx = document.getElementById('productProfitChart');
     
-    data.forEach(row => {
-        tbody.append(`
-            <tr>
-                <td>${row.timePeriod}</td>
-                <td>${row.productName}</td>
-                <td>${formatNumber(row.quantitySold)}</td>
-                <td>$${formatNumber(row.grossRevenue)}</td>
-                <td>$${formatNumber(row.totalCost)}</td>
-                <td>$${formatNumber(row.grossProfit)}</td>
-                <td>${formatNumber(row.grossProfitMargin)}%</td>
-            </tr>
-        `);
+    // Tính tổng lợi nhuận cho mỗi sản phẩm
+    const productTotals = {};
+    data.forEach(item => {
+        if (!productTotals[item.productName]) {
+            productTotals[item.productName] = 0;
+        }
+        productTotals[item.productName] += item.grossProfit;
+    });
+
+    // Lấy top N sản phẩm
+    const topN = 10;
+    const sortedProducts = Object.entries(productTotals)
+        .sort(([,a], [,b]) => b - a);
+    const topProducts = sortedProducts.slice(0, topN).map(([name]) => name);
+    const otherProducts = sortedProducts.slice(topN).map(([name]) => name);
+
+    // Màu sắc cho mỗi sản phẩm (không phân biệt revenue/cost)
+    const colors = [
+        'rgba(54, 162, 235, 0.7)',  // Product 20
+        'rgba(255, 99, 132, 0.7)',  // Product 11
+        'rgba(75, 192, 192, 0.7)',  // Product 18
+        'rgba(255, 159, 64, 0.7)',  // Product 17
+        'rgba(153, 102, 255, 0.7)', // BOBEO
+        'rgba(169, 169, 169, 0.7)'  // Others
+    ];
+
+    // Group data theo thời gian
+    const timeLabels = [...new Set(data.map(item => item.timePeriod))].sort();
+    
+    // Tạo datasets với cùng màu cho revenue và cost
+    const datasets = [];
+    
+    topProducts.forEach((productName, index) => {
+        // Revenue bars
+        datasets.push({
+            label: productName,
+            data: timeLabels.map(time => {
+                const item = data.find(d => d.timePeriod === time && d.productName === productName);
+                return item ? item.grossRevenue : 0;
+            }),
+            backgroundColor: colors[index],
+            borderColor: colors[index],
+            borderWidth: 1,
+            stack: 'Revenue'
+        });
+
+        // Cost bars
+        datasets.push({
+            label: productName,
+            data: timeLabels.map(time => {
+                const item = data.find(d => d.timePeriod === time && d.productName === productName);
+                return item ? item.totalCost : 0;
+            }),
+            backgroundColor: colors[index],
+            borderColor: colors[index],
+            borderWidth: 1,
+            stack: 'Cost',
+            showInLegend: false
+        });
+    });
+
+    // Others với cùng màu
+    datasets.push({
+        label: 'Others',
+        data: timeLabels.map(time => {
+            return data.filter(d => d.timePeriod === time && otherProducts.includes(d.productName))
+                       .reduce((sum, item) => sum + item.grossRevenue, 0);
+        }),
+        backgroundColor: colors[5],
+        borderColor: colors[5],
+        borderWidth: 1,
+        stack: 'Revenue'
+    });
+
+    datasets.push({
+        label: 'Others',
+        data: timeLabels.map(time => {
+            return data.filter(d => d.timePeriod === time && otherProducts.includes(d.productName))
+                       .reduce((sum, item) => sum + item.totalCost, 0);
+        }),
+        backgroundColor: colors[5],
+        borderColor: colors[5],
+        borderWidth: 1,
+        stack: 'Cost',
+        showInLegend: false
+    });
+
+    if (productProfitChart) {
+        productProfitChart.destroy();
+    }
+
+    productProfitChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: timeLabels.map(label => `${label}\nRevenue\nCost`),
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                datalabels: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: `Top Products Profit Analysis (${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)})`,
+                    font: { 
+                        size: 16, 
+                        weight: 'bold'
+                    },
+                    subtitle: {
+                        display: true,
+                        text: getPeriodDescription(currentPeriod),
+                        font: { size: 12, style: 'italic' },
+                        color: '#666666'
+                    },
+                    padding: 20
+                },
+                legend: {
+                    position: 'right',
+                    align: 'start',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'rect',
+                        generateLabels: function(chart) {
+                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                            return labels.filter(label => 
+                                chart.data.datasets[label.datasetIndex].stack === 'Revenue'
+                            );
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label.split('\n')[0];
+                        },
+                        label: function(context) {
+                            const productName = context.dataset.label;
+                            const type = context.dataset.stack;
+                            
+                            // Tìm dữ liệu tương ứng từ data gốc
+                            const timeLabel = context.chart.data.labels[context.dataIndex].split('\n')[0];
+                            const productData = data.find(d => 
+                                d.timePeriod === timeLabel && 
+                                d.productName === productName
+                            );
+
+                            if (!productData || type === 'Cost') {
+                                return null;
+                            }
+
+                            return [
+                                `${productName} (${productData.quantitySold} units)`,
+                                `Revenue: $${productData.grossRevenue.toFixed(2)}`,
+                                `Cost: $${productData.totalCost.toFixed(2)}`,
+                                `Profit: $${productData.grossProfit.toFixed(2)} (${productData.grossProfitMargin.toFixed(2)}%)`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)',
+                        padding: {
+                            bottom: 10
+                        }
+                    },
+                    
+                    ticks: {
+                        callback: value => '$' + value.toFixed(2)
+                    },
+                    grid: {
+                        drawBorder: false
+                    },
+                    stacked: true
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time Period',
+                        padding: {
+                            top: 10
+                        }
+                    },
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        callback: function(value, index, ticks) {
+                            const label = this.getLabelForValue(value);
+                            const [period] = label.split('\n');
+                            return [
+                                'Revenue          Cost',
+                                period
+                            ];
+                        },
+                        align: 'center',
+                        padding: 10
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 30,
+                    top: 0,
+                    bottom: 10
+                }
+            }
+        }
     });
 }
+function renderProfitDetailsTable(data) {
+	const tbody = document.getElementById('profitDetailsTable');
+    tbody.innerHTML = '';
 
+    // Group data by quarter
+    const groupedByQuarter = {};
+    data.forEach(item => {
+        const quarter = item.timePeriod;
+        if (!groupedByQuarter[quarter]) {
+            groupedByQuarter[quarter] = {
+                items: [],
+                totalRevenue: 0,
+                totalCost: 0,
+                totalProfit: 0
+            };
+        }
+        groupedByQuarter[quarter].items.push(item);
+        groupedByQuarter[quarter].totalRevenue += item.grossRevenue;
+        groupedByQuarter[quarter].totalCost += item.totalCost;
+        groupedByQuarter[quarter].totalProfit += item.grossProfit;
+    });
 
+    // Sort quarters
+    const sortedQuarters = Object.keys(groupedByQuarter).sort().reverse();
 
+    // Render table
+    sortedQuarters.forEach(quarter => {
+        const quarterData = groupedByQuarter[quarter];
+        
+        // Add quarter summary row
+        const summaryRow = `
+            <tr class="table-light">
+                <td><strong>${quarter}</strong></td>
+                <td></td>
+                <td>${quarterData.items.reduce((sum, item) => sum + item.quantitySold, 0)}</td>
+                <td><strong>$${quarterData.totalRevenue.toFixed(2)}</strong></td>
+                <td><strong>$${quarterData.totalCost.toFixed(2)}</strong></td>
+                <td><strong>$${quarterData.totalProfit.toFixed(2)}</strong></td>
+                <td></td>
+            </tr>
+        `;
+        tbody.innerHTML += summaryRow;
+
+        // Add product detail rows
+        quarterData.items.forEach(item => {
+            const detailRow = `
+                <tr>
+                    <td></td>
+                    <td>${item.productName}</td>
+                    <td>${item.quantitySold}</td>
+                    <td>$${item.grossRevenue.toFixed(2)}</td>
+                    <td>$${item.totalCost.toFixed(2)}</td>
+                    <td>$${item.grossProfit.toFixed(2)}</td>
+                    <td>${item.grossProfitMargin.toFixed(2)}%</td>
+                </tr>
+            `;
+            tbody.innerHTML += detailRow;
+        });
+    });
+}
+// Initialize when document is ready
+$(document).ready(function() {
+    loadProfitAnalysis();
+});
 	</script>
 </div>

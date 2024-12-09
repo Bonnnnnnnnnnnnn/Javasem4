@@ -678,183 +678,144 @@ public class StatisticsRepository {
 	}
 
 	public List<Map<String, Object>> getGrossProfitAnalysis(String period) {
-		String sql = """
-					        WITH ProductCostPrice AS (
-				    SELECT DISTINCT
-				        wrd.Product_Id as productId,
-				        FIRST_VALUE(wrd.Wh_price) OVER (
-				            PARTITION BY wrd.Product_Id
-				            ORDER BY wr.Date DESC, wrd.Wh_receiptId DESC
-				        ) as latestCostPrice
-				    FROM [%s] wrd
-				    JOIN [%s] wr ON wrd.%s = wr.%s
-				    WHERE wrd.%s = 'Active'
-				),
-				OrderData AS (
-				    SELECT
-				        FORMAT(o.%s, 'yyyy-MM') as timePeriod,
-				        od.%s as productId,
-				        p.%s as productName,
-				        SUM(od.%s) as soldQuantity,
-				        SUM(od.%s * od.%s) as revenue
-				    FROM [%s] o
-				    JOIN [%s] od ON o.%s = od.%s
-				    JOIN [%s] p ON od.%s = p.%s
-				    WHERE o.%s = 'Completed'
-				        AND o.%s >= DATEADD(MONTH, -11, DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0))
-				    GROUP BY
-				        FORMAT(o.%s, 'yyyy-MM'),
-				        od.%s,
-				        p.%s
-				),
-				ReturnData AS (
-				    SELECT
-				        FORMAT(o.%s, 'yyyy-MM') as timePeriod,
-				        od.%s as productId,
-				        SUM(rod.%s) as returnQuantity,
-				        SUM(rod.%s) as returnAmount
-				    FROM [%s] ro
-				    JOIN [%s] rod ON ro.%s = rod.%s
-				    JOIN [%s] o ON ro.%s = o.%s
-				    JOIN [%s] od ON rod.%s = od.%s
-				    WHERE ro.%s IN ('Accepted', 'Completed')
-				    GROUP BY
-				        FORMAT(o.%s, 'yyyy-MM'),
-				        od.%s
-				),
-				SalesData AS (
-				    SELECT
-				        od.timePeriod,
-				        od.productId,
-				        od.productName,
-				        od.soldQuantity - COALESCE(rd.returnQuantity, 0) as quantitySold,
-				        od.revenue - COALESCE(rd.returnAmount, 0) as revenue,
-				        (od.soldQuantity - COALESCE(rd.returnQuantity, 0)) * pc.latestCostPrice as totalCost
-				    FROM OrderData od
-				    LEFT JOIN ReturnData rd ON rd.timePeriod = od.timePeriod
-				        AND rd.productId = od.productId
-				    LEFT JOIN ProductCostPrice pc ON od.productId = pc.productId
-				)
-				SELECT
-				    s.timePeriod,
-				    s.productId,
-				    s.productName,
-				    s.quantitySold,
-				    CAST(s.revenue as DECIMAL(18,2)) as grossRevenue,
-				    CAST(s.totalCost as DECIMAL(18,2)) as totalCost,
-				    CAST(s.revenue - s.totalCost as DECIMAL(18,2)) as grossProfit,
-				    CAST((s.revenue - s.totalCost) * 100.0 / NULLIF(s.revenue, 0) as DECIMAL(18,2)) as grossProfitMargin
-				FROM SalesData s
-				WHERE s.revenue > 0
-				ORDER BY s.timePeriod DESC, grossProfit DESC
-					    """.formatted(
-				// ProductCostPrice CTE
-				Views.TBL_WAREHOUSE_RECEIPT_DETAIL, // [Warehouse_receipt_detail]
-				Views.TBL_WAREHOUSE_RECEIPT, // [Warehouse_receipt]
-				Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID, // wrd.Wh_receiptId
-				Views.COL_WAREHOUSE_RECEIPT_ID, // wr.Id
-				Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS, // wrd.Status
+	    String timeFormat = switch (period) {
+	        case "monthly" -> "FORMAT(o.[" + Views.COL_ORDER_DATE + "], 'yyyy-MM')";
+	        case "quarterly" -> "CAST(YEAR(o.[" + Views.COL_ORDER_DATE 
+	            + "]) AS VARCHAR) + '-Q' + CAST(DATEPART(QUARTER, o.[" + Views.COL_ORDER_DATE + "]) AS VARCHAR)";
+	        case "yearly" -> "CAST(YEAR(o.[" + Views.COL_ORDER_DATE + "]) AS VARCHAR)";
+	        default -> throw new IllegalArgumentException("Invalid period: " + period);
+	    };
 
-				// OrderData CTE
-				Views.COL_ORDER_DATE, // o.Date
-				Views.COL_ORDER_DETAIL_PRODUCT_ID, // od.Product_Id
-				Views.COL_PRODUCT_NAME, // p.Product_name
-				Views.COL_ORDER_DETAIL_QUANTITY, // od.Quantity
-				Views.COL_ORDER_DETAIL_QUANTITY, // od.Quantity
-				Views.COL_ORDER_DETAIL_PRICE, // od.Price
-				Views.TBL_ORDER, // [Order]
-				Views.TBL_ORDER_DETAIL, // [Order_detail]
-				Views.COL_ORDER_ID, // o.Id
-				Views.COL_ORDER_DETAIL_ORDER_ID, // od.Order_Id
-				Views.TBL_PRODUCT, // [Product]
-				Views.COL_ORDER_DETAIL_PRODUCT_ID, // od.Product_Id
-				Views.COL_PRODUCT_ID, // p.Id
-				Views.COL_ORDER_STATUS, // o.Status
-				Views.COL_ORDER_DATE, // o.Date
-				Views.COL_ORDER_DATE, // o.Date
-				Views.COL_ORDER_DETAIL_PRODUCT_ID, // od.Product_Id
-				Views.COL_PRODUCT_NAME, // p.Product_name
+	    String groupBy = switch (period) {
+	        case "monthly" -> "YEAR(o.[" + Views.COL_ORDER_DATE + "]), MONTH(o.[" + Views.COL_ORDER_DATE + "])";
+	        case "quarterly" -> 
+	            "YEAR(o.[" + Views.COL_ORDER_DATE + "]), DATEPART(QUARTER, o.[" + Views.COL_ORDER_DATE + "])";
+	        case "yearly" -> "YEAR(o.[" + Views.COL_ORDER_DATE + "])";
+	        default -> throw new IllegalArgumentException("Invalid period: " + period);
+	    };
 
-				// ReturnData CTE
-				Views.COL_ORDER_DATE, // o.Date
-				Views.COL_ORDER_DETAIL_PRODUCT_ID, // od.Product_Id
-				Views.COL_RETURN_DETAIL_QUANTITY, // rod.Quantity
-				Views.COL_RETURN_DETAIL_AMOUNT, // rod.Amount
-				Views.TBL_RETURN_ORDER, // [Return_Order]
-				Views.TBL_RETURN_ORDER_DETAIL, // [Return_Order_Detail]
-				Views.COL_RETURN_ORDER_ID, // ro.Id
-				Views.COL_RETURN_DETAIL_RETURN_ID, // rod.Return_Order_Id
-				Views.TBL_ORDER, // [Order]
-				Views.COL_RETURN_ORDER_ORDER_ID, // ro.Order_Id
-				Views.COL_ORDER_ID, // o.Id
-				Views.TBL_ORDER_DETAIL, // [Order_detail]
-				Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID, // rod.Order_Detail_Id
-				Views.COL_ORDER_DETAIL_ID, // od.Id
-				Views.COL_RETURN_ORDER_STATUS, // ro.Status
-				Views.COL_ORDER_DATE, // o.Date
-				Views.COL_ORDER_DETAIL_PRODUCT_ID // od.Product_Id
-		);
+	    String periodCondition = getPeriodCondition(period);
 
-		List<Map<String, Object>> results = db.queryForList(sql);
+	    String sql = """
+	            WITH ProductCostPrice AS (
+	                SELECT DISTINCT
+	                    wrd.Product_Id as productId,
+	                    FIRST_VALUE(wrd.Wh_price) OVER (
+	                        PARTITION BY wrd.Product_Id
+	                        ORDER BY wr.Date DESC, wrd.Wh_receiptId DESC
+	                    ) as latestCostPrice
+	                FROM [%s] wrd
+	                JOIN [%s] wr ON wrd.%s = wr.%s
+	                WHERE wrd.%s = 'Active'
+	            ),
+	            OrderData AS (
+	                SELECT
+	                    %s as timePeriod,
+	                    od.%s as productId,
+	                    p.%s as productName,
+	                    SUM(od.%s) as soldQuantity,
+	                    SUM(od.%s * od.%s) as revenue
+	                FROM [%s] o
+	                JOIN [%s] od ON o.%s = od.%s
+	                JOIN [%s] p ON od.%s = p.%s
+	                WHERE o.%s = 'Completed'
+	                    AND %s
+	                GROUP BY
+	                    %s,
+	                    od.%s,
+	                    p.%s
+	            ),
+	            ReturnData AS (
+	                SELECT
+	                    %s as timePeriod,
+	                    od.%s as productId,
+	                    SUM(rod.%s) as returnQuantity,
+	                    SUM(rod.%s) as returnAmount
+	                FROM [%s] ro
+	                JOIN [%s] rod ON ro.%s = rod.%s
+	                JOIN [%s] o ON ro.%s = o.%s
+	                JOIN [%s] od ON rod.%s = od.%s
+	                WHERE ro.%s IN ('Accepted', 'Completed')
+	                GROUP BY
+	                    %s,
+	                    od.%s
+	            ),
+	            SalesData AS (
+	                SELECT
+	                    od.timePeriod,
+	                    od.productId,
+	                    od.productName,
+	                    od.soldQuantity - COALESCE(rd.returnQuantity, 0) as quantitySold,
+	                    od.revenue - COALESCE(rd.returnAmount, 0) as revenue,
+	                    (od.soldQuantity - COALESCE(rd.returnQuantity, 0)) * pc.latestCostPrice as totalCost
+	                FROM OrderData od
+	                LEFT JOIN ReturnData rd ON rd.timePeriod = od.timePeriod
+	                    AND rd.productId = od.productId
+	                LEFT JOIN ProductCostPrice pc ON od.productId = pc.productId
+	            )
+	            SELECT
+	                s.timePeriod,
+	                s.productId,
+	                s.productName,
+	                s.quantitySold,
+	                CAST(s.revenue as DECIMAL(18,2)) as grossRevenue,
+	                CAST(s.totalCost as DECIMAL(18,2)) as totalCost,
+	                CAST(s.revenue - s.totalCost as DECIMAL(18,2)) as grossProfit,
+	                CAST((s.revenue - s.totalCost) * 100.0 / NULLIF(s.revenue, 0) as DECIMAL(18,2)) as grossProfitMargin
+	            FROM SalesData s
+	            WHERE s.revenue > 0
+	            ORDER BY s.timePeriod DESC, grossProfit DESC
+	            """.formatted(
+	                // ProductCostPrice CTE
+	                Views.TBL_WAREHOUSE_RECEIPT_DETAIL,
+	                Views.TBL_WAREHOUSE_RECEIPT,
+	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
 
-	    // In kết quả chi tiết
-	    System.out.println("\n=== GROSS PROFIT ANALYSIS ===");
-	    System.out.println(String.format("%-10s %-20s %-10s %-12s %-12s %-10s %-10s",
-	        "Time", "Product", "Units", "Revenue", "Cost", "Profit", "Margin%"));
-	    
-	    for (Map<String, Object> row : results) {
-	        System.out.println(String.format("%-10s %-20s %-10d %-12.2f %-12.2f %-10.2f %-10.2f",
-	            row.get("timePeriod"),
-	            truncateString(row.get("productName").toString(), 20),
-	            ((Number)row.get("quantitySold")).intValue(),
-	            ((Number)row.get("grossRevenue")).doubleValue(),
-	            ((Number)row.get("totalCost")).doubleValue(),
-	            ((Number)row.get("grossProfit")).doubleValue(),
-	            ((Number)row.get("grossProfitMargin")).doubleValue()));
-	    }
+	                // OrderData CTE
+	                timeFormat,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_PRODUCT_NAME,
+	                Views.COL_ORDER_DETAIL_QUANTITY,
+	                Views.COL_ORDER_DETAIL_QUANTITY,
+	                Views.COL_ORDER_DETAIL_PRICE,
+	                Views.TBL_ORDER,
+	                Views.TBL_ORDER_DETAIL,
+	                Views.COL_ORDER_ID,
+	                Views.COL_ORDER_DETAIL_ORDER_ID,
+	                Views.TBL_PRODUCT,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_PRODUCT_ID,
+	                Views.COL_ORDER_STATUS,
+	                periodCondition,
+	                timeFormat + ", " + groupBy,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_PRODUCT_NAME,
 
-	    // Tính tổng theo tháng
-	    System.out.println("\n=== MONTHLY SUMMARY ===");
-	    Map<String, Map<String, Object>> monthlySummary = new HashMap<>();
-	    
-	    for (Map<String, Object> row : results) {
-	        String month = row.get("timePeriod").toString();
-	        monthlySummary.computeIfAbsent(month, k -> new HashMap<>());
-	        
-	        Map<String, Object> summary = monthlySummary.get(month);
-	        summary.merge("units", ((Number)row.get("quantitySold")).intValue(), (a, b) -> 
-	            ((Number)a).intValue() + ((Number)b).intValue());
-	        summary.merge("revenue", ((Number)row.get("grossRevenue")).doubleValue(), (a, b) -> 
-	            ((Number)a).doubleValue() + ((Number)b).doubleValue());
-	        summary.merge("cost", ((Number)row.get("totalCost")).doubleValue(), (a, b) -> 
-	            ((Number)a).doubleValue() + ((Number)b).doubleValue());
-	        summary.merge("profit", ((Number)row.get("grossProfit")).doubleValue(), (a, b) -> 
-	            ((Number)a).doubleValue() + ((Number)b).doubleValue());
-	    }
+	                // ReturnData CTE
+	                timeFormat,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_RETURN_DETAIL_QUANTITY,
+	                Views.COL_RETURN_DETAIL_AMOUNT,
+	                Views.TBL_RETURN_ORDER,
+	                Views.TBL_RETURN_ORDER_DETAIL,
+	                Views.COL_RETURN_ORDER_ID,
+	                Views.COL_RETURN_DETAIL_RETURN_ID,
+	                Views.TBL_ORDER,
+	                Views.COL_RETURN_ORDER_ORDER_ID,
+	                Views.COL_ORDER_ID,
+	                Views.TBL_ORDER_DETAIL,
+	                Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID,
+	                Views.COL_ORDER_DETAIL_ID,
+	                Views.COL_RETURN_ORDER_STATUS,
+	                timeFormat + ", " + groupBy,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID
+	        );
 
-	    System.out.println(String.format("%-10s %-10s %-12s %-12s %-12s %-10s",
-	        "Month", "Units", "Revenue", "Cost", "Profit", "Margin%"));
-	    
-	    for (Map.Entry<String, Map<String, Object>> entry : monthlySummary.entrySet()) {
-	        int units = ((Number)entry.getValue().get("units")).intValue();
-	        double revenue = ((Number)entry.getValue().get("revenue")).doubleValue();
-	        double cost = ((Number)entry.getValue().get("cost")).doubleValue();
-	        double profit = ((Number)entry.getValue().get("profit")).doubleValue();
-	        double margin = revenue > 0 ? (profit * 100.0 / revenue) : 0;
-	        
-	        System.out.println(String.format("%-10s %-10d %-12.2f %-12.2f %-12.2f %-10.2f",
-	            entry.getKey(), units, revenue, cost, profit, margin));
-	    }
-
-		return results;
+	    return db.queryForList(sql);
 	}
 
-	private String truncateString(String str, int length) {
-		if (str == null)
-			return "";
-		if (str.length() <= length)
-			return str;
-		return str.substring(0, length - 3) + "...";
-	}
+	
 
 }
