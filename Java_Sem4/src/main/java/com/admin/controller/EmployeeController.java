@@ -1,6 +1,7 @@
 package com.admin.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.admin.repository.EmployeeRepository;
+import com.admin.repository.SalaryRepository;
 import com.models.Employee;
+import com.models.EmployeeSalaryHistory;
 import com.models.PageView;
 import com.utils.Views;
 
@@ -23,6 +26,8 @@ import com.utils.Views;
 public class EmployeeController {
 	@Autowired
     private EmployeeRepository emprep;
+	@Autowired
+	SalaryRepository salaryRepo;
 	// show nhân viên ra 
 	@GetMapping("/showEmp")
 	public String showEmp(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
@@ -47,6 +52,8 @@ public class EmployeeController {
 	        int idemp = Integer.parseInt(employeeId);
 	        Employee emp = emprep.findId(idemp);
 	        model.addAttribute("employee", emp);
+	        List<EmployeeSalaryHistory> currentSalaries = salaryRepo.getCurrentSalaries(idemp);
+	        model.addAttribute("currentSalaries", currentSalaries);
 	        return Views.EMPLOYEE_SHOWEMPLOYEEDETAIL;
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -88,6 +95,10 @@ public class EmployeeController {
 	        int ide = Integer.parseInt(id);
 	        model.addAttribute("employee", emprep.findId(ide));
 	        model.addAttribute("roles", emprep.findAllRole());
+	        List<EmployeeSalaryHistory> currentSalaries = salaryRepo.getCurrentSalaries(ide);
+	        model.addAttribute("currentSalaries", currentSalaries); 
+
+	        
 	        return Views.EMPLOYEE_SHOWUPDATEMPLOYEE;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();

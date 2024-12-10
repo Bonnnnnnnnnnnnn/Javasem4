@@ -59,10 +59,85 @@
 	            </div>
 	          </div>
 	        </div>
+	        <!-- Salary start -->
+	        <div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Employee Salary Details</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Salary Type</th>
+                            <th>Current Amount</th>
+                            <th>New Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${currentSalaries}">
+						    <td th:text="${salary.salaryType != null ? salary.salaryType.name : 'N/A'}"></td>
+						    <td th:text="${#numbers.formatDecimal(salary.amount, 0, 'COMMA', 0, 'POINT')} + ' $'"></td>
+						    <td>
+						        <input type="number" class="form-control" 
+						               th:name="'salary_' + ${salary.salaryTypeId}"
+						               th:data-employee-id="${employee.id}"
+						               placeholder="Enter new amount">
+						    </td>
+						    <td>
+						        <button type="button" class="btn btn-primary btn-sm"
+						                th:onclick="'updateSalary(' + ${salary.salaryTypeId} + ')'">
+						            <i class="fas fa-save"></i> Update
+						        </button>
+						    </td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Salary end -->
+	        
 	        </div>
 	        </section>
 	        </div>
 	        <div th:replace="admin/layout/footer_admin"></div>
 	        <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
 	          <script th:src="@{/js/js_index.js}"></script>
+	          <script th:inline="javascript">
+    function updateSalary(salaryTypeId) {
+        var inputElement = $(`input[name='salary_${salaryTypeId}']`);
+        var newAmount = inputElement.val();
+        var employeeId = inputElement.data('employee-id');
+        
+        if (!newAmount) {
+            alert('Please enter an amount');
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/salary/update-salary',
+            type: 'POST',
+            data: {
+                employeeId: employeeId,
+                salaryTypeId: salaryTypeId,
+                newAmount: newAmount
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert('Updated successfully');
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error updating salary: ' + error);
+            }
+        });
+    }
+</script>
 	</body>

@@ -323,4 +323,74 @@ public class ReturnOrderRepository {
 			return Collections.emptyList();
 		}
 	}
+	
+	public List<ReturnOrder> findAcceptedReturnOrdersByWarehouse(PageView pageView, int warehouseId) {
+	    try {
+	        // Query chính với JOIN để lấy warehouse_id từ Order
+	        StringBuilder str_query = new StringBuilder(String.format(
+	            "SELECT ro.* FROM %s ro " +
+	            "INNER JOIN [%s] o ON ro.%s = o.%s " +
+	            "WHERE ro.%s = 'Accepted' AND o.%s = ? " +
+	            "ORDER BY ro.%s DESC",
+	            Views.TBL_RETURN_ORDER,
+	            Views.TBL_ORDER,
+	            Views.COL_RETURN_ORDER_ORDER_ID,
+	            Views.COL_ORDER_ID,
+	            Views.COL_RETURN_ORDER_STATUS,
+	            Views.COL_ORDER_WAREHOUSE_ID,
+	            Views.COL_RETURN_ORDER_DATE
+	        ));
+
+	        List<Object> params = new ArrayList<>();
+	        params.add(warehouseId);
+
+	        // Query đếm với điều kiện status và warehouse
+	        String countQuery = String.format(
+	            "SELECT COUNT(*) FROM %s ro " +
+	            "INNER JOIN [%s] o ON ro.%s = o.%s " +
+	            "WHERE ro.%s = 'Accepted' AND o.%s = ?",
+	            Views.TBL_RETURN_ORDER,
+	            Views.TBL_ORDER,
+	            Views.COL_RETURN_ORDER_ORDER_ID,
+	            Views.COL_ORDER_ID,
+	            Views.COL_RETURN_ORDER_STATUS,
+	            Views.COL_ORDER_WAREHOUSE_ID
+	        );
+
+	        int count = db.queryForObject(countQuery, new Object[]{warehouseId}, Integer.class);
+
+	        // Tính total page
+	        int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
+	        pageView.setTotal_page(total_page);
+
+	        // Thêm phân trang
+	        if (pageView.isPaginationEnabled()) {
+	            str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+	            params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
+	            params.add(pageView.getPage_size());
+	        }
+
+	        // Thực hiện query và map kết quả
+	        List<ReturnOrder> returnOrders = db.query(str_query.toString(), new ReturnOrderMapper(), params.toArray());
+
+	        // Lấy thông tin Order và Employee cho mỗi ReturnOrder
+	        for (ReturnOrder ro : returnOrders) {
+	            Order order = repo.getOrderById(ro.getOrderId());
+	            ro.setOrder(order);
+
+	            if (ro.getEmployee_id() != 0) {
+	                Employee employee = employeeRepo.findId(ro.getEmployee_id());
+	                ro.setEmployee(employee);
+	            }
+	        }
+
+	        return returnOrders;
+
+	    } catch (DataAccessException e) {
+	        System.err.println("Error in findAcceptedReturnOrdersByWarehouse: " + e.getMessage());
+	        return Collections.emptyList();
+	    }
+	}
+	
+	
 }

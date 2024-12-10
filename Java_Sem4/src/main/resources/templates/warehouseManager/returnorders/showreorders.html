@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href=@{/css/showOrderInWarehouseDetail.css}>
+    
+</head>
+<body>
+
+<div th:replace="warehouseManager/layout/header_admin"></div>
+<div class="content-wrapper" style="min-height: 1302.4px;">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Return Orders</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Return Orders</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="content">
+    <div class="container-fluid">
+        <!-- Table Return Orders -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Return Orders List</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Return ID</th>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="returnOrder : ${returnOrders}">
+                            <td th:text="${returnOrder.id}"></td>
+                            <td th:text="${returnOrder.orderId}"></td>
+                            <td th:text="${returnOrder.order.Cus_Name}"></td>
+                            <td th:text="${#temporals.format(returnOrder.returnDate, 'dd-MM-yyyy')}"></td>
+                            <td>
+                                <span class="badge badge-warning" th:text="${returnOrder.status}"></span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" 
+                                        data-toggle="modal" 
+                                        data-target="#returnDetailModal"
+                                        th:onclick="'showReturnDetail(' + ${returnOrder.id} + ')'">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Return Detail Modal -->
+        <div class="modal fade" id="returnDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Return Order Details</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Return Order Info -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Return ID:</strong> <span id="modalReturnId"></span></p>
+                        <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
+                        <p><strong>Return Date:</strong> <span id="modalReturnDate"></span></p>
+                        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Customer Name:</strong> <span id="modalCustomerName"></span></p>
+                        <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+                        <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+                    </div>
+                </div>
+
+                <!-- Employee Info -->
+                <div id="employeeInfo" class="row mb-3" style="display:none;">
+                    <div class="col-12">
+                        <h6>Processed by:</h6>
+                        <p><strong>Name:</strong> <span id="modalEmployeeName"></span></p>
+                        <p><strong>Phone:</strong> <span id="modalEmployeePhone"></span></p>
+                    </div>
+                </div>
+
+                <!-- Return Items Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                                <th>Return Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalReturnItems">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Order Info -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <p><strong>Order Date:</strong> <span id="modalOrderDate"></span></p>
+                        <p><strong>Order Status:</strong> <span id="modalOrderStatus"></span></p>
+                        <p><strong>Order Total:</strong> <span id="modalOrderTotal"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</section>
+</div>
+
+
+<div th:replace="warehouseManager/layout/footer_admin"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+function showReturnDetail(returnId) {
+    $.ajax({
+        url: `/warehouseManager/returnorders/return-order/${returnId}`,
+        type: 'GET',
+        success: function(returnOrder) {
+            console.log(returnOrder);
+            // Populate modal with return order details
+            $('#modalReturnId').text(returnOrder.id);
+            $('#modalOrderId').text(returnOrder.orderId);
+            $('#modalReturnDate').text(new Date(returnOrder.returnDate).toLocaleDateString('vi-VN'));
+            $('#modalStatus').text(returnOrder.status);
+            $('#modalCustomerName').text(returnOrder.order.cus_Name);
+            $('#modalPhone').text(returnOrder.order.phone);
+            $('#modalAddress').text(returnOrder.order.address);
+
+            // Hiển thị thông tin Employee nếu có
+            if (returnOrder.employee) {
+                $('#employeeInfo').show();
+                const fullName = `${returnOrder.employee.first_name} ${returnOrder.employee.last_name}`;
+                $('#modalEmployeeName').text(fullName);
+                $('#modalEmployeePhone').text(returnOrder.employee.phone);
+            } else {
+                $('#employeeInfo').hide();
+            }
+
+            // Clear and populate return items table
+            const itemsBody = $('#modalReturnItems');
+            itemsBody.empty();
+            
+            if (returnOrder.returnDetails && returnOrder.returnDetails.length > 0) {
+                let totalAmount = 0;
+                returnOrder.returnDetails.forEach(item => {
+                    const amount = item.quantity * item.productPrice;
+                    totalAmount += amount;
+                    itemsBody.append(`
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                <img src="/uploads/${item.productImage}" th:alt="${item.productName}" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">
+                                    <div>
+                                        <div>${item.productName}</div>
+                                        <small class="text-muted">Original Qty: ${item.originalQuantity}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${item.quantity}</td>
+                            <td>$${item.productPrice.toFixed(2)}</td>
+                            <td>$${amount.toFixed(2)}</td>
+                            <td>${item.reason}</td>
+                        </tr>
+                    `);
+                });
+                
+                // Add total row
+                itemsBody.append(`
+                    <tr class="font-weight-bold">
+                        <td colspan="3" class="text-right">Total Amount:</td>
+                        <td colspan="2">$${totalAmount.toFixed(2)}</td>
+                    </tr>
+                `);
+            } else {
+                itemsBody.append('<tr><td colspan="5" class="text-center">No return details available</td></tr>');
+            }
+
+            // Add order additional info if needed
+            if (returnOrder.order) {
+                $('#modalOrderDate').text(new Date(returnOrder.order.date).toLocaleDateString('vi-VN'));
+                $('#modalOrderStatus').text(returnOrder.order.status);
+                $('#modalOrderTotal').text(`$${returnOrder.order.totalAmount.toFixed(2)}`);
+            }
+
+            $('#returnDetailModal').modal('show');
+        },
+        error: function(xhr) {
+            alert('Error loading return order details');
+            console.error('Error:', xhr);
+        }
+    });
+}
+</script>
+</body>
+</html>

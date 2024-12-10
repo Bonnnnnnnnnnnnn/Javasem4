@@ -20,6 +20,8 @@ public class Coupon_mapper implements RowMapper<Coupon> {
 		coupon.setMinOrderValue(rs.getDouble(Views.COL_DISCOUNT_MIN_ORDER_VALUE));
 		coupon.setMaxDiscountAmount(rs.getDouble(Views.COL_DISCOUNT_MAX_DISCOUNT_AMOUNT));
 		coupon.setStatus(rs.getString(Views.COL_DISCOUNT_STATUS));
+		coupon.setEmployee_Id(rs.getInt(Views.COL_DISCOUNT_EMPLOYEE_ID));
+		
 		return coupon;
 	}
 }

@@ -59,6 +59,41 @@
             </div>
           </div>
         </div>
+        <div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Employee Salary Details</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Salary Type</th>
+                            <th>Current Amount</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${currentSalaries}">
+                            <td th:text="${salary.salaryType != null ? salary.salaryType.name : 'N/A'}"></td>
+                            <td th:text="${salary.amount != null ? #numbers.formatDecimal(salary.amount, 0, 'COMMA', 0, 'POINT') + ' $' : 'Not set'}"></td>
+                            <td th:text="${salary.startDate != null ? #temporals.format(salary.startDate, 'dd/MM/yyyy') : 'N/A'}"></td>
+                            <td th:text="${salary.endDate != null ? #temporals.format(salary.endDate, 'dd/MM/yyyy') : 'Current'}"></td>
+                            <td th:text="${salary.createdByEmployee != null ? salary.createdByEmployee.First_name + ' ' + salary.createdByEmployee.Last_name : 'N/A'}"></td>
+                            <td th:text="${salary.createdAt != null ? #temporals.format(salary.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                            <td th:text="${salary.note != null ? salary.note : 'N/A'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
         </div>
         </section>
         </div>

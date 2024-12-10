@@ -38,9 +38,11 @@ public class WebConfig implements WebMvcConfigurer {
                                  "/contact/**"); 
         registry.addInterceptor(cartInterceptor)
         .addPathPatterns("/cart/**"); 
-       
+
+      
     }
 
+	
 
 }
 

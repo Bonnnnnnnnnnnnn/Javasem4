@@ -269,7 +269,8 @@ public final class Views {
 	public static String COL_PRODUCT_SPE_DES = "Des_spe";
 	public static String COL_PRODUCT_SPE_PRODUCTID= "Product_Id";
 	//22.COUPON
-
+	public static String DISCOUNT_LIST = "admin/discount/showDiscount";
+	
 	public static final String TBL_DISCOUNT = "tbl_discount";
     public static final String COL_DISCOUNT_ID = "id";
     public static final String COL_DISCOUNT_CODE = "code";
@@ -279,6 +280,8 @@ public final class Views {
     public static final String COL_DISCOUNT_MIN_ORDER_VALUE = "min_order_value";
     public static final String COL_DISCOUNT_MAX_DISCOUNT_AMOUNT = "max_discount_amount";
     public static final String COL_DISCOUNT_STATUS = "status";
+    public static final String COL_DISCOUNT_EMPLOYEE_ID = "Employee_Id";
+    
 
 	//23.FEEDBACK
 	public static final String TBL_FEEDBACK = "Feedback";
@@ -328,7 +331,7 @@ public final class Views {
 
 	//25.RETURN ORDER
 	
-
+	public static String RETURN_ORDERS_WAM = "warehouseManager/returnorders/showreorders";
 	public static String TBL_RETURN_ORDER = "Return_Order";
 	public static String COL_RETURN_ORDER_ID = "Id";
 	public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
@@ -437,6 +440,7 @@ public final class Views {
 	public static String COL_EXPENSE_HISTORY_UPDATED_AT = "Updated_At";
 
 	// Salary Types
+	public static final String SALARY_TYPES = "admin/Salary/salaryTypes";
 	public static String TBL_SALARY_TYPES = "Salary_Types";
 	public static String COL_SALARY_TYPE_ID = "Id";
 	public static String COL_SALARY_TYPE_NAME = "Name";
@@ -444,7 +448,7 @@ public final class Views {
 	public static String COL_SALARY_TYPE_IS_ACTIVE = "Is_Active";
 
 	// Employee Salary History
-	public static String TBL_EMPLOYEE_SALARY_HISTORY = "Employee_Salary_History";
+	public static String TBL_EMPLOYEE_SALARY_HISTORY = "Employee_Salary_History";	
 	public static String COL_SALARY_HISTORY_ID = "Id";
 	public static String COL_SALARY_HISTORY_EMPLOYEE_ID = "Employee_Id";
 	public static String COL_SALARY_HISTORY_TYPE_ID = "Salary_Type_Id";

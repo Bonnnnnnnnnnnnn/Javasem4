@@ -8,6 +8,7 @@ public class Employee {
 	private String Password;
 	private int Role_id;
 	private String Role_name;
+	
 	public Employee(int id, String first_name, String last_name, String phone, String password,
 			int role_id) {
 		super();
