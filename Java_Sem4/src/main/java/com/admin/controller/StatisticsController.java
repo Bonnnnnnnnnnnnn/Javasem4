@@ -42,28 +42,45 @@ public class StatisticsController {
 		int[] idBrands = {};
 		String[] statuses = { "NewRelease", "Active", "OutOfStock", "Inactive" };
         model.addAttribute("products", repspp.findAllnopaging(new PageView(), "", idCategories, idBrands, statuses));
-    
+        model.addAttribute("brands", repspp.findAllBrand());
+        model.addAttribute("categories", repspp.findAllCate());
         return Views.ADMIN_STATISTICSPAGE;
     }
 
     @GetMapping("/api/revenue/{period}")
     @ResponseBody
     public Map<String, Object> getRevenue(
-        @PathVariable String period,
-        @RequestParam(required = false) Long productId) {
+            @PathVariable String period,
+            @RequestParam(required = false) Long productId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long brandId) {
+
+        List<Map<String, Object>> data;
         
-        List<Map<String, Object>> data = repstat.getRevenue(period, productId);
+        if (productId != null) {
+            data = repstat.getProductRevenue(period, productId);
+        } else if (categoryId != null) {
+            data = repstat.getCategoryRevenue(period, categoryId);
+        } else if (brandId != null) {
+            data = repstat.getBrandRevenue(period, brandId);
+        } else {
+        	data = repstat.getProductRevenue(period, productId);
+        }
+
+        data = repstat.getPredictedRevenue(data, period);
         
         List<String> labels = new ArrayList<>();
         List<Double> values = new ArrayList<>();
         List<Double> totalPeriodRevenue = new ArrayList<>();
         List<Double> percentage = new ArrayList<>();
-
+        List<Boolean> isPredicted = new ArrayList<>();
+        
         for (Map<String, Object> row : data) {
             labels.add(row.get("timePeriod").toString());
             values.add(((Number)row.get("SelectedRevenue")).doubleValue());
             totalPeriodRevenue.add(((Number)row.get("TotalRevenue")).doubleValue());
             percentage.add(((Number)row.get("SelectedPercentage")).doubleValue());
+            isPredicted.add(Boolean.TRUE.equals(row.get("isPredicted")));
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -71,7 +88,7 @@ public class StatisticsController {
         result.put("values", values);
         result.put("totalPeriodRevenue", totalPeriodRevenue);
         result.put("percentage", percentage);
-
+        result.put("isPredicted", isPredicted);
         return result;
     }
 

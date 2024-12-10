@@ -253,14 +253,39 @@
 						<div class="tab-content">
 							<!-- Revenue Tab -->
 							<div class="tab-pane fade show active" id="revenueTab">
-								<div class="row mb-4">
-									<div class="col">
-										<select class="form-select product-select" id="productSelect"
-											onchange="loadChart(currentPeriod)">
+								<div class="row mb-4 align-items-center g-2">
+									<div class="col-auto">
+										<select class="form-control form-control-sm bg-white border"
+											style="width: 150px;" id="productSelect"
+											onchange="handleSelectChange('product')">
 											<option value="">All Products</option>
 											<option th:each="product : ${products}"
 												th:value="${product.Id}" th:text="${product.Product_name}"></option>
 										</select>
+									</div>
+
+									<div class="col-auto">
+										<select class="form-control form-control-sm bg-white border"
+											style="width: 150px;" id="categorySelect"
+											onchange="handleSelectChange('category')">
+											<option value="">All Categories</option>
+											<option th:each="category : ${categories}"
+												th:value="${category.Id}" th:text="${category.Name}"></option>
+										</select>
+									</div>
+
+									<div class="col-auto">
+										<select class="form-control form-control-sm bg-white border"
+											style="width: 150px;" id="brandSelect"
+											onchange="handleSelectChange('brand')">
+											<option value="">All Brands</option>
+											<option th:each="brand : ${brands}" th:value="${brand.Id}"
+												th:text="${brand.Name}"></option>
+										</select>
+									</div>
+
+									<div class="col-auto">
+										<button onclick="clearRevenueSelections()">Clear All</button>
 									</div>
 								</div>
 								<div class="chart-container">
@@ -553,10 +578,14 @@
 
 	<!-- Scripts -->
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 	<script>
 	// ===== COMMON UTILITIES & INITIALIZATION =====
@@ -729,163 +758,278 @@ $(document).ready(function() {
     }
 });
 	// ===== REVENUE TAB =====
-	function loadChart(period) {
-    currentPeriod = period;
-    const productId = document.getElementById('productSelect').value;
-    const url = `/admin/statistics/api/revenue/${period}${productId ? `?productId=${productId}` : ''}`;
+		
+		function handleSelectChange(type) {
+    const productSelect = document.getElementById('productSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const brandSelect = document.getElementById('brandSelect');
     
-    document.querySelectorAll('.period-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`.period-btn[onclick*="${period}"]`).classList.add('active');
+    switch(type) {
+        case 'product':
+            if (productSelect.value) {
+                // Reset các select khác về giá trị mặc định
+                categorySelect.value = '';    // Reset về "All Categories"
+                brandSelect.value = '';       // Reset về "All Brands"
+            }
+            break;
+        case 'category':
+            if (categorySelect.value) {
+                // Reset các select khác về giá trị mặc định
+                productSelect.value = '';     // Reset về "All Products"
+                brandSelect.value = '';       // Reset về "All Brands"
+            }
+            break;
+        case 'brand':
+            if (brandSelect.value) {
+                // Reset các select khác về giá trị mặc định
+                productSelect.value = '';     // Reset về "All Products"
+                categorySelect.value = '';    // Reset về "All Categories"
+            }
+            break;
+    }
     
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (currentChart) {
-                currentChart.destroy();
-            }
-
-            const chartElement = document.getElementById('revenueChart');
-            Chart.register(ChartDataLabels);
-            
-            const datasets = [];
-            
-            if (productId) {
-                // Selected Product Revenue (bottom)
-                datasets.push({
-                    label: 'Selected Product Revenue',
-                    data: data.values,
-                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'bottom',
-                        formatter: function(value, context) {
-                            if (value === 0) return '';
-                            return `${data.percentage[context.dataIndex].toFixed(1)}%\n$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                        },
-                        font: { weight: 'bold', size: 14 },
-                        color: '#000000',
-                        padding: 8,
-                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                        borderRadius: 4
-                    }
-                });
-
-                // Other Revenue (top)
-                const otherRevenue = data.totalPeriodRevenue.map((total, index) => 
-                    Math.max(0, total - data.values[index])
-                );
-                datasets.push({
-                    label: 'Other Revenue',
-                    data: otherRevenue,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
-                    datalabels: {
-                        anchor: 'start',
-                        align: 'top',
-                        formatter: function(value, context) {
-                            if (value === 0) return '';
-                            const percentage = (100 - data.percentage[context.dataIndex]).toFixed(1);
-                            return `${percentage}%\n$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                        },
-                        font: { weight: 'bold', size: 14 },
-                        color: '#000000',
-                        padding: 8,
-                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                        borderRadius: 4
-                    }
-                });
-            } else {
-                // Total Revenue (single bar)
-                datasets.push({
-                    label: 'Total Revenue',
-                    data: data.totalPeriodRevenue,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'top',
-                        formatter: function(value) {
-                            if (value === 0) return '';
-                            return `$${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                        },
-                        font: { weight: 'bold', size: 14 },
-                        color: '#000000',
-                        padding: 8,
-                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                        borderRadius: 4
-                    }
-                });
-            }
-
-            currentChart = new Chart(chartElement, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `Revenue Statistics (${period.charAt(0).toUpperCase() + period.slice(1)})`,
-                            font: { size: 16 }
-                        },
-                        subtitle: {
-                            display: true,
-                            text: getPeriodDescription(currentPeriod),
-                            font: { size: 12, style: 'italic' },
-                            color: '#666666'
-                        },
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const datasetLabel = context.dataset.label;
-                                    const value = context.raw;
-                                    const formattedValue = value.toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    });
-                                    
-                                    if (datasetLabel === 'Selected Product Revenue') {
-                                        const percentage = data.percentage[context.dataIndex];
-                                        return `${datasetLabel}: $${formattedValue} (${percentage.toFixed(1)}%)`;
-                                    }
-                                    if (datasetLabel === 'Other Revenue') {
-                                        const percentage = 100 - data.percentage[context.dataIndex];
-                                        return `${datasetLabel}: $${formattedValue} (${percentage.toFixed(1)}%)`;
-                                    }
-                                    return `${datasetLabel}: $${formattedValue}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { stacked: true },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            ticks: {
-                                callback: value => '$' + value.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                })
-                            }
-                        }
-                    }
-                }
-            });
-        });
+    loadChart(currentPeriod);
 }
+		function clearRevenueSelections() {
+			 const productSelect = document.getElementById('productSelect');
+			    const categorySelect = document.getElementById('categorySelect');
+			    const brandSelect = document.getElementById('brandSelect');
+		    // Reset UI elements
+		    categorySelect.value = '';    // Reset về "All Categories"
+                brandSelect.value = '';      
+                productSelect.value = '';  
+		    // Reset chart to default state
+		    loadChart(currentPeriod);
 
+		  
+		}
+		function loadChart(period) {
+		    currentPeriod = period;
+		    const productId = document.getElementById('productSelect').value;
+		    const categoryId = document.getElementById('categorySelect').value;
+		    const brandId = document.getElementById('brandSelect').value;
+		    
+		    // Build URL with appropriate parameter
+		    let url = `/admin/statistics/api/revenue/${period}`;
+		    if (productId) url += `?productId=${productId}`;
+		    else if (categoryId) url += `?categoryId=${categoryId}`;
+		    else if (brandId) url += `?brandId=${brandId}`;
+		    
+		    // Update active period button
+		    document.querySelectorAll('.period-btn').forEach(btn => {
+		        btn.classList.remove('active');
+		    });
+		    document.querySelector(`.period-btn[onclick*="${period}"]`).classList.add('active');
+		    
+		    fetch(url)
+		        .then(response => response.json())
+		        .then(data => {
+		            if (currentChart) {
+		                currentChart.destroy();
+		            }
+
+		            const chartElement = document.getElementById('revenueChart');
+		            Chart.register(ChartDataLabels);
+		            
+		            const datasets = [];
+		            
+		            if (productId || categoryId || brandId) {
+		                // Selected Revenue (bottom)
+		                datasets.push({
+		                    label: getSelectedLabel(),
+		                    data: data.values,
+		                    backgroundColor: data.isPredicted.map(isPred => 
+		                        isPred ? 'rgba(255, 192, 203, 0.4)' : 'rgba(255, 99, 132, 0.7)'  // Màu hồng nhạt cho dự đoán
+		                    ),
+		                    borderColor: data.isPredicted.map(isPred =>
+		                        isPred ? 'rgba(255, 192, 203, 0.6)' : 'rgba(255, 99, 132, 1)'
+		                    ),
+		                    borderWidth: 1,
+		                    datalabels: {
+		                        anchor: 'end',
+		                        align: 'bottom',
+		                        formatter: function(value, context) {
+		                            if (value === 0) return '';
+		                            const isPredicted = data.isPredicted[context.dataIndex];
+		                            const percentage = data.percentage[context.dataIndex].toFixed(1);
+		                            const formattedValue = value.toLocaleString(undefined, {
+		                                minimumFractionDigits: 2,
+		                                maximumFractionDigits: 2
+		                            });
+		                            return isPredicted ? 
+		                                `(Predicted)\n${percentage}%\n$${formattedValue}` : 
+		                                `${percentage}%\n$${formattedValue}`;
+		                        },
+		                        font: function(context) {
+		                            return {
+		                                weight: data.isPredicted[context.dataIndex] ? 'normal' : 'bold',
+		                                size: 14
+		                            };
+		                        },
+		                        color: function(context) {
+		                            return data.isPredicted[context.dataIndex] ? '#666666' : '#000000';
+		                        },
+		                        padding: 8,
+		                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+		                        borderRadius: 4
+		                    }
+		                });
+
+		                // Other Revenue (top)
+		                const otherRevenue = data.totalPeriodRevenue.map((total, index) => 
+		                    Math.max(0, total - data.values[index])
+		                );
+		                datasets.push({
+		                    label: 'Other Revenue',
+		                    data: otherRevenue,
+		                    backgroundColor: data.isPredicted.map(isPred => 
+		                        isPred ? 'rgba(169, 169, 169, 0.5)' : 'rgba(54, 162, 235, 0.7)'  // Màu xám nhạt cho dự đoán
+		                    ),
+		                    borderColor: data.isPredicted.map(isPred =>
+		                        isPred ? 'rgba(169, 169, 169, 0.8)' : 'rgba(54, 162, 235, 1)'
+		                    ),
+		                    borderWidth: 1,
+		                    datalabels: {
+		                        anchor: 'start',
+		                        align: 'top',
+		                        formatter: function(value, context) {
+		                            if (value === 0) return '';
+		                            const isPredicted = data.isPredicted[context.dataIndex];
+		                            const percentage = (100 - data.percentage[context.dataIndex]).toFixed(1);
+		                            const formattedValue = value.toLocaleString(undefined, {
+		                                minimumFractionDigits: 2,
+		                                maximumFractionDigits: 2
+		                            });
+		                            return isPredicted ? 
+		                                `(Predicted)\n${percentage}%\n$${formattedValue}` : 
+		                                `${percentage}%\n$${formattedValue}`;
+		                        },
+		                        font: function(context) {
+		                            return {
+		                                weight: data.isPredicted[context.dataIndex] ? 'normal' : 'bold',
+		                                size: 14
+		                            };
+		                        },
+		                        color: function(context) {
+		                            return data.isPredicted[context.dataIndex] ? '#666666' : '#000000';
+		                        },
+		                        padding: 8,
+		                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+		                        borderRadius: 4
+		                    }
+		                });
+		            } else {
+		            	datasets.push({
+		            	    label: 'Total Revenue',
+		            	    data: data.totalPeriodRevenue,
+		            	    backgroundColor: data.isPredicted.map(isPred => 
+		            	        isPred ? 'rgba(169, 169, 169, 0.5)' : 'rgba(54, 162, 235, 0.7)'
+		            	    ),
+		            	    borderColor: data.isPredicted.map(isPred =>
+		            	        isPred ? 'rgba(169, 169, 169, 0.8)' : 'rgba(54, 162, 235, 1)'
+		            	    ),
+		            	    borderWidth: 1,
+		            	    datalabels: {
+		            	        anchor: 'end',
+		            	        align: 'top',
+		            	        formatter: function(value, context) {
+		            	            if (value === 0) return '';
+		            	            const isPredicted = data.isPredicted[context.dataIndex];
+		            	            const formattedValue = value.toLocaleString(undefined, {
+		            	                minimumFractionDigits: 2,
+		            	                maximumFractionDigits: 2
+		            	            });
+		            	            return isPredicted ? 
+		            	                `(Predicted)\n$${formattedValue}` : 
+		            	                `$${formattedValue}`;
+		            	        },
+		            	        font: function(context) {
+		            	            const isPredicted = data.isPredicted[context.dataIndex];
+		            	            return {
+		            	                weight: isPredicted ? 'normal' : 'bold',
+		            	                size: 14
+		            	            };
+		            	        },
+		            	        color: function(context) {
+		            	            const isPredicted = data.isPredicted[context.dataIndex];
+		            	            return isPredicted ? '#666666' : '#000000';
+		            	        },
+		            	        padding: 8,
+		            	        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+		            	        borderRadius: 4
+		            	    }
+		            	});
+		            }
+
+		            currentChart = new Chart(chartElement, {
+		                type: 'bar',
+		                data: {
+		                    labels: data.labels,
+		                    datasets: datasets
+		                },
+		                options: {
+		                    responsive: true,
+		                    maintainAspectRatio: false,
+		                    plugins: {
+		                        title: {
+		                            display: true,
+		                            text: `Revenue Statistics (${period.charAt(0).toUpperCase() + period.slice(1)})`,
+		                            font: { size: 16 }
+		                        },
+		                        subtitle: {
+		                            display: true,
+		                            text: getPeriodDescription(currentPeriod),
+		                            font: { size: 12, style: 'italic' },
+		                            color: '#666666'
+		                        },
+		                        legend: { position: 'top' },
+		                        tooltip: {
+		                            callbacks: {
+		                                label: function(context) {
+		                                    const datasetLabel = context.dataset.label;
+		                                    const value = context.raw;
+		                                    const formattedValue = value.toLocaleString(undefined, {
+		                                        minimumFractionDigits: 2,
+		                                        maximumFractionDigits: 2
+		                                    });
+		                                    
+		                                    if (datasetLabel.includes('Selected')) {
+		                                        const percentage = data.percentage[context.dataIndex];
+		                                        return `${datasetLabel}: $${formattedValue} (${percentage.toFixed(1)}%)`;
+		                                    }
+		                                    if (datasetLabel === 'Other Revenue') {
+		                                        const percentage = 100 - data.percentage[context.dataIndex];
+		                                        return `${datasetLabel}: $${formattedValue} (${percentage.toFixed(1)}%)`;
+		                                    }
+		                                    return `${datasetLabel}: $${formattedValue}`;
+		                                }
+		                            }
+		                        }
+		                    },
+		                    scales: {
+		                        x: { stacked: true },
+		                        y: {
+		                            stacked: true,
+		                            beginAtZero: true,
+		                            ticks: {
+		                                callback: value => '$' + value.toLocaleString(undefined, {
+		                                    minimumFractionDigits: 2,
+		                                    maximumFractionDigits: 2
+		                                })
+		                            }
+		                        }
+		                    }
+		                }
+		            });
+		        });
+		}
+
+		function getSelectedLabel() {
+		    if (document.getElementById('productSelect').value) return 'Selected Product Revenue';
+		    if (document.getElementById('categorySelect').value) return 'Selected Category Revenue';
+		    if (document.getElementById('brandSelect').value) return 'Selected Brand Revenue';
+		    return 'Total Revenue';
+		}
 	document.querySelectorAll('a[data-toggle="tab"]').forEach(tab => {
 	    tab.addEventListener('click', function (e) {
 	        const targetTab = this.getAttribute('href');
