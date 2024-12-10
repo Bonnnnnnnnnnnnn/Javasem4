@@ -7,96 +7,60 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/stockAll.css}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-	table {
-    width: 100%;
-    table-layout: fixed; 
-	}
-	
-	table th, table td {
-	    text-align: center;
-	    padding: 10px;
-	    min-width: 150px; 
-	    overflow: hidden; 
-	    word-wrap: break-word; 
-	}
-	.conversion-div {
-    display: none; /* Ẩn theo mặc định */
+	<style>
+#filterForm {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: flex-start; /* Căn lề trái */
+    gap: 5px; /* Giảm khoảng cách giữa các thành phần */
+    max-width: 500px; /* Giới hạn độ rộng form */
+    margin: 20px auto; /* Căn giữa */
+    padding: 10px;
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 8px; /* Bo góc */
+    background-color: #f9f9f9; /* Màu nền */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+}
+
+
+#filterForm label {
+    font-size: 14px;
+    color: #333; /* Màu chữ */
+    margin-right: 10px; /* Khoảng cách giữa label và input */
+}
+
+#filterForm input[type="date"] {
+    padding: 8px;
+    font-size: 14px;
     border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
+    border-radius: 4px;
+    width: 130px; /* Giới hạn chiều rộng của input */
+    box-sizing: border-box; /* Tính cả padding vào width */
+}
+
+#filterForm input[type="date"]:focus {
+    outline: none;
+    border-color: #007bff; /* Đổi màu khi focus */
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+#filterForm button {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#filterForm button:hover {
+    background-color: #0056b3; /* Màu khi hover */
 }
 	
-/* Container chung */
-.conversion-container {
-    border: 1px solid #007bff;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    font-family: Arial, sans-serif;
-    text-align: left;
-}
-
-/* Container chung */
-.conversion-container {
-    border: 1px solid #007bff;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    font-family: Arial, sans-serif;
-    text-align: left;
-}
-
-
-/* Định dạng danh sách */
-.conversion-container ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.conversion-container ul li {
-    margin-bottom: 15px; /* Khoảng cách giữa các mục */
-    display: flex; /* Sử dụng Flexbox để căn chỉnh */
-    align-items: center; /* Căn giữa nội dung trong hàng */
-    justify-content: flex-start; /* Canh trái các mục */
-}
-
-/* Nhãn (Unit) */
-.conversion-label {
-    color: #000;
-    font-weight: bold;
-    width: 100px; /* Nhãn "Unit" sát lề trái */
-    text-align: left;
-}
-
-/* Nhãn Quantity sẽ có margin-left */
-.quantity-label {
-    color: #28a745; /* Màu xanh cho giá trị */
-    font-weight: 500;
-    margin-left: 18px; /* Khoảng cách từ "Quantity" đến lề trái */
-}
-
-/* Giá trị */
-.conversion-value {
-    color: #28a745;
-    font-weight: 500;
-    flex: 1; /* Giá trị tự động giãn đầy khoảng còn lại */
-}
-
-.no-conversion-message {
-    text-align: center;
-    color: red;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 10px;
-}
-
-    </style>
+	</style>
 </head>
 <body>
 
@@ -116,6 +80,15 @@
                                     </button>
                                 </div>
                             </div>
+							<form id="filterForm" th:action="@{/warehouseManager/showStockDetail}" method="get">
+							    <label for="startDate">Start Date:</label>
+							    <input type="date" id="startDate" name="startDate" 
+							           th:value="${startDate != null ? startDate : '2020-01-01'}" onchange="applyFilter()">
+							    
+							    <label for="endDate">End Date:</label>
+							    <input type="date" id="endDate" name="endDate" 
+							           th:value="${endDate != null ? endDate : T(java.time.LocalDate).now()}" onchange="applyFilter()">
+							</form>
                         </div>
                         <div class="card-body table-responsive p-0">
                             <div id="stockTableContainer">
@@ -275,6 +248,38 @@ function loadPage(page) {
 document.addEventListener('DOMContentLoaded', () => {
     loadPage(currentPage); 
 });
+
+//start Date
+document.addEventListener("DOMContentLoaded", function() {
+    
+    const defaultStartDate = '2020-01-01'; 
+    const defaultEndDate = new Date().toISOString().split('T')[0]; 
+	console.log("defaultStartDate: ", defaultStartDate)
+    applyFilter(defaultStartDate, defaultEndDate); 
+});
+
+function applyFilter() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+    $.ajax({
+        url: '/warehouseManager/showStockDetailJson', 
+        method: 'GET',
+        data: { startDate: startDate, endDate: endDate },
+        success: function(response) {
+        	console.log("Response from server:", response);
+            data = response;
+            loadPage(0); 
+        },
+        error: function(error) {
+            console.error("Không lấy được dữ liệu:", error);
+        }
+    });
+}
+//end
+
+
 </script>
 
 

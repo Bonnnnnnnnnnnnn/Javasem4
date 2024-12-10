@@ -158,3 +158,33 @@ td {
 	background-color: #1874CD !important;
 }
 
+    
+/* Căn chỉnh form */
+#filterForm {
+    display: flex;
+    align-items: center; 
+    gap: 10px; 
+}
+
+
+#filterForm input[type="date"] {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    background-color: #f9f9f9; 
+}
+
+
+#filterForm button {
+    padding: 5px 15px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007bff;
+    border: none; 
+    border-radius: 5px; 
+}
+
+#filterForm button:hover {
+    background-color: #0056b3; /* Màu khi hover */
+}

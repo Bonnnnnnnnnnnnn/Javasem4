@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href=@{/css/stockAll.css}>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-
- 
-    </style>
 </head>
 <body>
 
@@ -33,16 +29,31 @@
 			                </div>
 			              </div>
 			              <!-- /.card-header -->
-			              <div class="card-header p-2" >
-			                <ul class="nav nav-pills">
-			                	<li class="nav-item" >
-							        <a class="nav-link active" href="#stocklist" data-toggle="pill">inventory list</a>
-							    </li>
-							    <li class="nav-item">
-							        <a class="nav-link" href="#sotcklistdetail" data-toggle="pill">detailed inventory list</a>
-							    </li>
-							</ul>
-			              </div>
+			            <div class="card-header p-2">
+						    <ul class="nav nav-pills">
+						        <li class="nav-item">
+						            <a class="nav-link active" href="#stocklist" data-toggle="pill">inventory list</a>
+						        </li>
+						        <li class="nav-item">
+						            <a class="nav-link" href="#sotcklistdetail" data-toggle="pill">detailed inventory list</a>
+						        </li>
+						        <li class="nav-item" style=" display: flex;margin-left: auto; align-items: center;">
+						            <form id="filterForm" th:action="@{/warehouseManager/showStock}" method="get">
+						                <label for="startDate"></label>
+						                <input type="date" id="startDate" name="startDate"
+						                       th:value="${startDate != null ? startDate : '2020-01-01'}">
+						                
+						                <label for="endDate">--  --</label>
+						                <input type="date" id="endDate" name="endDate"
+						                       th:value="${endDate != null ? endDate : T(java.time.LocalDate).now()}">
+						                
+						                <button type="submit">Filter</button>
+						            </form>
+						        </li>
+						    </ul>
+						</div>
+							
+
 			              <div class="card-body">
 						    <div class="tab-content">
 						        <!-- Tab for Inventory List -->
@@ -94,6 +105,7 @@ function renderStockTable1(stockList) {
                     <th>Unit</th>
                     <th>Price</th>
                     <th>Quantity</th>
+                    <th>Date</th>
                     <th>Conversion</th>
                 </tr>
             </thead>
@@ -107,6 +119,7 @@ function renderStockTable1(stockList) {
                 <td>${stock.unitName}</td>
                 <td>${stock.price}</td>
                 <td>${stock.quantity}</td>
+                <td>${stock.date}</td>
                 <td>
                     <button type="button" class="btn btn-primary btn-conversion1" 
                         data-product-id="${stock.productId}">
@@ -209,6 +222,7 @@ function renderStockTable2(stockList) {
                     <th>Unit</th>
                     <th>Price</th>
                     <th>Quantity</th>
+                    <th>Date</th>
                     <th>Conversion</th>
                 </tr>
             </thead>
@@ -222,6 +236,7 @@ function renderStockTable2(stockList) {
                 <td>${stock.unitName}</td>
                 <td>${stock.whPrice}</td>
                 <td>${stock.quantity}</td>
+                <td>${stock.date}</td>
                 <td>
                     <button type="button" class="btn btn-primary btn-conversion2" 
                         data-product-id="${stock.product_id}">
@@ -315,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPage1(currentPage1); 
     loadPage2(currentPage2); 
 });
+
 </script>
 
 </body>

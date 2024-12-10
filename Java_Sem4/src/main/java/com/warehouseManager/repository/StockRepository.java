@@ -1,18 +1,17 @@
 package com.warehouseManager.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.Conversion_mapper;
 import com.mapper.Product_mapper;
+import com.mapper.StockSum_mapper;
 import com.mapper.Stock_mapper;
 import com.models.Conversion;
 import com.models.ConversionShow;
@@ -30,14 +29,15 @@ public class StockRepository {
     private JdbcTemplate jdbcTemplate;
 	
 
-    public List<StockSumByWarehouseId> findAllStock(int warehouseId) {
+    public List<StockSumByWarehouseId> findAllStock(int warehouseId, LocalDate startDate, LocalDate endDate) {
         String sql = String.format("""
                 SELECT 
-                    p.Id AS Product_Id,
+                    p.Id,
                     p.Product_name,
-                    u.Name AS Unit_Name, 
+                    u.Name, 
                     wh.Id AS Warehouse_Id,
-                    SUM(st.Quantity) AS Total_Quantity,
+                    whr.Date,                    
+                    SUM(st.Quantity) AS total_Quantity,
                     AVG(wrd.Wh_price) AS Average_Wh_price                   
                 FROM 
                     stock st
@@ -48,35 +48,16 @@ public class StockRepository {
                     JOIN Warehouse wh ON whr.Wh_Id = wh.Id
                     JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
                 WHERE 
-                    ew.Warehouse_Id = %d
+                    ew.Warehouse_Id = ?
+                    AND whr.Date BETWEEN ?  AND ?
                 GROUP BY 
-                    p.Id, p.Product_name, u.Name, wh.Id
+                    p.Id, p.Product_name, u.Name, wh.Id, whr.Date
                 ORDER BY 
-                    wh.Id, p.Product_name;
-                """, warehouseId);
+                      whr.Date DESC, wh.Id, p.Product_name;
+                """);
 
-        List<StockSumByWarehouseId> stocks = jdbcTemplate.query(sql, new ResultSetExtractor<List<StockSumByWarehouseId>>() {
-            @Override
-            public List<StockSumByWarehouseId> extractData(ResultSet rs) throws SQLException {
-                List<StockSumByWarehouseId> stockList = new ArrayList<>();
-                while (rs.next()) {
-                    int productId = rs.getInt("Product_Id");
-                    String productName = rs.getString("Product_name");
-                    String unitName = rs.getString("Unit_Name");
-                    int quantity = rs.getInt("Total_Quantity");
-                    Double price = rs.getDouble("Average_Wh_price");
+        List<StockSumByWarehouseId> stocks = jdbcTemplate.query(sql, new StockSum_mapper(), warehouseId, startDate, endDate);
 
-                    StockSumByWarehouseId stock = new StockSumByWarehouseId();
-                    stock.setProductId(productId);
-                    stock.setProductName(productName);
-                    stock.setUnitName(unitName);
-                    stock.setQuantity(quantity);
-                    stock.setPrice(price);
-                    stockList.add(stock);
-                }
-                return stockList;
-            }
-        });
         
         for (StockSumByWarehouseId stock : stocks) {
 
@@ -113,9 +94,10 @@ public class StockRepository {
 
         return stocks;
     }
+
     
 
-    public List<Stock> findStockDetail(int warehouseId) {
+    public List<Stock> findStockDetail(int warehouseId,  LocalDate startDate, LocalDate endDate) {
         String sql = String.format("""
                 SELECT 
                     st.*,
@@ -137,10 +119,11 @@ public class StockRepository {
                     JOIN Warehouse wh ON whr.Wh_Id = wh.Id
                     JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
                 WHERE 
-                    ew.Warehouse_Id = ?;
-                """, warehouseId);
+                    ew.Warehouse_Id = ?
+                    AND whr.Date BETWEEN ? AND ? ;
+                """);
 
-        List<Stock> stocks = jdbcTemplate.query(sql, new Stock_mapper(), warehouseId);
+        List<Stock> stocks = jdbcTemplate.query(sql, new Stock_mapper(), warehouseId, startDate, endDate);
 
         for (Stock stock : stocks) {
 

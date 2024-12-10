@@ -1,5 +1,6 @@
 package com.models;
 
+import java.sql.Date;
 import java.util.List;
 
 public class StockSumByWarehouseId {
@@ -9,15 +10,17 @@ public class StockSumByWarehouseId {
     private String unitName;
     private int quantity;
     private Double price;
+    private Date Date;
     private List<ConversionShow> conversions;
 
     // Constructor
-    public StockSumByWarehouseId(int productId, String productName, String unitName, int quantity, Double price) {
+    public StockSumByWarehouseId(int productId, String productName, String unitName, int quantity, Double price, Date date) {
         this.productId = productId;
         this.productName = productName;
         this.unitName = unitName;
         this.quantity = quantity;
         this.price = price;
+        this.Date = date;
     }
     
 
@@ -79,4 +82,14 @@ public class StockSumByWarehouseId {
         this.price = price;
     }
 
+
+	public Date getDate() {
+		return Date;
+	}
+
+
+	public void setDate(Date date) {
+		Date = date;
+	}
+    
 }
