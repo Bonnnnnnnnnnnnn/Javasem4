@@ -182,13 +182,14 @@ $(document).ready(function() {
 		           fetch('/warehouseManager/warehouseReceipt/getConversions?id=' + productId)
 		               .then(response => response.json())
 		               .then(data => {
+						console.log(data)
 		                   var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
 		                   conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>'; // Xóa các option cũ
 		                   
 		                   data.forEach(conversion => {
 		                       var option = document.createElement('option');
 		                       option.value = conversion.id;
-		                       option.text = conversion.toUnitName;
+		                       option.text = conversion.fromUnitName + '->' + conversion.toUnitName + '(' + conversion.conversion_rate +')';
 		                       conversionSelect.appendChild(option);
 		                   });
 		               })

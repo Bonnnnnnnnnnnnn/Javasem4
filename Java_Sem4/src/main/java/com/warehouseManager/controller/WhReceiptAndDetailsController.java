@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,10 +74,15 @@ public class WhReceiptAndDetailsController {
 		public String showAddWhReceipt(Model model, HttpSession session) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
-		        Integer warehouseId = repwd.findWarehouseIdByEmployeeId(employeeId);
+		        Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 		        if (warehouseId == null) {
-		            model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
-		            return "error";
+		            warehouseId = repwd.getWarehouseIdByEmployeeId(employeeId);
+		            if (warehouseId != null) {
+		                session.setAttribute("warehouseId", warehouseId);
+		            } else {
+		                model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
+		                return "error";
+		            }
 		        }
 		        model.addAttribute("whId", warehouseId);
 		        model.addAttribute("products", repwd.findAllPro());
@@ -90,6 +94,7 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
+
 
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(

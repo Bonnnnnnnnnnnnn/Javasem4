@@ -248,7 +248,7 @@ public class WarehouseRepository {
 	}
 
 	public Employee_warehouse findByEmpwhId(int id) {
-	    try {
+	    try { 
 	        String sql = "SELECT ew.Id, ew.Employee_Id, " +
 	                     "CONCAT(e.First_name, ' ', e.Last_name) AS Employee_name, " +
 	                     "ew.Warehouse_Id, w.Name AS Warehouse_name " +
