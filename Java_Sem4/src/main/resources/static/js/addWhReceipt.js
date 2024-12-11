@@ -188,7 +188,7 @@ $(document).ready(function() {
 		                   data.forEach(conversion => {
 		                       var option = document.createElement('option');
 		                       option.value = conversion.id;
-		                       option.text = conversion.toUnitName;
+		                       option.text = conversion.fromUnitName + '->' + conversion.toUnitName + '(' + conversion.conversion_rate + ')';
 		                       conversionSelect.appendChild(option);
 		                   });
 		               })

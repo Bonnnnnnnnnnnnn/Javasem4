@@ -70,11 +70,12 @@ public class WhReceiptAndDetailsController {
 		public String showAddWhReceipt(Model model, HttpSession session) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
-		        Integer warehouseId = repwd.findWarehouseIdByEmployeeId(employeeId);
+		        Integer warehouseId =(Integer)  session.getAttribute("warehouseId");
 		        if (warehouseId == null) {
 		            model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
 		            return "error";
 		        }
+		       
 		        model.addAttribute("whId", warehouseId);
 		        model.addAttribute("products", repwd.findAllPro());
 		        model.addAttribute("employeeId", employeeId);

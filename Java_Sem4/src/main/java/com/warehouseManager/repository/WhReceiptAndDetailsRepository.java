@@ -207,7 +207,7 @@ public class WhReceiptAndDetailsRepository {
 		    try {
 		    	//tính tổng totalfee
 		        double totalFee = details.stream()
-		                .mapToDouble(detail -> detail.getQuantity() * detail.getWh_price())
+		                .mapToDouble(detail -> detail.getQuantity()  * detail.getWh_price())
 		                .sum();
 		        totalFee += receipt.getShipping_fee() + receipt.getOther_fee();
 		        receipt.setTotal_fee(totalFee);
