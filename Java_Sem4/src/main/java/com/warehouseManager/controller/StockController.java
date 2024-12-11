@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +33,7 @@ public class StockController {
 	public String showStock(HttpSession session, Model model,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		
-		System.out.println("startDate: " + startDate);
-		System.out.println("endDate: " + endDate);
+
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 			
 	    if (startDate == null) {
@@ -59,8 +59,7 @@ public class StockController {
 	public List<StockSumByWarehouseId> showStockAllJson(HttpSession session,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		System.out.println("Start Date1: " + startDate);
-	    System.out.println("End Date1: " + endDate);
+
 
 	    Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 	    if (warehouseId == null) {
@@ -78,8 +77,7 @@ public class StockController {
     public List<Stock> showStockDetailJson(HttpSession session,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		System.out.println("Start Date2: " + startDate);
-	    System.out.println("End Date2: " + endDate);
+
         
         Integer warehouseId = (Integer) session.getAttribute("warehouseId");
         if (warehouseId == null) {
@@ -93,8 +91,7 @@ public class StockController {
 	public String showStockDetail(HttpSession session, Model model,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		System.out.println("Start Date4: " + startDate);
-	    System.out.println("End Date4: " + endDate);
+
 		
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 
@@ -114,17 +111,33 @@ public class StockController {
 	
 	
 	
-	@GetMapping("/inventory-stats")
-	@ResponseBody
-	public List<Map<String, Object>> getInventoryStats(HttpSession session) {
+
+	
+	@GetMapping("/lowStock")
+	public String lowStock(HttpSession session) {
 	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 
-	    if (loggedInEmployee != null) {
-	        return repst.getInventoryStats();
+	    if (loggedInEmployee == null) {
+	        return "redirect:/employee/login"; 
 	    }
 
-	    return List.of();
+	    return Views.SHOW_STOCK_LOW; 
 	}
+	
+	@GetMapping("/lowStockApi")
+	@ResponseBody
+	public List<Map<String, Object>> getLowStockData(@RequestParam(required = false) Integer minQuantity, HttpSession session) {
+	    Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+
+	    if (minQuantity == null ) {
+	        return repst.findAllLowStock(warehouseId);
+	    }
+
+	    
+	    return repst.findLowStock(warehouseId, minQuantity);
+	}
+
+
 	
 	@GetMapping("/chartStock")
 	public String chart(HttpSession session) {
@@ -135,6 +148,29 @@ public class StockController {
 	    }
 
 	    return Views.SHOW_STOCK_CHAR; 
+	}
+
+	@GetMapping("/inventory-stats")
+	@ResponseBody
+	public ResponseEntity<List<Map<String, Object>>> getInventoryStats(HttpSession session) {
+	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+	    Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+
+	    if (loggedInEmployee != null && warehouseId != null) {
+	        try {
+	            List<Map<String, Object>> inventoryStats = repst.getInventoryStats(warehouseId);
+
+	            return ResponseEntity.ok(inventoryStats);
+	        } catch (Exception e) {
+	            System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
+	            e.printStackTrace();
+
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(List.of());
+	        }
+	    }
+
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(List.of());
 	}
 
 

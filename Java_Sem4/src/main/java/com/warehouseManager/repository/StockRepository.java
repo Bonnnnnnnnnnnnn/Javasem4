@@ -161,28 +161,116 @@ public class StockRepository {
         return stocks;
     }
 
+        
     
-    
-    
-    public List<Map<String, Object>> getInventoryStats() {
-        String sql = """
-            SELECT 
-                p.Product_name AS ProductName,
-                wr.Date AS ImportDate,
-                st.Quantity AS StockQuantity,
-                CASE 
-                    WHEN st.Quantity > 0 THEN 'Còn'
-                    ELSE 'Hết'
-                END AS Status
-            FROM stock st
-            JOIN Product p ON st.Id_product = p.Id
-            JOIN Warehouse_receipt_detail wrd ON st.Wh_rc_dt_Id = wrd.Id
-            JOIN Warehouse_receipt wr ON wrd.Wh_receiptId = wr.Id
-            ORDER BY p.Product_name, wr.Date
-        """;
+    public List<Map<String, Object>> getInventoryStats(int warehouseId) {
+    	String sql = String.format ("""
+		            SELECT 
+				    p.%s AS ProductName,
+				    CONVERT(VARCHAR, whr.%s, 23) AS ImportDate,  
+				    SUM(st.%s) AS StockQuantity,  
+				    CASE 
+				        WHEN SUM(st.%s) > 0 THEN 'in stock'  
+				        ELSE 'out of stock'  
+				    END AS StatusProduct
+				FROM 
+				    %s st
+				    JOIN %s p ON st.%s = p.%s
+				    JOIN %s wrd ON st.%s = wrd.%s
+				    JOIN %s whr ON wrd.%s = whr.%s
+				    JOIN %s wh ON whr.%s = wh.%s
+				    JOIN %s ew ON wh.%s = ew.%s
+				WHERE     
+				    ew.%s = ?  
+				GROUP BY 
+				    p.%s, CONVERT(VARCHAR, whr.%s, 23), p.%s  
+				ORDER BY 
+				    CONVERT(VARCHAR, whr.%s, 23) DESC, p.%s;  
+		        """, 
+		        Views.COL_PRODUCT_NAME, Views.COL_WAREHOUSE_RECEIPT_DATE, Views.COL_STOCK_QUANTITY,
+		        Views.COL_STOCK_QUANTITY, Views.TBL_STOCK,
+		        Views.TBL_PRODUCT, Views.COL_STOCK_PRODUCT_ID, Views.COL_PRODUCT_ID,                
+                Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.COL_STOCK_WARERCDT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID,
+                Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,Views.COL_WAREHOUSE_RECEIPT_ID,
+                Views.TBL_WAREHOUSE, Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
+		        Views.TBL_EMPLOYEE_WAREHOUSE, Views.COL_WAREHOUSE_ID, Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,
+		        Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,
+		        Views.COL_PRODUCT_NAME, Views.COL_WAREHOUSE_RECEIPT_DATE, Views.COL_PRODUCT_ID,
+		        Views.COL_WAREHOUSE_RECEIPT_DATE,  Views.COL_PRODUCT_NAME
+    	);
 
-        return jdbcTemplate.queryForList(sql);  
+    	try {
+            return jdbcTemplate.queryForList(sql, warehouseId);  
+        } catch (Exception e) {            
+            System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>(); 
+        } 
     }
+    
+    
+    public List<Map<String, Object>> findLowStock(int warehouseId,int minQuantity) {
+        String sql = String.format("""
+                SELECT 
+                    p.%s AS productName,
+                    SUM(st.%s) AS totalQuantity
+                FROM 
+                    %s st
+                    JOIN %s p ON st.%s = p.%s
+                    JOIN %s wrd ON st.%s = wrd.%s
+                    JOIN %s whr ON wrd.%s = whr.%s
+                    JOIN %s wh ON whr.%s = wh.%s
+                    JOIN %s ew ON wh.%s = ew.%s
+                WHERE 
+                    ew.%s = ?
+                GROUP BY 
+                    p.%s
+                HAVING 
+                    SUM(st.%s) < ?
+                """,
+                Views.COL_PRODUCT_NAME, Views.COL_STOCK_QUANTITY, Views.TBL_STOCK, 
+                Views.TBL_PRODUCT, Views.COL_STOCK_PRODUCT_ID, Views.COL_PRODUCT_ID,                
+                Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.COL_STOCK_WARERCDT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID,
+                Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,Views.COL_WAREHOUSE_RECEIPT_ID,
+                Views.TBL_WAREHOUSE, Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
+                Views.TBL_EMPLOYEE_WAREHOUSE, Views.COL_WAREHOUSE_ID, Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,                
+                Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID, Views.COL_PRODUCT_NAME, Views.COL_STOCK_QUANTITY
+                
+        );
+        return jdbcTemplate.queryForList(sql,warehouseId, minQuantity);
+    }
+    
+    public List<Map<String, Object>> findAllLowStock(int warehouseId) {
+        String sql = String.format("""
+                SELECT 
+                    p.%s AS productName,
+                    SUM(st.%s) AS totalQuantity
+                FROM 
+                    %s st
+                    JOIN %s p ON st.%s = p.%s
+                    JOIN %s wrd ON st.%s = wrd.%s
+                    JOIN %s whr ON wrd.%s = whr.%s
+                    JOIN %s wh ON whr.%s = wh.%s
+                    JOIN %s ew ON wh.%s = ew.%s
+                WHERE 
+                    ew.%s = ?
+                GROUP BY 
+                    p.%s
+                ORDER BY 
+                    SUM(st.%s) DESC
+                """,
+                Views.COL_PRODUCT_NAME, Views.COL_STOCK_QUANTITY, Views.TBL_STOCK, 
+                Views.TBL_PRODUCT, Views.COL_STOCK_PRODUCT_ID, Views.COL_PRODUCT_ID,                
+                Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.COL_STOCK_WARERCDT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID,
+                Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,Views.COL_WAREHOUSE_RECEIPT_ID,
+                Views.TBL_WAREHOUSE, Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
+                Views.TBL_EMPLOYEE_WAREHOUSE, Views.COL_WAREHOUSE_ID, Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,                
+                Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID, Views.COL_PRODUCT_NAME, Views.COL_STOCK_QUANTITY
+                
+        );
+        return jdbcTemplate.queryForList(sql,warehouseId);
+    }
+
 
 	
 	public List<Conversion> conversionByProductId(int product_Id) {
@@ -201,7 +289,7 @@ public class StockRepository {
 	
 	public List<Product> findAddPro(){
 		try {
-			String sql = "SELECT * FROM Product";
+			String sql = String.format("SELECT * FROM %s ", Views.TBL_PRODUCT);
 			return jdbcTemplate.query(sql, new Product_mapper());
 		} catch (Exception e) {
 			e.printStackTrace();
