@@ -16,6 +16,7 @@ public class Conversion {
 		From_unit_id = from_unit_id;
 		To_unit_id = to_unit_id;
 		Conversion_rate = conversion_rate;
+		Product_id = product_id;
 	}
 	public Conversion() {
 	}
@@ -24,12 +25,6 @@ public class Conversion {
 	}
 	public void setId(int id) {
 		Id = id;
-	}
-	public int getProduct_id() {
-		return Product_id;
-	}
-	public void setProduct_id(int product_id) {
-		Product_id = product_id;
 	}
 	public int getFrom_unit_id() {
 		return From_unit_id;
@@ -67,4 +62,12 @@ public class Conversion {
 	public void setProductName(String productName) {
 		this.ProductName = productName;
 	}
+	public int getProduct_id() {
+		return Product_id;
+	}
+	public void setProduct_id(int product_id) {
+		Product_id = product_id;
+	}
+
 }
+

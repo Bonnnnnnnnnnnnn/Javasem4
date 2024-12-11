@@ -1,5 +1,6 @@
+  <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <link rel="stylesheet" th:href="@{/css/addProduct.css}">
-<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
     <div th:replace="admin/layout/header_admin"></div>
     <div class="content-wrapper" style="min-height: 1302.4px;">
         <section class="content-header">
@@ -128,15 +129,13 @@
 									            <label for="specDescriptions-0">Specification Description 1</label>
 									            <input type="text" id="specDescriptions-0" name="specDescriptions[]" class="form-control" required>
 									        </div>
-									       <div class="form-group">
-										    <button type="button" id="addSpecBtn" class="btn btn-primary">Add Specification</button>
-										</div> 
 										</div>   
 									</div>
 
                                <div class="card-footer">
                                    <a th:href="@{/admin/product/showProduct}" class="btn btn-danger">Back to List</a>
                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                   <button type="button" id="addSpecBtn" class="btn btn-success">Add Specification</button>
                                </div>
                            </form>
                         </div>
@@ -146,8 +145,9 @@
         </section>
     </div>
     <div th:replace="admin/layout/footer_admin"></div>
-
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
      <script th:src="@{/js/showdetailimg.js}"></script>
     <script th:src="@{/js/addProduct.js}"></script>
 </body>
+  </html>
+  

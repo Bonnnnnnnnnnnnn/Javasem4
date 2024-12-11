@@ -58,5 +58,9 @@ public class LoginEmployee {
 	        return Views.EMPLOYEE_LOGIN; 
 	    }
 	}
-
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(HttpSession session) {
+	    session.invalidate();
+	    return "redirect:login";
+	}
 }
