@@ -126,28 +126,40 @@ public class TaxRepository {
 				Views.COL_TAX_HISTORY_AMOUNT, Views.COL_TAX_HISTORY_STATUS, Views.COL_TAX_HISTORY_PAYMENT_DATE,
 				Views.COL_TAX_HISTORY_NOTE, Views.COL_TAX_HISTORY_CREATED_BY);
 
-		db.update(sql, tax.getTaxType(), tax.getPeriodStart(), tax.getPeriodEnd(), tax.getRevenueAmount(),
+		db.update(sql, tax.getTaxType(), tax.getPeriodStart(), tax.getPeriodEnd(), tax.getAmount(),
 				tax.getTaxRate(), tax.getTaxAmount(), tax.getPaymentStatus(), tax.getPaymentDate(), tax.getNote(),
 				tax.getCreatedBy());
 	}
 
 	public Double calculateRevenue(LocalDate startDate, LocalDate endDate) {
-		String sql = String.format(
-				"SELECT " + "    (SELECT COALESCE(SUM(%s), 0) " + "     FROM [%s] " + "     WHERE %s BETWEEN ? AND ? "
-						+ "     AND %s = 'Completed') - " + "    (SELECT COALESCE(SUM(%s), 0) " + "     FROM %s "
-						+ "     WHERE %s BETWEEN ? AND ? " + "     AND %s = 'Completed') as Total_Revenue",
-				Views.COL_ORDER_TOTALAMOUNT, Views.TBL_ORDER, Views.COL_ORDER_DATE, Views.COL_ORDER_STATUS,
-				Views.COL_RETURN_ORDER_FINAL_AMOUNT, Views.TBL_RETURN_ORDER, Views.COL_RETURN_ORDER_DATE,
-				Views.COL_RETURN_ORDER_STATUS);
+	    String sql = String.format(
+	        "SELECT " + 
+	        "    (SELECT COALESCE(SUM(%s), 0) " + 
+	        "     FROM [%s] " + 
+	        "     WHERE %s BETWEEN ? AND ? " +
+	        "     AND %s = 'Completed') - " + 
+	        "    (SELECT COALESCE(SUM(%s), 0) " + 
+	        "     FROM %s " + 
+	        "     WHERE %s BETWEEN ? AND ? " + 
+	        "     AND %s IN ('Completed', 'Accepted') " +  
+	        "     AND %s IS NOT NULL) as Total_Revenue",
+	        Views.COL_ORDER_TOTALAMOUNT, 
+	        Views.TBL_ORDER, 
+	        Views.COL_ORDER_DATE, 
+	        Views.COL_ORDER_STATUS,
+	        Views.COL_RETURN_ORDER_FINAL_AMOUNT,
+	        Views.TBL_RETURN_ORDER, 
+	        Views.COL_RETURN_ORDER_DATE,
+	        Views.COL_RETURN_ORDER_STATUS,
+	        Views.COL_RETURN_ORDER_FINAL_AMOUNT);
 
-		try {
-			return db.queryForObject(sql, Double.class, startDate, endDate, startDate, endDate);
-		} catch (DataAccessException e) {
-			System.err.println("Error calculating revenue: " + e.getMessage());
-			return 0.0;
-		}
+	    try {
+	        return db.queryForObject(sql, Double.class, startDate, endDate, startDate, endDate);
+	    } catch (DataAccessException e) {
+	        System.err.println("Error calculating revenue: " + e.getMessage());
+	        return 0.0;
+	    }
 	}
-
 	public void updateStatus(TaxHistory tax) {
 		String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?", Views.TBL_TAX_HISTORY,
 				Views.COL_TAX_HISTORY_STATUS, Views.COL_TAX_HISTORY_PAYMENT_DATE, Views.COL_TAX_HISTORY_ID);

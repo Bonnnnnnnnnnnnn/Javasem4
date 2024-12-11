@@ -89,13 +89,13 @@ public final class Views {
 	public static String COL_STOCK_WARERCDT_ID = "Wh_rc_dt_id";
 
 	// 8.WAREHOUSE_RECEIPT_DETAIL
-	public static String TBL_WAREHOUSE_RECEIPT_DETAIL = "Warehouse_receipt_detail";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_ID = "Id";
-	public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Product_Id";
-	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION = "Conversion_Id";
+		public static String TBL_WAREHOUSE_RECEIPT_DETAIL = "Warehouse_receipt_detail";
+		public static String COL_WAREHOUSE_RECEIPT_DETAIL_ID = "Id";
+		public static String COL_DETAIL_WAREHOUSE_RECEIPT_ID = "Wh_receiptId";
+		public static String COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY = "Quantity";
+		public static String COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE = "Wh_price";
+		public static String COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID = "Product_Id";
+		public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION = "Conversion_Id";
 
 	// 9.WAREHOUSE_RECEIPT
 	public static String COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION_RATE = "Conversion_rate";
@@ -333,27 +333,27 @@ public final class Views {
 	//25.RETURN ORDER
 	
 	public static String RETURN_ORDERS_WAM = "warehouseManager/returnorders/showreorders";
-	public static String TBL_RETURN_ORDER = "Return_Order";
-	public static String COL_RETURN_ORDER_ID = "Id";
-	public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
-	public static String COL_RETURN_ORDER_DATE = "Return_Date";
-	public static String COL_RETURN_ORDER_STATUS = "Status";
-	public static String COL_RETURN_ORDER_NOTE = "Note";
-	public static String COL_RETURN_ORDER_TOTAL_AMOUNT = "Total_Amount";
-	public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
-	public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
-	public static String COL_RETURN_ORDER_MESSAGE = "Message";
-	public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
-
-
-	//25.RETURN ORDER DETAIL
-	public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
-	public static String COL_RETURN_DETAIL_ID = "Id";
-	public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
-	public static String COL_RETURN_DETAIL_ORDER_DETAIL_ID = "Order_Detail_Id";
-	public static String COL_RETURN_DETAIL_QUANTITY = "Quantity";
-	public static String COL_RETURN_DETAIL_REASON = "Reason";
-	public static String COL_RETURN_DETAIL_AMOUNT = "Amount";
+		public static String TBL_RETURN_ORDER = "Return_Order";
+		public static String COL_RETURN_ORDER_ID = "Id";
+		public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
+		public static String COL_RETURN_ORDER_DATE = "Return_Date";
+		public static String COL_RETURN_ORDER_STATUS = "Status";
+		public static String COL_RETURN_ORDER_NOTE = "Note";
+		public static String COL_RETURN_ORDER_TOTAL_AMOUNT = "Total_Amount";
+		public static String COL_RETURN_ORDER_DISCOUNT_AMOUNT = "Discount_Amount";
+		public static String COL_RETURN_ORDER_FINAL_AMOUNT = "Final_Amount";
+		public static String COL_RETURN_ORDER_MESSAGE = "Message";
+		public static String COL_RETURN_ORDER_EMPLOYEE_ID = "Employee_Id";
+	
+	
+		//25.RETURN ORDER DETAIL
+		public static String TBL_RETURN_ORDER_DETAIL = "Return_Order_Detail";
+		public static String COL_RETURN_DETAIL_ID = "Id";
+		public static String COL_RETURN_DETAIL_RETURN_ID = "Return_Order_Id";
+		public static String COL_RETURN_DETAIL_ORDER_DETAIL_ID = "Order_Detail_Id";
+		public static String COL_RETURN_DETAIL_QUANTITY = "Quantity";
+		public static String COL_RETURN_DETAIL_REASON = "Reason";
+		public static String COL_RETURN_DETAIL_AMOUNT = "Amount";
 	// 26.CUSTOMER
 
 	// 21.CUSTOMER
@@ -467,7 +467,7 @@ public final class Views {
 	public static String COL_TAX_HISTORY_TYPE = "Tax_Type";
 	public static String COL_TAX_HISTORY_PERIOD_START = "Period_Start";
 	public static String COL_TAX_HISTORY_PERIOD_END = "Period_End";
-	public static String COL_TAX_HISTORY_REVENUE = "Revenue_Amount";
+	public static String COL_TAX_HISTORY_REVENUE = "Amount";
 	public static String COL_TAX_HISTORY_RATE = "Tax_Rate";
 	public static String COL_TAX_HISTORY_AMOUNT = "Tax_Amount";
 	public static String COL_TAX_HISTORY_STATUS = "Payment_Status";
@@ -476,5 +476,5 @@ public final class Views {
 	public static String COL_TAX_HISTORY_CREATED_AT = "Created_At";
 	public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
 
-
+	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
 }

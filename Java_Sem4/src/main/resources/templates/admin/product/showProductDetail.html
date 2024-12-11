@@ -206,7 +206,8 @@
 						            <tr th:each="item, iterStat : ${priceChanges}" class="text-center">
 						                <td th:text="${iterStat.index + 1}"></td>
 						                <td>
-						                     $<span th:text="${item.price}"></span>
+
+						                     $ <span th:text="${item.price}"></span>
 						                </td>
 										<td>
 										    <span th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span>

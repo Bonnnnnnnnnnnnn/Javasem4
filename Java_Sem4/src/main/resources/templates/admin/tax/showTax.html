@@ -39,7 +39,7 @@
                                     - 
                                     <span th:text="${#temporals.format(tax.periodEnd, 'dd/MM/yyyy')}"></span>
                                 </td>
-                                <td th:text="${#numbers.formatDecimal(tax.revenueAmount, 0, 'COMMA', 2, 'POINT')}"></td>
+                                <td th:text="${#numbers.formatDecimal(tax.Amount, 0, 'COMMA', 2, 'POINT')}"></td>
                                 <td th:text="${tax.taxRate + '%'}"></td>
                                 <td th:text="${#numbers.formatDecimal(tax.taxAmount, 0, 'COMMA', 2, 'POINT')}"></td>
                                 <td>
@@ -140,14 +140,26 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label>Revenue Amount</label>
                                 <input type="number" class="form-control" 
-                                       id="revenueAmount" name="revenueAmount" 
+                                       id="revenueAmount"
                                        readonly>
                                 <small class="text-muted">Automatically calculated from completed orders</small>
                             </div>
+                            
+                           
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Amount</label> <input type="number"
+										class="form-control" id="Amount" name="Amount"
+										required="required" onchange="calculateTaxAmount()">
+								</div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -158,8 +170,12 @@
                                        required onchange="calculateTaxAmount()">
                             </div>
                         </div>
-                    </div>
-                    
+                         
+                        </div>
+                        
+                        
+                   	<div class="row">
+                   	<div class="col-12">
                     <div class="form-group">
                         <label>Tax Amount</label>
                         <input type="number" class="form-control" 
@@ -172,6 +188,10 @@
                         <label>Note</label>
                         <textarea class="form-control" name="note" rows="3"></textarea>
                     </div>
+                    </div>
+                   	</div>
+                    
+                    
                 </form>
             </div>
             <div class="modal-footer">
@@ -195,7 +215,7 @@
                     <div class="col-md-6">
                         <p><strong>Tax Type:</strong> <span id="viewTaxType"></span></p>
                         <p><strong>Period:</strong> <span id="viewPeriod"></span></p>
-                        <p><strong>Revenue Amount:</strong> <span id="viewRevenue"></span></p>
+                        <p><strong>Amount:</strong> <span id="viewAmount"></span></p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Tax Rate:</strong> <span id="viewTaxRate"></span></p>
@@ -240,8 +260,7 @@ function calculateRevenue() {
             $('#periodEnd').val('');
             return;
         }
-        console.log(startDate)
-        console.log(endDate)
+
         $.ajax({
             url: '/admin/tax/calculate-revenue',
             type: 'GET',
@@ -251,7 +270,7 @@ function calculateRevenue() {
             },
             success: function(response) {
                 $('#revenueAmount').val(response);
-                console.log()
+               
                 calculateTaxAmount();
             },
             error: function(xhr) {
@@ -262,7 +281,7 @@ function calculateRevenue() {
 }
 
 function calculateTaxAmount() {
-    var revenue = parseFloat($('#revenueAmount').val()) || 0;
+    var revenue = parseFloat($('#Amount').val()) || 0;
     var rate = parseFloat($('#taxRate').val()) || 0;
     
     if (revenue && rate) {
@@ -283,13 +302,12 @@ function saveTax() {
         taxType: $('#addTaxForm select[name="taxType"]').val(),
         periodStart: $('#periodStart').val(),
         periodEnd: $('#periodEnd').val(),
-        revenueAmount: parseFloat($('#revenueAmount').val()),
+        amount: parseFloat($('#Amount').val()),
         taxRate: parseFloat($('#taxRate').val()),
         taxAmount: parseFloat($('#taxAmount').val()),
         note: $('#addTaxForm textarea[name="note"]').val()
     };
-    
-    $.ajax({
+   $.ajax({
         url: '/admin/tax/add',
         type: 'POST',
         contentType: 'application/json',
@@ -378,7 +396,7 @@ function viewTax(id) {
             // Populate modal with tax details
             $('#viewTaxType').text(tax.taxType);
             $('#viewPeriod').text(formatDate(tax.periodStart) + ' - ' + formatDate(tax.periodEnd));
-            $('#viewRevenue').text(formatMoney(tax.revenueAmount));
+            $('#viewAmount').text(formatMoney(tax.amount));
             $('#viewTaxRate').text(tax.taxRate + '%');
             $('#viewTaxAmount').text(formatMoney(tax.taxAmount));
             $('#viewStatus').text(tax.paymentStatus);
