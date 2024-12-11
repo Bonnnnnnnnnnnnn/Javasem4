@@ -79,7 +79,8 @@ public final class Views {
 	public static String SHOW_STOCK = "warehouseManager/stock/showListStock";
 	public static String SHOW_STOCK_DETAIL = "warehouseManager/stock/showListStockDetail";
 	public static String SHOW_STOCK_CHAR = "warehouseManager/stock/showStockChar";
-	
+	public static String SHOW_STOCK_LOW = "warehouseManager/stock/showStockLow";
+
 
 	public static String TBL_STOCK = "Stock";
 	public static String COL_STOCK_ID = "Id";
