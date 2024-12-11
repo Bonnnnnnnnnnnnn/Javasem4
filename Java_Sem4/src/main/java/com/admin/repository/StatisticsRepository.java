@@ -1027,6 +1027,200 @@ public class StatisticsRepository {
 	    
 	    return Math.max(minValue, Math.min(maxValue, prediction));
 	}
+
+	public List<Map<String, Object>> getProfitAnalysis(String period) {
+	    // Định nghĩa CASE statement cho period format
+	    String periodCase = switch (period) {
+	        case "monthly" -> "FORMAT(%s, 'yyyy-MM')";
+	        case "quarterly" -> "CAST(YEAR(%s) AS VARCHAR) + '-Q' + CAST(DATEPART(QUARTER, %s) AS VARCHAR)";
+	        case "yearly" -> "CAST(YEAR(%s) AS VARCHAR)";
+	        default -> throw new IllegalArgumentException("Invalid period: " + period);
+	    };
+
+	    // Tạo format cho từng loại date
+	    String orderPeriodFormat = periodCase.formatted(
+	        "o.[" + Views.COL_ORDER_DATE + "]",
+	        "o.[" + Views.COL_ORDER_DATE + "]"
+	    );
+	    
+	    String returnPeriodFormat = periodCase.formatted(
+	        "ro.[" + Views.COL_RETURN_ORDER_DATE + "]",
+	        "ro.[" + Views.COL_RETURN_ORDER_DATE + "]"
+	    );
+	    
+	    String expensePeriodFormat = periodCase.formatted(
+	        "eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]",
+	        "eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]"
+	    );
+	    
+	    String vatPeriodFormat = periodCase.formatted(
+	        "th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]",
+	        "th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]"
+	    );
+
+	    String sql = """
+	            WITH ProductCostPrice AS (
+	                SELECT DISTINCT
+	                    wrd.%s as productId,
+	                    FIRST_VALUE(wrd.%s) OVER (
+	                        PARTITION BY wrd.%s
+	                        ORDER BY wr.%s DESC, wrd.%s DESC
+	                    ) as latestCostPrice
+	                FROM [%s] wrd
+	                JOIN [%s] wr ON wrd.%s = wr.%s
+	                WHERE wrd.%s = 'Active'
+	            ),
+	            OrderData AS (
+	                SELECT 
+	                    %s as period,
+	                    SUM(od.%s * od.%s) as revenue,
+	                    SUM(od.%s * pc.latestCostPrice) as costAmount
+	                FROM [%s] o
+	                JOIN [%s] od ON o.%s = od.%s
+	                LEFT JOIN ProductCostPrice pc ON od.%s = pc.productId
+	                WHERE o.%s = 'Completed'
+	                GROUP BY %s
+	            ),
+	            ReturnData AS (
+	                SELECT 
+	                    %s as period,
+	                    SUM(rod.%s) as returnAmount,
+	                    SUM(rod.%s * pc.latestCostPrice) as returnCost
+	                FROM [%s] ro
+	                JOIN [%s] rod ON ro.%s = rod.%s
+	                JOIN [%s] od ON rod.%s = od.%s
+	                LEFT JOIN ProductCostPrice pc ON od.%s = pc.productId
+	                WHERE ro.%s IN ('Completed', 'Accepted')
+	                GROUP BY %s
+	            ),
+	            ExpenseData AS (
+	                SELECT 
+	                    %s as period,
+	                    CAST(SUM(
+	                        CASE 
+	                            WHEN et.%s = 'true' THEN eh.%s
+	                            ELSE eh.%s / NULLIF(DATEDIFF(MONTH, eh.%s, eh.%s) + 1, 0)
+	                        END
+	                    ) AS DECIMAL(10,2)) as total_expense
+	                FROM [%s] eh
+	                JOIN [%s] et ON eh.%s = et.%s
+	                WHERE eh.%s <= eh.%s
+	                GROUP BY %s
+	            ),
+	            VATData AS (
+	                SELECT 
+	                    %s as period,
+	                    CAST(SUM(th.%s) AS DECIMAL(10,2)) as vat_amount
+	                FROM [%s] th
+	                WHERE th.%s = 'VAT'
+	                AND th.%s = 'Paid'
+	                GROUP BY %s
+	            )
+	            SELECT 
+	                COALESCE(o.period, r.period, e.period, v.period) as period,
+	                CAST(COALESCE(o.revenue, 0) - COALESCE(r.returnAmount, 0) AS DECIMAL(10,2)) as Revenue,
+	                CAST(COALESCE(o.revenue - o.costAmount, 0) - COALESCE(r.returnAmount - r.returnCost, 0) AS DECIMAL(10,2)) as GrossProfit,
+	                COALESCE(e.total_expense, 0) as Expenses,
+	                COALESCE(v.vat_amount, 0) as VAT,
+	                CAST(
+	                    (COALESCE(o.revenue - o.costAmount, 0) - COALESCE(r.returnAmount - r.returnCost, 0)) - 
+	                    COALESCE(e.total_expense, 0) - COALESCE(v.vat_amount, 0) 
+	                AS DECIMAL(10,2)) as Net_Profit
+	            FROM OrderData o
+	            FULL OUTER JOIN ReturnData r ON r.period = o.period
+	            FULL OUTER JOIN ExpenseData e ON e.period = o.period
+	            FULL OUTER JOIN VATData v ON v.period = o.period
+	            ORDER BY period DESC
+	            """.formatted(
+	                // ProductCostPrice
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE,
+	                Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_DATE,
+	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
+	                Views.TBL_WAREHOUSE_RECEIPT_DETAIL,
+	                Views.TBL_WAREHOUSE_RECEIPT,
+	                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_ID,
+	                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
+
+	                // OrderData
+	                orderPeriodFormat,
+	                Views.COL_ORDER_DETAIL_QUANTITY,
+	                Views.COL_ORDER_DETAIL_PRICE,
+	                Views.COL_ORDER_DETAIL_QUANTITY,
+	                Views.TBL_ORDER,
+	                Views.TBL_ORDER_DETAIL,
+	                Views.COL_ORDER_ID,
+	                Views.COL_ORDER_DETAIL_ORDER_ID,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_ORDER_STATUS,
+	                orderPeriodFormat,
+
+	                // ReturnData
+	                returnPeriodFormat,
+	                Views.COL_RETURN_DETAIL_AMOUNT,
+	                Views.COL_RETURN_DETAIL_QUANTITY,
+	                Views.TBL_RETURN_ORDER,
+	                Views.TBL_RETURN_ORDER_DETAIL,
+	                Views.COL_RETURN_ORDER_ID,
+	                Views.COL_RETURN_DETAIL_RETURN_ID,
+	                Views.TBL_ORDER_DETAIL,
+	                Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID,
+	                Views.COL_ORDER_DETAIL_ID,
+	                Views.COL_ORDER_DETAIL_PRODUCT_ID,
+	                Views.COL_RETURN_ORDER_STATUS,
+	                returnPeriodFormat,
+
+	                // ExpenseData
+	                expensePeriodFormat,
+	                Views.COL_EXPENSE_TYPE_IS_FIXED,
+	                Views.COL_EXPENSE_HISTORY_AMOUNT,
+	                Views.COL_EXPENSE_HISTORY_AMOUNT,
+	                Views.COL_EXPENSE_HISTORY_START_DATE,
+	                Views.COL_EXPENSE_HISTORY_END_DATE,
+	                Views.TBL_EXPENSE_HISTORY,
+	                Views.TBL_EXPENSE_TYPES,
+	                Views.COL_EXPENSE_HISTORY_TYPE_ID,
+	                Views.COL_EXPENSE_TYPE_ID,
+	                Views.COL_EXPENSE_HISTORY_START_DATE,
+	                Views.COL_EXPENSE_HISTORY_END_DATE,
+	                expensePeriodFormat,
+
+	                // VATData
+	                vatPeriodFormat,
+	                Views.COL_TAX_HISTORY_AMOUNT,
+	                Views.TBL_TAX_HISTORY,
+	                Views.COL_TAX_HISTORY_TYPE,
+	                Views.COL_TAX_HISTORY_STATUS,
+	                vatPeriodFormat
+	            );
+
+	        // In kết quả
+	        List<Map<String, Object>> results = db.queryForList(sql);
+	        printResults(results, period);
+	        return results;
+	    }
+
+	    private void printResults(List<Map<String, Object>> results, String period) {
+	        System.out.println("\nPhân tích lợi nhuận theo " + period + ":");
+	        System.out.println("+-----------------+----------------+----------------+----------------+----------------+----------------+");
+	        System.out.println("|      Period     |     Revenue    | Gross Profit  |    Expenses    |      VAT       |  Net Profit   |");
+	        System.out.println("+-----------------+----------------+----------------+----------------+----------------+----------------+");
+
+	        for (Map<String, Object> row : results) {
+	            System.out.printf("| %-15s | %,14.2f | %,14.2f | %,14.2f | %,14.2f | %,14.2f |%n",
+	                row.get("period"),
+	                row.get("Revenue"),
+	                row.get("GrossProfit"),
+	                row.get("Expenses"),
+	                row.get("VAT"),
+	                row.get("Net_Profit")
+	            );
+	        }
+	        System.out.println("+-----------------+----------------+----------------+----------------+----------------+----------------+");
+	    }
+
 }
 	
 	

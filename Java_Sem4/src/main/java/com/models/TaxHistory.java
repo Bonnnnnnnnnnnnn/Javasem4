@@ -8,7 +8,7 @@ public class TaxHistory {
 	private String taxType;
 	private LocalDate periodStart;
 	private LocalDate periodEnd;
-	private Double revenueAmount;
+	private Double Amount;
 	private Double taxRate;
 	private Double taxAmount;
 	private String paymentStatus;
@@ -16,7 +16,7 @@ public class TaxHistory {
 	private String note;
 	private LocalDateTime createdAt;
 	private int createdBy;
-	private Employee createdByEmployee; // Navigation property
+	private Employee createdByEmployee;
 
 	public TaxHistory() {
 		super();
@@ -54,12 +54,12 @@ public class TaxHistory {
 		this.periodEnd = periodEnd;
 	}
 
-	public Double getRevenueAmount() {
-		return revenueAmount;
+	public Double getAmount() {
+		return Amount;
 	}
 
-	public void setRevenueAmount(Double revenueAmount) {
-		this.revenueAmount = revenueAmount;
+	public void setAmount(Double Amount) {
+		this.Amount = Amount;
 	}
 
 	public Double getTaxRate() {

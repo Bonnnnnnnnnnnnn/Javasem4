@@ -465,7 +465,7 @@ public final class Views {
 	public static String COL_TAX_HISTORY_TYPE = "Tax_Type";
 	public static String COL_TAX_HISTORY_PERIOD_START = "Period_Start";
 	public static String COL_TAX_HISTORY_PERIOD_END = "Period_End";
-	public static String COL_TAX_HISTORY_REVENUE = "Revenue_Amount";
+	public static String COL_TAX_HISTORY_REVENUE = "Amount";
 	public static String COL_TAX_HISTORY_RATE = "Tax_Rate";
 	public static String COL_TAX_HISTORY_AMOUNT = "Tax_Amount";
 	public static String COL_TAX_HISTORY_STATUS = "Payment_Status";

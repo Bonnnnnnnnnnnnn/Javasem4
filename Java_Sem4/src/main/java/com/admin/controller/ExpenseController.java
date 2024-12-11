@@ -3,9 +3,11 @@ package com.admin.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +40,7 @@ public class ExpenseController {
 
 			List<ExpenseHistory> expenseList = expenseRepo.findAll(pv);
 			model.addAttribute("expenseList", expenseList);
-			model.addAttribute("pageView", pv);
+			model.addAttribute("pv", pv);
 
 			List<ExpenseType> expenseTypes = expenseRepo.findAllTypes();
 			model.addAttribute("expenseTypes", expenseTypes);
@@ -55,6 +57,7 @@ public class ExpenseController {
 	@ResponseBody
 	public ResponseEntity<ExpenseHistory> addExpense(@RequestBody ExpenseHistory expense, HttpServletRequest request) {
 		try {
+			
 			Employee emp = (Employee) request.getSession().getAttribute("loggedInEmployee");
 			expense.setCreatedBy(emp.getId());
 			ExpenseHistory savedExpense = expenseRepo.saveHistory(expense);
@@ -63,11 +66,21 @@ public class ExpenseController {
 			return ResponseEntity.badRequest().build();
 		}
 	}
-
+	@PostMapping("/delete/{id}")
+	@ResponseBody
+	public ResponseEntity<Void> deleteExpense(@PathVariable int id) {
+	    try {
+	        expenseRepo.deleteHistoryById(id);
+	        return ResponseEntity.ok().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
 	@PostMapping("/type/add")
 	@ResponseBody
 	public ResponseEntity<ExpenseType> addExpenseType(@RequestBody ExpenseType expenseType) {
 		try {
+			
 			ExpenseType savedType = expenseRepo.saveType(expenseType);
 			return ResponseEntity.ok(savedType);
 		} catch (Exception e) {

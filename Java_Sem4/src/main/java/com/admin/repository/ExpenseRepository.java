@@ -1,14 +1,21 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
+import com.models.Employee;
 import com.models.ExpenseHistory;
 import com.models.ExpenseType;
 import com.models.PageView;
@@ -19,7 +26,8 @@ import com.utils.Views;
 public class ExpenseRepository {
 	@Autowired
 	private JdbcTemplate db;
-
+	@Autowired
+	EmployeeRepository emrep;
 	public List<ExpenseType> findAllTypes() {
 		try {
 			String sql = String.format("SELECT * FROM %s WHERE %s = 'true' OR %s = '1' ORDER BY %s DESC",
@@ -33,24 +41,40 @@ public class ExpenseRepository {
 	}
 
 	public ExpenseHistory saveHistory(ExpenseHistory history) {
-		try {
-			String insertSql = String.format(
-					"INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?); "
-							+ "SELECT h.*, t.%s as TypeName FROM %s h " + "INNER JOIN %s t ON h.%s = t.%s "
-							+ "WHERE h.%s = SCOPE_IDENTITY()",
-					Views.TBL_EXPENSE_HISTORY, Views.COL_EXPENSE_HISTORY_TYPE_ID, Views.COL_EXPENSE_HISTORY_AMOUNT,
-					Views.COL_EXPENSE_HISTORY_START_DATE, Views.COL_EXPENSE_HISTORY_END_DATE,
-					Views.COL_EXPENSE_HISTORY_NOTE, Views.COL_EXPENSE_HISTORY_CREATED_BY, Views.COL_EXPENSE_TYPE_NAME,
-					Views.TBL_EXPENSE_HISTORY, Views.TBL_EXPENSE_TYPES, Views.COL_EXPENSE_HISTORY_TYPE_ID,
-					Views.COL_EXPENSE_TYPE_ID, Views.COL_EXPENSE_HISTORY_ID);
+	    try {
+	        String insertSql = String.format(
+	                "INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?);",
+	                Views.TBL_EXPENSE_HISTORY, 
+	                Views.COL_EXPENSE_HISTORY_TYPE_ID, 
+	                Views.COL_EXPENSE_HISTORY_AMOUNT,
+	                Views.COL_EXPENSE_HISTORY_START_DATE, 
+	                Views.COL_EXPENSE_HISTORY_END_DATE,
+	                Views.COL_EXPENSE_HISTORY_NOTE, 
+	                Views.COL_EXPENSE_HISTORY_CREATED_BY);
 
-			return db.queryForObject(insertSql, new ExpenseHistoryMapper(), history.getExpenseTypeId(),
-					history.getAmount(), history.getStartDate(), history.getEndDate(), history.getNote(),
-					history.getCreatedBy());
-		} catch (DataAccessException e) {
-			System.err.println("Error saving expense history: " + e.getMessage());
-			throw e;
-		}
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+	        db.update(connection -> {
+	            PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+	            ps.setInt(1, history.getExpenseTypeId());
+	            ps.setDouble(2, history.getAmount());
+	            ps.setObject(3, history.getStartDate());
+	            ps.setObject(4, history.getEndDate());
+	            ps.setString(5, history.getNote());
+	            ps.setInt(6, history.getCreatedBy());
+	            return ps;
+	        }, keyHolder);
+
+	        history.setId(keyHolder.getKey().intValue());
+	        history.setCreatedAt(LocalDateTime.now());
+	        history.setExpenseType(findTypeById(history.getExpenseTypeId()));
+	        history.setCreatedByEmployee(emrep.findId(history.getCreatedBy()));
+
+	        return history;
+	    } catch (DataAccessException e) {
+	        System.err.println("Error saving expense history: " + e.getMessage());
+	        throw e;
+	    }
 	}
 
 	public ExpenseType saveType(ExpenseType type) {
@@ -115,8 +139,11 @@ public class ExpenseRepository {
 
 			// Gán type cho mỗi history
 			for (ExpenseHistory history : histories) {
-				ExpenseType type = findTypeById(history.getExpenseTypeId());
-				history.setExpenseType(type);
+				
+				history.setExpenseType(findTypeById(history.getExpenseTypeId()));
+				
+				history.setCreatedByEmployee(emrep.findId(history.getCreatedBy()));
+				
 			}
 
 			return histories;
@@ -150,5 +177,15 @@ public class ExpenseRepository {
 			throw e;
 		}
 	}
-
+	public void deleteHistoryById(int id) {
+	    try {
+	        String deleteSql = String.format("DELETE FROM %s WHERE %s = ?", 
+	                Views.TBL_EXPENSE_HISTORY, 
+	                Views.COL_EXPENSE_HISTORY_ID);
+	        db.update(deleteSql, id);
+	    } catch (DataAccessException e) {
+	        System.err.println("Error deleting expense history by id: " + e.getMessage());
+	        throw e;
+	    }
+	}
 }

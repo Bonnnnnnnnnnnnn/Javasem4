@@ -37,7 +37,7 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-bordered table-hover">
+							<table class="table table-bordered table-hover" id="ExpenseTableId">
 								<thead>
 									<tr>
 										<th>ID</th>
@@ -48,12 +48,13 @@
 										<th>Note</th>
 										<th>Created By</th>
 										<th>Created At</th>
+										<th>Action</th>
 									</tr>
 								</thead>
 								<tbody>
-									<!-- Sửa histories thành expenseList -->
-									<tr th:each="history : ${expenseList}">
-										<td th:text="${history.id}"></td>
+									<tr th:each="history, iterStat : ${expenseList}">
+										<td th:text="${iterStat.index + 1}"></td>
+										<!-- Hiển thị số thứ tự -->
 										<td th:text="${history.expenseType.name}"></td>
 										<td
 											th:text="${#numbers.formatDecimal(history.amount, 0, 'COMMA', 0, 'POINT')} + ' $'"></td>
@@ -62,13 +63,60 @@
 										<td
 											th:text="${history.endDate != null ? #temporals.format(history.endDate, 'dd/MM/yyyy') : 'N/A'}"></td>
 										<td th:text="${history.note}"></td>
-										<td th:text="${history.createdBy}"></td>
+										<td
+											th:text="${history.createdByEmployee != null ? history.createdByEmployee.first_name + ' ' + history.createdByEmployee.last_name : 'N/A'}"></td>
+										<!-- Hiển thị tên nhân viên -->
 										<td
 											th:text="${#temporals.format(history.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+										<td>
+											<button class="btn btn-danger"
+												th:onclick="'confirmDelete(' + ${history.id} + ')'">Delete</button>
+										</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<nav th:if="${pv.total_page > 1}">
+							<!-- Only show the pagination if there's more than one page -->
+							<ul class="pagination justify-content-center">
+								<!-- First Page -->
+								<li class="page-item"><a class="page-link"
+									th:href="@{/admin/expense/showexpense(cp=1)}"
+									title="First page">&laquo;</a></li>
+
+								<!-- Previous Page -->
+								<li class="page-item" th:if="${pv.page_current > 1}"><a
+									class="page-link"
+									th:href="@{/admin/expense/showexpense(cp=${pv.page_current - 1})}"
+									title="Previous page">&lt;</a></li>
+
+								<!-- Page Number Links -->
+								<li th:each="i : ${#numbers.sequence(0, pv.total_page - 1)}"
+									th:if="${(i >= pv.page_current - 2) && (i <= pv.page_current) && (pv.total_page > 1)}"
+									th:class="${i + 1 == pv.page_current ? 'active page-item' : 'page-item'}">
+									<a class="page-link"
+									th:href="@{/admin/expense/showexpense(cp=${i + 1})}"
+									th:text="${i + 1}"></a>
+								</li>
+
+								<!-- Next Page -->
+								<li class="page-item" th:if="${pv.page_current < pv.total_page}">
+									<a class="page-link"
+									th:href="@{/admin/expense/showexpense(cp=${pv.page_current + 1})}"
+									title="Next page">&gt;</a>
+								</li>
+
+								<!-- Last Page -->
+								<li class="page-item" th:if="${pv.total_page > 1}"><a
+									class="page-link"
+									th:href="@{/admin/expense/showexpense(cp=${pv.total_page})}"
+									title="Last page">&raquo;</a></li>
+							</ul>
+						</nav>
 					</div>
 				</div>
 			</div>
@@ -333,21 +381,28 @@
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function(response) {
-                    // Thêm dòng mới vào bảng
+                	var rowCount = $('#ExpenseTableId tbody tr').length + 1;  
+                   	
+                    var employeeName = response.createdByEmployee ? 
+                        `${response.createdByEmployee.first_name} ${response.createdByEmployee.last_name}` : '';
+                    
                     var newRow = `
                         <tr>
-                            <td>${response.id}</td>
-                            <td>${response.typeName}</td>
-                            <td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(response.amount)}</td>
-                            <td>${formatDate(response.startDate)} - ${formatDate(response.endDate)}</td>
-                            <td>${response.note || ''}</td>
-                            <td>${response.createdBy}</td>
-                            <td>${formatDate(response.createdAt)}</td>
+                    	<td>${rowCount}</td>
+                        <td>${response.expenseType.name}</td>
+                        <td>${new Intl.NumberFormat('en-US').format(response.amount)} $</td>
+                        <td>${formatDate(response.startDate)}</td>
+                        <td>${formatDate(response.endDate)}</td>
+                        <td>${response.note || ''}</td>
+                        <td>${employeeName}</td>
+                        <td>${formatDate(response.createdAt)}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="confirmDelete(${response.id})">Delete</button>
+                        </td>
                         </tr>
                     `;
                     $('table tbody').prepend(newRow);
-                    
-                    // Đóng modal
+                   console.log($('#addExpenseModal'))
                     $('#addExpenseModal').modal('hide');
                     $('#addExpenseForm')[0].reset();
                 },
@@ -501,36 +556,25 @@
                 }
             });
         }
-        function editHistory(id) {
-            // Gọi API lấy thông tin history
-            $.get('/admin/expense/history/' + id, function(history) {
-                // Điền thông tin vào form edit
-                $('#editHistoryForm input[name="id"]').val(history.id);
-                $('#editHistoryForm select[name="typeId"]').val(history.typeId);
-                $('#editHistoryForm input[name="amount"]').val(history.amount);
-                $('#editHistoryForm input[name="startDate"]').val(history.startDate);
-                $('#editHistoryForm input[name="endDate"]').val(history.endDate);
-                $('#editHistoryForm textarea[name="note"]').val(history.note);
-                
-                // Hiện modal edit
-                $('#editHistoryModal').modal('show');
-            });
+        
+        function confirmDelete(id) {
+            if (confirm("Are you sure you want to delete this?")) {
+                deleteExpense(id);
+            }
         }
 
-        function deleteHistory(id) {
-            if (confirm('Bạn có chắc muốn xóa chi phí này?')) {
-                $.ajax({
-                    url: '/admin/expense/history/' + id,
-                    type: 'DELETE',
-                    success: function() {
-                        // Reload trang sau khi xóa
-                        location.reload();
-                    },
-                    error: function(xhr) {
-                        alert('Lỗi khi xóa: ' + xhr.responseText);
-                    }
-                });
-            }
+        function deleteExpense(id) {
+            $.ajax({
+                url: '/admin/expense/delete/' + id,
+                type: 'POST',
+                success: function() {
+                    
+                	location.reload();
+                },
+                error: function(xhr) {
+                    alert('Error deleting: ' + xhr.responseText);
+                }
+            });
         }
     </script>
 </body>

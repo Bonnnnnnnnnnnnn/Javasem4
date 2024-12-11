@@ -17,7 +17,7 @@ public class TaxHistoryMapper implements RowMapper<TaxHistory> {
         tax.setTaxType(rs.getString(Views.COL_TAX_HISTORY_TYPE));
         tax.setPeriodStart(rs.getDate(Views.COL_TAX_HISTORY_PERIOD_START).toLocalDate());
         tax.setPeriodEnd(rs.getDate(Views.COL_TAX_HISTORY_PERIOD_END).toLocalDate());
-        tax.setRevenueAmount(rs.getDouble(Views.COL_TAX_HISTORY_REVENUE));
+        tax.setAmount(rs.getDouble(Views.COL_TAX_HISTORY_REVENUE));
         tax.setTaxRate(rs.getDouble(Views.COL_TAX_HISTORY_RATE));
         tax.setTaxAmount(rs.getDouble(Views.COL_TAX_HISTORY_AMOUNT));
         tax.setPaymentStatus(rs.getString(Views.COL_TAX_HISTORY_STATUS));

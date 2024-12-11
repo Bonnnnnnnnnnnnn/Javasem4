@@ -44,6 +44,9 @@ public class StatisticsController {
         model.addAttribute("products", repspp.findAllnopaging(new PageView(), "", idCategories, idBrands, statuses));
         model.addAttribute("brands", repspp.findAllBrand());
         model.addAttribute("categories", repspp.findAllCate());
+        repstat.getProfitAnalysis("monthly");
+        repstat.getProfitAnalysis("quarterly");
+        repstat.getProfitAnalysis("yearly");
         return Views.ADMIN_STATISTICSPAGE;
     }
 
