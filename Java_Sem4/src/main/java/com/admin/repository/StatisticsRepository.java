@@ -19,7 +19,7 @@ public class StatisticsRepository {
 
 	@Autowired
 	JdbcTemplate db;
- 
+
 	public List<Map<String, Object>> getProductRevenue(String period, Long productId) {
 		String timeFormat = switch (period) {
 		case "monthly" -> "FORMAT(DATEFROMPARTS(YEAR(o.[" + Views.COL_ORDER_DATE + "]), MONTH(o.["
@@ -227,7 +227,6 @@ public class StatisticsRepository {
 
 		return db.queryForList(sql);
 	}
-
 
 	public List<Map<String, Object>> getBrandRevenue(String period, Long brandId) {
 		String timeFormat = switch (period) {
@@ -859,514 +858,533 @@ public class StatisticsRepository {
 		String periodCondition = getPeriodCondition(period);
 
 		String sql = """
+					        WITH
+					        -- 1. Lấy giá vốn mới nhất của sản phẩm
+					        ProductCostPrice AS (
+					            SELECT DISTINCT
+					                wrd.Product_Id as productId,
+					                FIRST_VALUE(wrd.Wh_price) OVER (
+					                    PARTITION BY wrd.Product_Id
+					                    ORDER BY wr.Date DESC, wrd.Wh_receiptId DESC
+					                ) as latestCostPrice
+					            FROM [%s] wrd
+					            JOIN [%s] wr ON wrd.%s = wr.%s
+					            WHERE wrd.%s = 'Active'
+					        ),
+					        -- 2. Tính tổng doanh thu theo period
+					        PeriodRevenue AS (
+				    SELECT
+				        %s as timePeriod,
+				        SUM(CASE
+				            WHEN ro.%s IS NULL THEN o.%s
+				            WHEN ro.%s IN ('Accepted', 'Completed') THEN o.%s - ro.%s
+				            ELSE o.%s
+				        END) as totalRevenue
+				    FROM [%s] o
+				    LEFT JOIN [%s] ro ON o.%s = ro.%s
+				    WHERE o.%s = 'Completed'
+				        AND %s
+				    GROUP BY %s
+				),
+					        -- 3. Tính chi tiết đơn hàng
+					        OrderData AS (
+					            SELECT
+					                %s as timePeriod,
+					                od.%s as productId,
+					                p.%s as productName,
+					                SUM(od.%s) as soldQuantity,
+					                SUM(od.%s * od.%s) as revenue
+					            FROM [%s] o
+					            JOIN [%s] od ON o.%s = od.%s
+					            JOIN [%s] p ON od.%s = p.%s
+					            WHERE o.%s = 'Completed'
+					                AND %s
+					            GROUP BY
+					                %s,
+					                od.%s,
+					                p.%s
+					        ),
+					        -- 4. Tính chi tiết trả hàng
+					        ReturnData AS (
+					            SELECT
+					                %s as timePeriod,
+					                od.%s as productId,
+					                SUM(rod.%s) as returnQuantity,
+					                SUM(rod.%s) as returnAmount
+					            FROM [%s] ro
+					            JOIN [%s] rod ON ro.%s = rod.%s
+					            JOIN [%s] o ON ro.%s = o.%s
+					            JOIN [%s] od ON rod.%s = od.%s
+					            WHERE ro.%s IN ('Accepted', 'Completed')
+					            GROUP BY
+					                %s,
+					                od.%s
+					        ),
+					        -- 5. Tổng hợp dữ liệu bán hàng
+					        SalesData AS (
+					            SELECT
+					                od.timePeriod,
+					                od.productId,
+					                od.productName,
+					                od.soldQuantity - COALESCE(rd.returnQuantity, 0) as quantitySold,
+					                od.revenue - COALESCE(rd.returnAmount, 0) as revenue,
+					                (od.soldQuantity - COALESCE(rd.returnQuantity, 0)) * pc.latestCostPrice as totalCost
+					            FROM OrderData od
+					            LEFT JOIN ReturnData rd ON rd.timePeriod = od.timePeriod
+					                AND rd.productId = od.productId
+					            LEFT JOIN ProductCostPrice pc ON od.productId = pc.productId
+					        ),
+					        -- 6. Tổng hợp theo period
+					        PeriodSummary AS (
+					            SELECT
+					                timePeriod,
+					                SUM(totalCost) as periodTotalCost
+					            FROM SalesData
+					            GROUP BY timePeriod
+					        )
+					        -- 7. Kết quả cuối cùng
+					        SELECT
+					            s.timePeriod,
+					            s.productId,
+					            s.productName,
+					            s.quantitySold,
+					            s.revenue as grossRevenue,
+					            CAST(s.totalCost as DECIMAL(18,2)) as totalCost,
+					            CAST(s.revenue - s.totalCost as DECIMAL(18,2)) as grossProfit,
+					            CAST((s.revenue - s.totalCost) * 100.0 / NULLIF(s.revenue, 0) as DECIMAL(18,2)) as grossProfitMargin,
+					            CAST(pr.totalRevenue as DECIMAL(18,2)) as periodTotalRevenue,
+					            CAST(ps.periodTotalCost as DECIMAL(18,2)) as periodTotalCost
+					        FROM SalesData s
+					        LEFT JOIN PeriodRevenue pr ON pr.timePeriod = s.timePeriod
+					        LEFT JOIN PeriodSummary ps ON ps.timePeriod = s.timePeriod
+					        WHERE s.revenue > 0
+					        ORDER BY s.timePeriod DESC, s.revenue DESC
+					        """
+				.formatted(
+						// ProductCostPrice params
+						Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.TBL_WAREHOUSE_RECEIPT,
+						Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID, Views.COL_WAREHOUSE_RECEIPT_ID,
+						Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
+
+						// PeriodRevenue params
+						timeFormat,
+						Views.COL_RETURN_ORDER_STATUS,
+						Views.COL_ORDER_TOTALAMOUNT,
+						Views.COL_RETURN_ORDER_STATUS,
+						Views.COL_ORDER_TOTALAMOUNT,
+						Views.COL_RETURN_ORDER_FINAL_AMOUNT,
+						Views.COL_ORDER_TOTALAMOUNT,
+						Views.TBL_ORDER,
+						Views.TBL_RETURN_ORDER,
+						Views.COL_ORDER_ID,
+						Views.COL_RETURN_ORDER_ORDER_ID,
+						Views.COL_ORDER_STATUS,
+						periodCondition,
+						timeFormat + ", " + groupBy,
+
+						// OrderData params
+						timeFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_NAME,
+						Views.COL_ORDER_DETAIL_QUANTITY, Views.COL_ORDER_DETAIL_QUANTITY, Views.COL_ORDER_DETAIL_PRICE,
+						Views.TBL_ORDER, Views.TBL_ORDER_DETAIL, Views.COL_ORDER_ID, Views.COL_ORDER_DETAIL_ORDER_ID,
+						Views.TBL_PRODUCT, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_ID,
+						Views.COL_ORDER_STATUS, periodCondition, timeFormat + ", " + groupBy,
+						Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_NAME,
+
+						// ReturnData params
+						timeFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_RETURN_DETAIL_QUANTITY,
+						Views.COL_RETURN_DETAIL_AMOUNT, Views.TBL_RETURN_ORDER, Views.TBL_RETURN_ORDER_DETAIL,
+						Views.COL_RETURN_ORDER_ID, Views.COL_RETURN_DETAIL_RETURN_ID, Views.TBL_ORDER,
+						Views.COL_RETURN_ORDER_ORDER_ID, Views.COL_ORDER_ID, Views.TBL_ORDER_DETAIL,
+						Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID, Views.COL_ORDER_DETAIL_ID,
+						Views.COL_RETURN_ORDER_STATUS, timeFormat + ", " + groupBy, Views.COL_ORDER_DETAIL_PRODUCT_ID);
+
+		List<Map<String, Object>> results = db.queryForList(sql);
+
+		System.out.println("\n=== GROSS PROFIT ANALYSIS DATA ===");
+		System.out.println("Period: " + period);
+		System.out.println("Total records: " + results.size());
+
+		// Group data by period để dễ đọc
+		Map<String, List<Map<String, Object>>> groupedByPeriod = results.stream()
+				.collect(Collectors.groupingBy(row -> row.get("timePeriod").toString()));
+
+		groupedByPeriod.forEach((timePeriod, rows) -> {
+			System.out.println("\n=== PERIOD: " + timePeriod + " ===");
+			System.out.println("Number of products: " + rows.size());
+			System.out.println("Period Total Revenue: " + rows.get(0).get("periodTotalRevenue"));
+			System.out.println("Period Total Cost: " + rows.get(0).get("periodTotalCost"));
+
+			System.out.println("\nProduct Details:");
+			rows.forEach(row -> {
+				System.out.printf("""
+						Product: %s
+						Quantity: %d
+						Revenue: %.2f
+						Cost: %.2f
+						Profit: %.2f
+						---------------
+						""", row.get("productName"), ((Number) row.get("quantitySold")).intValue(),
+						((Number) row.get("grossRevenue")).doubleValue(), ((Number) row.get("totalCost")).doubleValue(),
+						((Number) row.get("grossProfit")).doubleValue());
+			});
+		});
+
+		return results;
+	}
+
+	public List<Map<String, Object>> getPredictedRevenue(List<Map<String, Object>> currentData, String period) {
+		// Lấy data đến tháng 12 để hiển thị
+		YearMonth currentMonth = YearMonth.now();
+		String currentMonthStr = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+		List<Map<String, Object>> result = new ArrayList<>(currentData);
+
+		// Lọc dữ liệu đến tháng 11 để dự đoán
+		YearMonth endMonth = currentMonth.minusMonths(1); // tháng 11
+		String endMonthStr = endMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+		List<Map<String, Object>> filteredData = currentData.stream()
+				.filter(row -> row.get("timePeriod").toString().compareTo(endMonthStr) <= 0)
+				.collect(Collectors.toList());
+
+		List<Double> revenues = filteredData.stream().map(row -> ((Number) row.get("TotalRevenue")).doubleValue())
+				.collect(Collectors.toList());
+
+		List<String> periods = filteredData.stream().map(row -> row.get("timePeriod").toString())
+				.collect(Collectors.toList());
+
+		// Dự đoán cho tháng 1 và 2
+		YearMonth nextMonth = currentMonth.plusMonths(1);
+
+		for (int i = 1; i <= 2; i++) {
+			String nextPeriod = nextMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+			double predictedValue = calculatePrediction(revenues, period);
+
+			Map<String, Object> prediction = new HashMap<>();
+			prediction.put("timePeriod", nextPeriod);
+			prediction.put("TotalRevenue", predictedValue);
+			prediction.put("SelectedRevenue", 0.0);
+			prediction.put("SelectedPercentage", 0.0);
+			prediction.put("isPredicted", true);
+
+			result.add(prediction);
+
+			revenues.add(predictedValue);
+			periods.add(nextPeriod);
+			nextMonth = nextMonth.plusMonths(1);
+		}
+
+		return result;
+	}
+
+	private double calculatePrediction(List<Double> revenues, String periodType) {
+		if (revenues.size() < 3)
+			return 0;
+
+		int size = revenues.size();
+		double recentAvg = 0;
+		for (int i = size - 3; i < size; i++) {
+			recentAvg += revenues.get(i);
+		}
+		recentAvg = recentAvg / 3;
+
+		double lastValue = revenues.get(size - 1);
+		double previousValue = revenues.get(size - 2);
+		double growthRate = (lastValue - previousValue) / previousValue;
+
+		growthRate = Math.max(-0.2, Math.min(0.2, growthRate));
+
+		double prediction = lastValue * (1 + growthRate) * 0.6 + recentAvg * 0.4;
+
+		double maxChange = 0.3;
+		double minValue = lastValue * (1 - maxChange);
+		double maxValue = lastValue * (1 + maxChange);
+
+		return Math.max(minValue, Math.min(maxValue, prediction));
+	}
+
+	public List<Map<String, Object>> getProfitAnalysis(String period) {
+		// Định nghĩa CASE statement cho period format
+		String periodCase = switch (period) {
+		case "monthly" -> "FORMAT(%s, 'yyyy-MM')";
+		case "quarterly" -> "CAST(YEAR(%s) AS VARCHAR) + '-Q' + CAST(DATEPART(QUARTER, %s) AS VARCHAR)";
+		case "yearly" -> "CAST(YEAR(%s) AS VARCHAR)";
+		default -> throw new IllegalArgumentException("Invalid period: " + period);
+		};
+
+		// Tạo format cho từng loại date
+		String orderPeriodFormat = periodCase.formatted("o.[" + Views.COL_ORDER_DATE + "]",
+				"o.[" + Views.COL_ORDER_DATE + "]");
+
+		String returnPeriodFormat = periodCase.formatted("ro.[" + Views.COL_RETURN_ORDER_DATE + "]",
+				"ro.[" + Views.COL_RETURN_ORDER_DATE + "]");
+
+		String expensePeriodFormat = periodCase.formatted("eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]",
+				"eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]");
+
+		String vatPeriodFormat = periodCase.formatted("th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]",
+				"th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]");
+
+		String sql = """
 				WITH ProductCostPrice AS (
 				    SELECT DISTINCT
-				        wrd.Product_Id as productId,
-				        FIRST_VALUE(wrd.Wh_price) OVER (
-				            PARTITION BY wrd.Product_Id
-				            ORDER BY wr.Date DESC, wrd.Wh_receiptId DESC
+				        wrd.%s as productId,
+				        FIRST_VALUE(wrd.%s) OVER (
+				            PARTITION BY wrd.%s
+				            ORDER BY wr.%s DESC, wrd.%s DESC
 				        ) as latestCostPrice
 				    FROM [%s] wrd
 				    JOIN [%s] wr ON wrd.%s = wr.%s
 				    WHERE wrd.%s = 'Active'
 				),
-				OrderData AS (
+				Revenue AS (
 				    SELECT
-				        %s as timePeriod,
+				        %s as period,
+				        SUM(o.%s) as order_revenue,
+				        0 as return_amount
+				    FROM [%s] o
+				    WHERE o.%s = 'Completed'
+				    GROUP BY %s
+				    UNION ALL
+				    SELECT
+				        %s as period,
+				        0 as order_revenue,
+				        SUM(ro.%s) as return_amount
+				    FROM [%s] ro
+				    WHERE ro.%s IN ('Completed', 'Accepted')
+				    GROUP BY %s
+				),
+				ProductQuantities AS (
+				    SELECT
+				        %s as period,
 				        od.%s as productId,
-				        p.%s as productName,
-				        SUM(od.%s) as soldQuantity,
-				        SUM(od.%s * od.%s) as revenue
+				        SUM(od.%s) as sold_quantity,
+				        0 as return_quantity
 				    FROM [%s] o
 				    JOIN [%s] od ON o.%s = od.%s
-				    JOIN [%s] p ON od.%s = p.%s
 				    WHERE o.%s = 'Completed'
-				        AND %s
-				    GROUP BY
-				        %s,
-				        od.%s,
-				        p.%s
-				),
-				ReturnData AS (
+				    GROUP BY %s, od.%s
+				    UNION ALL
 				    SELECT
-				        %s as timePeriod,
+				        %s as period,
 				        od.%s as productId,
-				        SUM(rod.%s) as returnQuantity,
-				        SUM(rod.%s) as returnAmount
+				        0 as sold_quantity,
+				        SUM(rod.%s) as return_quantity
 				    FROM [%s] ro
 				    JOIN [%s] rod ON ro.%s = rod.%s
-				    JOIN [%s] o ON ro.%s = o.%s
 				    JOIN [%s] od ON rod.%s = od.%s
-				    WHERE ro.%s IN ('Accepted', 'Completed')
-				    GROUP BY
-				        %s,
-				        od.%s
+				    WHERE ro.%s IN ('Completed', 'Accepted')
+				    GROUP BY %s, od.%s
 				),
-				SalesData AS (
+				CostData AS (
 				    SELECT
-				        od.timePeriod,
-				        od.productId,
-				        od.productName,
-				        od.soldQuantity - COALESCE(rd.returnQuantity, 0) as quantitySold,
-				        od.revenue - COALESCE(rd.returnAmount, 0) as revenue,
-				        (od.soldQuantity - COALESCE(rd.returnQuantity, 0)) * pc.latestCostPrice as totalCost
-				    FROM OrderData od
-				    LEFT JOIN ReturnData rd ON rd.timePeriod = od.timePeriod
-				        AND rd.productId = od.productId
-				    LEFT JOIN ProductCostPrice pc ON od.productId = pc.productId
+				        pq.period,
+				        SUM((pq.sold_quantity - pq.return_quantity) * pc.latestCostPrice) as total_cost
+				    FROM (
+				        SELECT
+				            period,
+				            productId,
+				            SUM(sold_quantity) as sold_quantity,
+				            SUM(return_quantity) as return_quantity
+				        FROM ProductQuantities
+				        GROUP BY period, productId
+				    ) pq
+				    JOIN ProductCostPrice pc ON pq.productId = pc.productId
+				    GROUP BY pq.period
+				),
+				RevenueSummary AS (
+				    SELECT
+				        period,
+				        SUM(order_revenue) as total_revenue,
+				        SUM(return_amount) as total_return
+				    FROM Revenue
+				    GROUP BY period
+				),
+				ExpenseData AS (
+				    SELECT
+				        %s as period,
+				        CAST(SUM(eh.%s) AS DECIMAL(10,2)) as total_expense
+				    FROM [%s] eh
+				    JOIN [%s] et ON eh.%s = et.%s
+				    GROUP BY %s
+				),
+				VATData AS (
+				    SELECT
+				        %s as period,
+				        CAST(SUM(th.%s) AS DECIMAL(10,2)) as vat_amount
+				    FROM [%s] th
+				    WHERE th.%s = 'VAT'
+				    AND th.%s = 'Paid'
+				    GROUP BY %s
 				)
 				SELECT
-				    s.timePeriod,
-				    s.productId,
-				    s.productName,
-				    s.quantitySold,
-				    CAST(s.revenue as DECIMAL(18,2)) as grossRevenue,
-				    CAST(s.totalCost as DECIMAL(18,2)) as totalCost,
-				    CAST(s.revenue - s.totalCost as DECIMAL(18,2)) as grossProfit,
-				    CAST((s.revenue - s.totalCost) * 100.0 / NULLIF(s.revenue, 0) as DECIMAL(18,2)) as grossProfitMargin
-				FROM SalesData s
-				WHERE s.revenue > 0
-				ORDER BY s.timePeriod DESC, grossProfit DESC
-				""".formatted(
-				// ProductCostPrice CTE
-				Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
-				Views.COL_WAREHOUSE_RECEIPT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
+				    COALESCE(r.period, c.period, e.period, v.period) as period,
+				    CAST(COALESCE(r.total_revenue, 0) - COALESCE(r.total_return, 0) AS DECIMAL(10,2)) as Revenue,
+				    CAST(COALESCE(r.total_revenue - r.total_return, 0) - COALESCE(c.total_cost, 0) AS DECIMAL(10,2)) as GrossProfit,
+				    COALESCE(e.total_expense, 0) as Expenses,
+				    COALESCE(v.vat_amount, 0) as VAT,
+				    CAST(
+				        (COALESCE(r.total_revenue - r.total_return, 0) - COALESCE(c.total_cost, 0)) -
+				        COALESCE(e.total_expense, 0) - COALESCE(v.vat_amount, 0)
+				    AS DECIMAL(10,2)) as Net_Profit
+				FROM RevenueSummary r
+				LEFT JOIN CostData c ON c.period = r.period
+				FULL OUTER JOIN ExpenseData e ON e.period = r.period
+				FULL OUTER JOIN VATData v ON v.period = r.period
+				ORDER BY period DESC
+				"""
+				.formatted(
+						// ProductCostPrice
+						Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE,
+						Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID, Views.COL_WAREHOUSE_RECEIPT_DATE,
+						Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID, Views.TBL_WAREHOUSE_RECEIPT_DETAIL,
+						Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
+						Views.COL_WAREHOUSE_RECEIPT_ID, Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
 
-				// OrderData CTE
-				timeFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_NAME, Views.COL_ORDER_DETAIL_QUANTITY,
-				Views.COL_ORDER_DETAIL_QUANTITY, Views.COL_ORDER_DETAIL_PRICE, Views.TBL_ORDER, Views.TBL_ORDER_DETAIL,
-				Views.COL_ORDER_ID, Views.COL_ORDER_DETAIL_ORDER_ID, Views.TBL_PRODUCT,
-				Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_ID, Views.COL_ORDER_STATUS, periodCondition,
-				timeFormat + ", " + groupBy, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_NAME,
+						// Revenue - Orders
+						orderPeriodFormat, Views.COL_ORDER_TOTALAMOUNT, Views.TBL_ORDER, Views.COL_ORDER_STATUS,
+						orderPeriodFormat,
 
-				// ReturnData CTE
-				timeFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_RETURN_DETAIL_QUANTITY,
-				Views.COL_RETURN_DETAIL_AMOUNT, Views.TBL_RETURN_ORDER, Views.TBL_RETURN_ORDER_DETAIL,
-				Views.COL_RETURN_ORDER_ID, Views.COL_RETURN_DETAIL_RETURN_ID, Views.TBL_ORDER,
-				Views.COL_RETURN_ORDER_ORDER_ID, Views.COL_ORDER_ID, Views.TBL_ORDER_DETAIL,
-				Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID, Views.COL_ORDER_DETAIL_ID, Views.COL_RETURN_ORDER_STATUS,
-				timeFormat + ", " + groupBy, Views.COL_ORDER_DETAIL_PRODUCT_ID);
+						// Revenue - Returns
+						returnPeriodFormat, Views.COL_RETURN_ORDER_FINAL_AMOUNT, Views.TBL_RETURN_ORDER,
+						Views.COL_RETURN_ORDER_STATUS, returnPeriodFormat,
+
+						// ProductQuantities - Orders
+						orderPeriodFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_ORDER_DETAIL_QUANTITY,
+						Views.TBL_ORDER, Views.TBL_ORDER_DETAIL, Views.COL_ORDER_ID, Views.COL_ORDER_DETAIL_ORDER_ID,
+						Views.COL_ORDER_STATUS, orderPeriodFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID,
+
+						// ProductQuantities - Returns
+						returnPeriodFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID, Views.COL_RETURN_DETAIL_QUANTITY,
+						Views.TBL_RETURN_ORDER, Views.TBL_RETURN_ORDER_DETAIL, Views.COL_RETURN_ORDER_ID,
+						Views.COL_RETURN_DETAIL_RETURN_ID, Views.TBL_ORDER_DETAIL,
+						Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID, Views.COL_ORDER_DETAIL_ID,
+						Views.COL_RETURN_ORDER_STATUS, returnPeriodFormat, Views.COL_ORDER_DETAIL_PRODUCT_ID,
+
+						// ExpenseData
+						expensePeriodFormat, Views.COL_EXPENSE_HISTORY_AMOUNT, Views.TBL_EXPENSE_HISTORY,
+						Views.TBL_EXPENSE_TYPES, Views.COL_EXPENSE_HISTORY_TYPE_ID, Views.COL_EXPENSE_TYPE_ID,
+						expensePeriodFormat,
+
+						// VATData
+						vatPeriodFormat, Views.COL_TAX_HISTORY_AMOUNT, Views.TBL_TAX_HISTORY,
+						Views.COL_TAX_HISTORY_TYPE, Views.COL_TAX_HISTORY_STATUS, vatPeriodFormat);
 
 		return db.queryForList(sql);
 	}
 
-	public List<Map<String, Object>> getPredictedRevenue(List<Map<String, Object>> currentData, String period) {
-	    // Lấy data đến tháng 12 để hiển thị
-	    YearMonth currentMonth = YearMonth.now();
-	    String currentMonthStr = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-	    
-	    List<Map<String, Object>> result = new ArrayList<>(currentData);
-	    
-	    // Lọc dữ liệu đến tháng 11 để dự đoán
-	    YearMonth endMonth = currentMonth.minusMonths(1);  // tháng 11
-	    String endMonthStr = endMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-	    
-	    List<Map<String, Object>> filteredData = currentData.stream()
-	        .filter(row -> row.get("timePeriod").toString().compareTo(endMonthStr) <= 0)
-	        .collect(Collectors.toList());
-	    
-	    List<Double> revenues = filteredData.stream()
-	        .map(row -> ((Number)row.get("TotalRevenue")).doubleValue())
-	        .collect(Collectors.toList());
-	            
-	    List<String> periods = filteredData.stream()
-	        .map(row -> row.get("timePeriod").toString())
-	        .collect(Collectors.toList());
-
-	    // Dự đoán cho tháng 1 và 2
-	    YearMonth nextMonth = currentMonth.plusMonths(1); 
-	    
-	    for (int i = 1; i <= 2; i++) {
-	        String nextPeriod = nextMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-	        double predictedValue = calculatePrediction(revenues, period);
-	        
-	        Map<String, Object> prediction = new HashMap<>();
-	        prediction.put("timePeriod", nextPeriod);
-	        prediction.put("TotalRevenue", predictedValue);
-	        prediction.put("SelectedRevenue", 0.0);
-	        prediction.put("SelectedPercentage", 0.0);
-	        prediction.put("isPredicted", true);
-	        
-	        result.add(prediction);
-	        
-	        revenues.add(predictedValue);
-	        periods.add(nextPeriod);
-	        nextMonth = nextMonth.plusMonths(1);
-	    }
-	    
-	    return result;
-	}
-
-	private double calculatePrediction(List<Double> revenues, String periodType) {
-	    if (revenues.size() < 3) return 0;
-	    
-	    
-	    int size = revenues.size();
-	    double recentAvg = 0;
-	    for (int i = size - 3; i < size; i++) {
-	        recentAvg += revenues.get(i);
-	    }
-	    recentAvg = recentAvg / 3;
-
-	    
-	    double lastValue = revenues.get(size - 1);
-	    double previousValue = revenues.get(size - 2);
-	    double growthRate = (lastValue - previousValue) / previousValue;
-	    
-	    growthRate = Math.max(-0.2, Math.min(0.2, growthRate));
-
-	    
-	    double prediction = lastValue * (1 + growthRate) * 0.6 + recentAvg * 0.4;
-
-	  
-	    double maxChange = 0.3;
-	    double minValue = lastValue * (1 - maxChange);
-	    double maxValue = lastValue * (1 + maxChange);
-	    
-	    return Math.max(minValue, Math.min(maxValue, prediction));
-	}
-
-	public List<Map<String, Object>> getProfitAnalysis(String period) {
-	    // Định nghĩa CASE statement cho period format
-	    String periodCase = switch (period) {
-	        case "monthly" -> "FORMAT(%s, 'yyyy-MM')";
-	        case "quarterly" -> "CAST(YEAR(%s) AS VARCHAR) + '-Q' + CAST(DATEPART(QUARTER, %s) AS VARCHAR)";
-	        case "yearly" -> "CAST(YEAR(%s) AS VARCHAR)";
-	        default -> throw new IllegalArgumentException("Invalid period: " + period);
-	    };
-
-	    // Tạo format cho từng loại date
-	    String orderPeriodFormat = periodCase.formatted(
-	        "o.[" + Views.COL_ORDER_DATE + "]",
-	        "o.[" + Views.COL_ORDER_DATE + "]"
-	    );
-	    
-	    String returnPeriodFormat = periodCase.formatted(
-	        "ro.[" + Views.COL_RETURN_ORDER_DATE + "]",
-	        "ro.[" + Views.COL_RETURN_ORDER_DATE + "]"
-	    );
-	    
-	    String expensePeriodFormat = periodCase.formatted(
-	        "eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]",
-	        "eh.[" + Views.COL_EXPENSE_HISTORY_START_DATE + "]"
-	    );
-	    
-	    String vatPeriodFormat = periodCase.formatted(
-	        "th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]",
-	        "th.[" + Views.COL_TAX_HISTORY_PERIOD_START + "]"
-	    );
-
-	    String sql = """
-	        WITH ProductCostPrice AS (
-	            SELECT DISTINCT
-	                wrd.%s as productId,
-	                FIRST_VALUE(wrd.%s) OVER (
-	                    PARTITION BY wrd.%s
-	                    ORDER BY wr.%s DESC, wrd.%s DESC
-	                ) as latestCostPrice
-	            FROM [%s] wrd
-	            JOIN [%s] wr ON wrd.%s = wr.%s
-	            WHERE wrd.%s = 'Active'
-	        ),
-	        Revenue AS (
-	            SELECT 
-	                %s as period,
-	                SUM(o.%s) as order_revenue,
-	                0 as return_amount
-	            FROM [%s] o
-	            WHERE o.%s = 'Completed'
-	            GROUP BY %s
-	            UNION ALL
-	            SELECT 
-	                %s as period,
-	                0 as order_revenue,
-	                SUM(ro.%s) as return_amount
-	            FROM [%s] ro
-	            WHERE ro.%s IN ('Completed', 'Accepted')
-	            GROUP BY %s
-	        ),
-	        ProductQuantities AS (
-	            SELECT 
-	                %s as period,
-	                od.%s as productId,
-	                SUM(od.%s) as sold_quantity,
-	                0 as return_quantity
-	            FROM [%s] o
-	            JOIN [%s] od ON o.%s = od.%s
-	            WHERE o.%s = 'Completed'
-	            GROUP BY %s, od.%s
-	            UNION ALL
-	            SELECT 
-	                %s as period,
-	                od.%s as productId,
-	                0 as sold_quantity,
-	                SUM(rod.%s) as return_quantity
-	            FROM [%s] ro
-	            JOIN [%s] rod ON ro.%s = rod.%s
-	            JOIN [%s] od ON rod.%s = od.%s
-	            WHERE ro.%s IN ('Completed', 'Accepted')
-	            GROUP BY %s, od.%s
-	        ),
-	        CostData AS (
-	            SELECT 
-	                pq.period,
-	                SUM((pq.sold_quantity - pq.return_quantity) * pc.latestCostPrice) as total_cost
-	            FROM (
-	                SELECT 
-	                    period,
-	                    productId,
-	                    SUM(sold_quantity) as sold_quantity,
-	                    SUM(return_quantity) as return_quantity
-	                FROM ProductQuantities
-	                GROUP BY period, productId
-	            ) pq
-	            JOIN ProductCostPrice pc ON pq.productId = pc.productId
-	            GROUP BY pq.period
-	        ),
-	        RevenueSummary AS (
-	            SELECT 
-	                period,
-	                SUM(order_revenue) as total_revenue,
-	                SUM(return_amount) as total_return
-	            FROM Revenue
-	            GROUP BY period
-	        ),
-	        ExpenseData AS (
-	            SELECT 
-	                %s as period,
-	                CAST(SUM(eh.%s) AS DECIMAL(10,2)) as total_expense
-	            FROM [%s] eh
-	            JOIN [%s] et ON eh.%s = et.%s
-	            GROUP BY %s
-	        ),
-	        VATData AS (
-	            SELECT 
-	                %s as period,
-	                CAST(SUM(th.%s) AS DECIMAL(10,2)) as vat_amount
-	            FROM [%s] th
-	            WHERE th.%s = 'VAT'
-	            AND th.%s = 'Paid'
-	            GROUP BY %s
-	        )
-	        SELECT 
-	            COALESCE(r.period, c.period, e.period, v.period) as period,
-	            CAST(COALESCE(r.total_revenue, 0) - COALESCE(r.total_return, 0) AS DECIMAL(10,2)) as Revenue,
-	            CAST(COALESCE(r.total_revenue - r.total_return, 0) - COALESCE(c.total_cost, 0) AS DECIMAL(10,2)) as GrossProfit,
-	            COALESCE(e.total_expense, 0) as Expenses,
-	            COALESCE(v.vat_amount, 0) as VAT,
-	            CAST(
-	                (COALESCE(r.total_revenue - r.total_return, 0) - COALESCE(c.total_cost, 0)) - 
-	                COALESCE(e.total_expense, 0) - COALESCE(v.vat_amount, 0) 
-	            AS DECIMAL(10,2)) as Net_Profit
-	        FROM RevenueSummary r
-	        LEFT JOIN CostData c ON c.period = r.period
-	        FULL OUTER JOIN ExpenseData e ON e.period = r.period
-	        FULL OUTER JOIN VATData v ON v.period = r.period
-	        ORDER BY period DESC
-	        """.formatted(
-	            // ProductCostPrice
-	            Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_DATE,
-	            Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
-	            Views.TBL_WAREHOUSE_RECEIPT_DETAIL,
-	            Views.TBL_WAREHOUSE_RECEIPT,
-	            Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
-
-	            // Revenue - Orders
-	            orderPeriodFormat,
-	            Views.COL_ORDER_TOTALAMOUNT,
-	            Views.TBL_ORDER,
-	            Views.COL_ORDER_STATUS,
-	            orderPeriodFormat,
-
-	            // Revenue - Returns
-	            returnPeriodFormat,
-	            Views.COL_RETURN_ORDER_FINAL_AMOUNT,
-	            Views.TBL_RETURN_ORDER,
-	            Views.COL_RETURN_ORDER_STATUS,
-	            returnPeriodFormat,
-
-	            // ProductQuantities - Orders
-	            orderPeriodFormat,
-	            Views.COL_ORDER_DETAIL_PRODUCT_ID,
-	            Views.COL_ORDER_DETAIL_QUANTITY,
-	            Views.TBL_ORDER,
-	            Views.TBL_ORDER_DETAIL,
-	            Views.COL_ORDER_ID,
-	            Views.COL_ORDER_DETAIL_ORDER_ID,
-	            Views.COL_ORDER_STATUS,
-	            orderPeriodFormat,
-	            Views.COL_ORDER_DETAIL_PRODUCT_ID,
-
-	            // ProductQuantities - Returns
-	            returnPeriodFormat,
-	            Views.COL_ORDER_DETAIL_PRODUCT_ID,
-	            Views.COL_RETURN_DETAIL_QUANTITY,
-	            Views.TBL_RETURN_ORDER,
-	            Views.TBL_RETURN_ORDER_DETAIL,
-	            Views.COL_RETURN_ORDER_ID,
-	            Views.COL_RETURN_DETAIL_RETURN_ID,
-	            Views.TBL_ORDER_DETAIL,
-	            Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID,
-	            Views.COL_ORDER_DETAIL_ID,
-	            Views.COL_RETURN_ORDER_STATUS,
-	            returnPeriodFormat,
-	            Views.COL_ORDER_DETAIL_PRODUCT_ID,
-
-	            // ExpenseData
-	            expensePeriodFormat,
-	            Views.COL_EXPENSE_HISTORY_AMOUNT,
-	            Views.TBL_EXPENSE_HISTORY,
-	            Views.TBL_EXPENSE_TYPES,
-	            Views.COL_EXPENSE_HISTORY_TYPE_ID,
-	            Views.COL_EXPENSE_TYPE_ID,
-	            expensePeriodFormat,
-
-	            // VATData
-	            vatPeriodFormat,
-	            Views.COL_TAX_HISTORY_AMOUNT,
-	            Views.TBL_TAX_HISTORY,
-	            Views.COL_TAX_HISTORY_TYPE,
-	            Views.COL_TAX_HISTORY_STATUS,
-	            vatPeriodFormat
-	        );
-
-
-	    return db.queryForList(sql);
-	}
 	public List<Map<String, Object>> getProfitAnalysisDetails(String period, String selectedPeriod) {
-	    // Format cho period trong câu query
-	    String periodFormat = switch (period) {
-	        case "monthly" -> "FORMAT(%s, 'yyyy-MM')";
-	        case "quarterly" -> "CONCAT(YEAR(%s), '-Q', DATEPART(QUARTER, %s))"; // Format giống 2024-Q4
-	        case "yearly" -> "CAST(YEAR(%s) AS VARCHAR)";
-	        default -> throw new IllegalArgumentException("Invalid period: " + period);
-	    };
+		// Format cho period trong câu query
+		String periodFormat = switch (period) {
+		case "monthly" -> "FORMAT(%s, 'yyyy-MM')";
+		case "quarterly" -> "CONCAT(YEAR(%s), '-Q', DATEPART(QUARTER, %s))"; // Format giống 2024-Q4
+		case "yearly" -> "CAST(YEAR(%s) AS VARCHAR)";
+		default -> throw new IllegalArgumentException("Invalid period: " + period);
+		};
 
-	    // Sửa lại whereClause để match với format từ AJAX
-	    String whereClause = "WHERE r.period = ?"; // So sánh trực tiếp với selectedPeriod
+		// Sửa lại whereClause để match với format từ AJAX
+		String whereClause = "WHERE r.period = ?"; // So sánh trực tiếp với selectedPeriod
 
-	    String sql = """
-	        WITH Revenue AS (
-	            SELECT 
-	                %s as period,
-	                SUM(o.%s) as total_revenue
-	            FROM [%s] o
-	            WHERE o.%s = 'Completed'
-	            GROUP BY %s
-	        ),
-	        CostDetails AS (
-	            SELECT 
-	                %s as period,
-	                'Product Cost' as cost_type,
-	                SUM(od.%s * wrd.%s) as amount
-	            FROM [%s] o
-	            JOIN [%s] od ON o.%s = od.%s
-	            JOIN [%s] wrd ON od.%s = wrd.%s
-	            JOIN [%s] wr ON wrd.%s = wr.%s
-	            WHERE o.%s = 'Completed'
-	            AND wrd.%s = 'Active'
-	            GROUP BY %s
-	        ),
-	        ExpenseDetails AS (
-	            SELECT 
-	                %s as period,
-	                'Operating Expense' as cost_type,
-	                et.%s as detail_name,
-	                SUM(eh.%s) as amount
-	            FROM [%s] eh
-	            JOIN [%s] et ON eh.%s = et.%s
-	            GROUP BY %s, et.%s
-	        ),
-	        VATDetails AS (
-	            SELECT 
-	                %s as period,
-	                'Tax' as cost_type,
-	                th.%s as detail_name,
-	                SUM(th.%s) as amount
-	            FROM [%s] th
-	            WHERE th.%s = 'VAT'
-	            AND th.%s = 'Paid'
-	            GROUP BY %s, th.%s
-	        ),
-	        AllCosts AS (
-	            SELECT period, cost_type, 'Product Cost' as detail_name, amount FROM CostDetails
-	            UNION ALL
-	            SELECT * FROM ExpenseDetails
-	            UNION ALL
-	            SELECT * FROM VATDetails
-	        )
-	        SELECT 
-	            r.period,
-	            r.total_revenue as revenue,
-	            c.cost_type,
-	            c.detail_name,
-	            c.amount,
-	            SUM(c.amount) OVER (PARTITION BY r.period, c.cost_type) as type_total,
-	            SUM(c.amount) OVER (PARTITION BY r.period) as total_cost
-	        FROM Revenue r
-	        LEFT JOIN AllCosts c ON r.period = c.period
-	        %s
-	        ORDER BY c.cost_type, c.amount DESC
-	        """.formatted(
-	            // Revenue
-	            periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
-	            Views.COL_ORDER_TOTALAMOUNT,
-	            Views.TBL_ORDER,
-	            Views.COL_ORDER_STATUS,
-	            periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
-	            
-	            // CostDetails
-	            periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
-	            Views.COL_ORDER_DETAIL_QUANTITY,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE,
-	            Views.TBL_ORDER,
-	            Views.TBL_ORDER_DETAIL,
-	            Views.COL_ORDER_ID,
-	            Views.COL_ORDER_DETAIL_ORDER_ID,
-	            Views.TBL_WAREHOUSE_RECEIPT_DETAIL,
-	            Views.COL_ORDER_DETAIL_PRODUCT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID,
-	            Views.TBL_WAREHOUSE_RECEIPT,
-	            Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
-	            Views.COL_WAREHOUSE_RECEIPT_ID,
-	            Views.COL_ORDER_STATUS,
-	            Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
-	            periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
-	            
-	            // ExpenseDetails
-	            periodFormat.formatted("eh." + Views.COL_EXPENSE_HISTORY_START_DATE, "eh." + Views.COL_EXPENSE_HISTORY_START_DATE),
-	            Views.COL_EXPENSE_TYPE_NAME,
-	            Views.COL_EXPENSE_HISTORY_AMOUNT,
-	            Views.TBL_EXPENSE_HISTORY,
-	            Views.TBL_EXPENSE_TYPES,
-	            Views.COL_EXPENSE_HISTORY_TYPE_ID,
-	            Views.COL_EXPENSE_TYPE_ID,
-	            periodFormat.formatted("eh." + Views.COL_EXPENSE_HISTORY_START_DATE, "eh." + Views.COL_EXPENSE_HISTORY_START_DATE),
-	            Views.COL_EXPENSE_TYPE_NAME,
-	            
-	            // VATDetails
-	            periodFormat.formatted("th." + Views.COL_TAX_HISTORY_PERIOD_START, "th." + Views.COL_TAX_HISTORY_PERIOD_START),
-	            Views.COL_TAX_HISTORY_TYPE,
-	            Views.COL_TAX_HISTORY_AMOUNT,
-	            Views.TBL_TAX_HISTORY,
-	            Views.COL_TAX_HISTORY_TYPE,
-	            Views.COL_TAX_HISTORY_STATUS,
-	            periodFormat.formatted("th." + Views.COL_TAX_HISTORY_PERIOD_START, "th." + Views.COL_TAX_HISTORY_PERIOD_START),
-	            Views.COL_TAX_HISTORY_TYPE,
-	            
-	            // WHERE clause
-	            whereClause
-	        );
+		String sql = """
+				WITH Revenue AS (
+				    SELECT
+				        %s as period,
+				        SUM(o.%s) as total_revenue
+				    FROM [%s] o
+				    WHERE o.%s = 'Completed'
+				    GROUP BY %s
+				),
+				CostDetails AS (
+				    SELECT
+				        %s as period,
+				        'Product Cost' as cost_type,
+				        SUM(od.%s * wrd.%s) as amount
+				    FROM [%s] o
+				    JOIN [%s] od ON o.%s = od.%s
+				    JOIN [%s] wrd ON od.%s = wrd.%s
+				    JOIN [%s] wr ON wrd.%s = wr.%s
+				    WHERE o.%s = 'Completed'
+				    AND wrd.%s = 'Active'
+				    GROUP BY %s
+				),
+				ExpenseDetails AS (
+				    SELECT
+				        %s as period,
+				        'Operating Expense' as cost_type,
+				        et.%s as detail_name,
+				        SUM(eh.%s) as amount
+				    FROM [%s] eh
+				    JOIN [%s] et ON eh.%s = et.%s
+				    GROUP BY %s, et.%s
+				),
+				VATDetails AS (
+				    SELECT
+				        %s as period,
+				        'Tax' as cost_type,
+				        th.%s as detail_name,
+				        SUM(th.%s) as amount
+				    FROM [%s] th
+				    WHERE th.%s = 'VAT'
+				    AND th.%s = 'Paid'
+				    GROUP BY %s, th.%s
+				),
+				AllCosts AS (
+				    SELECT period, cost_type, 'Product Cost' as detail_name, amount FROM CostDetails
+				    UNION ALL
+				    SELECT * FROM ExpenseDetails
+				    UNION ALL
+				    SELECT * FROM VATDetails
+				)
+				SELECT
+				    r.period,
+				    r.total_revenue as revenue,
+				    c.cost_type,
+				    c.detail_name,
+				    c.amount,
+				    SUM(c.amount) OVER (PARTITION BY r.period, c.cost_type) as type_total,
+				    SUM(c.amount) OVER (PARTITION BY r.period) as total_cost
+				FROM Revenue r
+				LEFT JOIN AllCosts c ON r.period = c.period
+				%s
+				ORDER BY c.cost_type, c.amount DESC
+				""".formatted(
+				// Revenue
+				periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
+				Views.COL_ORDER_TOTALAMOUNT, Views.TBL_ORDER, Views.COL_ORDER_STATUS,
+				periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
 
-	    return db.queryForList(sql, selectedPeriod);
+				// CostDetails
+				periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
+				Views.COL_ORDER_DETAIL_QUANTITY, Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE, Views.TBL_ORDER,
+				Views.TBL_ORDER_DETAIL, Views.COL_ORDER_ID, Views.COL_ORDER_DETAIL_ORDER_ID,
+				Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.COL_ORDER_DETAIL_PRODUCT_ID,
+				Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID, Views.TBL_WAREHOUSE_RECEIPT,
+				Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID, Views.COL_WAREHOUSE_RECEIPT_ID, Views.COL_ORDER_STATUS,
+				Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS,
+				periodFormat.formatted("o." + Views.COL_ORDER_DATE, "o." + Views.COL_ORDER_DATE),
+
+				// ExpenseDetails
+				periodFormat.formatted("eh." + Views.COL_EXPENSE_HISTORY_START_DATE,
+						"eh." + Views.COL_EXPENSE_HISTORY_START_DATE),
+				Views.COL_EXPENSE_TYPE_NAME, Views.COL_EXPENSE_HISTORY_AMOUNT, Views.TBL_EXPENSE_HISTORY,
+				Views.TBL_EXPENSE_TYPES, Views.COL_EXPENSE_HISTORY_TYPE_ID, Views.COL_EXPENSE_TYPE_ID,
+				periodFormat.formatted("eh." + Views.COL_EXPENSE_HISTORY_START_DATE,
+						"eh." + Views.COL_EXPENSE_HISTORY_START_DATE),
+				Views.COL_EXPENSE_TYPE_NAME,
+
+				// VATDetails
+				periodFormat.formatted("th." + Views.COL_TAX_HISTORY_PERIOD_START,
+						"th." + Views.COL_TAX_HISTORY_PERIOD_START),
+				Views.COL_TAX_HISTORY_TYPE, Views.COL_TAX_HISTORY_AMOUNT, Views.TBL_TAX_HISTORY,
+				Views.COL_TAX_HISTORY_TYPE, Views.COL_TAX_HISTORY_STATUS,
+				periodFormat.formatted("th." + Views.COL_TAX_HISTORY_PERIOD_START,
+						"th." + Views.COL_TAX_HISTORY_PERIOD_START),
+				Views.COL_TAX_HISTORY_TYPE,
+
+				// WHERE clause
+				whereClause);
+
+		return db.queryForList(sql, selectedPeriod);
 	}
-	
-}
-	
-	
 
+}
