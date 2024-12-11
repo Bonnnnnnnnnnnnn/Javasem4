@@ -56,7 +56,7 @@ public class WhReceiptAndDetailsRepository {
 	            Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
 	            Views.COL_WAREHOUSE_RECEIPT_EMP_ID, Views.COL_WAREHOUSE_RECEIPT_ID
 	        );
-
+ 
 	        if (ItemPage != null && ItemPage.isPaginationEnabled()) {
 	            int count = dbwhd.queryForObject(
 	                "SELECT COUNT(*) FROM " + Views.TBL_WAREHOUSE_RECEIPT + " WHERE " + Views.COL_WAREHOUSE_RECEIPT_EMP_ID + " = ?",
@@ -155,22 +155,22 @@ public class WhReceiptAndDetailsRepository {
 	}
 	
 	// Hàm lấy conversion_rate cho product_id từ bảng Conversion
-	private int getConversionRateByProductId(int productId) {
-	    String sql = "SELECT " + Views.COL_CONVERSION_RATE + 
-	                 " FROM " + Views.TBL_CONVERSION + 
-	                 " WHERE " + Views.COL_CONVERSION_PRODUCT_ID + " = ?";
+	private int getConversionRateByProductId(int productId, int conversionId) {
+	    String sql = "SELECT " + Views.COL_CONVERSION_RATE +
+	                 " FROM " + Views.TBL_CONVERSION +
+	                 " WHERE " + Views.COL_CONVERSION_PRODUCT_ID + " = ? AND " + Views.COL_CONVERSION_ID + " = ?";
 	    try {
-	        List<Integer> conversionRates = dbwhd.queryForList(sql, Integer.class, productId);
+	        List<Integer> conversionRates = dbwhd.queryForList(sql, Integer.class, productId, conversionId);
 	        if (conversionRates.isEmpty()) {
 	            return 0;
 	        }
 	        return conversionRates.get(0);
-
 	    } catch (DataAccessException e) {
 	        e.printStackTrace();
 	        return 0;
 	    }
 	}
+
 
 		
 		@SuppressWarnings("deprecation")
@@ -205,14 +205,19 @@ public class WhReceiptAndDetailsRepository {
 		@Transactional
 		public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
 		    try {
-		    	//tính tổng totalfee
-		        double totalFee = details.stream()
-		                .mapToDouble(detail -> detail.getQuantity()  * detail.getWh_price())
+		        // Tính tổng `totalFee`
+		    	double totalFee = details.stream()
+		                .mapToDouble(detail -> {
+		                    int conversionRate = getConversionRateByProductId(detail.getProduct_id(), detail.getConversion_id());
+		                    int convertedQuantity = detail.getQuantity() * conversionRate;
+		                    return convertedQuantity * detail.getWh_price();
+		                })
 		                .sum();
+
 		        totalFee += receipt.getShipping_fee() + receipt.getOther_fee();
 		        receipt.setTotal_fee(totalFee);
 
-		        // Thêm dữ liệu vào bảng Warehouse_receipt
+		        // Thêm dữ liệu vào bảng `Warehouse_receipt`
 		        String sql1 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT + " (" +
 		                Views.COL_WAREHOUSE_RECEIPT_NAME + ", " +
 		                Views.COL_WAREHOUSE_RECEIPT_IDWH + ", " +
@@ -224,7 +229,7 @@ public class WhReceiptAndDetailsRepository {
 		                Views.COL_WAREHOUSE_RECEIPT_EMP_ID + ") " +
 		                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-		        KeyHolder keyHolder = new GeneratedKeyHolder();
+		        KeyHolder receiptKeyHolder = new GeneratedKeyHolder();
 		        int result1 = dbwhd.update(connection -> {
 		            var ps = connection.prepareStatement(sql1, new String[]{Views.COL_WAREHOUSE_RECEIPT_ID});
 		            ps.setString(1, receipt.getName());
@@ -236,11 +241,11 @@ public class WhReceiptAndDetailsRepository {
 		            ps.setDouble(7, receipt.getTotal_fee());
 		            ps.setInt(8, receipt.getEmployee_id());
 		            return ps;
-		        }, keyHolder);
+		        }, receiptKeyHolder);
 
-		        int generatedIdRe = keyHolder.getKey().intValue();
+		        int generatedReceiptId = receiptKeyHolder.getKey().intValue();
 
-		        // Thêm dữ liệu vào bảng Warehouse_receipt_detail và cập nhật bảng Stock
+		        // Thêm dữ liệu vào bảng `Warehouse_receipt_detail` và cập nhật bảng `Stock`
 		        String sql2 = "INSERT INTO " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " (" +
 		                Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + ", " +
 		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE + ", " +
@@ -249,33 +254,40 @@ public class WhReceiptAndDetailsRepository {
 		                Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + ", " +
 		                Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS + ") VALUES (?, ?, ?, ?, ?, ?)";
 
+		        String sql3 = "INSERT INTO " + Views.TBL_STOCK + " (" +
+		                Views.COL_STOCK_PRODUCT_ID + ", " +
+		                Views.COL_STOCK_QUANTITY + ", " +
+		                Views.COL_STOCK_STATUS + ", " +
+		                Views.COL_STOCK_WARERCDT_ID + ") VALUES (?, ?, ?, ?)";
+
 		        for (Warehouse_receipt_detail detail : details) {
-		            int conversionRate = getConversionRateByProductId(detail.getProduct_id());
+		            int conversionRate = getConversionRateByProductId(detail.getProduct_id(), detail.getConversion_id());
 		            int originalQuantity = detail.getQuantity();
 		            int convertedQuantity = originalQuantity * conversionRate;
 
-		            detail.setWh_receipt_id(generatedIdRe);
+		            detail.setWh_receipt_id(generatedReceiptId);
 
-		            // Thêm vào bảng Warehouse_receipt_detail
-		            dbwhd.update(sql2,
-		                    detail.getWh_receipt_id(),
-		                    detail.getWh_price(),
-		                    detail.getQuantity(),
-		                    detail.getProduct_id(),
-		                    detail.getConversion_id(),
-		                    detail.getStatus()
-		            );
+		            // Thêm vào bảng `Warehouse_receipt_detail` và lấy ID mới
+		            KeyHolder detailKeyHolder = new GeneratedKeyHolder();
+		            dbwhd.update(connection -> {
+		                var ps = connection.prepareStatement(sql2, new String[]{Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID});
+		                ps.setInt(1, detail.getWh_receipt_id());
+		                ps.setDouble(2, detail.getWh_price());
+		                ps.setInt(3, detail.getQuantity());
+		                ps.setInt(4, detail.getProduct_id());
+		                ps.setInt(5, detail.getConversion_id());
+		                ps.setString(6, detail.getStatus());
+		                return ps;
+		            }, detailKeyHolder);
 
-		            // Thêm vào bảng Stock và cập nhật số lượng
-		            String sql3 = "INSERT INTO " + Views.TBL_STOCK + " (" +
-		                    Views.COL_STOCK_PRODUCT_ID + ", " +
-		                    Views.COL_STOCK_QUANTITY + ", " +
-		                    Views.COL_STOCK_STATUS + ", " + Views.COL_STOCK_WARERCDT_ID + ") VALUES (?, ?, ?, ?)";
+		            int generatedDetailId = detailKeyHolder.getKey().intValue();
+
+		            // Thêm vào bảng `Stock`
 		            dbwhd.update(sql3,
 		                    detail.getProduct_id(),
 		                    convertedQuantity,
 		                    detail.getStatus(),
-		                    generatedIdRe
+		                    generatedDetailId
 		            );
 		        }
 		        return result1 > 0;
@@ -284,8 +296,7 @@ public class WhReceiptAndDetailsRepository {
 		        return false;
 		    }
 		}
-
-
+		
 	//randum tên phiếu nhập kho 
 	public String generateReceiptName() {
 	    String prefix = "ES01/";
@@ -311,12 +322,34 @@ public class WhReceiptAndDetailsRepository {
 	    return prefix + String.format("%03d", nextNumber);
 	}
 	public int getEmployeeIdFromSession(HttpSession session) {
-	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
-	    if (loggedInEmployee != null) {
-	        return loggedInEmployee.getId();
+	    try {
+	        Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+	        if (loggedInEmployee != null) {
+	            return loggedInEmployee.getId();
+	        }
+	        throw new IllegalStateException("Employee not found in session");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error retrieving employee ID from session", e);
 	    }
-	    throw new IllegalStateException("Employee not found in session");
 	}
+
+	@SuppressWarnings("deprecation")
+	public Integer getWarehouseIdByEmployeeId(int employeeId) {
+	    try {
+	        String sql = "SELECT " + Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID +
+	                     " FROM " + Views.TBL_EMPLOYEE_WAREHOUSE +
+	                     " WHERE " + Views.COL_EMPLOYEE_WAREHOUS_EMPLOYEE_ID + " = ?";
+	        return dbwhd.queryForObject(sql, new Object[]{employeeId}, Integer.class);
+	    } catch (EmptyResultDataAccessException e) {
+	        return null;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error retrieving warehouse ID for employee ID: " + employeeId, e);
+	    }
+	}
+
+
 	
 
 	// Phần Warehouse_receipt_detail ====================================================
