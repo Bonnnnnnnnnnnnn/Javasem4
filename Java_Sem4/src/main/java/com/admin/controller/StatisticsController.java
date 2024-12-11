@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -272,6 +273,47 @@ public class StatisticsController {
         
         return ResponseEntity.ok(response);
     }
-    
-    
+    @GetMapping("/profit-analysis")
+    public ResponseEntity<List<Map<String, Object>>> getProfitAnalysis(@RequestParam String period) {
+        List<Map<String, Object>> analysis = repstat.getProfitAnalysis(period);
+        return ResponseEntity.ok(analysis);
+    }
+    @GetMapping("/profit-analysis-details")
+    public ResponseEntity<Map<String, Object>> getProfitAnalysisDetails(
+        @RequestParam String period,
+        @RequestParam String selectedPeriod
+    ) {
+        try {
+            List<Map<String, Object>> details = repstat.getProfitAnalysisDetails(period, selectedPeriod);
+            
+            // Tổ chức lại data cho frontend
+            Map<String, Object> response = new HashMap<>();
+            
+            if (!details.isEmpty()) {
+                response.put("revenue", details.get(0).get("revenue"));
+                response.put("totalCost", details.get(0).get("total_cost"));
+            }
+            
+            // Nhóm chi phí theo loại
+            Map<String, List<Map<String, Object>>> costsByType = details.stream()
+                .collect(Collectors.groupingBy(
+                    d -> (String) d.get("cost_type"),
+                    Collectors.mapping(
+                        d -> Map.of(
+                            "name", d.get("detail_name"),
+                            "amount", d.get("amount"),
+                            "typeTotal", d.get("type_total")
+                        ),
+                        Collectors.toList()
+                    )
+                ));
+            
+            response.put("costDetails", costsByType);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
