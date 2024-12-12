@@ -110,20 +110,6 @@ public class StockController {
 	}
 	
 	
-	
-
-	
-	@GetMapping("/lowStock")
-	public String lowStock(HttpSession session) {
-	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
-
-	    if (loggedInEmployee == null) {
-	        return "redirect:/employee/login"; 
-	    }
-
-	    return Views.SHOW_STOCK_LOW; 
-	}
-	
 	@GetMapping("/lowStockApi")
 	@ResponseBody
 	public List<Map<String, Object>> getLowStockData(@RequestParam(required = false) Integer minQuantity, HttpSession session) {
@@ -152,26 +138,35 @@ public class StockController {
 
 	@GetMapping("/inventory-stats")
 	@ResponseBody
-	public ResponseEntity<List<Map<String, Object>>> getInventoryStats(HttpSession session) {
+	public ResponseEntity<List<Map<String, Object>>> getInventoryStats(
+	        HttpSession session,
+	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+	    
+
 	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
 	    Integer warehouseId = (Integer) session.getAttribute("warehouseId");
 
+	    
 	    if (loggedInEmployee != null && warehouseId != null) {
 	        try {
-	            List<Map<String, Object>> inventoryStats = repst.getInventoryStats(warehouseId);
 
+	            List<Map<String, Object>> inventoryStats = repst.getInventoryStats(warehouseId, startDate, endDate);
 	            return ResponseEntity.ok(inventoryStats);
 	        } catch (Exception e) {
 	            System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
 	            e.printStackTrace();
+
 
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                    .body(List.of());
 	        }
 	    }
 
+
 	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(List.of());
 	}
+
 
 
 }

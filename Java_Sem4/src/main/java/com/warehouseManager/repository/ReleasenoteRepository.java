@@ -563,7 +563,9 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	                    """;
 	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
-
+	                
+	                
+	                
 	                remainingQuantity -= quantityToDeduct;
 
 	                if (remainingQuantity == 0) {                    
@@ -701,6 +703,14 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	                    """;
 	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
+	                
+	                
+	                String sqlUpdateDetailStockId = """
+	                        UPDATE Warehouse_rn_detail
+	                        SET Stock_Id = ?
+	                        WHERE Wgrn_Id = ? AND Id_product = ?
+	                    """;
+	                jdbcTemplate.update(sqlUpdateDetailStockId, stockId, generatedId, detail.getId_product());
 
 	                remainingQuantity -= quantityToDeduct;
 
@@ -852,8 +862,11 @@ public class ReleasenoteRepository {
 		                 "WHERE " + Views.COL_REQUEST_DETAIL_ID + " = ? AND " +
 		                  Views.COL_REQUEST_DETAIL_REQUEST_ID + " = ? " +
 		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
-
+		    
 		    Integer quantityRequested = jdbcTemplate.queryForObject(sql, Integer.class, id, requestId, idProduct);
+		    System.out.println("id: " + id);
+		    System.out.println("requestId: " + requestId);
+		    System.out.println("idProduct: " + idProduct);
 
 		    return (quantityRequested != null) ? quantityRequested : 0;
 		}

@@ -163,7 +163,9 @@ public class StockRepository {
 
         
     
-    public List<Map<String, Object>> getInventoryStats(int warehouseId) {
+    public List<Map<String, Object>> getInventoryStats(int warehouseId, LocalDate startDate, LocalDate endDate) {
+
+
     	String sql = String.format ("""
 		            SELECT 
 				    p.%s AS ProductName,
@@ -182,6 +184,7 @@ public class StockRepository {
 				    JOIN %s ew ON wh.%s = ew.%s
 				WHERE     
 				    ew.%s = ?  
+				    AND whr.%s BETWEEN ? AND ?
 				GROUP BY 
 				    p.%s, CONVERT(VARCHAR, whr.%s, 23), p.%s  
 				ORDER BY 
@@ -194,13 +197,13 @@ public class StockRepository {
                 Views.TBL_WAREHOUSE_RECEIPT, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,Views.COL_WAREHOUSE_RECEIPT_ID,
                 Views.TBL_WAREHOUSE, Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
 		        Views.TBL_EMPLOYEE_WAREHOUSE, Views.COL_WAREHOUSE_ID, Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,
-		        Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,
+		        Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID, Views.COL_WAREHOUSE_RECEIPT_DATE,
 		        Views.COL_PRODUCT_NAME, Views.COL_WAREHOUSE_RECEIPT_DATE, Views.COL_PRODUCT_ID,
 		        Views.COL_WAREHOUSE_RECEIPT_DATE,  Views.COL_PRODUCT_NAME
     	);
 
     	try {
-            return jdbcTemplate.queryForList(sql, warehouseId);  
+            return jdbcTemplate.queryForList(sql, warehouseId, startDate, endDate);  
         } catch (Exception e) {            
             System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
             e.printStackTrace();
