@@ -245,18 +245,22 @@ public class WarehouseRepository {
 	}
 
 	public Employee_warehouse findByEmpwhId(int id) {
-		try {
-			String sql = "SELECT ew.Id, ew.Employee_Id, " + "CONCAT(e.First_name, ' ', e.Last_name) AS Employee_name, "
-					+ "ew.Warehouse_Id, w.Name AS Warehouse_name " + "FROM employee_warehouse ew "
-					+ "JOIN employee e ON ew.Employee_Id = e.Id " + "JOIN warehouse w ON ew.Warehouse_Id = w.Id "
-					+ "WHERE ew.Id = ?";
-			return dbwh.queryForObject(sql, new Employee_warehouse_mapper(), id);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+
+	    try { 
+	        String sql = "SELECT ew.Id, ew.Employee_Id, " +
+	                     "CONCAT(e.First_name, ' ', e.Last_name) AS Employee_name, " +
+	                     "ew.Warehouse_Id, w.Name AS Warehouse_name " +
+	                     "FROM employee_warehouse ew " +
+	                     "JOIN employee e ON ew.Employee_Id = e.Id " +
+	                     "JOIN warehouse w ON ew.Warehouse_Id = w.Id " +
+	                     "WHERE ew.Id = ?";
+	        return dbwh.queryForObject(sql, new Employee_warehouse_mapper(), id);
+	    } catch (EmptyResultDataAccessException e) {
+	        return null;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 
 	public boolean addEw(Employee_warehouse ew) {

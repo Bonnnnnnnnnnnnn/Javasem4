@@ -182,6 +182,7 @@ $(document).ready(function() {
 		           fetch('/warehouseManager/warehouseReceipt/getConversions?id=' + productId)
 		               .then(response => response.json())
 		               .then(data => {
+						console.log(data)
 		                   var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
 		                   conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>'; // Xóa các option cũ
 		                   
