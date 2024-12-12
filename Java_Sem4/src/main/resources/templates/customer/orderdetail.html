@@ -7,7 +7,6 @@
 	href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
 
 <style>
-/* Rating Stars */
 .rating {
 	display: flex;
 	flex-direction: row-reverse;
@@ -65,9 +64,6 @@
 	border-color: #007bff;
 }
 
-.input-group .btn-primary:hover {
-	
-}
 
 .input-group .btn-primary.disabled {
 	background-color: #e9ecef;
@@ -84,7 +80,6 @@
 	box-shadow: none;
 }
 
-/* Ẩn mũi tên của input number */
 .return-quantity::-webkit-inner-spin-button, .return-quantity::-webkit-outer-spin-button
 	{
 	-webkit-appearance: none;
@@ -93,6 +88,177 @@
 
 .return-quantity {
 	-moz-appearance: textfield;
+}
+
+.chat-wrapper {
+    position: fixed;
+    bottom: 100px;  /* Tăng lên từ 30px thành 100px */
+    right: 20px;
+    z-index: 1000;
+}
+.chat-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #FFD700;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chat-button {
+    background-color: #FFD700;
+    color: black;
+}
+.chat-input button {
+    background: #FFD700; 
+    color: black;
+}
+.chat-input button:hover {
+    background: #FFC800; 
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 400px; /* Tăng width từ 350px lên 400px */
+    height: 550px; /* Tăng height từ 500px lên 550px */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 9999;
+}
+
+
+
+.chat-header {
+    padding: 15px 20px; /* Thêm padding ngang */
+    background: #FFD700;
+    color: black;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-chat:hover {
+    opacity: 1;
+}
+
+.close-chat {
+    background: none;
+    border: none;
+    color: black; /* Đổi màu thành đen */
+    cursor: pointer;
+    font-size: 20px; /* Tăng kích thước */
+    padding: 5px;
+    opacity: 0.7; /* Làm mờ đi chút */
+    transition: opacity 0.3s;
+}
+
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+}
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    position: relative;
+}
+
+
+.message.message-sent {
+    background: #FFD700;
+    color: black;
+    margin-left: auto;
+    margin-right: 10px;
+    border-bottom-right-radius: 5px;
+}
+
+
+.message.message-received {
+    background: white;
+    color: black;
+    margin-right: auto;
+    margin-left: 10px;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+.message-time {
+    font-size: 0.7em;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.chat-messages {
+    padding: 15px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-input {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: white;
+    border-radius: 0 0 15px 15px;
+    display: flex;
+    gap: 15px; 
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 15px;
+}
+.chat-input button {
+    background: #FFD700;
+    color: black; 
+    border: none;
+    border-radius: 50%;
+    width: 45px; 
+    height: 45px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chat-input button i {
+    font-size: 20px; 
+    color: black;
+}
+.chat-input button:hover {
+    background: #FFC800;
+    transform: scale(1.1);
+}
+
+.message-content {
+    word-break: break-word;
+}
+
+.message-time {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    text-align: right;
 }
 </style>
 <body>
@@ -604,12 +770,50 @@
 			</div>
 		</div>
 	</div>
+	
+	<input type="hidden" id="chatOrderId" th:value="${order.id}">
+	<div class="chat-wrapper">
+    <!-- Nút chat -->
+    <button id="chatButton" class="chat-button">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chat box -->
+    <div id="chatBox" class="chat-box" style="display: none;">
+        <div class="chat-header">
+            <h6 class="m-0">Chat with Support</h6>
+            <button class="close-chat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Hiển thị tin nhắn cũ -->
+            <th:block th:if="${chatMessages != null}">
+                <div th:each="msg : ${chatMessages}" 
+                     class="message" 
+                     th:classappend="${msg.senderType == 'CUSTOMER'} ? 'message-sent' : 'message-received'">
+                    <div class="message-content" th:text="${msg.message}"></div>
+                    <div class="message-time" th:text="${#temporals.format(msg.timestamp, 'HH:mm')}"></div>
+                </div>
+            </th:block>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+</div>
 	<!-- Footer Start -->
 	<div th:replace="~{customer/layout/footer_customer}"></div>
 	<!-- Foo<!-- Sweet Alert 2 JS -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
-	ter End -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
 
 </body>
@@ -630,15 +834,13 @@
 
 	    });
 	  });
-	  function showFeedbackModal(itemId, event) {
-		    // Ngăn sự kiện click lan ra tr
+	  function showFeedbackModal(itemId, event) { 
 		    event.stopPropagation();
-		    
-		    // Hiện modal bằng jQuery
+
 		    $('#feedbackModal' + itemId).modal('show');
 		    
-		    // Debug
-		    console.log('Showing modal for item:', itemId);
+		    
+		  
 		}
 	  function closeFeedbackModal(event, button) {
 		    event.stopPropagation();
@@ -984,6 +1186,235 @@
 	            console.error('Error:', error);
 	        }
 	    });
+	}
+	
+	
+	
+	
+	let stompClient = null;
+	let chatRoomId = null;
+	let reconnectAttempts = 0;
+	const MAX_RECONNECT_ATTEMPTS = 5;
+	function connectWebSocket() {
+	    const socket = new SockJS('/ws');
+	    stompClient = Stomp.over(socket);
+	    
+	    stompClient.connect({}, function(frame) {
+	        console.log('Connected to WebSocket');
+	        
+	        stompClient.subscribe('/topic/chat/' + chatRoomId, function(response) {
+	            try {
+	                const message = JSON.parse(response.body);
+	                console.log('Received message:', message);
+	                displayMessage(message);
+	            } catch (error) {
+	                console.error('Error parsing message:', error);
+	            }
+	        });
+	    }, function(error) {
+	        console.error('WebSocket connection error:', error);
+	        setTimeout(connectWebSocket, 3000);
+	    });
+	}
+	function handleConnectionError() {
+	    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+	        reconnectAttempts++;
+	      
+	        setTimeout(connectWebSocket, 3000); 
+	    } else {
+	        alert('Không thể kết nối tới server chat. Vui lòng thử lại sau.');
+	    }
+	}
+
+	function displayMessage(message) {
+	    const chatMessages = document.getElementById('chatMessages');
+	    const messageDiv = document.createElement('div');
+	    
+	    // Sửa lại class name thành message-sent cho tất cả tin nhắn của CUSTOMER
+	    messageDiv.className = `message ${message.senderType === 'CUSTOMER' ? 'message-sent' : 'message-received'}`;
+	    
+	    const contentDiv = document.createElement('div');
+	    contentDiv.className = 'message-content';
+	    contentDiv.textContent = message.message;
+	    
+	    const timeDiv = document.createElement('div');
+	    timeDiv.className = 'message-time';
+	    const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { 
+	        hour: '2-digit', 
+	        minute: '2-digit' 
+	    }) : '';
+	    timeDiv.textContent = timestamp;
+	    
+	    messageDiv.appendChild(contentDiv);
+	    messageDiv.appendChild(timeDiv);
+	    chatMessages.appendChild(messageDiv);
+	    
+	    chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+	function sendMessage() {
+	    const messageInput = document.getElementById('messageInput');
+	    const message = messageInput.value.trim();
+	    const orderId = document.getElementById('chatOrderId').value;
+	    
+	    if (!message) return;
+	    
+	    if (!chatRoomId) {
+	        // Tạo chat room mới nếu chưa có
+	        $.ajax({
+	            url: '/support/room/create',
+	            type: 'POST',
+	            data: { orderId: orderId },
+	            success: function(response) {
+	                chatRoomId = response.id;
+	                connectWebSocket();
+	                setTimeout(() => {
+	                    sendMessageToServer(message);
+	                    messageInput.value = '';
+	                }, 1000); // Đợi 1 giây cho kết nối WebSocket được thiết lập
+	            },
+	            error: function(xhr) {
+	                console.error('Error creating chat room:', xhr.responseText);
+	                alert('Không thể tạo phòng chat. Vui lòng thử lại.');
+	            }
+	        });
+	    } else {
+	        // Kiểm tra kết nối trước khi gửi
+	        if (!stompClient || !stompClient.connected) {
+	            connectWebSocket();
+	            setTimeout(() => {
+	                sendMessageToServer(message);
+	                messageInput.value = '';
+	            }, 1000);
+	        } else {
+	            sendMessageToServer(message);
+	            messageInput.value = '';
+	        }
+	    }
+	}
+
+	function loadOldMessages(roomId) {
+	    $.ajax({
+	        url: `/support/messages/${roomId}`, 
+	        method: 'GET',
+	        success: function(messages) {
+	            messages.forEach(message => {
+	                displayMessage(message);
+	            });
+	        }
+	    });
+	}
+
+	function sendMessageToServer(message) {
+	    if (!stompClient || !stompClient.connected) {
+	        alert('Mất kết nối, đang thử kết nối lại...');
+	        connectWebSocket();
+	        pendingMessage = message; 
+	        return;
+	    }
+
+	    const chatMessage = {
+	        chatroomId: chatRoomId,
+	        message: message,
+	        senderType: 'CUSTOMER'
+	    };
+	    
+	    stompClient.send("/app/chat/send/" + chatRoomId, {}, JSON.stringify(chatMessage));
+	}
+	
+
+	function loadExistingMessages() {
+	    const chatMessages = document.getElementById('chatMessages');
+	    if (chatMessages && chatMessages.dataset.messages) {
+	        const messages = JSON.parse(chatMessages.dataset.messages);
+	        messages.forEach(message => {
+	            displayMessage(message);
+	        });
+	        
+	        scrollToBottom();
+	    }
+	}
+	let pendingMessage = null;
+	window.onbeforeunload = function() {
+	    if (stompClient !== null) {
+	        stompClient.disconnect();
+	    }
+	};
+	function chatInitHandler() {
+	    const chatButton = document.getElementById('chatButton');
+	    const chatBox = document.getElementById('chatBox');
+	    const closeChat = document.querySelector('.close-chat');
+	    const messageInput = document.getElementById('messageInput');
+
+	    if (!chatButton || !chatBox || !closeChat) {
+	        console.error('Chat elements not found');
+	        return;
+	    }
+
+	    // Toggle chat box
+	    chatButton.addEventListener('click', function(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	     
+	        
+	        if (chatBox.style.display === 'none' || !chatBox.style.display) {
+	            chatBox.style.display = 'flex';
+	            chatBox.style.opacity = '0';
+	            setTimeout(() => {
+	                chatBox.style.opacity = '1';
+	                // Scroll xuống cuối khi mở chat
+	                const chatMessages = document.getElementById('chatMessages');
+	                if (chatMessages) {
+	                    chatMessages.scrollTop = chatMessages.scrollHeight;
+	                }
+	            }, 50);
+	        } else {
+	            chatBox.style.opacity = '0';
+	            setTimeout(() => {
+	                chatBox.style.display = 'none';
+	            }, 200);
+	        }
+	    });
+
+	    // Close chat box
+	    closeChat.addEventListener('click', function(e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        chatBox.style.opacity = '0';
+	        setTimeout(() => {
+	            chatBox.style.display = 'none';
+	        }, 200);
+	    });
+
+	    // Send message on Enter
+	    if (messageInput) {
+	        messageInput.addEventListener('keypress', function(e) {
+	            if (e.key === 'Enter') {
+	                sendMessage();
+	            }
+	        });
+	    }
+	}
+
+	// Thêm event listener cho window unload
+	window.addEventListener('beforeunload', function() {
+	    if (stompClient && stompClient.connected) {
+	        stompClient.disconnect();
+	    }
+	});
+
+	// Thêm auto reconnect khi mất kết nối
+	setInterval(function() {
+	    if (chatRoomId && (!stompClient || !stompClient.connected)) {
+	        connectWebSocket();
+	    }
+	}, 5000);
+	document.addEventListener('DOMContentLoaded', chatInitHandler);
+	let isConnecting = false;
+	function scrollToBottom() {
+	    const chatMessages = document.getElementById('chatMessages');
+	    if (chatMessages) {
+	        chatMessages.scrollTop = chatMessages.scrollHeight;
+	    }
 	}
 </script>
 </html>

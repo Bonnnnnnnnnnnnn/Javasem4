@@ -479,4 +479,25 @@ public final class Views {
 	public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
 
 	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
+	
+	public static String PAGE_LISTCHAT_NOEM = "businessManager/chatsp/listchatnoem";
+	public static String PAGE_CHAT_EMPLOYEE= "businessManager/chatsp/chatsp";
+	public static String PAGE_LISTCHAT_EMID = "businessManager/chatsp/listchatbyemid";
+	public static String TBL_CHAT_ROOM = "Chat_Room";
+	public static String COL_CHAT_ROOM_ID = "Id";
+	public static String COL_CHAT_ROOM_ORDER_ID = "Order_Id";
+	public static String COL_CHAT_ROOM_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_CHAT_ROOM_STATUS = "Status";
+	public static String COL_CHAT_ROOM_LAST_ACTIVITY = "Last_Activity";
+
+	// ChatMessage table
+	public static String TBL_CHAT_MESSAGE = "Chat_Message";
+	public static String COL_CHAT_MESSAGE_ID = "Id";
+	public static String COL_CHAT_MESSAGE_CHATROOM_ID = "ChatRoom_Id";
+	public static String COL_CHAT_MESSAGE_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_CHAT_MESSAGE_CONTENT = "Message";
+	public static String COL_CHAT_MESSAGE_TIMESTAMP = "Timestamp";
+	public static String COL_CHAT_MESSAGE_SENDER_TYPE = "Sender_Type";
+	public static String COL_CHAT_MESSAGE_IS_READ = "Is_Read";
+	
 }

@@ -62,7 +62,7 @@ public class BsCommentController {
 	       
 	        System.err.println("Error in showComments: " + e.getMessage());
 	       
-	        model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách bình luận");
+	       
 	        return Views.REPLY_COMMENT;
 	    }
 	}
