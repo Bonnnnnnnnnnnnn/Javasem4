@@ -7,7 +7,7 @@ public class ReturnOrderDetail {
     private int quantity;
     private String reason;
     private double amount;
-    
+    private int productId;
     // Thêm fields để hiển thị
     private String productName;
     private String productImage;
@@ -26,6 +26,15 @@ public class ReturnOrderDetail {
 		this.productPrice = productPrice;
 		this.originalQuantity = originalQuantity;
 	}
+	
+	public int getProductId() {
+		return productId;
+	}
+
+	public void setProductId(int productId) {
+		this.productId = productId;
+	}
+
 	public ReturnOrderDetail() {
 	}
 	public int getId() {

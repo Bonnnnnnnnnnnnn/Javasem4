@@ -333,6 +333,8 @@ public final class Views {
 	//25.RETURN ORDER
 	
 	public static String RETURN_ORDERS_WAM = "warehouseManager/returnorders/showreorders";
+	public static String RETURN_ORDERS_WAMCOM = "warehouseManager/returnorders/showreorderscomplete";
+	
 		public static String TBL_RETURN_ORDER = "Return_Order";
 		public static String COL_RETURN_ORDER_ID = "Id";
 		public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";

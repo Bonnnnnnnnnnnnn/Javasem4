@@ -22,8 +22,9 @@ public class ReturnOrderDetailMapper implements RowMapper<ReturnOrderDetail> {
         detail.setReason(rs.getString(Views.COL_RETURN_DETAIL_REASON));
         detail.setAmount(rs.getDouble(Views.COL_RETURN_DETAIL_AMOUNT));
         
-        // Nếu join với Product
+        
         try {
+        	detail.setProductId(rs.getInt("ProductId"));
             detail.setProductName(rs.getString("ProductName"));
             detail.setProductImage(rs.getString("ProductImage"));
             detail.setProductPrice(rs.getDouble("ProductPrice"));

@@ -684,7 +684,7 @@ public class StatisticsRepository {
 				    FROM [Warehouse] w
 				    JOIN [%s] o ON w.Id = o.[%s]
 				    JOIN [%s] ro ON ro.[%s] = o.[%s]
-				    WHERE ro.Status = 'Accepted'
+				    WHERE ro.Status IN ('Completed', 'Accepted')
 				    GROUP BY %s, w.Id, ro.Order_Id, ro.Final_Amount
 				),
 				WarehouseStats AS (
@@ -886,7 +886,6 @@ public class StatisticsRepository {
 				        AND %s
 				    GROUP BY %s
 				),
-					        -- 3. Tính chi tiết đơn hàng
 					        OrderData AS (
 					            SELECT
 					                %s as timePeriod,
@@ -904,7 +903,6 @@ public class StatisticsRepository {
 					                od.%s,
 					                p.%s
 					        ),
-					        -- 4. Tính chi tiết trả hàng
 					        ReturnData AS (
 					            SELECT
 					                %s as timePeriod,
@@ -920,7 +918,6 @@ public class StatisticsRepository {
 					                %s,
 					                od.%s
 					        ),
-					        -- 5. Tổng hợp dữ liệu bán hàng
 					        SalesData AS (
 					            SELECT
 					                od.timePeriod,
@@ -934,7 +931,6 @@ public class StatisticsRepository {
 					                AND rd.productId = od.productId
 					            LEFT JOIN ProductCostPrice pc ON od.productId = pc.productId
 					        ),
-					        -- 6. Tổng hợp theo period
 					        PeriodSummary AS (
 					            SELECT
 					                timePeriod,
@@ -942,7 +938,6 @@ public class StatisticsRepository {
 					            FROM SalesData
 					            GROUP BY timePeriod
 					        )
-					        -- 7. Kết quả cuối cùng
 					        SELECT
 					            s.timePeriod,
 					            s.productId,
@@ -998,38 +993,8 @@ public class StatisticsRepository {
 						Views.COL_RETURN_DETAIL_ORDER_DETAIL_ID, Views.COL_ORDER_DETAIL_ID,
 						Views.COL_RETURN_ORDER_STATUS, timeFormat + ", " + groupBy, Views.COL_ORDER_DETAIL_PRODUCT_ID);
 
-		List<Map<String, Object>> results = db.queryForList(sql);
 
-		System.out.println("\n=== GROSS PROFIT ANALYSIS DATA ===");
-		System.out.println("Period: " + period);
-		System.out.println("Total records: " + results.size());
-
-		// Group data by period để dễ đọc
-		Map<String, List<Map<String, Object>>> groupedByPeriod = results.stream()
-				.collect(Collectors.groupingBy(row -> row.get("timePeriod").toString()));
-
-		groupedByPeriod.forEach((timePeriod, rows) -> {
-			System.out.println("\n=== PERIOD: " + timePeriod + " ===");
-			System.out.println("Number of products: " + rows.size());
-			System.out.println("Period Total Revenue: " + rows.get(0).get("periodTotalRevenue"));
-			System.out.println("Period Total Cost: " + rows.get(0).get("periodTotalCost"));
-
-			System.out.println("\nProduct Details:");
-			rows.forEach(row -> {
-				System.out.printf("""
-						Product: %s
-						Quantity: %d
-						Revenue: %.2f
-						Cost: %.2f
-						Profit: %.2f
-						---------------
-						""", row.get("productName"), ((Number) row.get("quantitySold")).intValue(),
-						((Number) row.get("grossRevenue")).doubleValue(), ((Number) row.get("totalCost")).doubleValue(),
-						((Number) row.get("grossProfit")).doubleValue());
-			});
-		});
-
-		return results;
+		return db.queryForList(sql);
 	}
 
 	public List<Map<String, Object>> getPredictedRevenue(List<Map<String, Object>> currentData, String period) {
