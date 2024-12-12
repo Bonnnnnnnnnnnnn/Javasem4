@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -383,7 +384,7 @@ public class ReleasenoteRepository {
 	
 	// hiển thị bảng Request_detail
 	public List<Request_detail> findDetailsByRequestId(int requesId) {
-	    String sql = "SELECT rd.*, p.Product_name AS Product_name, u.Name As Unit_name " +
+	    String sql = "SELECT rd.*,rd.Id AS RqDetailId, p.Product_name AS Product_name, u.Name As Unit_name " +
 	                 "FROM Request_detail rd " +
 	                 "JOIN Product p ON rd.id_product = p.id " +
 	                 "JOIN Unit u ON p.Unit_id = u.id " +
@@ -397,8 +398,7 @@ public class ReleasenoteRepository {
 	        detail.setStatus(rs.getString(Views.COL_REQUEST_DETAIL_STATUS));
 	        detail.setProductName(rs.getString(Views.COL_PRODUCT_NAME)); 
 	        detail.setUnit_name(rs.getString("Unit_name"));
-	        
-	        
+	        detail.setId(rs.getInt("RqDetailId"));
 	        return detail;
 	    }, requesId);
 	}
@@ -563,9 +563,14 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	                    """;
 	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
-	                
-	                
-	                
+
+	                String sqlUpdateDetailStockId = """
+	                        UPDATE Warehouse_rn_detail
+	                        SET Stock_Id = ?
+	                        WHERE Wgrn_Id = ? AND Id_product = ?
+	                    """;
+	                jdbcTemplate.update(sqlUpdateDetailStockId, stockId, generatedId, detail.getId_product());
+
 	                remainingQuantity -= quantityToDeduct;
 
 	                if (remainingQuantity == 0) {                    
@@ -703,8 +708,7 @@ public class ReleasenoteRepository {
 					    AND ew.Warehouse_Id = ?
 	                    """;
 	                jdbcTemplate.update(sqlUpdateStock, quantityToDeduct, stockId, detail.getId_product(), warehouseId);
-	                
-	                
+
 	                String sqlUpdateDetailStockId = """
 	                        UPDATE Warehouse_rn_detail
 	                        SET Stock_Id = ?
@@ -855,8 +859,9 @@ public class ReleasenoteRepository {
 	  
 
 	  
-	  //total quantity_requested
+	
 	  public int getQuantityRequested(int id, int requestId, int idProduct) {
+
 		    String sql = "SELECT " + Views.COL_REQUEST_DETAIL_QUANTITY_REQUESTED + " " +
 		                 "FROM " + Views.TBL_REQUEST_DETAIL + " " +
 		                 "WHERE " + Views.COL_REQUEST_DETAIL_ID + " = ? AND " +
@@ -869,8 +874,8 @@ public class ReleasenoteRepository {
 		    System.out.println("idProduct: " + idProduct);
 
 		    return (quantityRequested != null) ? quantityRequested : 0;
-		}
 
+		}
 	  //total quantity_exported
 	  public int getQuantityExported(int id, int requestId, int idProduct) {
 		  String checkSql = "SELECT Quantity_exported FROM Request_detail WHERE id = ? AND Request_Id = ? AND Id_product = ?";
@@ -879,11 +884,7 @@ public class ReleasenoteRepository {
 
 		    return (quantityExported != null) ? quantityExported : 0;
 		}
-	 //find_id
-	 public List<Request_detail> getRequestDetailsByRequestId(int requestId) {
-		    String sql = "SELECT * FROM Request_detail WHERE Request_Id = ?";
-		    return jdbcTemplate.query(sql, new Request_detail_mapper(), requestId);
-		}
+
 
 	 //update_request_detail
 	 public void updateQuantityExportedz(int id, int productId, int requestId, int quantityToAdd) {

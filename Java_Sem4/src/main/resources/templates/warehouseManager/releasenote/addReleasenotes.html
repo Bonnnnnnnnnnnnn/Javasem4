@@ -142,6 +142,7 @@
 							                <tr th:each="filteredDetail : ${filteredDetails}">
 							                    <td style="width: 28%;"> 
 							                        <span th:text="${filteredDetail.productName}"></span>
+							                        <input type="hidden" name="Id[]" th:value="${filteredDetail.id}">
 							                        <input type="hidden" name="id_product[]" th:value="${filteredDetail.id_product}" />
 							                    </td>
 							                    <td style="width: 19%;"> 

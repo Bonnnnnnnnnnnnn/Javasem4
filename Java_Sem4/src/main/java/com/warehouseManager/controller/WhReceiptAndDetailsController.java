@@ -72,8 +72,13 @@ public class WhReceiptAndDetailsController {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
 		        Integer warehouseId =(Integer)  session.getAttribute("warehouseId");
 		        if (warehouseId == null) {
-		            model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
-		            return "error";
+		            warehouseId = repwd.getWarehouseIdByEmployeeId(employeeId);
+		            if (warehouseId != null) {
+		                session.setAttribute("warehouseId", warehouseId);
+		            } else {
+		                model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
+		                return "error";
+		            }
 		        }
 		       
 		        model.addAttribute("whId", warehouseId);
@@ -86,6 +91,7 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
+
 
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -223,55 +224,96 @@ public class StatisticsController {
     public ResponseEntity<?> getGrossProfitStats(@PathVariable String period) {
         List<Map<String, Object>> rawData = repstat.getGrossProfitAnalysis(period);
         
-        // Tạo response structure
         Map<String, Object> response = new HashMap<>();
         
-        // 1. Monthly Summary cho line/column chart
-        List<Map<String, Object>> monthlySummary = new ArrayList<>();
-        Map<String, Map<String, Object>> summaryByMonth = new HashMap<>();
+        // Group theo period để tránh duplicate và dùng periodTotalRevenue
+        Map<String, Map<String, Object>> summaryByPeriod = new HashMap<>();
         
-        // Group by month
         for (Map<String, Object> row : rawData) {
-            String month = row.get("timePeriod").toString();
-            summaryByMonth.computeIfAbsent(month, k -> new HashMap<>());
+            String timePeriod = row.get("timePeriod").toString();
             
-            Map<String, Object> summary = summaryByMonth.get(month);
-            summary.merge("units", ((Number)row.get("quantitySold")).intValue(), (a, b) -> 
-                ((Number)a).intValue() + ((Number)b).intValue());
-            summary.merge("revenue", ((Number)row.get("grossRevenue")).doubleValue(), (a, b) -> 
-                ((Number)a).doubleValue() + ((Number)b).doubleValue());
-            summary.merge("cost", ((Number)row.get("totalCost")).doubleValue(), (a, b) -> 
-                ((Number)a).doubleValue() + ((Number)b).doubleValue());
-            summary.merge("profit", ((Number)row.get("grossProfit")).doubleValue(), (a, b) -> 
-                ((Number)a).doubleValue() + ((Number)b).doubleValue());
+            // Chỉ lấy một lần cho mỗi period
+            if (!summaryByPeriod.containsKey(timePeriod)) {
+                Map<String, Object> periodData = new HashMap<>();
+                periodData.put("period", timePeriod);
+                periodData.put("revenue", row.get("periodTotalRevenue")); // Dùng periodTotalRevenue
+                periodData.put("cost", row.get("periodTotalCost")); // Dùng periodTotalCost
+                
+                // Tính profit và margin từ period totals
+                double revenue = ((Number)row.get("periodTotalRevenue")).doubleValue();
+                double cost = ((Number)row.get("periodTotalCost")).doubleValue();
+                double profit = revenue - cost;
+                double margin = revenue > 0 ? (profit * 100.0 / revenue) : 0;
+                
+                periodData.put("profit", profit);
+                periodData.put("margin", margin);
+                
+                // Tính total units
+                int units = ((Number)row.get("quantitySold")).intValue();
+                periodData.put("units", units);
+                
+                summaryByPeriod.put(timePeriod, periodData);
+            } else {
+                // Cộng dồn units cho period
+                Map<String, Object> periodData = summaryByPeriod.get(timePeriod);
+                int currentUnits = ((Number)periodData.get("units")).intValue();
+                int newUnits = ((Number)row.get("quantitySold")).intValue();
+                periodData.put("units", currentUnits + newUnits);
+            }
         }
         
-        // Convert to list và tính margin
-        for (Map.Entry<String, Map<String, Object>> entry : summaryByMonth.entrySet()) {
-            Map<String, Object> monthData = new HashMap<>();
-            monthData.put("period", entry.getKey());
-            monthData.put("units", entry.getValue().get("units"));
-            monthData.put("revenue", entry.getValue().get("revenue"));
-            monthData.put("cost", entry.getValue().get("cost"));
-            monthData.put("profit", entry.getValue().get("profit"));
-            
-            double revenue = ((Number)entry.getValue().get("revenue")).doubleValue();
-            double profit = ((Number)entry.getValue().get("profit")).doubleValue();
-            double margin = revenue > 0 ? (profit * 100.0 / revenue) : 0;
-            monthData.put("margin", margin);
-            
-            monthlySummary.add(monthData);
-        }
+        List<Map<String, Object>> monthlySummary = new ArrayList<>(summaryByPeriod.values());
         
-        // 2. Product Performance cho stacked bar chart
-        List<Map<String, Object>> productPerformance = new ArrayList<>(rawData);
+        // Sort by period
+        monthlySummary.sort((a, b) -> 
+            ((String)a.get("period")).compareTo((String)b.get("period")));
         
-        // Add vào response
         response.put("monthlySummary", monthlySummary);
-        response.put("productPerformance", productPerformance);
+        response.put("productPerformance", rawData);
         
         return ResponseEntity.ok(response);
     }
-    
-    
+    @GetMapping("/profit-analysis")
+    public ResponseEntity<List<Map<String, Object>>> getProfitAnalysis(@RequestParam String period) {
+        List<Map<String, Object>> analysis = repstat.getProfitAnalysis(period);
+        return ResponseEntity.ok(analysis);
+    }
+    @GetMapping("/profit-analysis-details")
+    public ResponseEntity<Map<String, Object>> getProfitAnalysisDetails(
+        @RequestParam String period,
+        @RequestParam String selectedPeriod
+    ) {
+        try {
+            List<Map<String, Object>> details = repstat.getProfitAnalysisDetails(period, selectedPeriod);
+            
+            // Tổ chức lại data cho frontend
+            Map<String, Object> response = new HashMap<>();
+            
+            if (!details.isEmpty()) {
+                response.put("revenue", details.get(0).get("revenue"));
+                response.put("totalCost", details.get(0).get("total_cost"));
+            }
+            
+            // Nhóm chi phí theo loại
+            Map<String, List<Map<String, Object>>> costsByType = details.stream()
+                .collect(Collectors.groupingBy(
+                    d -> (String) d.get("cost_type"),
+                    Collectors.mapping(
+                        d -> Map.of(
+                            "name", d.get("detail_name"),
+                            "amount", d.get("amount"),
+                            "typeTotal", d.get("type_total")
+                        ),
+                        Collectors.toList()
+                    )
+                ));
+            
+            response.put("costDetails", costsByType);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

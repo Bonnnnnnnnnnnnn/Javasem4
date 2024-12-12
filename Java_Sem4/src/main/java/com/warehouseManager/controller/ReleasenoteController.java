@@ -365,10 +365,11 @@ public class ReleasenoteController {
 			@RequestParam("name") String name, 
 			@RequestParam("statusWr") String statusWr,
 			@RequestParam("requestId") int requestId, 
-			@RequestParam("employeeId") int employeeId,
+			@RequestParam("employeeId") int employeeId,		
 			@RequestParam(required = false) List<Integer> id_product,
 			@RequestParam(required = false) List<Integer> quantity, 
 			@RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) List<Integer> Id,
 			Model model, HttpSession session,RedirectAttributes redirectAttributes) {
 		
 		Integer warehouseId = (Integer) session.getAttribute("warehouseId");
@@ -387,7 +388,7 @@ public class ReleasenoteController {
 		            Warehouse_rn_detail detail = new Warehouse_rn_detail();
 		            detail.setId_product(id_product.get(i));
 		            detail.setQuantity(quantity.get(i));
-		            detail.setStatus(status.get(i));
+		            detail.setStatus(status.get(i));		            
 		            details.add(detail);
 		            		            
 		        }
@@ -399,23 +400,18 @@ public class ReleasenoteController {
 
 		if (id_product != null && !id_product.isEmpty()) { 
 
-		    List<Request_detail> rsdetails = rele.getRequestDetailsByRequestId(requestId);
-
-		    List<Integer> requestDetailIds = rsdetails.stream()
-		                                            .map(Request_detail::getId)
-		                                            .collect(Collectors.toList());
 
 		    for (int i = 0; i < id_product.size(); i++) { 
 		        Request_detail detail = new Request_detail();
 
 		        int productId = id_product.get(i); 
 		        int quantityExported = quantity.get(i); 
-		        if (requestDetailIds.size() > i) {
-		            int detailId = requestDetailIds.get(i);
+		        if (Id.size() > i) {
+		            int detailId = Id.get(i);
 		            detail.setId(detailId);                
 		            detail.setQuantity_exported(quantityExported); 
 		            detail.setId_product(productId); 
-
+		            
 		            rsdetail.add(detail);
 
 		            rele.updateQuantityExportedz(detailId, productId, requestId, quantityExported);
@@ -435,19 +431,12 @@ public class ReleasenoteController {
 			
 
 	        if (id_product != null && !id_product.isEmpty()) {
-	        	List<Request_detail> rsdetails = rele.getRequestDetailsByRequestId(requestId);
 
-			    List<Integer> requestDetailIdss = rsdetails.stream()
-			                                            .map(Request_detail::getId)
-			                                            .collect(Collectors.toList());
-		        for (int i = 0; i < id_product.size(); i++) {
-			        
-
+		        for (int i = 0; i < id_product.size(); i++) {		        			        	
+		        	
 		            int idProduct = id_product.get(i);
-		            if (requestDetailIdss.size() > i) {
-			            int detailId = requestDetailIdss.get(i);
-			                            
-			            
+		            if (Id.size() > i) {
+			            int detailId = Id.get(i);			                           			            
 			            rele.updateStatusRequestDetail(detailId, requestId, idProduct); 
 		            }
 		        }	        	
