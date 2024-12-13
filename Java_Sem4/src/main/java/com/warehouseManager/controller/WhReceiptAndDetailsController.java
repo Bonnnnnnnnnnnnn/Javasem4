@@ -74,7 +74,7 @@ public class WhReceiptAndDetailsController {
 		public String showAddWhReceipt(Model model, HttpSession session) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
-		        Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+		        Integer warehouseId = (Integer) session.getAttribute("warehouseId"); 
 		        if (warehouseId == null) {
 		            warehouseId = repwd.getWarehouseIdByEmployeeId(employeeId);
 		            if (warehouseId != null) {
