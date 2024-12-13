@@ -1,0 +1,5 @@
+.submitConversion button:hover {
+  background-color: #e0f7fa !important; /* Xanh nhạt khi hover */
+  border-color: #007bff !important; /* Đổi màu viền khi hover */
+  color: #007bff !important; /* Đổi màu chữ khi hover */
+}

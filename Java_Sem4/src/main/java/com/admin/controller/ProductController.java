@@ -75,6 +75,8 @@ public class ProductController {
 	        List<Product_price_change> priceChanges = reppro.findListProductPriceChanges(idpro);
 	        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
 	        String formattedPrice = formatter.format(pro.getPrice());
+	        model.addAttribute("units",con.findAllUnit());
+	        model.addAttribute("conversion", new Conversion());			
 	        model.addAttribute("product", pro);
 	        model.addAttribute("formattedPrice", formattedPrice);
 	        model.addAttribute("ps", ps);

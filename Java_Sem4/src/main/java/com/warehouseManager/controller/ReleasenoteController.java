@@ -441,8 +441,8 @@ public class ReleasenoteController {
 		            }
 		        }	        	
 	        }    	
-	        
-	        rele.isRequestComplete(requestId);        
+	        int orderId = rele.findOrderIdByRequest(requestId);
+	        rele.isRequestComplete(requestId, orderId);        
 	    }	
 	    return "redirect:insufficientOutputDetail?id=" + requestId;
 	}

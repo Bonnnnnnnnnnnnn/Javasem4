@@ -799,15 +799,21 @@ public class ReleasenoteRepository {
 		  return (totalQuantity != null) ? totalQuantity : 0; 
 	  }
 	  
-	  // so sánh quantity vs request Id đổi status
-	  public boolean isRequestComplete(int requestId) {
+	  public int findOrderIdByRequest(int requestId) {
+		    String sql = "SELECT Order_Id FROM Request WHERE Id = ?";
+
+		    return jdbcTemplate.queryForObject(sql, Integer.class, requestId);
+		}
+
+	  public boolean isRequestComplete(int requestId, int orderId) {
 		    int totalQuantityExported = QuantityExported(requestId);
 		    int totalRequestedQuantity = QuantityRequested(requestId);
 		    
 		    if (totalQuantityExported >= totalRequestedQuantity) {
 		        String sql = "UPDATE Request SET Status = 'waiting for shipping' WHERE Id = ?";
+		        String sql1 = "UPDATE [Order] SET Status = 'waiting for shipping' WHERE Id = ?";
 		        jdbcTemplate.update(sql, requestId);		      
-		        
+		        jdbcTemplate.update(sql1, orderId);
 		        return true;
 		    } else { 
 		    	String typeCheckSql = "SELECT Type FROM Request WHERE Id = ?";
@@ -823,7 +829,7 @@ public class ReleasenoteRepository {
 		    }
 		    return false;
 		}
-
+	  
 	  // so sánh quantity vs Order Id đổi status
 
 	  public boolean isOrderComplete(int ReleaseDetailId, int orderId) {
@@ -869,9 +875,7 @@ public class ReleasenoteRepository {
 		                 "AND " + Views.COL_REQUEST_DETAIL_ID_PRODUCT + " = ?";
 		    
 		    Integer quantityRequested = jdbcTemplate.queryForObject(sql, Integer.class, id, requestId, idProduct);
-		    System.out.println("id: " + id);
-		    System.out.println("requestId: " + requestId);
-		    System.out.println("idProduct: " + idProduct);
+		    
 
 		    return (quantityRequested != null) ? quantityRequested : 0;
 
