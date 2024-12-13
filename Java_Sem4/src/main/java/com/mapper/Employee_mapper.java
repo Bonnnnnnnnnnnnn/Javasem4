@@ -18,6 +18,9 @@ public class Employee_mapper implements RowMapper<Employee>{
 		item.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
 		item.setRole_id(rs.getInt(Views.COL_EMPLOYEE_ROLE_ID));
 //		item.setRole_name(rs.getString("role_name"));
+		
+
+
 		return item;
 	}
 

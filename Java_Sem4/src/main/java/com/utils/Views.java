@@ -477,4 +477,8 @@ public final class Views {
 	public static String COL_TAX_HISTORY_CREATED_BY = "Created_By";
 
 	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
+	
+	// Employee Warehouse
+	public static String EMPLOYEE_WAREHOUSE_MANAGER = "warehouseManager/employee/showEmployee";
+
 }

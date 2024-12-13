@@ -8,7 +8,8 @@ public class Employee {
 	private String Password;
 	private int Role_id;
 	private String Role_name;
-	
+	private String Warehouse_name;
+	private int Warehouse_Id;
 	public Employee(int id, String first_name, String last_name, String phone, String password,
 			int role_id) {
 		super();
@@ -62,6 +63,18 @@ public class Employee {
 	}
 	public void setRole_name(String role_name) {
 		Role_name = role_name;
+	}
+	public String getWarehouse_name() {
+		return Warehouse_name;
+	}
+	public void setWarehouse_name(String warehouse_name) {
+		Warehouse_name = warehouse_name;
+	}
+	public int getWarehouse_Id() {
+		return Warehouse_Id;
+	}
+	public void setWarehouse_Id(int warehouse_Id) {
+		Warehouse_Id = warehouse_Id;
 	}
 	
 	
