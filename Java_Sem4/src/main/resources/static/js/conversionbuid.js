@@ -111,3 +111,14 @@
             // Thêm hàng mới vào form
             document.getElementById('conversion-form').appendChild(newRow);
         });
+		
+		
+		function validateNumber(input) {
+		    // Kiểm tra nếu giá trị không phải là một số hợp lệ hoặc là NaN
+		    if (isNaN(input.value) || input.value === "") {
+		        input.setCustomValidity("Please enter a valid number.");
+		    } else {
+		        input.setCustomValidity("");
+		    }
+		}
+

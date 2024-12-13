@@ -31,14 +31,15 @@
 						<div class="card">
 							<div class="card-header p-2">
 								<ul class="nav nav-pills">
+
 									<li class="nav-item"><a class="nav-link active"
-										href="#conversion" data-toggle="pill">Conversion</a></li>
-									<li class="nav-item"><a class="nav-link "
 										href="#productimage-tab" data-toggle="pill">Product image
 											details</a></li>
 									<li class="nav-item"><a class="nav-link"
 										href="#productdetails-tab" data-toggle="pill">Product
 											details</a></li>
+									<li class="nav-item"><a class="nav-link "
+										href="#conversion" data-toggle="pill"> Conversion</a></li>
 									<li class="nav-item"><a class="nav-link"
 										href="#productSpecifications-tab" data-toggle="pill">Product
 											specifications</a></li>
@@ -49,136 +50,9 @@
 							</div>
 							<div class="card-body">
 								<div class="tab-content">
-									<!-- conversion -->
-									<div class="tab-pane active" id="conversion" style="height: 600px;">
-										<!-- Post -->
-
-										<div class="infopro"
-											style="display: flex; justify-content: space-between; align-items: flex-start; gap: 120px;">
-											<!-- Khối Product Information -->
-											<div>
-											<div class="card"
-												style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-												<div class="card-header"
-													style="font-weight: bold; font-size: 16px; background-color: #f8f9fa; border-bottom: 1px solid #ddd; padding: 10px;
-														background-color:#1E90FF;">
-													Product Information</div>
-												<div class="card-body"
-													style="display: flex; align-items: center; padding: 20px; gap: 30px;">
-													<!-- Hình ảnh -->
-													<div style="flex: 0 0 120px; text-align: center;">
-														<label for="exampleInputPassword1"
-															style="display: block; font-weight: bold; margin-bottom: 10px;"></label>
-														<img th:if="${product.img != null}"
-															th:src="@{/uploads/{imageName}(imageName=${product.img})}"
-															style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
-													</div>
-
-													<!-- Thông tin sản phẩm -->
-													<div
-														style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px;">
-														<div style="flex: 1; min-width: 150px;">
-															<label for="title"
-																style="font-weight: bold; display: block; margin-bottom: 5px;">Product
-																Name</label> <input type="text" id="proName" disabled readonly
-																th:value="${product.product_name}" class="form-control"
-																style="border: 1px solid #ddd; border-radius: 5px;">
-														</div>
-														<div style="flex: 1; min-width: 150px;">
-															<label for="conversion"
-																style="font-weight: bold; display: block; margin-bottom: 5px;">Unit</label>
-															<input class="form-control" disabled readonly
-																th:value="${product.unit_name}"
-																style="border: 1px solid #ddd; border-radius: 5px;">
-														</div>
-														<div style="flex: 1; min-width: 150px;">
-															<label for="price"
-																style="font-weight: bold; display: block; margin-bottom: 5px;">Price</label>
-															<input type="text" id="price" disabled readonly
-																th:value="${formattedPrice}" class="form-control"
-																style="border: 1px solid #ddd; border-radius: 5px;">
-														</div>
-													</div>
-												</div>
-											</div>
-											
-											<div class="card" style="width: 900px;">
-												<div class="card-header" style="background-color: #1E90FF;">Conversions</div>
-												<div class="card-body">
-													<table class="table table-striped" id="conversionTable">
-														<thead style="text-align: center;">
-															<tr>
-																<th>#</th>
-																<th>From Unit</th>
-																<th>Main Unit</th>
-																<th>Conversion Rate</th>
-															</tr>
-														</thead>
-														<tbody style="text-align: center;">
-														</tbody>
-													</table>
-													<nav class="d-flex justify-content-center"
-														style="margin-top: 22px;">
-														<ul class="pagination" id="pagination"></ul>
-													</nav>
-												</div>
-											</div>
-											</div>										
 
 
-											<!-- Khối Conversion -->
-											<div>
-											<div class="Conversion card"
-												style="width: 500px; flex: 1; margin-right: 100px; margin-bottom:26px;">
-												<div class="card-header" style="background-color: #1E90FF;">
-												Add Conversion</div>
-												<form th:action="@{/admin/addConversion}" method="post">
-													<div class="card-body">
-														<input type="hidden" name="product_id"
-															th:value="${product.id}" />
-														<div class="form-group">
-															<div class="mainUnit">
-																<label for="to_unit_name">Main Unit</label>
-															</div>
-															<span th:text="${product.unit_name}" class="d-block mb-2"
-																style="background-color: #E8E8E8;border-radius: 0.25rem;border: 1px solid #ced4da; padding: .375rem .75rem; width: 180px;"></span>
-															<input type="hidden" name="to_unit_name" id="to_unit_id"
-																th:value="${product.unit_id}" class="form-control">
-														</div>
-														<div class="inputform">
-															<label for="from_unit_name">From Unit</label> <select
-																name="from_unit_name" id="from_unit_name"
-																class="form-control" required>
-																<option th:each="unit : ${units}" th:value="${unit.id}"
-																	th:text="${unit.name}"></option>
-															</select> <label for="conversion_rate">Conversion Rate</label> <input
-																type="number" id="conversion_rate"
-																name="conversion_rate" class="form-control"
-																placeholder="Enter Conversion Rate" required>
-														</div>
-													</div>
-													<div class="submitConversion">
-														<button type="submit"
-															style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #333; background-color: #fff; border: 1px dashed #007bff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-left: 20px;">
-															<i class="fas fa-plus"
-																style="margin-right: 8px; font-size: 16px; color: #007bff;"></i>
-															Add New Conversion
-														</button>
-													</div>
-												</form>												
-											</div>
-											<div class="back" >
-												<a th:href="@{/admin/product/showProduct}"
-												class="btn btn-danger">Back to List Product</a>
-											</div>											
-											
-											</div>
-											
-										</div>
-									</div>
-									<!-- end conversion -->									
-									
-									<div class="tab-pane " id="productimage-tab">
+									<div class="tab-pane active" id="productimage-tab">
 										<div>
 											<a th:href="@{/admin/product/showAddPImg(id=${product.id})}"
 												class="btn btn-primary" id="addProductBtn">Add Product</a>
@@ -310,6 +184,128 @@
 
 										<!-- /.post -->
 									</div>
+
+									<!-- conversion -->
+									<div class="tab-pane" id="conversion">
+										<!-- Post -->
+										<div class="infopro"
+											style="display: flex; justify-content: space-between; align-items: flex-start; gap: 100px;">
+											<!-- Khối Product Information -->
+											<div>
+												<div class="card"
+													style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+													<div class="card-header"
+														style="font-weight: bold; font-size: 16px; background-color: #1E90FF; padding: 10px;">
+														Product Information</div>
+													<div class="card-body"
+														style="display: flex; align-items: center; padding: 20px; gap: 30px;">
+														<!-- Hình ảnh -->
+														<div style="flex: 0 0 120px; text-align: center;">
+															<img th:if="${product.img != null}"
+																th:src="@{/uploads/{imageName}(imageName=${product.img})}"
+																style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+														</div>
+														<!-- Thông tin sản phẩm -->
+														<div
+															style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px;">
+															<div style="flex: 1; min-width: 150px;">
+																<label
+																	style="font-weight: bold; display: block; margin-bottom: 5px;">Product
+																	Name</label> <input type="text" id="proName" disabled readonly
+																	th:value="${product.product_name}" class="form-control"
+																	style="border: 1px solid #ddd; border-radius: 5px;">
+															</div>
+															<div style="flex: 1; min-width: 150px;">
+																<label
+																	style="font-weight: bold; display: block; margin-bottom: 5px;">Unit</label>
+																<input class="form-control" disabled readonly
+																	th:value="${product.unit_name}"
+																	style="border: 1px solid #ddd; border-radius: 5px;">
+															</div>
+															<div style="flex: 1; min-width: 150px;">
+																<label
+																	style="font-weight: bold; display: block; margin-bottom: 5px;">Price</label>
+																<input type="text" id="price" disabled readonly
+																	th:value="${formattedPrice}" class="form-control"
+																	style="border: 1px solid #ddd; border-radius: 5px;">
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!-- Khối Conversion -->
+											<div class="container-fluid">
+												<div class="Conversion card"
+													style="flex: 1; margin-right: 70px; margin-bottom: 26px; max-width: 100%; padding: 0; width: 100%; box-sizing: border-box;">
+													<div class="card-header"
+														style="background-color: #1E90FF; font-size: 18px;">Add
+														Conversion</div>
+													<form th:action="@{/admin/addConversion}" method="post">
+														<div class="card-body" style="padding: 20px;">
+															<input type="hidden" name="product_id"
+																th:value="${product.id}" />
+															<div class="form-group">
+																<label for="to_unit_name">Main Unit</label> <span
+																	th:text="${product.unit_name}" class="d-block mb-2"
+																	style="background-color: #E8E8E8; border-radius: 0.25rem; border: 1px solid #ced4da; padding: .375rem .75rem; width: 180px;"></span>
+																<input type="hidden" name="to_unit_name" id="to_unit_id"
+																	th:value="${product.unit_id}" class="form-control">
+															</div>
+															<div class="inputform">
+																<label for="from_unit_name">From Unit</label> <select
+																	name="from_unit_name" id="from_unit_name"
+																	class="form-control" required>
+																	<option th:each="unit : ${units}" th:value="${unit.id}"
+																		th:text="${unit.name}"></option>
+																</select> <label for="conversion_rate">Conversion Rate</label> <input
+																	type="number" id="conversion_rate"
+																	name="conversion_rate" class="form-control"
+																	placeholder="Enter Conversion Rate" required min="0"
+																	oninput="validateNumber(this)">
+															</div>
+														</div>
+														<div class="submitConversion" style="padding: 10px 0;">
+															<button type="submit"
+																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #333; background-color: #fff; border: 1px dashed #007bff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-left: 20px; width: auto;">
+																<i class="fas fa-plus"
+																	style="margin-right: 8px; font-size: 16px; color: #007bff;"></i>
+																Add New Conversion
+															</button>
+														</div>
+													</form>
+												</div>
+											</div>
+
+										</div>
+
+										<!-- Bảng Conversion -->
+										<div style="flex: 1; overflow-y: auto; margin-top: 20px;">
+											<div class="card" style="width: 100%;">
+												<div class="card-header" style="background-color: #1E90FF;">Conversions</div>
+												<div class="card-body">
+													<table class="table table-striped" id="conversionTable">
+														<thead style="text-align: center;">
+															<tr>
+																<th>#</th>
+																<th>From Unit</th>
+																<th>Main Unit</th>
+																<th>Conversion Rate</th>
+															</tr>
+														</thead>
+														<tbody style="text-align: center;">
+														</tbody>
+													</table>
+													<nav class="d-flex justify-content-center"
+														style="margin-top: 22px;">
+														<ul class="pagination" id="pagination"></ul>
+													</nav>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- end conversion -->
 
 									<div class="tab-pane " id="productSpecifications-tab">
 										<table class="table table-hover text-nowrap">
