@@ -1,7 +1,9 @@
 package com.customer.controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.customer.repository.ChatService;
+import com.customer.repository.OrderRepository;
+import com.customer.repository.Order_detailRepository;
 import com.models.ChatMessage;
 import com.models.ChatRoom;
 import com.models.Employee;
+import com.models.Order;
+import com.models.Order_detail;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,7 +37,12 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
-
+    
+    @Autowired
+    private OrderRepository repo;
+    
+    @Autowired
+    private Order_detailRepository repod;
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public ChatMessage handleChat(@DestinationVariable Integer roomId, 
@@ -75,17 +86,8 @@ public class ChatController {
     @SendTo("/topic/chat/{roomId}")
     public ChatMessage handleMessage(@DestinationVariable String roomId, ChatMessage message) {
         try {
-            message.setTimestamp(LocalDateTime.now());
-            
-            // Log để debug
-            System.out.println("Received message: " + message.getMessage() + " for room: " + roomId);
-            
-            // Lưu tin nhắn vào database
+            message.setTimestamp(LocalDateTime.now()); 
             ChatMessage savedMessage = chatService.save(message);
-            
-            // Log sau khi lưu
-            System.out.println("Saved message with ID: " + savedMessage.getId());
-            
             return savedMessage;
         } catch (Exception e) {
             System.err.println("Error saving message: " + e.getMessage());
@@ -126,7 +128,7 @@ public class ChatController {
         }
     }
 
-    // Đóng chat room
+    
     @PostMapping("/close/{roomId}")
     @ResponseBody
     public ResponseEntity<?> closeChatRoom(@PathVariable int roomId,HttpServletRequest request) {
@@ -152,7 +154,7 @@ public class ChatController {
         }
     }
 
-    // Thêm endpoint kiểm tra trạng thái chat room
+    
     @GetMapping("/room/{roomId}/status")
     public ResponseEntity<?> getRoomStatus(@PathVariable int roomId) {
         try {
@@ -163,6 +165,28 @@ public class ChatController {
             return ResponseEntity.ok(room.getStatus());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error getting room status");
+        }
+    }
+    @GetMapping("/order-details/{orderId}")
+    public ResponseEntity<Map<String, Object>> getOrderDetails(@PathVariable int orderId) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            
+            // Lấy thông tin order
+            Order order = repo.getOrderById(orderId);
+            if (order == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Lấy order details
+            List<Order_detail> orderDetails = repod.findAllOrderDetailsByOrderId(orderId);
+            
+            response.put("order", order);
+            response.put("orderDetails", orderDetails);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 }

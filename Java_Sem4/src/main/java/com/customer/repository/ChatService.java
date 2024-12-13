@@ -25,7 +25,8 @@ public class ChatService {
 
     @Autowired
     private JdbcTemplate db;
-
+    @Autowired
+    OrderRepository orderService;
     public ChatRoom createChatRoom(Integer orderId) {
         String sql = String.format(
             "INSERT INTO %s (%s, %s, %s) VALUES (?, 'WAITING', ?)",
@@ -188,38 +189,32 @@ public class ChatService {
         }
     }
     
-    public List<ChatRoom> findChatRoomsByEmployeeId(int employeeId, PageView pageView) {
+    public List<ChatRoom> findChatRoomsByEmployeeId(int employeeId) {
         try {
-            // Base query
-            StringBuilder str_query = new StringBuilder(
-                    String.format("SELECT cr.* FROM %s cr " + 
-                                "WHERE cr.%s = ? " + 
-                                "ORDER BY cr.%s DESC",
-                            Views.TBL_CHAT_ROOM, 
-                            Views.COL_CHAT_ROOM_EMPLOYEE_ID,
-                            Views.COL_CHAT_ROOM_LAST_ACTIVITY));
+            // Query lấy chat rooms đang active
+            String query = String.format(
+                "SELECT cr.* FROM %s cr " +
+                "WHERE cr.%s = ? " +
+                "AND cr.%s = 'Active' " +
+                "ORDER BY cr.%s DESC",
+                Views.TBL_CHAT_ROOM,
+                Views.COL_CHAT_ROOM_EMPLOYEE_ID, 
+                Views.COL_CHAT_ROOM_STATUS,
+                Views.COL_CHAT_ROOM_LAST_ACTIVITY
+            );
 
-            List<Object> params = new ArrayList<>();
-            params.add(employeeId);
+            List<ChatRoom> chatRooms = db.query(query, new ChatRoom_mapper(), employeeId);
 
-            
-            String countQuery = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?", 
-                    Views.TBL_CHAT_ROOM, Views.COL_CHAT_ROOM_EMPLOYEE_ID);
-
-            int count = db.queryForObject(countQuery, Integer.class, employeeId);
-
-           
-            int total_page = (int) Math.ceil((double) count / pageView.getPage_size());
-            pageView.setTotal_page(total_page);
-
-           
-            if (pageView.isPaginationEnabled()) {
-                str_query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-                params.add((pageView.getPage_current() - 1) * pageView.getPage_size());
-                params.add(pageView.getPage_size());
+          
+            for (ChatRoom chatRoom : chatRooms) {
+               
+                Order order = orderService.getOrderById(chatRoom.getOrderId());
+                chatRoom.setOrder(order);
+                
+              
             }
 
-            return db.query(str_query.toString(), new ChatRoom_mapper(), params.toArray());
+            return chatRooms;
 
         } catch (DataAccessException e) {
             System.err.println("Error in findChatRoomsByEmployeeId: " + e.getMessage());
@@ -243,7 +238,7 @@ public class ChatService {
                 return false;
             }
 
-            // Update employee_id và status cho chat room
+           
             String updateQuery = String.format(
                 "UPDATE %s SET %s = ?, %s = 'Active', %s = CURRENT_TIMESTAMP WHERE %s = ?",
                 Views.TBL_CHAT_ROOM,

@@ -773,12 +773,10 @@
 	
 	<input type="hidden" id="chatOrderId" th:value="${order.id}">
 	<div class="chat-wrapper">
-    <!-- Nút chat -->
     <button id="chatButton" class="chat-button">
         <i class="fas fa-comments"></i>
     </button>
 
-    <!-- Chat box -->
     <div id="chatBox" class="chat-box" style="display: none;">
         <div class="chat-header">
             <h6 class="m-0">Chat with Support</h6>
@@ -786,8 +784,8 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
+        
         <div class="chat-messages" id="chatMessages">
-            <!-- Hiển thị tin nhắn cũ -->
             <th:block th:if="${chatMessages != null}">
                 <div th:each="msg : ${chatMessages}" 
                      class="message" 
@@ -797,6 +795,7 @@
                 </div>
             </th:block>
         </div>
+
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="Type a message...">
             <button onclick="sendMessage()">
@@ -806,6 +805,38 @@
     </div>
 </div>
 
+
+<div class="chat-wrapper" th:if="${order.Status == 'Canceled' && chatMessages != null && !chatMessages.empty}">
+    <button id="viewMessagesBtn" class="chat-button">
+        <i class="fas fa-history"></i>
+    </button>
+
+    <div id="chatHistoryBox" class="chat-box" style="display: none;">
+        <div class="chat-header">
+            <h6 class="m-0">Chat History</h6>
+            <button class="close-chat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chat-messages" id="chatHistoryMessages">
+            <div th:each="msg : ${chatMessages}" 
+                 class="message" 
+                 th:classappend="${msg.senderType == 'CUSTOMER'} ? 'message-sent' : 'message-received'">
+                <div class="message-content" th:text="${msg.message}"></div>
+                <div class="message-time" th:text="${#temporals.format(msg.timestamp, 'HH:mm')}"></div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <div class="alert alert-warning m-2">
+                Cannot send messages for canceled orders
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="chatRoomId" th:value="${chatRoom?.id}">
+<input type="hidden" id="chatRoomStatus" th:value="${chatRoom?.status}">
 </div>
 	<!-- Footer Start -->
 	<div th:replace="~{customer/layout/footer_customer}"></div>
@@ -1146,7 +1177,7 @@
 	        success: function(response) {
 	            $('#returnModal').modal('hide');
 	            toggleReturnMode();
-	            // Hiển thị thông báo thành công
+	            
 	            Swal.fire({
 	                icon: 'success',
 	                title: 'Success',
@@ -1188,8 +1219,43 @@
 	    });
 	}
 	
-	
-	
+	document.addEventListener('DOMContentLoaded', function() {
+	    const orderStatus = '[[${order.Status}]]';
+	    
+	    if (orderStatus === 'Canceled') {
+	        
+	        initChatHistory();
+	    } else {
+	       
+	        initNormalChat();
+	    }
+	});
+	function initChatHistory() {
+	    const viewMessagesBtn = document.getElementById('viewMessagesBtn');
+	    const chatHistoryBox = document.getElementById('chatHistoryBox');
+	    const closeBtn = chatHistoryBox?.querySelector('.close-chat');
+
+	    if (viewMessagesBtn && chatHistoryBox) {
+	        viewMessagesBtn.addEventListener('click', function() {
+	            chatHistoryBox.style.display = 'flex';
+	            const messagesDiv = document.getElementById('chatHistoryMessages');
+	            if (messagesDiv) {
+	                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+	            }
+	        });
+
+	        if (closeBtn) {
+	            closeBtn.addEventListener('click', function() {
+	                chatHistoryBox.style.display = 'none';
+	            });
+	        }
+	    }
+	}
+
+	function initNormalChat() {
+	   
+	    chatInitHandler();
+	}
 	
 	let stompClient = null;
 	let chatRoomId = null;
@@ -1198,14 +1264,14 @@
 	function connectWebSocket() {
 	    const socket = new SockJS('/ws');
 	    stompClient = Stomp.over(socket);
-	    
+	    stompClient.debug = null;
 	    stompClient.connect({}, function(frame) {
-	        console.log('Connected to WebSocket');
+	       
 	        
 	        stompClient.subscribe('/topic/chat/' + chatRoomId, function(response) {
 	            try {
 	                const message = JSON.parse(response.body);
-	                console.log('Received message:', message);
+	               
 	                displayMessage(message);
 	            } catch (error) {
 	                console.error('Error parsing message:', error);
@@ -1254,12 +1320,20 @@
 	function sendMessage() {
 	    const messageInput = document.getElementById('messageInput');
 	    const message = messageInput.value.trim();
+	    const orderStatus = '[[${order.Status}]]';
 	    const orderId = document.getElementById('chatOrderId').value;
-	    
+	    const chatRoomStatus = document.getElementById('chatRoomStatus')?.value;
 	    if (!message) return;
-	    
+	   
+	    if (orderStatus === 'Canceled') {
+	        alert('Cannot send messages for canceled orders');
+	        return;
+	    }
+	    if (chatRoomStatus === 'Closed') {
+	        alert('This chat has been closed. You cannot send new messages.');
+	        return;
+	    }
 	    if (!chatRoomId) {
-	        // Tạo chat room mới nếu chưa có
 	        $.ajax({
 	            url: '/support/room/create',
 	            type: 'POST',
@@ -1270,7 +1344,7 @@
 	                setTimeout(() => {
 	                    sendMessageToServer(message);
 	                    messageInput.value = '';
-	                }, 1000); // Đợi 1 giây cho kết nối WebSocket được thiết lập
+	                }, 1000);
 	            },
 	            error: function(xhr) {
 	                console.error('Error creating chat room:', xhr.responseText);
@@ -1278,7 +1352,6 @@
 	            }
 	        });
 	    } else {
-	        // Kiểm tra kết nối trước khi gửi
 	        if (!stompClient || !stompClient.connected) {
 	            connectWebSocket();
 	            setTimeout(() => {
@@ -1340,69 +1413,90 @@
 	    }
 	};
 	function chatInitHandler() {
+	    const orderStatus = '[[${order.Status}]]';
 	    const chatButton = document.getElementById('chatButton');
 	    const chatBox = document.getElementById('chatBox');
 	    const closeChat = document.querySelector('.close-chat');
 	    const messageInput = document.getElementById('messageInput');
+	    const chatInput = document.querySelector('.chat-input');
+	    
+	    // Lấy thông tin chatroom từ hidden inputs
+	    const chatRoomId = document.getElementById('chatRoomId')?.value;
+	    const chatRoomStatus = document.getElementById('chatRoomStatus')?.value;
 
-	    if (!chatButton || !chatBox || !closeChat) {
-	        console.error('Chat elements not found');
-	        return;
+	  
+	    if (orderStatus === 'Canceled' || (chatRoomId && chatRoomStatus === 'Closed')) {
+	     
+	        if (messageInput) {
+	            messageInput.disabled = true;
+	            messageInput.placeholder = orderStatus === 'Canceled' ? 
+	                'Cannot chat with canceled order' : 
+	                'This chat has been closed';
+	        }
+	        
+	      
+	        if (chatInput) {
+	            const message = orderStatus === 'Canceled' ? 
+	                'Cannot send messages for canceled orders' : 
+	                'This chat has been closed. You can only view previous messages';
+	            
+	            chatInput.innerHTML = `
+	                <div class="alert alert-warning m-2 w-100">
+	                    ${message}
+	                </div>
+	            `;
+	        }
+	        
+	       
+	        if (chatRoomId) {
+	            loadOldMessages(chatRoomId);
+	        }
 	    }
 
-	    // Toggle chat box
-	    chatButton.addEventListener('click', function(e) {
-	        e.preventDefault();
-	        e.stopPropagation();
-	     
-	        
-	        if (chatBox.style.display === 'none' || !chatBox.style.display) {
-	            chatBox.style.display = 'flex';
-	            chatBox.style.opacity = '0';
-	            setTimeout(() => {
-	                chatBox.style.opacity = '1';
-	                // Scroll xuống cuối khi mở chat
-	                const chatMessages = document.getElementById('chatMessages');
-	                if (chatMessages) {
-	                    chatMessages.scrollTop = chatMessages.scrollHeight;
+	    // Xử lý đóng/mở chat box
+	    if (chatButton) {
+	        chatButton.addEventListener('click', function(e) {
+	            e.preventDefault();
+	            e.stopPropagation();
+	            
+	            if (chatBox.style.display === 'none' || !chatBox.style.display) {
+	                chatBox.style.display = 'flex';
+	                const messagesDiv = document.getElementById('chatMessages');
+	                if (messagesDiv) {
+	                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 	                }
-	            }, 50);
-	        } else {
-	            chatBox.style.opacity = '0';
-	            setTimeout(() => {
-	                chatBox.style.display = 'none';
-	            }, 200);
-	        }
-	    });
+	            }
+	        });
+	    }
 
-	    // Close chat box
-	    closeChat.addEventListener('click', function(e) {
-	        e.preventDefault();
-	        e.stopPropagation();
-	        chatBox.style.opacity = '0';
-	        setTimeout(() => {
+	    // Đóng chat box
+	    if (closeChat) {
+	        closeChat.addEventListener('click', function(e) {
+	            e.preventDefault();
+	            e.stopPropagation();
 	            chatBox.style.display = 'none';
-	        }, 200);
-	    });
+	        });
+	    }
 
-	    // Send message on Enter
-	    if (messageInput) {
+	    // Gửi tin nhắn khi nhấn Enter (chỉ khi order không bị cancel và chat chưa đóng)
+	    if (messageInput && orderStatus !== 'Canceled' && chatRoomStatus !== 'CLOSED') {
 	        messageInput.addEventListener('keypress', function(e) {
-	            if (e.key === 'Enter') {
+	            if (e.key === 'Enter' && !e.shiftKey) {
+	                e.preventDefault();
 	                sendMessage();
 	            }
 	        });
 	    }
 	}
 
-	// Thêm event listener cho window unload
+	
 	window.addEventListener('beforeunload', function() {
 	    if (stompClient && stompClient.connected) {
 	        stompClient.disconnect();
 	    }
 	});
 
-	// Thêm auto reconnect khi mất kết nối
+	
 	setInterval(function() {
 	    if (chatRoomId && (!stompClient || !stompClient.connected)) {
 	        connectWebSocket();

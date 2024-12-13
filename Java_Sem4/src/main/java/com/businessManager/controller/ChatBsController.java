@@ -53,21 +53,15 @@ public class ChatBsController {
         }
     }
     @GetMapping("/room")
-    public String showEmployeeChats(Model model,
-            @RequestParam(name = "cp", required = false, defaultValue = "1") int cp,HttpServletRequest request) {
+    public String showEmployeeChats(Model model,HttpServletRequest request) {
         try {
         	Employee emp = (Employee)  request.getSession().getAttribute("loggedInEmployee");
           
-            PageView pv = new PageView();
-            pv.setPage_current(cp);
-            pv.setPage_size(10);
-
-           
-            List<ChatRoom> employeeChats = chatService.findChatRoomsByEmployeeId(emp.getId(), pv);
+            List<ChatRoom> employeeChats = chatService.findChatRoomsByEmployeeId(emp.getId());
             
             // Thêm vào model
             model.addAttribute("chatRooms", employeeChats);
-            model.addAttribute("pv", pv);
+          
             model.addAttribute("activeEmployee", emp);
             
             return Views.PAGE_CHAT_EMPLOYEE;

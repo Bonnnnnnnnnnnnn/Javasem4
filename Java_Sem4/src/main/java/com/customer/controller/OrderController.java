@@ -74,7 +74,7 @@ public class OrderController {
 	        model.addAttribute("returnOrder", returnOrder);
 	        model.addAttribute("returnOrderDetails", returnOrderDetails);
 	    }
-
+	    
 	    
 	    try {
 	        ChatRoom chatRoom = chatService.findChatRoomByOrderId(id);
@@ -82,12 +82,13 @@ public class OrderController {
 	            List<ChatMessage> messages = chatService.getChatMessages(chatRoom.getId());
 	            model.addAttribute("chatRoom", chatRoom);
 	            model.addAttribute("chatMessages", messages);
+	            
 	        }
 	    } catch (Exception e) {
 	       
 	    }
 	    
-	    // Thêm orderId để dùng trong chat
+	    
 	    model.addAttribute("orderId", id);
 	    
 	    return Views.CUS_ORDEREDDETAILPAGE;
