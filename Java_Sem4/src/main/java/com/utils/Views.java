@@ -480,5 +480,11 @@ public final class Views {
 	
 	// Employee Warehouse
 	public static String EMPLOYEE_WAREHOUSE_MANAGER = "warehouseManager/employee/showEmployee";
+	public static String EMPLOYEE_BUSINESS_MANAGER = "businessManager/employee/showEmployee";
+	
+	// Customer buniss
+	public static String SHOW_CUSTOMER_BUSINESS = "businessManager/customer/showCustomer";
+	public static String SHOW_CUSTOMER_ORDER_BUSINESS = "businessManager/customer/showCustomerOrder";
+
 
 }

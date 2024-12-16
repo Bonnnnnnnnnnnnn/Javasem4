@@ -167,6 +167,36 @@ public class StockController {
 	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(List.of());
 	}
 
+	@GetMapping("/gettLineChart")
+	@ResponseBody
+	public ResponseEntity<List<Map<String, Object>>> gettLineChart(
+	        HttpSession session,
+	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+	    
+
+	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+	    Integer warehouseId = (Integer) session.getAttribute("warehouseId");
+
+	    
+	    if (loggedInEmployee != null && warehouseId != null) {
+	        try {
+
+	            List<Map<String, Object>> inventoryStats = repst.listProReceipt(warehouseId, startDate, endDate);
+	            return ResponseEntity.ok(inventoryStats);
+	        } catch (Exception e) {
+	            System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
+	            e.printStackTrace();
+
+
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(List.of());
+	        }
+	    }
+
+
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(List.of());
+	}
 
 
 }

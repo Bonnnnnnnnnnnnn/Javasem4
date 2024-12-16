@@ -210,8 +210,7 @@ public class ReleasenoteRepository {
 	        System.err.println("Error fetching requests: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
-		
-		
+				
 		
 	}
 	
@@ -382,7 +381,7 @@ public class ReleasenoteRepository {
 	    }, wgrnId);
 	}
 	
-	// hiển thị bảng Request_detail
+
 	public List<Request_detail> findDetailsByRequestId(int requesId) {
 	    String sql = "SELECT rd.*,rd.Id AS RqDetailId, p.Product_name AS Product_name, u.Name As Unit_name " +
 	                 "FROM Request_detail rd " +

@@ -1,86 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Stock</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href=@{/css/stockAll.css}>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Stock</title>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" th:href=@{/css/stockAll.css}>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<div th:replace="warehouseManager/layout/header_admin"></div>
-<div class="content-wrapper" style="min-height: 1302.4px;">
+	<div th:replace="warehouseManager/layout/header_admin"></div>
+	<div class="content-wrapper" style="min-height: 1302.4px;">
 
-			        <section class="content">
-			      <div class="container-fluid">
-			        <div class="row">
-			          <div class="col-12">
-			            <div class="card">
-			              
-			              <!-- /.card-header -->
-			            <div class="card-header p-2" style="margin-top: 25px;">
-						    <ul class="nav nav-pills">
-						        <li class="nav-item">
-						            <a class="nav-link active" href="#stocklist" data-toggle="pill">inventory list</a>
-						        </li>
-						        <li class="nav-item">
-						            <a class="nav-link" href="#sotcklistdetail" data-toggle="pill">detailed inventory list</a>
-						        </li>
-						        <li class="nav-item" style=" display: flex;margin-left: auto; align-items: center;">
-						            <form id="filterForm" th:action="@{/warehouseManager/showStock}" method="get">
-						                <label for="startDate"></label>
-						                <input type="date" id="startDate" name="startDate"
-						                       th:value="${startDate != null ? startDate : '2020-01-01'}">
-						                
-						                <label for="endDate">--  --</label>
-						                <input type="date" id="endDate" name="endDate"
-						                       th:value="${endDate != null ? endDate : T(java.time.LocalDate).now()}">
-						                
-						                <button type="submit">Filter</button>
-						            </form>
-						        </li>
-						    </ul>
-						</div>
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+
+							<!-- /.card-header -->
+							<div class="card-header p-2" style="margin-top: 25px;">
+								<ul class="nav nav-pills">
+									<li class="nav-item"><a class="nav-link active"
+										href="#stocklist" data-toggle="pill">inventory list</a></li>
+									<li class="nav-item"><a class="nav-link"
+										href="#sotcklistdetail" data-toggle="pill">detailed
+											inventory list</a></li>
+									<li class="nav-item"
+										style="display: flex; margin-left: auto; align-items: center;">
+										<form id="filterForm"
+											th:action="@{/warehouseManager/showStock}" method="get">
+											<label for="startDate"></label> <input type="date"
+												id="startDate" name="startDate"
+												th:value="${startDate != null ? startDate : '2020-01-01'}">
+
+											<label for="endDate">-- --</label> <input type="date"
+												id="endDate" name="endDate"
+												th:value="${endDate != null ? endDate : T(java.time.LocalDate).now()}">
+
+											<button type="submit">Filter</button>
+										</form>
+									</li>
+								</ul>
+							</div>
+
+
+							<div class="card-body">
+							    <div class="tab-content">
+							        <!-- Tab for Inventory List -->
+							        <div class="tab-pane fade show active" id="stocklist">
+							            <div id="stockTableContainer1" class="col-12 col-md-8 col-lg-6"
+							                 style="overflow-x: auto; max-width: 100%; padding: 10px; box-sizing: border-box;">
+							                <table style="width: 100%; border-collapse: collapse;">
+							                    <!-- Table content here -->
+							                </table>
+							            </div>
+							            <nav aria-label="Page navigation">
+							                <ul id="pagination1" class="pagination"
+							                    style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;"></ul>
+							            </nav>
+							        </div>
 							
+							        <!-- Tab for Detailed Inventory List -->
+							        <div class="tab-pane fade" id="sotcklistdetail">
+							            <div id="stockTableContainer2" class="col-12 col-md-8 col-lg-6"
+							                 style="overflow-x: auto; max-width: 100%; padding: 10px; box-sizing: border-box;">
+							                <table style="width: 100%; border-collapse: collapse;">
+							                    <!-- Table content here -->
+							                </table>
+							            </div>
+							            <nav aria-label="Page navigation">
+							                <ul id="pagination2" class="pagination"
+							                    style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;"></ul>
+							            </nav>
+							        </div>
+							    </div>
+							</div>
 
-			              <div class="card-body">
-						    <div class="tab-content">
-						        <!-- Tab for Inventory List -->
-						        <div class="tab-pane fade show active" id="stocklist">
-						            <div id="stockTableContainer1"></div>
-										<nav aria-label="Page navigation">
-										    <ul id="pagination1" class="pagination" style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;"></ul>
-										</nav>
-						        </div>
-						
-						        <!-- Tab for Detailed Inventory List -->
-						        <div class="tab-pane fade" id="sotcklistdetail">
-						            <div id="stockTableContainer2">
-
-		                            </div>
-		                            <nav aria-label="Page navigation">
-										<ul id="pagination2" class="pagination" style="height: 50px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-										</ul>                            
-									</nav>
-						        </div>
-						    </div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
 
-			            </div>
-			          </div>
-			        </div>
-			      </div>
-			    </section>
-    		</div>    		
-    		
 
-<div th:replace="warehouseManager/layout/footer_admin"></div>
+	<div th:replace="warehouseManager/layout/footer_admin"></div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script th:inline="javascript">
+	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script th:inline="javascript">
 var data1 = /*[[${stocks}]]*/ {}; 
 var data2 = /*[[${stockdetail}]]*/ {};
 

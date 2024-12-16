@@ -44,13 +44,23 @@ function addDetail() {
             </div>
             <div class="form-group col-md-6">
                 <label for="quantity_requested${detailIndex}">Quantity</label>
-                <input type="number" id="quantity_requested${detailIndex}" name="quantity_requested" class="form-control" placeholder="Enter Quantity" required>
+                <input type="number" id="quantity_requested${detailIndex}" name="quantity_requested" class="form-control" placeholder="Enter Quantity" min="1" oninput="validateQuantity(${detailIndex})" required>
             </div>
         </div>
         <input type="hidden" id="status${detailIndex}" name="status" value="Processing">
         <button type="button" class="btn btn-danger remove-detail-btn" onclick="removeDetail(this)">Remove</button>
     `;
     detailsDiv.appendChild(newDetail);
+}
+
+function validateQuantity(index) {
+    const quantityInput = document.getElementById(`quantity_requested${index}`);
+    const quantityValue = quantityInput.value;
+
+    // Kiểm tra nếu giá trị không phải là số hoặc là NaN
+	if (quantityValue < 1 || isNaN(quantityValue)) {
+	        quantityInput.value = 1; // Đặt lại giá trị mặc định
+	    }
 }
 
 // Lọc danh sách sản phẩm dựa trên văn bản tìm kiếm

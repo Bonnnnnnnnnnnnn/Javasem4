@@ -44,10 +44,6 @@ public class LoginEmploy {
         	e.printStackTrace();
             return null;
         }
-    }
+    }    
     
-    public void updatePassword(Employee emp) {
-        String sql = "UPDATE " + Views.TBL_EMPLOYEE + " SET " + Views.COL_EMPLOYEE_PASSWORD + " = ? WHERE " + Views.COL_EMPLOYEE_ID + " = ?";
-        jdbcTemplate.update(sql, emp.getPassword(), emp.getId());
-    }
 }

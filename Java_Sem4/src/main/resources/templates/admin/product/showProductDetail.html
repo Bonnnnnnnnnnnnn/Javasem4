@@ -187,87 +187,81 @@
 
 									<!-- conversion -->
 									<div class="tab-pane" id="conversion">
-										<!-- Post -->
-										<div class="infopro"
-											style="display: flex; justify-content: space-between; align-items: flex-start; gap: 100px;">
+										<div class="infopro row gx-3 gy-3">
 											<!-- Khối Product Information -->
-											<div>
-												<div class="card"
-													style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-													<div class="card-header"
-														style="font-weight: bold; font-size: 16px; background-color: #1E90FF; padding: 10px;">
-														Product Information</div>
-													<div class="card-body"
-														style="display: flex; align-items: center; padding: 20px; gap: 30px;">
+											<div class="col-12 col-md-5">
+												<div class="card">
+													<div class="card-header text-white"
+														style="background-color: #1E90FF;">Product
+														Information</div>
+													<div class="card-body d-flex flex-wrap align-items-center">
 														<!-- Hình ảnh -->
-														<div style="flex: 0 0 120px; text-align: center;">
+														<div
+															style="flex: 0 0 120px; text-align: center; margin-right: 20px;">
 															<img th:if="${product.img != null}"
 																th:src="@{/uploads/{imageName}(imageName=${product.img})}"
 																style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
 														</div>
 														<!-- Thông tin sản phẩm -->
-														<div
-															style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px;">
-															<div style="flex: 1; min-width: 150px;">
-																<label
-																	style="font-weight: bold; display: block; margin-bottom: 5px;">Product
-																	Name</label> <input type="text" id="proName" disabled readonly
-																	th:value="${product.product_name}" class="form-control"
-																	style="border: 1px solid #ddd; border-radius: 5px;">
-															</div>
-															<div style="flex: 1; min-width: 150px;">
-																<label
-																	style="font-weight: bold; display: block; margin-bottom: 5px;">Unit</label>
-																<input class="form-control" disabled readonly
-																	th:value="${product.unit_name}"
-																	style="border: 1px solid #ddd; border-radius: 5px;">
-															</div>
-															<div style="flex: 1; min-width: 150px;">
-																<label
-																	style="font-weight: bold; display: block; margin-bottom: 5px;">Price</label>
-																<input type="text" id="price" disabled readonly
-																	th:value="${formattedPrice}" class="form-control"
-																	style="border: 1px solid #ddd; border-radius: 5px;">
+														<div class="flex-grow-1 d-flex flex-column gap-3">
+															<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+																<div style="min-width: 150px;">
+																	<label class="fw-bold">Product Name</label> <input
+																		type="text" id="proName" disabled readonly
+																		th:value="${product.product_name}"
+																		class="form-control">
+																</div>
+																<div style="min-width: 150px;">
+																	<label class="fw-bold">Unit</label> <input
+																		class="form-control" disabled readonly
+																		th:value="${product.unit_name}">
+																</div>
+																<div style="min-width: 150px;">
+																	<label class="fw-bold">Price</label> <input type="text"
+																		id="price" disabled readonly
+																		th:value="${formattedPrice}" class="form-control">
+																</div>
 															</div>
 														</div>
 													</div>
+
 												</div>
 											</div>
 
 											<!-- Khối Conversion -->
-											<div class="container-fluid">
-												<div class="Conversion card"
-													style="flex: 1; margin-right: 70px; margin-bottom: 26px; max-width: 100%; padding: 0; width: 100%; box-sizing: border-box;">
-													<div class="card-header"
-														style="background-color: #1E90FF; font-size: 18px;">Add
-														Conversion</div>
-													<form th:action="@{/admin/addConversion}" method="post">
-														<div class="card-body" style="padding: 20px;">
-															<input type="hidden" name="product_id"
+											<div class="col-12 col-md-7">
+												<div class="card">
+													<div class="card-header text-white"
+														style="background-color: #1E90FF;">Add Conversion</div>
+													<form id="add-conversion-form" method="post">
+														<div class="card-body">
+															<input type="hidden" name="product_id" id="product_id"
 																th:value="${product.id}" />
-															<div class="form-group">
-																<label for="to_unit_name">Main Unit</label> <span
-																	th:text="${product.unit_name}" class="d-block mb-2"
-																	style="background-color: #E8E8E8; border-radius: 0.25rem; border: 1px solid #ced4da; padding: .375rem .75rem; width: 180px;"></span>
-																<input type="hidden" name="to_unit_name" id="to_unit_id"
-																	th:value="${product.unit_id}" class="form-control">
+															<div class="form-group mb-3">
+																<label>Main Unit</label> <span
+																	th:text="${product.unit_name}"
+																	class="d-block p-2 bg-light rounded border"></span> <input
+																	type="hidden" name="to_unit_name" id="to_unit_id"
+																	th:value="${product.unit_id}">
 															</div>
-															<div class="inputform">
+															<div class="mb-3">
 																<label for="from_unit_name">From Unit</label> <select
 																	name="from_unit_name" id="from_unit_name"
 																	class="form-control" required>
 																	<option th:each="unit : ${units}" th:value="${unit.id}"
 																		th:text="${unit.name}"></option>
-																</select> <label for="conversion_rate">Conversion Rate</label> <input
+																</select>
+															</div>
+															<div class="mb-3">
+																<label for="conversion_rate">Conversion Rate</label> <input
 																	type="number" id="conversion_rate"
 																	name="conversion_rate" class="form-control"
-																	placeholder="Enter Conversion Rate" required min="0"
-																	oninput="validateNumber(this)">
+																	placeholder="Enter Conversion Rate" required min="0">
 															</div>
-														</div>
-														<div class="submitConversion" style="padding: 10px 0;">
 															<button type="submit"
-																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #333; background-color: #fff; border: 1px dashed #007bff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-left: 20px; width: auto;">
+																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #333; background-color: #fff; border: 1px dashed #007bff; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; width: auto;"
+																onmouseover="this.style.backgroundColor='#e6f7ff'; this.style.color='#007bff'; this.style.borderColor='#007bff';"
+																onmouseout="this.style.backgroundColor='#fff'; this.style.color='#333'; this.style.borderColor='#007bff';">
 																<i class="fas fa-plus"
 																	style="margin-right: 8px; font-size: 16px; color: #007bff;"></i>
 																Add New Conversion
@@ -397,6 +391,81 @@
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script th:src="@{/js/showProduct.js}"></script>
 	<script th:src="@{/js/conversionbuid.js}"></script>
+	<script>
+	document.getElementById("add-conversion-form").addEventListener("submit", function (e) {
+	    e.preventDefault(); // Ngăn form submit mặc định
+
+	    // Lấy dữ liệu từ form
+	    const product_id = document.getElementById("product_id").value;
+	    const to_unit_name = document.getElementById("to_unit_id").value;
+	    const from_unit_name = document.getElementById("from_unit_name").value;
+	    const conversion_rate = document.getElementById("conversion_rate").value;
+
+	    // Gửi AJAX request để thêm conversion
+	    fetch('/admin/addConversion', {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/x-www-form-urlencoded'
+	        },
+	        body: new URLSearchParams({
+	            product_id: product_id,
+	            to_unit_name: to_unit_name,
+	            from_unit_name: from_unit_name,
+	            conversion_rate: conversion_rate
+	        })
+	    })
+	        .then(response => {
+	            if (!response.ok) {
+	                return response.text().then(error => {
+	                    throw new Error(error);
+	                });
+	            }
+	            return response.json(); // Parse JSON từ phản hồi
+	        })
+	        .then(data => {
+	            if (!data.from_unit_name || !data.to_unit_name || data.conversion_rate === undefined) {
+	                throw new Error("Invalid data format from server!");
+	            }
+	            addNewConversionToTable(data);
+	            // Thêm conversion mới vào mảng allConversions
+	            allConversions.push(data);
+
+	            // Cập nhật lại bảng và phân trang
+	            renderStockTable1();
+	            renderPagination1();
+
+	            alert("Conversion added successfully!");
+	        })
+	        .catch(error => {
+	            console.error('Error:', error);
+	            alert('Failed to add conversion! Details: ' + error.message);
+	        });
+
+	});
+
+
+	// Hàm thêm Conversion mới vào bảng
+	function addNewConversionToTable(conversion) {
+    if (!conversion) {
+        console.error("Conversion data is undefined or null!");
+        return;
+    }
+    
+    const tableBody = document.getElementById('conversionTable').querySelector('tbody');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>${tableBody.children.length + 1}</td>
+        <td>${conversion.from_unit_name}</td>
+        <td>${conversion.to_unit_name}</td>
+        <td>${conversion.conversion_rate}</td>
+    `;
+    tableBody.appendChild(newRow);
+}
+
+
+
+
+	</script>
 </body>
 </html>
 

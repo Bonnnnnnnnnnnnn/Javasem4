@@ -1,12 +1,14 @@
 package com.businessManager.controller;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +57,7 @@ public class RequestOrderController {
     public String showAddRequestOrderForm(Model model) {
     	Request request = new Request();
         String randomName = "RO-" + UUID.randomUUID().toString().substring(0, 8);
+        request.setDate(LocalDateTime.now());
         request.setName(randomName);
         model.addAttribute("request", request);
         return Views.ADD_ORDER_REQUEST; 
@@ -66,6 +69,7 @@ public class RequestOrderController {
             @RequestParam("name") String name,
             @RequestParam("statusRequest") String statusRequest,
             @RequestParam(required = false) List<Integer> id_product, 
+            @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam(required = false) List<Integer> quantity_requested,
             @RequestParam(required = false) List<String> status,            
             Model model) {
@@ -77,10 +81,10 @@ public class RequestOrderController {
 
         Request request = new Request();
         request.setName(name);
-        request.setDate(LocalDateTime.now());
+        LocalDateTime dateTime = date.atStartOfDay();
+        request.setDate(dateTime); 
         request.setStatusRequest(statusRequest);
-        System.out.println("employee: " + request.getEmployee_Id());
-
+        System.out.println("setDate" + request.getDate());
         List<Request_detail> details = new ArrayList<>();
         if (id_product != null && !id_product.isEmpty()) {
             for (int i = 0; i < id_product.size(); i++) {

@@ -1,6 +1,7 @@
 package com.models;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Order {
 	private int Id;
@@ -29,7 +30,6 @@ public class Order {
 	private String Tracking_code;
 	private LocalDate expected_delivery_time;
 	private String shipping_status;
-
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,
@@ -275,5 +275,5 @@ public class Order {
 	public void setWareHouse_Id(int wareHouse_Id) {
 		WareHouse_Id = wareHouse_Id;
 	}
-
+	
 }

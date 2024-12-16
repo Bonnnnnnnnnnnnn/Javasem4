@@ -120,7 +120,9 @@ public class StockRepository {
                     JOIN employee_warehouse ew ON wh.Id = ew.Warehouse_Id
                 WHERE 
                     ew.Warehouse_Id = ?
-                    AND whr.Date BETWEEN ? AND ? ;
+                    AND whr.Date BETWEEN ? AND ? 
+                ORDER BY 
+                      whr.Date DESC, wh.Id, p.Product_name;
                 """);
 
         List<Stock> stocks = jdbcTemplate.query(sql, new Stock_mapper(), warehouseId, startDate, endDate);
@@ -272,6 +274,53 @@ public class StockRepository {
                 
         );
         return jdbcTemplate.queryForList(sql,warehouseId);
+    }
+    
+    public List<Map<String, Object>> listProReceipt(int warehouseId, LocalDate startDate, LocalDate endDate) {
+
+
+    	String sql = String.format ("""
+		            SELECT 
+				    p.%s AS ProductName,
+				    c.%s AS conversionrate,
+				    CONVERT(VARCHAR, wr.%s, 23) AS ImportDate,  
+				    SUM(wrd.%s) AS Quantity,
+				    SUM(wrd.%s * c.%s ) AS TrueQuantity  				      				    
+				FROM 
+				    %s  wr
+				    JOIN %s w ON wr.%s = w.%s
+				    JOIN %s ew ON w.%s = ew.%s
+				    JOIN %s wrd ON wr.%s = wrd.%s
+				    JOIN %s c ON wrd.%s = c.%s
+				    JOIN %s p ON wrd.%s = p.%s
+				WHERE     
+				    ew.%s = ?  
+				    AND wr.%s BETWEEN ? AND ?
+				GROUP BY 
+    				p.%s, CONVERT(VARCHAR, wr.%s, 23),  c.%s
+				ORDER BY 
+				    CONVERT(VARCHAR, wr.%s, 23) DESC, p.%s,  c.%s; 
+		        """, 
+		        Views.COL_PRODUCT_NAME, Views.COL_CONVERSION_RATE, Views.COL_WAREHOUSE_RECEIPT_DATE,
+		        Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY, Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY, Views.COL_CONVERSION_RATE,
+		        Views.TBL_WAREHOUSE_RECEIPT,
+		        Views.TBL_WAREHOUSE, Views.COL_WAREHOUSE_RECEIPT_IDWH, Views.COL_WAREHOUSE_ID,
+		        Views.TBL_EMPLOYEE_WAREHOUSE, Views.COL_WAREHOUSE_ID, Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID,
+                Views.TBL_WAREHOUSE_RECEIPT_DETAIL, Views.COL_WAREHOUSE_RECEIPT_ID, Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID,
+                Views.TBL_CONVERSION, Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION,Views.COL_CONVERSION_ID,
+                Views.TBL_PRODUCT, Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID, Views.COL_PRODUCT_ID,		        
+		        Views.COL_EMPLOYEE_WAREHOUS_WAREHOUSE_ID, Views.COL_WAREHOUSE_RECEIPT_DATE, 
+		        Views.COL_PRODUCT_NAME, Views.COL_WAREHOUSE_RECEIPT_DATE, Views.COL_CONVERSION_RATE,
+		        Views.COL_WAREHOUSE_RECEIPT_DATE,Views.COL_PRODUCT_NAME, Views.COL_CONVERSION_RATE
+    	);
+
+    	try {
+            return jdbcTemplate.queryForList(sql, warehouseId, startDate, endDate);  
+        } catch (Exception e) {            
+            System.err.println("Error occurred while fetching inventory stats: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>(); 
+        } 
     }
 
 
