@@ -119,7 +119,10 @@
 				    });
 				    toggleDeleteButton(); // Cập nhật nút xóa khi "Select all" thay đổi
 				}
+				const priceChanges = /*[[${priceChanges}]]*/ [];
 
+				    // Chuẩn bị dữ liệu cho biểu đồ
+				    
 
 
 

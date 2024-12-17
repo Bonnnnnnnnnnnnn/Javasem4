@@ -13,4 +13,30 @@
   display: block;  /* Hiển thị tab đang active */
 }
 
+.container {
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+canvas {
+    margin: 20px auto;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
 
