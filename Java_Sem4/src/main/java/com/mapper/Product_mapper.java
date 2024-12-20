@@ -33,16 +33,16 @@ public class Product_mapper implements RowMapper<Product> {
 		item.setCategoryName(rs.getString("category_name"));
 		item.setUnit_name(rs.getString("unit_name"));
 		
-		/*
-		 * try { FeedbackRepository feedbackRepo = MapperHelper.getFeedbackRepo(); if
-		 * (feedbackRepo != null) { int productId = item.getId();
-		 * item.setAverageRating(feedbackRepo.calculateAverageRating(productId));
-		 * item.setFeedbacks(feedbackRepo.getProductFeedbacks(productId));
-		 * item.setTotalFeedbacks(item.getFeedbacks().size()); } } catch (Exception e) {
-		 * System.err.println("Error getting feedback data: " + e.getMessage());
-		 * item.setAverageRating(0.0); item.setFeedbacks(new ArrayList<>());
-		 * item.setTotalFeedbacks(0); }
-		 */
+		
+		  try { FeedbackRepository feedbackRepo = MapperHelper.getFeedbackRepo(); if
+		  (feedbackRepo != null) { int productId = item.getId();
+		  item.setAverageRating(feedbackRepo.calculateAverageRating(productId));
+		  item.setFeedbacks(feedbackRepo.getProductFeedbacks(productId));
+		  item.setTotalFeedbacks(item.getFeedbacks().size()); } } catch (Exception e) {
+		  System.err.println("Error getting feedback data: " + e.getMessage());
+		  item.setAverageRating(0.0); item.setFeedbacks(new ArrayList<>());
+		  item.setTotalFeedbacks(0); }
+		 
 		 
 
 		return item;

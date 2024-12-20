@@ -1,4 +1,4 @@
-package com.warehouseManager.controller;
+package com.businessManager.controller;
 
 import java.util.List;
 
@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.businessManager.repository.CustomerRepository;
 import com.models.Customer;
 import com.models.Employee;
 import com.models.PageView;
 import com.models.Order;
 import com.models.Order_detail;
 import com.utils.Views;
-import com.warehouseManager.repository.CustomerRepository;
 
 import jakarta.servlet.http.HttpSession;
 

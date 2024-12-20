@@ -1,4 +1,4 @@
-package com.warehouseManager.repository;
+package com.businessManager.repository;
 
 import java.util.Collections;
 import java.util.List;
