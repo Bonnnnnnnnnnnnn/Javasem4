@@ -485,6 +485,9 @@ public final class Views {
 	// Customer buniss
 	public static String SHOW_CUSTOMER_BUSINESS = "businessManager/customer/showCustomer";
 	public static String SHOW_CUSTOMER_ORDER_BUSINESS = "businessManager/customer/showCustomerOrder";
+	
+	// order waiting 
+	public static String SHOW_ORDER_STATUS_WAITING = "warehouseManager/orderInfor/orderWaiting";
 
 
 }
