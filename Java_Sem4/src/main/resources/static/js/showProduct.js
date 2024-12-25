@@ -121,11 +121,4 @@
 				}
 				const priceChanges = /*[[${priceChanges}]]*/ [];
 
-				    // Chuẩn bị dữ liệu cho biểu đồ
-				    
-
-
-
-
-
-		  
+						  

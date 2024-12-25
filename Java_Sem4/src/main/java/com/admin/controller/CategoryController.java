@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.CategoryRepository;
 import com.models.Category_Product;
@@ -54,26 +55,40 @@ public class CategoryController {
 	        return "redirect:/error";
 	    }
 	}
-	@PostMapping("addCategory")
-	public String addCategory(@RequestParam String name) {
-		Category_Product ca = new Category_Product();
-		ca.setName(name);
-		repca.saveCate(ca);
-		return "redirect:showCategory";
+	@PostMapping("/addCategory")
+	public String addCategory(@RequestParam String name, RedirectAttributes redirectAttributes) {
+	    try {
+	        Category_Product category = new Category_Product();
+	        category.setName(name);
+	        repca.saveCate(category);
+	        redirectAttributes.addFlashAttribute("message", "Category added successfully!");
+	        return "redirect:/admin/category/showCategory";
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("error", "Error adding category: " + e.getMessage());
+	        return "redirect:/admin/category/showCategory";
+	    }
 	}
+
 	
 	//xóa danh mục
-	@GetMapping("deleteCa")
-	public String deleteCa(@RequestParam String id) {
+	@GetMapping("/deleteCa")
+	public String deleteCa(@RequestParam String id, @RequestParam int cp, RedirectAttributes redirectAttributes) {
 	    try {
 	        int idb = Integer.parseInt(id);
 	        repca.deleteCa(idb);
-	        return "redirect:showCategory";
+	        PageView pv = new PageView();
+	        int totalCount = repca.countCategories();
+	        int totalPage = (int) Math.ceil((double) totalCount / pv.getPage_size());
+	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
+	            cp = cp > 1 ? cp - 1 : 1;
+	        }
+	        return "redirect:/admin/category/showCategory?cp=" + cp;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
 	        return "redirect:/error";
 	    }
 	}
+
 	
 	// sửa danh mục
 	@GetMapping("showUpdateCategory")

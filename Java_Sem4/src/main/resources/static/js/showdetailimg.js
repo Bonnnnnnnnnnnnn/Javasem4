@@ -112,3 +112,13 @@ document.getElementById('addSpecBtn').addEventListener('click', function () {
     // Thêm card-body mới vào container
     container.appendChild(newCardBody);
 });
+
+// không được nhập số âm
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('keydown', function(event) {
+        // Chặn phím '-' hoặc các phím không hợp lệ
+        if (event.key === '-' || event.key === 'e' || event.key === 'E') {
+            event.preventDefault(); // Ngăn không cho nhập
+        }
+    });
+});

@@ -25,18 +25,18 @@
               <div class="card-header">
                 <h3 class="card-title">Add Category</h3>
               </div>
-              <form th:object="${new_item}" action="addCategory" method="post">
+              <form th:object="${new_item}" action="/admin/category/addCategory" method="post" id="add-category-form">
 			    <div class="card-body">
 			        <div class="form-group">
 			            <label for="title">Category Name</label>
 			            <input type="text" id="name" required name="name" class="form-control" placeholder="Enter Name">
 			        </div>
 			    </div>
-				    <div class="card-footer">
-				    	<a th:href="@{/admin/category/showCategory}" class="btn btn-danger">Back to List</a>
-				        <button type="submit" class="btn btn-primary">Submit</button>
-				    </div>
-				</form>
+			    <div class="card-footer">
+			        <a th:href="@{/admin/category/showCategory}" class="btn btn-danger">Back to List</a>
+			        <button type="submit" class="btn btn-primary">Submit</button>
+			    </div>
+			</form>
             </div>
           </div>
         </div>
