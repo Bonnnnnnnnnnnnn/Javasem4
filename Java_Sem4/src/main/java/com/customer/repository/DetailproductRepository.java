@@ -7,9 +7,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.mapper.Product_img_mapper;
 import com.mapper.Product_mapper;
 import com.mapper.Productspe_mapper;
 import com.models.Product;
+import com.models.Product_img;
 import com.models.Product_spe;
 import com.utils.Views;
 
@@ -49,5 +51,19 @@ public class DetailproductRepository {
 			return null;
 		}
 	}
+	
+	public List<Product_img> findProductImagesByProductId(int productId) {
+	    try {
+	        String str_query = String.format(
+	            "SELECT * FROM %s WHERE %s = ?",
+	            Views.TBL_PRODUCT_IMG,
+	            Views.COL_PRODUCT_IMG_PRODUCT_ID
+	        );
 
+	        return db.query(str_query, new Product_img_mapper(), productId);
+	    } catch (DataAccessException e) {
+	        System.err.println("Error fetching images for product with ID: " + productId + " - " + e.getMessage());
+	        return null;
+	    }
+	}
 }

@@ -63,7 +63,7 @@ public class OrderController {
 
 	@GetMapping("/showdetailor")
 	public String showdetailor(Model model, @RequestParam int id, HttpServletRequest request) {
-	    // Giữ nguyên code cũ
+	    
 	    model.addAttribute("order", repo.getOrderById(id));
 	    model.addAttribute("orderdetail", repod.findAllOrderDetailsByOrderId(id));
 	    ReturnOrder returnOrder = returnOrderRepository.findReturnOrderByOrderId(id);
@@ -102,10 +102,7 @@ public class OrderController {
 				throw new RuntimeException("Không tìm thấy đơn hàng");
 			}
 
-			// Log để debug
-			logger.info("Order status: " + order.getPay_status());
-			logger.info("Transaction ID: " + order.getTransactionId());
-			logger.info("Total amount: " + order.getTotalAmount());
+			
 
 			String status = order.getPay_status().trim().toLowerCase();
 
@@ -119,13 +116,10 @@ public class OrderController {
 					throw new RuntimeException("Không tìm thấy mã giao dịch MoMo");
 				}
 
-				// Chuyển đổi số tiền sang đúng format (nhân 1000 vì MoMo tính bằng VND)
+				
 				long amount = Math.round(order.getTotalAmount());
 
-				// Log thông tin trước khi refund
-				logger.info("Attempting refund for order: " + id);
-				logger.info("Transaction ID: " + order.getTransactionId());
-				logger.info("Amount to refund: " + amount);
+				
 
 				boolean refundSuccess = momoser.refundPayment(order, "Refund order: " + order.getOrderID());
 

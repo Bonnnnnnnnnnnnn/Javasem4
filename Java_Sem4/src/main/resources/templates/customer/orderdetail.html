@@ -340,14 +340,14 @@
 						</div>
 						<div class="col-md-9 form-group"></div>
 						<div class="col-md-3 form-group">
-							<a th:if="${order.Status == 'Waiting for cofirmation'}"
+							<a th:if="${order.Status == 'Waiting for confirmation'}"
 								class="btn btn-primary" data-toggle="modal"
 								data-target="#confirmCancelModal"> Cancel Order </a>
 							<div th:if="${order.Status == 'Canceled'}"
 								style="border-color: #acacac; background-color: #dddddd;"
 								class="btn">Order Canceled</div>
 							<div
-								th:if="${order.Status != 'Waiting for cofirmation' && order.Status != 'Canceled'}"
+								th:if="${order.Status != 'Waiting for confirmation' && order.Status != 'Canceled'}"
 								style="border-color: #acacac; background-color: #dddddd;"
 								class="btn">Confirmed - No Cancellation</div>
 
@@ -1453,7 +1453,7 @@
 	        }
 	    }
 
-	    // Xử lý đóng/mở chat box
+	    
 	    if (chatButton) {
 	        chatButton.addEventListener('click', function(e) {
 	            e.preventDefault();
@@ -1469,7 +1469,7 @@
 	        });
 	    }
 
-	    // Đóng chat box
+	   
 	    if (closeChat) {
 	        closeChat.addEventListener('click', function(e) {
 	            e.preventDefault();
@@ -1478,7 +1478,7 @@
 	        });
 	    }
 
-	    // Gửi tin nhắn khi nhấn Enter (chỉ khi order không bị cancel và chat chưa đóng)
+	   
 	    if (messageInput && orderStatus !== 'Canceled' && chatRoomStatus !== 'CLOSED') {
 	        messageInput.addEventListener('keypress', function(e) {
 	            if (e.key === 'Enter' && !e.shiftKey) {

@@ -254,6 +254,31 @@
         height: 32px;
     }
 }
+.main-image-container {
+    width: 100%;
+    height: 400px; /* Set a fixed height */
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.thumbnail-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Allow horizontal scrolling */
+    padding: 10px 0;
+}
+
+.thumbnail img {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.thumbnail img:hover {
+    border-color: #007bff; /* Highlight on hover */
+}
 </style>
 <body>
 
@@ -279,22 +304,19 @@
 	<div class="container-fluid pb-5">
 		<div class="row px-xl-5">
 			<div class="col-lg-5 mb-30">
-				<div id="product-carousel" class="carousel slide"
-					data-ride="carousel">
-					<div class="carousel-inner bg-light">
-						<div class="carousel-item active">
-							<img class="w-100 h-100 " th:if="${product != null}"
-								th:src="'/uploads/'+${product.Img}" alt="Image">
-						</div>
+				<div class="main-image-container">
+    <!-- Main product image -->
+    <img id="mainProductImage" class="w-100 h-100" th:if="${product != null}"
+         th:src="'/uploads/'+${product.Img}" alt="Main Product Image">
+</div>
 
-					</div>
-					<a class="carousel-control-prev" href="#product-carousel"
-						data-slide="prev"> <i class="fa fa-2x fa-angle-left text-dark"></i>
-					</a> <a class="carousel-control-next" href="#product-carousel"
-						data-slide="next"> <i
-						class="fa fa-2x fa-angle-right text-dark"></i>
-					</a>
-				</div>
+<!-- Thumbnails -->
+<div class="thumbnail-container">
+    <div th:each="image : ${productImages}" class="thumbnail">
+        <img th:src="@{'/uploads/' + ${image.img_url}}" alt="Product Thumbnail"
+             onclick="updateMainImage(this.src)">
+    </div>
+</div>
 			</div>
 
 			<div class="col-lg-7 h-auto mb-30">
@@ -303,7 +325,6 @@
 					<div class="d-flex mb-3">
 						<div class="text-primary mr-2">
 							<th:block th:with="rating=${product.averageRating}">
-								<!-- Rating từ 1-5 -->
 								<th:block th:if="${rating >= 1}">
 									<small class="fas fa-star"></small>
 								</th:block>
@@ -1288,5 +1309,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+function updateMainImage(src) {
+    document.getElementById('mainProductImage').src = src;
+}
 </script>
 </html>

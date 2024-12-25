@@ -43,8 +43,8 @@ public class MomoService {
 			String rawData = "accessKey=" + momoConfig.getAccessKey() + "&amount=" + model.getAmount() + "&extraData="
 					+ "&ipnUrl=" + momoConfig.getNotifyUrl() + "&orderId=" + OrderId + "&orderInfo="
 					+ model.getOrderInfo() + "&partnerCode=" + momoConfig.getPartnerCode() + "&redirectUrl="
-					+ momoConfig.getReturnUrl() + "&requestId=" + requestId + "&requestType=captureWallet"; // Sửa
-																											// requestType
+					+ momoConfig.getReturnUrl() + "&requestId=" + requestId + "&requestType=captureWallet"; 
+																											
 
 			String signature = generateHMAC(rawData, momoConfig.getSecretKey());
 
@@ -53,17 +53,17 @@ public class MomoService {
 			System.out.println("Generated Signature: " + signature);
 
 			// Tạo request body
-			Map<String, Object> requestData = new HashMap<>(); // Đổi lại thành Object
+			Map<String, Object> requestData = new HashMap<>();
 			requestData.put("partnerCode", momoConfig.getPartnerCode());
 			requestData.put("accessKey", momoConfig.getAccessKey());
 			requestData.put("requestId", requestId);
-			requestData.put("amount", model.getAmount()); // Gửi số nguyên
+			requestData.put("amount", model.getAmount());
 			requestData.put("orderId", OrderId);
 			requestData.put("orderInfo", model.getOrderInfo());
 			requestData.put("redirectUrl", momoConfig.getReturnUrl());
 			requestData.put("ipnUrl", momoConfig.getNotifyUrl());
 			requestData.put("extraData", "");
-			requestData.put("requestType", "captureWallet"); // Sửa requestType
+			requestData.put("requestType", "captureWallet");
 			requestData.put("signature", signature);
 			requestData.put("lang", "vi");
 
@@ -109,8 +109,9 @@ public class MomoService {
 
 	public void processPayment(Order or, HttpServletResponse response) {
 		try {
+			System.out.println(or.getTotalAmount());
 			double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
-			if (or.getTotalAmount() < 1000 || or.getTotalAmount() > 50000000) {
+			if ((int) Math.round(or.getTotalAmount() * usdToVndRate) < 1000 || (int) Math.round(or.getTotalAmount() * usdToVndRate) > 50000000) {
 				sendErrorResponse(response, "Số tiền phải từ 1,000đ đến 50,000,000đ");
 				return;
 			}
@@ -122,7 +123,7 @@ public class MomoService {
 
 			// Gọi API MoMo
 			MomoCreatePaymentResponseModel momoResponse = createPayment(orderInfoModel, or);
-
+			orderInfoModel.setAmount(15000);
 			// Kiểm tra response
 			if (momoResponse == null) {
 				sendErrorResponse(response, "Không nhận được phản hồi từ MoMo");
@@ -164,24 +165,18 @@ public class MomoService {
 			String requestId = String.valueOf(System.currentTimeMillis());
 			String orderId = String.valueOf(System.currentTimeMillis());
 			double usdToVndRate = Double.parseDouble(env.getProperty("exchange.rate.usd-to-vnd"));
-			// Chuyển đổi số tiền sang đúng format
+			
 			long amount = Math.round(order.getTotalAmount() * usdToVndRate);
 
-			// Log để debug
-			logger.info("Refund request:");
-			logger.info("Transaction ID: " + order.getTransactionId());
-			logger.info("Amount: " + amount);
-			logger.info("Order ID: " + orderId);
-
-			// Tạo raw signature
+			amount = 15000;
+		
 			StringBuilder rawSignature = new StringBuilder();
 			rawSignature.append("accessKey=").append(momoConfig.getAccessKey()).append("&amount=").append(amount)
 					.append("&description=").append(description).append("&orderId=").append(orderId)
 					.append("&partnerCode=").append(momoConfig.getPartnerCode()).append("&requestId=").append(requestId)
 					.append("&transId=").append(order.getTransactionId());
 
-			// Log raw signature
-			logger.info("Raw signature: " + rawSignature.toString());
+		
 
 			String signature = generateHMAC(rawSignature.toString(), momoConfig.getSecretKey());
 
@@ -196,9 +191,6 @@ public class MomoService {
 			requestBody.put("signature", signature);
 			requestBody.put("lang", "vi");
 
-			// Log request body
-			logger.info("Request body: " + new ObjectMapper().writeValueAsString(requestBody));
-
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -207,14 +199,11 @@ public class MomoService {
 			ResponseEntity<Map> response = restTemplate.postForEntity(momoConfig.getRefundUrl(), request, Map.class);
 
 			Map<String, Object> responseBody = response.getBody();
-			logger.info("MoMo refund response: " + responseBody);
+
 
 			if (responseBody != null) {
 				String resultCode = String.valueOf(responseBody.get("resultCode"));
 
-				// Log chi tiết response
-				logger.info("Result code: " + resultCode);
-				logger.info("Message: " + responseBody.get("message"));
 
 				switch (resultCode) {
 				case "0":
