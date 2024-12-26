@@ -97,11 +97,11 @@ public class ReturnOrderRepository {
 
 			if (!returnOrders.isEmpty()) {
 				ReturnOrder returnOrder = returnOrders.get(0);
-				// Lấy order info
+				
 				Order order = repo.getOrderById(returnOrder.getOrderId());
 				returnOrder.setOrder(order);
 
-				// Lấy employee info nếu có
+				
 				if (returnOrder.getEmployee_id() != 0) {
 					Employee employee = employeeRepo.findId(returnOrder.getEmployee_id());
 					returnOrder.setEmployee(employee);
@@ -126,11 +126,11 @@ public class ReturnOrderRepository {
 
 			if (!returnOrders.isEmpty()) {
 				ReturnOrder returnOrder = returnOrders.get(0);
-				// Lấy order info
+				
 				Order order = repo.getOrderById(returnOrder.getOrderId());
 				returnOrder.setOrder(order);
 
-				// Lấy employee info nếu có
+				
 				if (returnOrder.getEmployee_id() != 0) {
 					Employee employee = employeeRepo.findId(returnOrder.getEmployee_id());
 					returnOrder.setEmployee(employee);
@@ -610,6 +610,25 @@ public class ReturnOrderRepository {
 	    }
 	}
 	
+	public ReturnOrder getCompleteReturnOrder(int returnOrderId) {
+	    try {
+	        
+	        ReturnOrder returnOrder = findReturnOrderById(returnOrderId);
+	        if (returnOrder == null) {
+	            return null;
+	        }
+
+	       
+	        returnOrder.setReturnDetails(findReturnOrderDetailsByReturnOrderId(returnOrderId));
+
+	        return returnOrder;
+
+	    } catch (Exception e) {
+	        System.out.println("Error in getCompleteReturnOrder: " + e.getMessage());
+	        return null;
+	    }
+	}
+
 	
 	
 	

@@ -3,21 +3,21 @@ package com.models;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ReturnOrder {
-	private int id;
-    private int orderId;
-    private LocalDate returnDate;
-    private String status;
-    private String note;
-    private double totalAmount;
-    private double discountAmount;
-    private double finalAmount;
-    private Order order;
-    private String message;
-    private String customerName;
-    private int Employee_id;
-    private Employee Employee;
-    private List<ReturnOrderDetail> returnDetails;
+	public class ReturnOrder {
+		private int id;
+	    private int orderId;
+	    private LocalDate returnDate;
+	    private String status;
+	    private String note;
+	    private double totalAmount;
+	    private double discountAmount;
+	    private double finalAmount;
+	    private Order order;
+	    private String message;
+	    private String customerName;
+	    private int Employee_id;
+	    private Employee Employee;
+	    private List<ReturnOrderDetail> returnDetails;
 	public ReturnOrder(int id, int orderId, LocalDate returnDate, String status, String note, double totalAmount,
 			double discountAmount, double finalAmount, String customerName, List<ReturnOrderDetail> returnDetails) {
 		this.id = id;

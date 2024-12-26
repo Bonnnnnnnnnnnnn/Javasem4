@@ -116,10 +116,6 @@ public class OrderController {
 					throw new RuntimeException("Không tìm thấy mã giao dịch MoMo");
 				}
 
-				
-				long amount = Math.round(order.getTotalAmount());
-
-				
 
 				boolean refundSuccess = momoser.refundPayment(order, "Refund order: " + order.getOrderID());
 

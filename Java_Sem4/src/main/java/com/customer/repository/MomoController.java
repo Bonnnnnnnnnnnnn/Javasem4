@@ -84,7 +84,7 @@ public class MomoController {
 	            @RequestParam String orderId,
 	            @RequestParam(required = false) String transId
 	    ) {
-	    	System.out.println("xx");
+	    	
 	        try {
 	            String requestId = String.valueOf(System.currentTimeMillis());
 	            
