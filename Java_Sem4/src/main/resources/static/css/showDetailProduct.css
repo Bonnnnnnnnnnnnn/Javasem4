@@ -1,16 +1,41 @@
 @charset "UTF-8";
 .tab-content {
   display: flex;
-  flex-direction: row;  /* Hiển thị các tab nội dung theo hàng ngang */
+  flex-direction: row;
 }
 
 .tab-pane {
-  width: 100%;  /* Đảm bảo mỗi tab chiếm một diện tích */
-  display: none;  /* Ẩn các tab không active */
+  width: 100%;
+  display: none;
 }
 
 .tab-pane.active {
-  display: block;  /* Hiển thị tab đang active */
+  display: block;
+}
+.custom-alert {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
 }
 
+.custom-alert.success {
+    border: 1px solid rgba(0, 128, 0, 0.8);
+    background-color: #ffffff;
+    color: rgba(0, 128, 0, 0.8);
+}
+
+.custom-alert.error {
+    border: 2px solid rgba(255, 0, 0, 0.8);
+    background-color: #ffffff;
+    color: rgba(255, 0, 0, 0.8);
+}
+
+
+.btn.disabled {
+	pointer-events: none;
+	opacity: 0.6;
+	cursor: not-allowed;
+}
 

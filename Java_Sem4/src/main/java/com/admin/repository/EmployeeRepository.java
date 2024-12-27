@@ -114,6 +114,16 @@ public class EmployeeRepository {
 			return false;
 		}
     }
+	public int countEmp() {
+		try {
+			String sql = "SELECT COUNT(*) FROM Employee";
+		    return empdb.queryForObject(sql, Integer.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	    
+	}
     public void updateEmp(Employee emp) {
         try {
             String currentPassword = empdb.queryForObject(

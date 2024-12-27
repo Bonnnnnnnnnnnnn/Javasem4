@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.models.Conversion;
 import com.models.PageView;
@@ -108,7 +109,7 @@ public class WhReceiptAndDetailsController {
 		        @RequestParam List<Integer> product_id,
 		        @RequestParam List<Integer> conversionId,
 		        @RequestParam List<String> statusDetails,
-		        Model model) {
+		        Model model, RedirectAttributes redirectAttributes) {
 		    
 		    Warehouse_receipt receipt = new Warehouse_receipt();
 		    
@@ -137,7 +138,7 @@ public class WhReceiptAndDetailsController {
 		    } else {
 		        model.addAttribute("message", "Adding warehouse receipt failed.");
 		    }
-		    
+		    redirectAttributes.addFlashAttribute("message", "✔ Imported goods successfully!");
 		    return "redirect:showWhReceipt";
 		}
 		

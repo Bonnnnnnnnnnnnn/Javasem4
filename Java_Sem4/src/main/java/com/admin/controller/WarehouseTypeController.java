@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.WarehouseTypeRepository;
 import com.models.PageView;
@@ -74,20 +75,27 @@ public class WarehouseTypeController {
 	    }
 	}
 	@PostMapping("addWhType")
-	public String addWhType(@RequestParam String name) {
+	public String addWhType(@RequestParam String name, RedirectAttributes redirectAttributes) {
 		Warehouse_type wt = new Warehouse_type();
 		wt.setName(name);
 		reptype.saveWhType(wt);
+		redirectAttributes.addFlashAttribute("message", "✔ Warehouse type added successfully!");
 		return"redirect:showWhType";
 	}
 	
 	// xóa loại kho 
 	@GetMapping("deleteWt")
-	public String deleteWt(@RequestParam String id) {
+	public String deleteWt(@RequestParam String id,@RequestParam int cp, RedirectAttributes redirectAttributes) {
 	    try {
 	        int idwt = Integer.parseInt(id);
 	        reptype.deleteWt(idwt);
-	        return "redirect:showWhType";
+	        PageView pv = new PageView();
+	        int totalCount = reptype.countWhT();
+	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
+	            cp = cp > 1 ? cp - 1 : 1;
+	        }
+	        redirectAttributes.addFlashAttribute("message", "✔ Warehouse type deleted successfully!");
+	        return "redirect:showWhType?cp=" + cp;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
 	        return "redirect:/error";
@@ -114,11 +122,12 @@ public class WarehouseTypeController {
 	}
 	@PostMapping("updateWt")
 	public String updateWt(@RequestParam("id") int id,
-							@RequestParam("name") String Name) {
+							@RequestParam("name") String Name, RedirectAttributes redirectAttributes) {
 		Warehouse_type wt = new Warehouse_type();
 		wt.setId(id);
 		wt.setName(Name);
 		reptype.updateWt(wt);
+		redirectAttributes.addFlashAttribute("message", "✔ Warehouse type updated successfully!");
 		return "redirect:showWhType";
 	}
 }

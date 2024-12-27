@@ -1,16 +1,19 @@
 const priceInput = document.getElementById('price');
 const priceChangesInput = document.getElementById('priceChanges');
 
+// Hàm định dạng giá trị thành định dạng tiền tệ
 function formatCurrency(value) {
-	return value.toFixed(2);
+	return isNaN(value) ? '0.00' : parseFloat(value).toFixed(2);
 }
 
+// Hàm parse và định dạng giá trị nhập vào
 function parseAndFormat(value) {
 	value = value.replace(/[^0-9.]/g, '');
 	const num = parseFloat(value);
 	return isNaN(num) ? '' : num.toFixed(2);
 }
 
+// Cập nhật giá trị vào ô "Price Changes"
 function updatePriceChanges() {
 	const priceValue = parseFloat(priceInput.value.replace(/[^0-9.]/g, '')) || 0;
 	priceChangesInput.value = formatCurrency(priceValue);
@@ -25,27 +28,25 @@ function handleBlur(event) {
 	updatePriceChanges();
 }
 
-// Gán sự kiện cho ô "Price"
-priceInput.addEventListener('blur', handleBlur);
-
+// Xử lý khi người dùng nhập giá trị vào ô
 function handleInput(event) {
 	event.target.value = event.target.value.replace(/[^0-9.]/g, '');
+}
 
-// Gán sự kiện cho cả hai ô
+// Gán sự kiện cho ô "Price"
+priceInput.addEventListener('blur', handleBlur);
 priceInput.addEventListener('input', handleInput);
-priceInput.addEventListener('input', handleInput);
-priceChangesInput.addEventListener('input', handleInput);
-//cái des cảu product
-CKEDITOR.replace('description');
 
 // Tìm kiếm thương hiệu
-document.getElementById('searchBrand').addEventListener('input', function() {
+document.getElementById('searchBrand')?.addEventListener('input', function () {
 	const filter = this.value.toLowerCase();
-	const options = document.getElementById('brandId').options;
+	const options = document.getElementById('brandId')?.options;
 
-	for (let i = 0; i < options.length; i++) {
-		const optionText = options[i].text.toLowerCase();
-		options[i].style.display = optionText.includes(filter) ? '' : 'none';
+	if (options) {
+		for (let i = 0; i < options.length; i++) {
+			const optionText = options[i].text.toLowerCase();
+			options[i].style.display = optionText.includes(filter) ? '' : 'none';
+		}
 	}
 });
 
@@ -54,25 +55,25 @@ function showImage(event) {
 	const file = event.target.files[0];
 	const preview = document.getElementById('preview');
 
-	if (file) {
+	if (file && preview) {
 		const reader = new FileReader();
-		reader.onload = function(e) {
+		reader.onload = function (e) {
 			preview.src = e.target.result;
 			preview.style.display = 'block';
 		};
 		reader.readAsDataURL(file);
-	} else {
+	} else if (preview) {
 		preview.style.display = 'none';
 	}
 }
-document.getElementById("dateStart").value = new Date().toISOString();
 
+// Gán ngày hiện tại vào ô "Date Start" (nếu tồn tại)
+const dateStartInput = document.getElementById("dateStart");
+if (dateStartInput) {
+	dateStartInput.value = new Date().toISOString().split('T')[0];
+}
 
-
-
-
-
-
-
-
-
+// Khởi tạo CKEditor cho mô tả sản phẩm (nếu tồn tại)
+if (typeof CKEDITOR !== 'undefined') {
+	CKEDITOR.replace('description');
+}

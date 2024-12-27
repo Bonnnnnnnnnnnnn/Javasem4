@@ -61,7 +61,7 @@ public class CategoryController {
 	        Category_Product category = new Category_Product();
 	        category.setName(name);
 	        repca.saveCate(category);
-	        redirectAttributes.addFlashAttribute("message", "Category added successfully!");
+	        redirectAttributes.addFlashAttribute("message", "✔ Category added successfully!");
 	        return "redirect:/admin/category/showCategory";
 	    } catch (Exception e) {
 	        redirectAttributes.addFlashAttribute("error", "Error adding category: " + e.getMessage());
@@ -82,6 +82,7 @@ public class CategoryController {
 	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
 	            cp = cp > 1 ? cp - 1 : 1;
 	        }
+	        redirectAttributes.addFlashAttribute("message", "✔ Category deleted successfully!");
 	        return "redirect:/admin/category/showCategory?cp=" + cp;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
@@ -104,12 +105,17 @@ public class CategoryController {
 	}
 	@PostMapping("updateCa")
 	public String updateCa(@RequestParam("id") int id,
-							@RequestParam("name") String name) {
-		Category_Product ca  = new Category_Product();
-		ca.setName(name);
-		ca.setId(id);
-		
-		repca.updateCa(ca);
-		return "redirect:showCategory";
+							@RequestParam("name") String name, RedirectAttributes redirectAttributes) {
+		try {
+			Category_Product ca  = new Category_Product();
+			ca.setName(name);
+			ca.setId(id);
+			repca.updateCa(ca);
+	        redirectAttributes.addFlashAttribute("message", "✔ Category updated successfully!");
+	        return "redirect:/admin/category/showCategory";
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("error", "Error updating category: " + e.getMessage());
+	        return "redirect:/admin/category/showCategory";
+	    }
 	}
 }

@@ -94,8 +94,14 @@ public class BrandRepository {
 		}
 	}
 	public int countBrand() {
-	    String sql = "SELECT COUNT(*) FROM Brand";
-	    return dbbr.queryForObject(sql, Integer.class);
+		try {
+			String sql = "SELECT COUNT(*) FROM Brand";
+		    return dbbr.queryForObject(sql, Integer.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	    
 	}
 	public boolean updateBr(Brand br) {
 		try {
