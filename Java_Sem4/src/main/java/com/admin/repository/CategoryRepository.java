@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.mapper.Category_mapper;
 import com.models.Category_Product;
@@ -68,15 +72,26 @@ public class CategoryRepository {
 	}
 
 	public boolean saveCate(Category_Product ca) {
-		try {
-			String sql = "INSERT INTO Product_category (Cate_name) VALUES (?)";
-			int row = dbcate.update(sql,ca.getName());
-			return row > 0 ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    try {
+	        String sql = "INSERT INTO Product_category (Cate_name) VALUES (?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+	        int row = dbcate.update(connection -> {
+	            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            ps.setString(1, ca.getName());
+	            return ps;
+	        }, keyHolder);
+	        if (row > 0) {
+	            ca.setId(keyHolder.getKey().intValue());
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 	public boolean deleteCa(int id) {
 		try {
 			String sql = "DELETE FROM Product_category WHERE Id=?";

@@ -168,6 +168,7 @@ public class ProductController {
 
 			reppro.saveProductWithDetails(prod, specifications, productImages, priceChangeDetail);
 
+			redirectAttributes.addFlashAttribute("newProductId", prod.getId());
 			redirectAttributes.addFlashAttribute("message", "✔ Product added successfully!");
 
 			return "redirect:/admin/product/showProduct";

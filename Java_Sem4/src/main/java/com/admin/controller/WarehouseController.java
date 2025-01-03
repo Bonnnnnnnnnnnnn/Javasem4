@@ -132,6 +132,7 @@ public class WarehouseController {
 		wh.setDistrict_Id(districtId);
 		
 		repwh.saveWh(wh);
+		redirectAttributes.addFlashAttribute("newWarehouseId", wh.getId());
 		redirectAttributes.addFlashAttribute("message", "✔ Warehouse added successfully!");
 		
 		return "redirect:showWarehouse";

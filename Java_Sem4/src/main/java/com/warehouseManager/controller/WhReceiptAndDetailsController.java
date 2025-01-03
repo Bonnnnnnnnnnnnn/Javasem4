@@ -3,16 +3,12 @@ package com.warehouseManager.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,7 +98,7 @@ public class WhReceiptAndDetailsController {
 		        @RequestParam("wh_id") int wh_id,
 		        @RequestParam("status") String status,
 		        @RequestParam("shippingFee") double shippingFee,
-		        @RequestParam(value = "otherFee", defaultValue = "0") double otherFee, 
+		        @RequestParam(value = "otherFee", defaultValue = "0") double otherFee,
 		        @RequestParam("employeeId") int employeeId,
 		        @RequestParam List<Integer> quantity,
 		        @RequestParam List<Double> wh_price,
@@ -110,7 +106,7 @@ public class WhReceiptAndDetailsController {
 		        @RequestParam List<Integer> conversionId,
 		        @RequestParam List<String> statusDetails,
 		        Model model, RedirectAttributes redirectAttributes) {
-		    
+
 		    Warehouse_receipt receipt = new Warehouse_receipt();
 		    
 		    receipt.setName(repwd.generateReceiptName());
@@ -120,7 +116,7 @@ public class WhReceiptAndDetailsController {
 		    receipt.setOther_fee(otherFee);
 		    receipt.setEmployee_id(employeeId);
 		    receipt.setDate(LocalDateTime.now());
-	
+		    
 		    List<Warehouse_receipt_detail> details = new ArrayList<>();
 		    for (int i = 0; i < quantity.size(); i++) {
 		        Warehouse_receipt_detail detail = new Warehouse_receipt_detail();
@@ -131,16 +127,20 @@ public class WhReceiptAndDetailsController {
 		        detail.setStatus(statusDetails.get(i));
 		        details.add(detail);
 		    }
-		    boolean isAdded = repwd.addRequestOrderWithDetails(receipt, details);
-	
-		    if (isAdded) {
-		        model.addAttribute("message", "Input repository has been added successfully!");
+
+		    // Lấy ID của hóa đơn nhập kho
+		    int generatedReceiptId = repwd.addRequestOrderWithDetails(receipt, details);
+
+		    if (generatedReceiptId > 0) {
+		        redirectAttributes.addFlashAttribute("newReceiptId", generatedReceiptId);
+		        redirectAttributes.addFlashAttribute("message", "✔ Imported goods successfully!");
 		    } else {
 		        model.addAttribute("message", "Adding warehouse receipt failed.");
 		    }
-		    redirectAttributes.addFlashAttribute("message", "✔ Imported goods successfully!");
+		    
 		    return "redirect:showWhReceipt";
 		}
+
 		
 		//randum tên phiếu
 		 @GetMapping("/generateReceiptName")

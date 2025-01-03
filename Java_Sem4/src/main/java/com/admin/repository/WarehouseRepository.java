@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.models.Employee;
 import com.models.Employee_warehouse;
@@ -86,15 +90,32 @@ public class WarehouseRepository {
 		}
 	}
 	public boolean saveWh(Warehouse wh) {
-		try {
-			String sql = "INSERT INTO Warehouse (Name,Address,Wh_type_Id,Ward_id,Province_id,District_Id) VALUES (?,?,?,?,?,?)";
-			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id(),wh.getWard_Id(),wh.getProvince_Id(),wh.getDistrict_Id());
-			return row >0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    try {
+	        String sql = "INSERT INTO Warehouse (Name, Address, Wh_type_Id, Ward_id, Province_id, District_Id) VALUES (?, ?, ?, ?, ?, ?)";
+	        
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+	        int row = dbwh.update(connection -> {
+	            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            ps.setString(1, wh.getName());
+	            ps.setString(2, wh.getAddress());
+	            ps.setInt(3, wh.getWh_type_id());
+	            ps.setString(4, wh.getWard_Id());
+	            ps.setInt(5, wh.getProvince_Id());
+	            ps.setInt(6, wh.getDistrict_Id());
+	            return ps;
+	        }, keyHolder);
+	        if (row > 0) {
+	            wh.setId(keyHolder.getKey().intValue());
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 	
 	public boolean updatewh(Warehouse wh) {
 		try {

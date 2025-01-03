@@ -61,6 +61,7 @@ public class CategoryController {
 	        Category_Product category = new Category_Product();
 	        category.setName(name);
 	        repca.saveCate(category);
+	        redirectAttributes.addFlashAttribute("newCategoryId", category.getId());
 	        redirectAttributes.addFlashAttribute("message", "✔ Category added successfully!");
 	        return "redirect:/admin/category/showCategory";
 	    } catch (Exception e) {

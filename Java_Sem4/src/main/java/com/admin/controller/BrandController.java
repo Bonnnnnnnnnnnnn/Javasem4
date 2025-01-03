@@ -62,6 +62,7 @@ public class BrandController {
 			Brand br = new Brand();
 			br.setName(name);
 			repbr.saveBr(br);
+			redirectAttributes.addFlashAttribute("newBrandId", br.getId());
 			redirectAttributes.addFlashAttribute("message", "✔ Brand added successfully!");
 			return "redirect:/admin/brand/showBrand";
 		} catch (Exception e) {

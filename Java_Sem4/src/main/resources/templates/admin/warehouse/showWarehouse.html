@@ -55,7 +55,7 @@
 				      <tr th:if="${#lists.isEmpty(warehouses)}" class="text-center">
 				          <td colspan="5">No warehouses found</td>
 				      </tr>
-				      <tr th:each="item ,iterStat: ${warehouses}" class="text-center">
+				      <tr th:each="item ,iterStat: ${warehouses}" class="text-center" th:classappend="${item.id == newWarehouseId} ? 'highlighted-row' : ''">
 				          <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"></td>
 				          <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"><span th:text="${item.name}"></span></td>
 				          <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"><span th:text="${item.typeName}"></span></td>

@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.models.Brand;
 import com.models.PageView;
@@ -65,16 +69,19 @@ public class BrandRepository {
 			return null;
 		}
 	}
-	public boolean saveBr(Brand br) {
-		try {
-			String sql = "INSERT INTO Brand (Name) VALUES (?)";
-			int row = dbbr.update(sql,br.getName());
-			return row > 0 ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public Brand saveBr(Brand brand) {
+	    String sql = "INSERT INTO Brand (Name) VALUES (?)";
+	    KeyHolder keyHolder = new GeneratedKeyHolder();
+	    dbbr.update(connection -> {
+	        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        ps.setString(1, brand.getName());
+	        return ps;
+	    }, keyHolder);
+	    brand.setId(keyHolder.getKey().intValue());
+	    return brand;
 	}
+
+
 	public boolean deleteBr(int id) {
 		try {
 			String sql = "DELETE FROM Brand WHERE Id=?";

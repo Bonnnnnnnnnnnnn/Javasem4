@@ -58,3 +58,18 @@ table tr {
 	opacity: 0.6;
 	cursor: not-allowed;
 }
+.highlighted-row {
+    background-color: rgb(128, 255, 255);
+    animation: fadeOutHighlight 2s ease-in-out forwards;
+}
+
+@keyframes fadeOutHighlight {
+    0% {
+        background-color: rgb(128, 255, 255);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+

@@ -46,7 +46,7 @@
 					    <tr th:if="${#lists.isEmpty(brands)}" class="text-center">
 					        <td colspan="5">No employees found</td>
 					    </tr>
-					    <tr th:each="item, iterStat: ${brands}" class="text-center">
+					    <tr th:each="item, iterStat: ${brands}" class="text-center" th:classappend="${item.id == newBrandId} ? 'highlighted-row' : ''">
 					        <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"></td>
 					        <td>
 					            <span th:text="${item.name}"></span>

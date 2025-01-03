@@ -35,6 +35,15 @@
 		        });
 		    });
 		});
+		$(document).ready(function() {
+		    const newCategoryRow = $(".highlighted-row");
+		    if (newCategoryRow.length) {
+		        $('html, body').animate({
+		            scrollTop: newCategoryRow.offset().top - 100
+		        }, 1000);
+		    }
+		});
+
 
 
 

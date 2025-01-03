@@ -61,7 +61,8 @@
 										<tr th:if="${#lists.isEmpty(whrs)}" class="text-center">
 											<td colspan="8">No positions found</td>
 										</tr>
-										<tr th:each="item, iterStat : ${whrs}" class="text-center">
+										<tr th:each="item, iterStat : ${whrs}" class="text-center"
+											th:classappend="${item.id == newReceiptId} ? 'highlighted-row' : ''">
 											<td
 												th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"
 												style="cursor: pointer;"

@@ -27,8 +27,6 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="card">
-							<div id="toast-message" style="display: none;"
-								class="alert alert-success"></div>
 							<div>
 								<p th:if="${message}" th:text="${message}"
 									class="custom-alert success"></p>
@@ -57,7 +55,8 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr th:each="item ,iterStat: ${employees}" class="text-center">
+										<tr th:each="item ,iterStat: ${employees}" class="text-center"
+											th:classappend="${item.id == newEmployeeId} ? 'highlighted-row' : ''">
 											<td
 												th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"
 												style="cursor: pointer;"

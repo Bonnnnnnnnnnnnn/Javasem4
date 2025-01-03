@@ -209,10 +209,10 @@ public class WhReceiptAndDetailsRepository {
 		
 	//thêm 3 bản Warehouse_receipt , Warehouse_receipt_detail và stock
 		@Transactional
-		public boolean addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
+		public int addRequestOrderWithDetails(Warehouse_receipt receipt, List<Warehouse_receipt_detail> details) {
 		    try {
 		        // Tính tổng `totalFee`
-		    	double totalFee = details.stream()
+		        double totalFee = details.stream()
 		                .mapToDouble(detail -> {
 		                    int conversionRate = getConversionRateByProductId(detail.getProduct_id(), detail.getConversion_id());
 		                    int convertedQuantity = detail.getQuantity() * conversionRate;
@@ -296,10 +296,10 @@ public class WhReceiptAndDetailsRepository {
 		                    generatedDetailId
 		            );
 		        }
-		        return result1 > 0;
+		        return generatedReceiptId;
 		    } catch (DataAccessException e) {
 		        e.printStackTrace();
-		        return false;
+		        return -1;
 		    }
 		}
 		

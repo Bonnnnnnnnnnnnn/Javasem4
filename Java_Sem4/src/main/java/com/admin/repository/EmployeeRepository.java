@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.logging.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.mapper.Employee_mapper;
 import com.mapper.Role_mapper;
@@ -91,8 +95,23 @@ public class EmployeeRepository {
         try {
             String encodedPassword = SecurityUtility.encryptBcrypt(emp.getPassword());
             String sql = "INSERT INTO Employee (First_name, Last_name, Phone, Role_Id, Password) VALUES (?, ?, ?, ?, ?)";
-            empdb.update(sql, emp.getFirst_name(), emp.getLast_name(), emp.getPhone(), emp.getRole_id(), encodedPassword);
-            Logger.getGlobal().info("employee saved successfully: " + emp.getPhone());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int row = empdb.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, emp.getFirst_name());
+                ps.setString(2, emp.getLast_name());
+                ps.setString(3, emp.getPhone());
+                ps.setInt(4, emp.getRole_id());
+                ps.setString(5, encodedPassword);
+                return ps;
+            }, keyHolder);
+            if (row > 0) {
+                emp.setId(keyHolder.getKey().intValue());
+                Logger.getGlobal().info("Employee saved successfully: " + emp.getPhone() + " with ID: " + emp.getId());
+            } else {
+                Logger.getGlobal().severe("Error saving employee: No rows affected.");
+                throw new RuntimeException("Failed to save employee.");
+            }
 
         } catch (DataAccessException e) {
             Logger.getGlobal().severe("Error saving employee: " + e.getMessage());
@@ -102,6 +121,7 @@ public class EmployeeRepository {
             throw new RuntimeException("Unexpected error occurred.", e);
         }
     }
+
     public Boolean deleteEmployee(int id) {
     	try {
 			String sql = "DELETE FROM Employee where Id=?";

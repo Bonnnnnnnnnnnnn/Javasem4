@@ -122,13 +122,11 @@ function toggleSelectAll(selectAllCheckbox) {
 const priceChanges = /*[[${priceChanges}]]*/[];
 
 $(document).ready(function() {
-    var message = /*[[${message}]]*/ '';
-    if (message.trim() !== '') {
-        var toast = $('#toast-message');
-        toast.text(message).fadeIn(400);
-        setTimeout(function() {
-            toast.fadeOut(3000);
-        }, 3000);
+    const newCategoryRow = $(".highlighted-row");
+    if (newCategoryRow.length) {
+        $('html, body').animate({
+            scrollTop: newCategoryRow.offset().top - 100
+        }, 1000);
     }
 });
 

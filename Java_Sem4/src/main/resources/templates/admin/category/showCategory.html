@@ -50,21 +50,22 @@
 					    <tr th:if="${#lists.isEmpty(categories)}" class="text-center">
 					        <td colspan="5">No categories found</td>
 					    </tr>
-					    <tr th:each="item, iterStat : ${categories}" class="text-center">
-					        <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"></td>
-					        <td>
-					            <span th:text="${item.name}"></span>
-					        </td>
-					        <td>
-					            <a th:href="@{showUpdateCategory(id=${item.id})}" class="btn btn-warning">Update</a>
-					            <a th:href="@{deleteCa(id=${item.id}, cp=${pv.Page_current})}"
-								   th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
-								   th:attr="disabled=${item.relatedCount > 0}"
-								   th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
-								   th:onclick="|return ${item.relatedCount > 0} ? false : confirmDeleteCate();|"
-								   class="btn btn-danger">Delete</a>
-					        </td>
-					    </tr>
+						<tr th:each="item, iterStat : ${categories}" class="text-center" th:classappend="${item.id == newCategoryId} ? 'highlighted-row' : ''">
+						    <td th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"></td>
+						    <td>
+						        <span th:text="${item.name}"></span>
+						    </td>
+						    <td>
+						        <a th:href="@{showUpdateCategory(id=${item.id})}" class="btn btn-warning">Update</a>
+						        <a th:href="@{deleteCa(id=${item.id}, cp=${pv.Page_current})}"
+						           th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
+						           th:attr="disabled=${item.relatedCount > 0}"
+						           th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
+						           th:onclick="|return ${item.relatedCount > 0} ? false : confirmDeleteCate();|"
+						           class="btn btn-danger">Delete</a>
+						    </td>
+						</tr>
+
 					</tbody>
                 </table>
                 <table style="margin-left:42%">
