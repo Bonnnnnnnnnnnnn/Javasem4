@@ -42,37 +42,37 @@
                                 <!--  Warehouse receipt details-->
                               <form th:object="${whr}">
 							    <div class="card-body row">
-							        <div class="form-group col-md-6">
+							        <div class="form-group col-md-4">
 							          	<label for="title">Name warehouse receipt</label>
 							            <input type="text" disabled readonly th:value="${whr.name}" class="form-control">
 							        </div>
 							        
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 									    <label for="title">Warehouse name</label>
 									    <input type="text" disabled readonly th:value="${whr.wh_name}" class="form-control">
 									</div>
 				
-									<div class="form-group col-md-6">
+									<div class="form-group col-md-4">
 									    <label for="phone">Date time</label>
 									    <input type="text" disabled readonly th:value="${#temporals.format(whr.date, 'HH:mm dd/MM/yyyy')}" class="form-control">
 									</div>
 
-									<div class="form-group col-6 ">
+									<div class="form-group col-4">
 									    <label for="exampleInputEmail1">Shipping fee</label>
 									    <input class="form-control" disabled readonly th:value="${whr.shipping_fee}">
 									</div>
 									
-									<div class="form-group col-6 ">
+									<div class="form-group col-4">
 									    <label for="exampleInputEmail1">Order fee</label>
 									    <input class="form-control" disabled readonly th:value="${whr.other_fee}">
 									</div>
 									
-									<div class="form-group col-6 ">
+									<div class="form-group col-4">
 									    <label for="exampleInputEmail1">Total fee</label>
 									    <input class="form-control" disabled readonly th:value="${whr.total_fee}">
 									</div>
 									
-									<div class="form-group col-6">
+									<div class="form-group col-12">
 									    <label for="employeeName">Employee</label>
 									    <input class="form-control" disabled readonly th:value="${whr.employee_name}">
 									</div>

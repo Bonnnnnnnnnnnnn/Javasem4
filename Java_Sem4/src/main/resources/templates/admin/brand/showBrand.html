@@ -23,6 +23,11 @@
         <div class="row">
           <div class="col-12">
             <div class="card">
+				<div id="toast-message" style="display: none;" class="custom-alert success"></div>
+				<div>
+					<p th:if="${message}" th:text="${message}" class="custom-alert success"></p>
+					<p th:if="${error}" th:text="${error}" class="custom-alert error"></p>
+				</div>
               <div class="card-header">
                 <h3 class="card-title">Brand Table</h3>
               </div>
@@ -48,12 +53,12 @@
 					        </td>
 					        <td>
 					    <a th:href="@{showUpdateBrand(id=${item.id})}" class="btn btn-warning">Update</a>
-					    <a th:href="@{deleteBr(id=${item.id})}"
-					       th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
-					       th:attr="disabled=${item.relatedCount > 0}"
-					       th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
-					       th:onclick="${item.relatedCount > 0} ? 'return false;' : 'return confirmDeleteBr();'" 
-					       class="btn btn-danger">Delete</a>
+					    <a th:href="@{/admin/brand/deleteBr(id=${item.id}, cp=${pv.Page_current})}"
+			               th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
+			               th:attr="disabled=${item.relatedCount > 0}"
+			               th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
+			               th:onclick="${item.relatedCount > 0} ? 'return false;' : 'return confirmDeleteBr();'"
+			               class="btn btn-danger">Delete</a>
 						    </td>
 					    </tr>
 					</tbody>

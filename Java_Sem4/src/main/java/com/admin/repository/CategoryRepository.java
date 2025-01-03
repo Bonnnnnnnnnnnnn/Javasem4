@@ -23,7 +23,7 @@ public class CategoryRepository {
 	}
 	public List<Category_Product> findAll(PageView itemPage) {
 	    try {
-	        String sql = "SELECT * FROM Product_category ORDER BY id";
+	        String sql = "SELECT * FROM Product_category ORDER BY id DESC";
 
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
 	            int count = dbcate.queryForObject("SELECT COUNT(*) FROM Product_category", Integer.class);
@@ -41,6 +41,7 @@ public class CategoryRepository {
 	        return Collections.emptyList();
 	    }
 	}
+
 
 	public Category_Product findId(int id) {
 		try {
@@ -94,6 +95,11 @@ public class CategoryRepository {
 			return false;
 		}
 	}
+	public int countCategories() {
+	    String sql = "SELECT COUNT(*) FROM Product_category";
+	    return dbcate.queryForObject(sql, Integer.class);
+	}
+
 	public boolean updateCa(Category_Product ca) {
 		try {
 			String sql = "UPDATE Product_category SET Cate_name = ? WHERE Id = ?";

@@ -7,6 +7,10 @@
 		function confirmDeleteWh(){
 					return confirm("Are you sure you want to delete this warehouse ?");
 		}
+		//delete warehouse_employee
+		function confirmDeletew(){
+					return confirm("Are you sure you want to delete this manager ?");
+		}
 		//click vào xem chi tiết sản phẩm
 		  function goToDetail(id) {
 		        window.location.href = '/admin/warehouse/showWarehouseDetails?id=' + id;
@@ -23,48 +27,6 @@
 			        } else {
 			            $(this).show();
 			        }
-			    });
-			}
-			//xoa all warehuuse
-			function deleteSelectedWarehouses() {
-			    const selectedWarehouseIds = [];
-			    document.querySelectorAll('.warehouseCheckbox:checked').forEach(checkbox => {
-			        selectedWarehouseIds.push(parseInt(checkbox.value));
-			    });
-		
-			    if (selectedWarehouseIds.length > 0) {
-			        if (confirm('Are you sure you want to delete the selected warehouses?')) {
-			            fetch('/admin/warehouse/deleteSelectedWarehouses', {
-			                method: 'POST',
-			                headers: {
-			                    'Content-Type': 'application/json'
-			                },
-			                body: JSON.stringify(selectedWarehouseIds)
-			            })
-			            .then(response => {
-			                if (response.ok) {
-			                    return response.text();
-			                } else {
-			                    throw new Error('Failed to delete warehouses.');
-			                }
-			            })
-			            .then(data => {
-			                console.log(data);
-			                window.location.reload();
-			            })
-			            .catch(error => {
-			                console.error('Error:', error);
-			                alert('An error occurred while deleting warehouses: ' + error.message);
-			            });
-			        }
-			    } else {
-			        alert('Please select at least one warehouse to delete.');
-			    }
-			}
-			function toggleSelectAll(selectAllCheckbox) {
-			    const checkboxes = document.querySelectorAll('.warehouseCheckbox');
-			    checkboxes.forEach(checkbox => {
-			        checkbox.checked = selectAllCheckbox.checked;
 			    });
 			}
 			function loadWarehouses(typeId) {
@@ -86,9 +48,9 @@
 			                    </thead>
 			                    <tbody>
 			            `;
-		
+
 			            if (response.length === 0) {
-			                newTableHtml += '<tr class="text-center"><td colspan="4">No warehouses found</td></tr>';
+			                newTableHtml += '<tr class="text-center"><td colspan="3">No warehouses found</td></tr>';
 			            } else {
 			                response.forEach(function(warehouse) {
 			                    newTableHtml += `
@@ -100,7 +62,7 @@
 			                    `;
 			                });
 			            }
-		
+
 			            newTableHtml += `
 			                    </tbody>
 			                </table>
@@ -108,7 +70,7 @@
 			                    <a href="/admin/warehouseType/showWhType" class="btn btn-secondary">Back to List</a>
 			                </div>
 			            `;
-		
+
 			            $('#warehouseTypeTable').replaceWith(newTableHtml);
 			        },
 			        error: function() {

@@ -57,11 +57,9 @@ public class WarehouseController {
 	public String showWarehouseDetails(Model model, @RequestParam("id") String id) {
 	    try {
 	        int idwh = Integer.parseInt(id); 
-	        Employee_warehouse ew = repwh.findByEmpwhId(idwh);
 	        Warehouse wh = repwh.findId(idwh);
 	        if (wh != null) {
 	            model.addAttribute("warehouse", wh);
-	            model.addAttribute("ew",ew);
 	        } else {
 	            model.addAttribute("error", "Warehouse not found");
 	        }
@@ -124,7 +122,7 @@ public class WarehouseController {
 							@RequestParam("wh_type_id") int wh_type_id,
 							@RequestParam("wardId") String wardId,
 							@RequestParam("provinceId") int provinceId,
-							@RequestParam("districtId") int districtId) {
+							@RequestParam("districtId") int districtId, RedirectAttributes redirectAttributes) {
 		Warehouse wh = new Warehouse();
 		wh.setName(name);
 		wh.setAddress(address);
@@ -134,17 +132,25 @@ public class WarehouseController {
 		wh.setDistrict_Id(districtId);
 		
 		repwh.saveWh(wh);
+		redirectAttributes.addFlashAttribute("message", "✔ Warehouse added successfully!");
+		
 		return "redirect:showWarehouse";
 	}
 	
 	
 	// xóa kho đó 
 	@GetMapping("deleteWh")
-	public String deleteWh(@RequestParam String id) {
+	public String deleteWh(@RequestParam String id, @RequestParam int cp, RedirectAttributes redirectAttributes) {
 	    try {
 	        int idwh = Integer.parseInt(id);
 	        repwh.deleteWh(idwh);
-	        return "redirect:showWarehouse";
+			PageView pv = new PageView();
+	        int totalCount = repwh.countWh();
+	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
+	            cp = cp > 1 ? cp - 1 : 1;
+	        }
+			redirectAttributes.addFlashAttribute("message", "✔ Warehouse deleted successfully!");
+	        return "redirect:showWarehouse?cp=" + cp;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
 	        return "redirect:showWarehouse?error=InvalidID";
@@ -179,7 +185,7 @@ public class WarehouseController {
 							@RequestParam("ward_Id") String ward_id,
 							@RequestParam("province_Id") int province_id,
 							@RequestParam("district_Id") int district_Id,
-							@RequestParam("id") int id) {
+							@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
 		Warehouse wh = new Warehouse();
 		wh.setName(name);
 		wh.setAddress(address);
@@ -189,6 +195,7 @@ public class WarehouseController {
 		wh.setDistrict_Id(district_Id);
 		wh.setId(id);
 		repwh.updatewh(wh);
+		redirectAttributes.addFlashAttribute("message", "✔ Warehouse updated successfully!");
 		return "redirect:showWarehouse";
 	}
 	
@@ -234,32 +241,31 @@ public class WarehouseController {
 	    
 	    repwh.addEw(ew);
 	    
-	    redirectAttributes.addFlashAttribute("successMessage", "Employee assigned successfully!");
+	    redirectAttributes.addFlashAttribute("message", "Employee assigned successfully!");
 	    
 	    return "redirect:/admin/warehouse/showWarehouseDetails?id=" + warehouse_id;
 	}
 	
 	// sửa lại quản lý kho đã thêm
-	@GetMapping("showUpdateWarehouseManagementLevel")
-	public String showUpdateWarehouseManagementLevel(Model model, @RequestParam String iddtwh, @RequestParam(required = false) String idup) {
+	@GetMapping("deleteManager")
+	public String deleteManager(@RequestParam("idew") String idew, RedirectAttributes redirectAttributes) {
 	    try {
-	        int idwh = Integer.parseInt(iddtwh);
-	        int idupp = Integer.parseInt(idup);
-	        Warehouse wh = repwh.findId(idwh);
-	        Employee_warehouse ew = repwh.findByEmpwhId(idupp);;
-	        List<Employee> availableEmployees = repwh.showEmpAll();
+	        int ideww = Integer.parseInt(idew);
+	        boolean isDeleted = repwh.deleteEw(ideww);
+	        if (isDeleted) {
+	            redirectAttributes.addFlashAttribute("message", "✔ Manager deleted successfully!");
+	        } else {
+	            redirectAttributes.addFlashAttribute("error", "Failed to delete manager");
+	        }
+	        return "redirect:/admin/warehouse/showEmpWare";
 
-	        model.addAttribute("employees", availableEmployees);
-	        model.addAttribute("warehouse", wh);
-	        model.addAttribute("empwh", ew); 
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
-	        model.addAttribute("error", "Warehouse ID is invalid.");
-	        return "errorPage";
+	        redirectAttributes.addFlashAttribute("error", "Invalid Manager or Warehouse ID");
+	        return "redirect:/admin/warehouse/showWarehouse";
 	    }
-	    
-	    return Views.EMPLOYEE_WAREHOUSE_SHOWUPDATEWAREHOUSEMANAGEMENTLEVEL;
 	}
+
 
 
 }

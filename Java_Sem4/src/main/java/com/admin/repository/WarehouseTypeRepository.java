@@ -104,12 +104,21 @@ public class WarehouseTypeRepository {
 	        return false;
 	    }
 	}
+	public int countWhT() {
+		try {
+			String sql = "SELECT COUNT(*) FROM Warehouse_type";
+			return dbtype.queryForObject(sql, Integer.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	public List<Warehouse> findByTypeId(int typeId) {
 	    try {
 	        String sql = "SELECT w.*, t.name AS type_name " +
 	                     "FROM " + Views.TBL_WAREHOUSE + " w " +
-	                     "LEFT JOIN " + Views.TBL_WAREHOUSE_TYPE + " t ON w.id = t.Id " +
-	                     "WHERE w.id = ?";
+	                     "LEFT JOIN " + Views.TBL_WAREHOUSE_TYPE + " t ON w.wh_type_id = t.id " +
+	                     "WHERE w.wh_type_id = ?";
 
 	        return dbtype.query(sql, (rs, rowNum) -> {
 	            Warehouse warehouse = new Warehouse();

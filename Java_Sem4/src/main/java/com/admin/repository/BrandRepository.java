@@ -93,6 +93,16 @@ public class BrandRepository {
 			return false;
 		}
 	}
+	public int countBrand() {
+		try {
+			String sql = "SELECT COUNT(*) FROM Brand";
+		    return dbbr.queryForObject(sql, Integer.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	    
+	}
 	public boolean updateBr(Brand br) {
 		try {
 			String sql = "UPDATE Brand SET Name = ? WHERE Id = ?";

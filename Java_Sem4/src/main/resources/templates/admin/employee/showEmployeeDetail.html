@@ -1,52 +1,71 @@
 
-<body xmlns:th="http://www.thymeleaf.org" lang="en" >
-<div th:replace="admin/layout/header_admin"></div>
-<div class="content-wrapper" style="min-height: 1302.4px;">
-<section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Employee</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Details Employee</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </section>
-        <section class="content-header">
-      <div class="container-fluid">
-	<div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Details Employee</h3>
-              </div>
-              <form th:object="${employee}">
-			    <div class="card-body row">
-			    	<div class="form-group col-md-6">	
-			    		<label for="title">Code Employee Id</label>
-			            <input type="text" id="id" disabled readonly th:value="${employee.id}" class="form-control">
-			        </div>
-			        <div class="form-group col-md-6">
-			          	<label for="title">First Name</label>
-			            <input type="text" id="proName" disabled readonly th:value="${employee.first_name}" class="form-control">
-			        </div>
-					<div class="form-group col-md-6">
-					    <label for="title">Last Name</label>
-					    <input type="text" id="price" disabled readonly th:value="${employee.last_name}" class="form-control">
+<body xmlns:th="http://www.thymeleaf.org" lang="en">
+	<div th:replace="admin/layout/header_admin"></div>
+	<div class="content-wrapper" style="min-height: 1302.4px;">
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Employee</h1>
 					</div>
-					<div class="form-group col-md-6">
-					    <label for="phone">Phone</label>
-							<input type="text" disabled readonly th:value="${employee.phone}" class="form-control">
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item"><a href="#">Home</a></li>
+							<li class="breadcrumb-item active">Details Employee</li>
+						</ol>
 					</div>
-			        <div class="form-group col-12 ">
-					    <label for="exampleInputEmail1">Role</label>
-					    <input class="form-control" disabled readonly th:value="${employee.role_name}">
+				</div>
+			</div>
+		</section>
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">Details Employee</h3>
+							</div>
+							<form th:object="${employee}">
+								<div class="card-body row">
+									<div class="form-group col-md-6">
+										<label for="title">Code Employee Id</label> <input type="text"
+											id="id" disabled readonly th:value="${employee.id}"
+											class="form-control">
+									</div>
+									<div class="form-group col-md-6">
+										<label for="title">First Name</label> <input type="text"
+											id="proName" disabled readonly
+											th:value="${employee.first_name}" class="form-control">
+									</div>
+									<div class="form-group col-md-6">
+										<label for="title">Last Name</label> <input type="text"
+											id="price" disabled readonly th:value="${employee.last_name}"
+											class="form-control">
+									</div>
+									<div class="form-group col-md-6">
+										<label for="phone">Phone</label> <input type="text" disabled
+											readonly th:value="${employee.phone}" class="form-control">
+									</div>
+									<div class="form-group col-12 ">
+										<label for="exampleInputEmail1">Role</label> <input
+											class="form-control" disabled readonly
+											th:value="${employee.role_name}">
+									</div>
+
+								</div>
+
+								<div class="card-footer">
+									<a th:href="@{/admin/employee/showEmp}" class="btn btn-danger">Back
+										to List</a> <a
+										th:href="@{/admin/employee/showUpdateEmployee(id=${employee.id})}"
+										class="btn btn-success">Update</a> <a
+										th:href="@{deleteEmployee(id=${employee.id})}"
+										class="btn btn-danger" onclick="return confirmDeleteEmp();">Delete</a>
+								</div>
+							</form>
+						</div>
 					</div>
+<<<<<<< HEAD
 					
 			    </div>
 			    
@@ -100,5 +119,14 @@
         <div th:replace="admin/layout/footer_admin"></div>
           <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
             <script th:src="@{/js/showEmployee.js}"></script>
+=======
+				</div>
+			</div>
+		</section>
+	</div>
+	<div th:replace="admin/layout/footer_admin"></div>
+	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+	<script th:src="@{/js/showEmployee.js}"></script>
+>>>>>>> trongdev
 </body>
 

@@ -1,11 +1,11 @@
-
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
 <link rel="stylesheet" th:href="@{/css/showDetailProduct.css}">
-<link rel="stylesheet" th:href="@{/css/Conversionzz.css.css}">
+<link rel="stylesheet" th:href="@{/css/Conversionzz.css}">
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 	rel="stylesheet">
-
+</head>
 <body>
 	<div th:replace="admin/layout/header_admin"></div>
 	<div class="content-wrapper" style="min-height: 1302.4px;">
@@ -29,17 +29,22 @@
 				<div class="row">
 					<div class="col-md-12">
 						<div class="card">
+							<div>
+								<p th:if="${message}" th:text="${message}"
+									class="custom-alert success"></p>
+								<p th:if="${error}" th:text="${error}"
+									class="custom-alert error"></p>
+							</div>
 							<div class="card-header p-2">
 								<ul class="nav nav-pills">
-
 									<li class="nav-item"><a class="nav-link active"
 										href="#productimage-tab" data-toggle="pill">Product image
 											details</a></li>
 									<li class="nav-item"><a class="nav-link"
 										href="#productdetails-tab" data-toggle="pill">Product
 											details</a></li>
-									<li class="nav-item"><a class="nav-link "
-										href="#conversion" data-toggle="pill"> Conversion</a></li>
+									<li class="nav-item"><a class="nav-link"
+										href="#conversion" data-toggle="pill">Conversion</a></li>
 									<li class="nav-item"><a class="nav-link"
 										href="#productSpecifications-tab" data-toggle="pill">Product
 											specifications</a></li>
@@ -50,12 +55,11 @@
 							</div>
 							<div class="card-body">
 								<div class="tab-content">
-
-
+									<!-- Product Image Tab -->
 									<div class="tab-pane active" id="productimage-tab">
 										<div>
 											<a th:href="@{/admin/product/showAddPImg(id=${product.id})}"
-												class="btn btn-primary" id="addProductBtn">Add Product</a>
+												class="btn btn-primary" id="addProductBtn">Add Images Details</a>
 											<button class="btn btn-danger" id="deleteSelectedBtn"
 												onclick="deleteSelectedImg()" style="display: none;">Delete
 												Selected</button>
@@ -90,11 +94,10 @@
 										</div>
 									</div>
 
+									<!-- Product Details Tab -->
 									<div class="tab-pane" id="productdetails-tab">
-										<!-- Post -->
 										<form th:object="${product}">
 											<div class="card-body row">
-
 												<div class="form-group col-md-2">
 													<label for="exampleInputPassword1">Image</label> <img
 														th:if="${product.img != null}"
@@ -102,8 +105,7 @@
 														style="width: 55%;">
 												</div>
 												<div class="form-group col-md-4"></div>
-
-												<div class="form-group col-6 ">
+												<div class="form-group col-6">
 													<label for="exampleInputEmail1">Status</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.status}">
@@ -118,27 +120,23 @@
 														id="proName" disabled readonly
 														th:value="${product.product_name}" class="form-control">
 												</div>
-
 												<div class="form-group col-md-6">
 													<label for="phone">Warranty period</label> <input
 														type="text" disabled readonly
 														th:value="${product.warranty_period} + ' ' + months"
 														class="form-control">
 												</div>
-
 												<div class="form-group col-6">
 													<label for="conversion">Unit</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.unit_name}">
 												</div>
-
-												<div class="form-group col-6 ">
+												<div class="form-group col-6">
 													<label for="exampleInputEmail1">Brand</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.brandName}">
 												</div>
-
-												<div class="form-group col-6 ">
+												<div class="form-group col-6">
 													<label for="exampleInputEmail1">Category</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.categoryName}">
@@ -153,20 +151,17 @@
 														class="form-control" disabled readonly
 														th:value="${product.length} + ' ' + (cm)">
 												</div>
-
-												<div class="form-group col-3 ">
+												<div class="form-group col-3">
 													<label for="exampleInputEmail1">Height</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.height} + ' ' + (cm)">
 												</div>
-
-												<div class="form-group col-3 ">
+												<div class="form-group col-3">
 													<label for="exampleInputEmail1">Width</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.width} + ' ' + (cm)">
 												</div>
-
-												<div class="form-group col-3 ">
+												<div class="form-group col-3">
 													<label for="exampleInputEmail1">Weight</label> <input
 														class="form-control" disabled readonly
 														th:value="${product.weight} + ' ' + (g)">
@@ -181,16 +176,12 @@
 													class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
 											</div>
 										</form>
-
-										<!-- /.post -->
 									</div>
 
-									<!-- conversion -->
+									<!-- Conversion Tab -->
 									<div class="tab-pane" id="conversion">
-										<!-- Post -->
 										<div class="infopro"
 											style="display: flex; justify-content: space-between; align-items: flex-start; gap: 100px;">
-											<!-- Khối Product Information -->
 											<div>
 												<div class="card"
 													style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
@@ -199,13 +190,11 @@
 														Product Information</div>
 													<div class="card-body"
 														style="display: flex; align-items: center; padding: 20px; gap: 30px;">
-														<!-- Hình ảnh -->
 														<div style="flex: 0 0 120px; text-align: center;">
 															<img th:if="${product.img != null}"
 																th:src="@{/uploads/{imageName}(imageName=${product.img})}"
 																style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
 														</div>
-														<!-- Thông tin sản phẩm -->
 														<div
 															style="flex: 1; display: flex; flex-wrap: wrap; gap: 20px;">
 															<div style="flex: 1; min-width: 150px;">
@@ -234,10 +223,9 @@
 												</div>
 											</div>
 
-											<!-- Khối Conversion -->
 											<div class="container-fluid">
 												<div class="Conversion card"
-													style="flex: 1; margin-right: 70px; margin-bottom: 26px; max-width: 100%; padding: 0; width: 100%; box-sizing: border-box;">
+													style="flex: 1; margin-right: 70px; margin-bottom: 26px; max-width: 100%; padding: 0; box-sizing: border-box;">
 													<div class="card-header"
 														style="background-color: #1E90FF; font-size: 18px;">Add
 														Conversion</div>
@@ -276,10 +264,9 @@
 													</form>
 												</div>
 											</div>
-
 										</div>
 
-										<!-- Bảng Conversion -->
+										<!-- Conversion Table -->
 										<div style="flex: 1; overflow-y: auto; margin-top: 20px;">
 											<div class="card" style="width: 100%;">
 												<div class="card-header" style="background-color: #1E90FF;">Conversions</div>
@@ -305,9 +292,8 @@
 										</div>
 									</div>
 
-									<!-- end conversion -->
-
-									<div class="tab-pane " id="productSpecifications-tab">
+									<!-- Product Specifications Tab -->
+									<div class="tab-pane" id="productSpecifications-tab">
 										<table class="table table-hover text-nowrap">
 											<thead>
 												<tr class="text-center">
@@ -321,9 +307,8 @@
 											</thead>
 											<tbody>
 												<tr th:if="${#lists.isEmpty(ps)}" class="text-center">
-													<td colspan="5">No units found</td>
+													<td colspan="4">No units found</td>
 												</tr>
-
 												<tr th:each="item, iterStat : ${ps}" class="text-center">
 													<td th:text="${iterStat.index + 1}"></td>
 													<td><span th:text="${item.name_spe}"></span></td>
@@ -342,9 +327,8 @@
 												class="btn btn-danger">Back to List Product</a>
 										</div>
 									</div>
-									<!-- /.tab-pane -->
 
-									<!-- .change price -->
+									<!-- Change Price Tab -->
 									<div class="tab-pane" id="changeprice-tab">
 										<table class="table table-hover text-nowrap">
 											<thead>
@@ -358,21 +342,18 @@
 											<tbody>
 												<tr th:if="${#lists.isEmpty(priceChanges)}"
 													class="text-center">
-													<td colspan="5">No price changes found</td>
+													<td colspan="4">No price changes found</td>
 												</tr>
 												<tr th:each="item, iterStat : ${priceChanges}"
 													class="text-center">
 													<td th:text="${iterStat.index + 1}"></td>
-													<td>$ <span th:text="${item.price}"></span>
-													</td>
+													<td>$ <span th:text="${item.price}"></span></td>
 													<td><span
-														th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span>
-													</td>
+														th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span></td>
 													<td><span th:if="${item.date_end != null}"
 														th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
 														<span th:if="${item.date_end == null}" th:text="'Present'"></span>
 													</td>
-
 												</tr>
 											</tbody>
 										</table>
@@ -381,17 +362,15 @@
 												class="btn btn-danger">Back to List Product</a>
 										</div>
 									</div>
-									<!-- /.change price -->
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
 		</section>
-
-
+		<div id="toast-message" style="display: none;"
+			class="alert alert-success"></div>
 	</div>
 	<div th:replace="admin/layout/footer_admin"></div>
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -399,5 +378,3 @@
 	<script th:src="@{/js/conversionbuid.js}"></script>
 </body>
 </html>
-
-

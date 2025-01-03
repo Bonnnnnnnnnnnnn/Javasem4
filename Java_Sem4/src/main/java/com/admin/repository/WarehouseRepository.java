@@ -124,7 +124,16 @@ public class WarehouseRepository {
 			return false;
 		}
 	}
-
+	
+	public int countWh() {
+		try {
+			String sql = "SELECT COUNT(*) FROM Warehouse";
+			return dbwh.queryForObject(sql, Integer.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	public Warehouse findId(int id) {
 		try {
 			String sql = """
@@ -262,7 +271,6 @@ public class WarehouseRepository {
 	        return null;
 	    }
 	}
-
 	public boolean addEw(Employee_warehouse ew) {
 		try {
 			String sql = "INSERT INTO employee_warehouse (Employee_Id,Warehouse_Id) VALUES (?,?)";
@@ -273,15 +281,23 @@ public class WarehouseRepository {
 			return false;
 		}
 	}
-
-	public boolean updateEw(Employee_warehouse ew) {
-		try {
-			String sql = "UPDATE employee_warehouse SET Employee_Id=?,Warehouse_Id=? WHERE Id =?";
-			int row = dbwh.update(sql, ew.getEmployee_id(), ew.getWarehouse_id(), ew.getId());
-			return row > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public boolean deleteEw(int id) {
+	    try {
+	        String sql = "DELETE FROM employee_warehouse WHERE Id = ?";
+	        Object[] params = {id};
+	        int[] types = {Types.INTEGER};
+	        int row = dbwh.update(sql, params, types);
+	        if (row > 0) {
+	            System.out.println("Delete successful");
+	            return true;
+	        } else {
+	            System.out.println("Failed to delete: No rows affected");
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 }

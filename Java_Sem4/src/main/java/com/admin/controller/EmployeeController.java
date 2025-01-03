@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.EmployeeRepository;
 import com.admin.repository.SalaryRepository;
@@ -77,7 +78,7 @@ public class EmployeeController {
 					    		@RequestParam String laname,
 					    		@RequestParam String pwd,
 					    		@RequestParam String phone,
-					    		@RequestParam int roleId) {
+					    		@RequestParam int roleId, RedirectAttributes redirectAttributes) {
         Employee emp = new Employee();
         emp.setFirst_name(finame);
         emp.setLast_name(laname);
@@ -85,6 +86,7 @@ public class EmployeeController {
         emp.setPhone(phone);
         emp.setRole_id(roleId);
         emprep.saveEmp(emp);
+        redirectAttributes.addFlashAttribute("message", "✔ Employee added successfully !");
         return "redirect:/admin/employee/showEmp";
     }
 	
@@ -114,7 +116,7 @@ public class EmployeeController {
 	                        @RequestParam("last_name") String laname,
 	                        @RequestParam("password") String pwd,
 	                        @RequestParam("phone") String phone,
-	                        @RequestParam("role_id") int roleId) {
+	                        @RequestParam("role_id") int roleId, RedirectAttributes redirectAttributes) {
 	    Employee emp = new Employee();
 	    emp.setId(id);
 	    emp.setFirst_name(finame);
@@ -123,16 +125,23 @@ public class EmployeeController {
 	    emp.setPhone(phone);
 	    emp.setRole_id(roleId);
 	    emprep.updateEmp(emp);
+	    redirectAttributes.addFlashAttribute("message", "✔ Employee updated successfully !");
 	    return "redirect:/admin/employee/showEmp";
 	}
 	
 	// xóa nhân viên 
 	@GetMapping("deleteEmployee")
-	public String deleteEmployee(@RequestParam("id") String id) {
+	public String deleteEmployee(@RequestParam("id") String id,@RequestParam int cp, RedirectAttributes redirectAttributes) {
 	    try {
 	        int ide = Integer.parseInt(id);
 	        emprep.deleteEmployee(ide);
-	        return "redirect:/admin/employee/showEmp";
+			PageView pv = new PageView();
+	        int totalCount = emprep.countEmp();
+	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
+	            cp = cp > 1 ? cp - 1 : 1;
+	        }
+	        redirectAttributes.addFlashAttribute("message", "✔ Employee deleted successfully !");
+	        return "redirect:/admin/employee/showEmp?cp=" + cp;
 	    } catch (NumberFormatException e) {
 	        e.printStackTrace();
 	        return "redirect:/error";

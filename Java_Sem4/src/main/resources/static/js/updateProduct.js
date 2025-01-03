@@ -57,4 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// không được nhập số âm
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('keydown', function(event) {
+        if (event.key === '-' || event.key === 'e' || event.key === 'E') {
+            event.preventDefault();
+        }
+    });
+});
 

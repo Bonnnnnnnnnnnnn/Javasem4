@@ -26,6 +26,12 @@
         <div class="row">
           <div class="col-12">
             <div class="card">
+	        	<div id="toast-message" style="display: none;"
+					class="alert alert-success"></div>
+				<div>
+					<p th:if="${message}" th:text="${message}" class="custom-alert success"></p>
+					<p th:if="${error}" th:text="${error}" class="custom-alert error"></p>
+				</div>
               <div class="card-header">
                 <h3 class="card-title">Warehouse Table</h3>
 				<div class="input-group input-group-sm" style="width: 80%; margin-left: 15%;">
@@ -55,7 +61,7 @@
 				          <td style="cursor: pointer;" th:onclick="'goToDetail(' + ${item.id} + ')'"><span th:text="${item.typeName}"></span></td>
 				          <td>
 				              <a th:href="@{showUpdateWarehouse(id=${item.id})}" class="btn btn-warning">Update</a>
-						    <a th:href="@{deleteWh(id=${item.id})}"
+						    <a th:href="@{deleteWh(id=${item.id}, cp=${pv.Page_current})}"
 						       th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
 						       th:attr="disabled=${item.relatedCount > 0}"
 						       th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
