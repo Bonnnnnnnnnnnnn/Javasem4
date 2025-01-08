@@ -83,12 +83,12 @@
 														</div>
 
 														<div class="form-group col-md-2">
-															<label for="wh_price">Warehouse Price</label> <input
+															<label for="wh_price">Import price (Roll,Box)</label> <input
 																type="number" name="wh_price" class="form-control"
 																placeholder="Enter Warehouse Price" step="0.01" required>
 														</div>
 
-														<input type="text" name="statusDetails" value="Active" required>
+														<input type="hidden" name="statusDetails" value="Active" required>
 														<!-- Dropdown for Product -->
 														<div class="form-group col-md-2">
 															<label for="product_id">Product</label> <select
@@ -125,7 +125,7 @@
 												<a
 													th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt}"
 													class="btn btn-danger">Back to List</a>
-												<button type="submit" class="btn btn-primary">Submit</button>
+												<button type="submit" class="btn btn-primary">Add warehouse receipt</button>
 												<button type="button" class="btn btn-success"
 													onclick="addDetailGroup()">Add More Details</button>
 											</div>

@@ -68,7 +68,7 @@ public class WhReceiptAndDetailsController {
 
 		// thêm phiếu nhập kho và chi tiết
 		@GetMapping("showAddWhReceipt")
-		public String showAddWhReceipt(Model model, HttpSession session) {
+		public String showAddWhReceipt(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
 		        Integer warehouseId = (Integer) session.getAttribute("warehouseId"); 
@@ -77,8 +77,8 @@ public class WhReceiptAndDetailsController {
 		            if (warehouseId != null) {
 		                session.setAttribute("warehouseId", warehouseId);
 		            } else {
-		                model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
-		                return "error";
+		                redirectAttributes.addFlashAttribute("error", "You have not been assigned to manage any warehouse yet!");
+		                return "redirect:showWhReceipt";
 		            }
 		        }
 		        model.addAttribute("whId", warehouseId);
@@ -91,7 +91,6 @@ public class WhReceiptAndDetailsController {
 		        return "error";
 		    }
 		}
-
 
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(

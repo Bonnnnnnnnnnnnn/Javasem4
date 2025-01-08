@@ -17,8 +17,22 @@ public class Employee_mapper implements RowMapper<Employee>{
 		item.setPassword(rs.getString(Views.COL_EMPLOYEE_PASSWORD));
 		item.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
 		item.setRole_id(rs.getInt(Views.COL_EMPLOYEE_ROLE_ID));
-//		item.setRole_name(rs.getString("role_name"));
+		 try {
+	            if (hasColumn(rs, "role_name")) {
+	                item.setRole_name(rs.getString("role_name"));
+	            }
+	        } catch (SQLException e) {
+	        	e.printStackTrace();
+	        }
 		return item;
 	}
-
+	
+	 private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+	        try {
+	            rs.findColumn(columnName);
+	            return true;
+	        } catch (SQLException e) {
+	            return false;
+	        }
+	    }
 }

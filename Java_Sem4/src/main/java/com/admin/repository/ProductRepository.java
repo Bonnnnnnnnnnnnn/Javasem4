@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -456,16 +458,28 @@ public class ProductRepository {
 
 	// thêm product_spe
 	public boolean addProPs(Product_specifications ps) {
-		try {
-			String sql = "INSERT INTO product_specifications (Product_id,Name_spe,Des_spe) VALUES (?, ?, ?)";
-			int rowsAffected = dbpro.update(sql, ps.getProduct_id(), ps.getName_spe(), ps.getDes_spe());
+	    try {
+	        String sql = "INSERT INTO product_specifications (Product_id, Name_spe, Des_spe) VALUES (?, ?, ?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-			return rowsAffected > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	        dbpro.update(connection -> {
+	            PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            pstmt.setInt(1, ps.getProduct_id());
+	            pstmt.setString(2, ps.getName_spe());
+	            pstmt.setString(3, ps.getDes_spe());
+	            return pstmt;
+	        }, keyHolder);
+	        if (keyHolder.getKey() != null) {
+	            ps.setId(keyHolder.getKey().intValue());
+	        }
+
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 
 	// Product_img
 	// ==========================================================================

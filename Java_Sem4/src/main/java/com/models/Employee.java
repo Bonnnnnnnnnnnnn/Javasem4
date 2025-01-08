@@ -7,7 +7,9 @@ public class Employee {
 	private String Phone;
 	private String Password;
 	private int Role_id;
+	private int RelatedCount;
 	private String Role_name;
+	private String warehouse_name;
 	public Employee(int id, String first_name, String last_name, String phone, String password,
 			int role_id) {
 		super();
@@ -61,6 +63,18 @@ public class Employee {
 	}
 	public void setRole_name(String role_name) {
 		Role_name = role_name;
+	}
+	public int getRelatedCount() {
+		return RelatedCount;
+	}
+	public void setRelatedCount(int relatedCount) {
+		RelatedCount = relatedCount;
+	}
+	public String getWarehouse_name() {
+		return warehouse_name;
+	}
+	public void setWarehouse_name(String warehouse_name) {
+		this.warehouse_name = warehouse_name;
 	}
 	
 	

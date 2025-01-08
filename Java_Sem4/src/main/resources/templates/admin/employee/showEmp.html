@@ -1,6 +1,8 @@
 
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <link rel="stylesheet" th:href="@{/css/pagination.css}">
-<body xmlns:th="http://www.thymeleaf.org" lang="en">
+<body >
 	<div th:replace="admin/layout/header_admin"></div>
 	<div class="content-wrapper" style="min-height: 1302.4px;">
 		<!-- Content Header (Page header) -->
@@ -49,7 +51,7 @@
 										<tr class="text-center">
 											<th>STT</th>
 											<th>FullName</th>
-											<th>Phone</th>
+											<th>Manager</th>
 											<th><a th:href="@{/admin/employee/showRegister}"
 												class="btn btn-primary">Register Employee</a></th>
 										</tr>
@@ -67,12 +69,15 @@
 											</td>
 											<td style="cursor: pointer;"
 												th:onclick="'goToDetailEmploy(' + ${item.id} + ')'"><span
-												th:text="${item.phone}"></span></td>
+												th:text="${item.role_name}"></span></td>
 											<td><a th:href="@{showUpdateEmployee(id=${item.id})}"
 												class="btn btn-warning">Update</a> <a
 												th:href="@{deleteEmployee(id=${item.id}, cp=${pv.Page_current})}"
-												onclick="return confirmDeleteEmp();" class="btn btn-danger">Delete</a>
-											</td>
+												th:classappend="${item.relatedCount > 0} ? 'disabled btn-secondary' : 'btn-danger'"
+												th:attr="disabled=${item.relatedCount > 0}"
+												th:styleappend="${item.relatedCount > 0} ? 'pointer-events: none; opacity: 0.6; cursor: not-allowed;' : ''"
+												th:onclick="${item.relatedCount > 0} ? 'return false;' : 'return confirmDeleteEmp();'"
+												class="btn btn-danger">Delete</a></td>
 										</tr>
 									</tbody>
 								</table>
@@ -111,4 +116,6 @@
 	<script th:src="@{/js/showEmployee.js}"></script>
 	<div th:replace="admin/layout/footer_admin"></div>
 </body>
+</html>
+
 

@@ -31,6 +31,9 @@
 								<p th:if="${error}" th:text="${error}"
 									class="custom-alert error"></p>
 							</div>
+							<div>
+							    <span id="error-message" th:text="${error}" style="display:none;"></span>
+							</div>
 							<div class="card-header">
 								<div class="d-flex align-items-center">
 									<a

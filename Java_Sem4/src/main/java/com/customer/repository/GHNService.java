@@ -59,12 +59,6 @@ public class GHNService {
 	        
 	        if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<Province> provinces = response.getBody().getData();
-	            provinces.forEach(p -> {
-	                System.out.println("Province ID: " + p.getProvinceId());
-	                System.out.println("Province Name: " + p.getProvinceName());
-	                System.out.println("Province Code: " + p.getCode());
-	                System.out.println("----------------");
-	            });
 	            return provinces;
 	        }
 	        
@@ -98,12 +92,6 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<District> district = response.getBody().getData();
-	            district.forEach(p -> {
-	                System.out.println("district ID: " + p.getDistrictId());
-	                System.out.println("district Name: " + p.getDistrictName());
-	                System.out.println("district Code: " + p.getCode());
-	                System.out.println("----------------");
-	            });
 	            return district;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {
@@ -139,11 +127,6 @@ public class GHNService {
             );
             if (response.getBody() != null && response.getBody().getData() != null) {
 	            List<Ward> ward = response.getBody().getData();
-	            ward.forEach(p -> {
-	                System.out.println("Ward ID: " + p.getWardCode());
-	                System.out.println("Ward Name: " + p.getWardName());
-	                System.out.println("----------------");
-	            });
 	            return ward;
 	        }
             if (response.getBody() != null && response.getBody().getData() != null) {

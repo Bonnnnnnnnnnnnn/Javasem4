@@ -84,7 +84,7 @@
 										</div>
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
-												class="btn btn-danger">Back to List Product</a>
+												class="btn btn-danger">Back to list product</a>
 										</div>
 									</div>
 
@@ -172,7 +172,7 @@
 											</div>
 											<div class="card-footer">
 												<a th:href="@{/admin/product/showProduct}"
-													class="btn btn-danger">Back to List Product</a> <a
+													class="btn btn-danger">Back to list product</a> <a
 													th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
 													class="btn btn-success">Update</a>
 											</div>
@@ -198,7 +198,7 @@
 													<td colspan="5">No units found</td>
 												</tr>
 
-												<tr th:each="item, iterStat : ${ps}" class="text-center">
+												<tr th:each="item, iterStat : ${ps}" class="text-center" th:classappend="${item.id == newCategoryId} ? 'highlighted-row' : ''">
 													<td th:text="${iterStat.index + 1}"></td>
 													<td><span th:text="${item.name_spe}"></span></td>
 													<td><span th:text="${item.des_spe}"></span></td>
@@ -213,7 +213,7 @@
 										</table>
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
-												class="btn btn-danger">Back to List Product</a>
+												class="btn btn-danger">Back to list product</a>
 										</div>
 									</div>
 									<!-- /.tab-pane -->
@@ -250,7 +250,7 @@
 										</table>
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
-												class="btn btn-danger">Back to List Product</a>
+												class="btn btn-danger">Back to list product</a>
 										</div>
 									</div>
 									<!-- /.change price -->

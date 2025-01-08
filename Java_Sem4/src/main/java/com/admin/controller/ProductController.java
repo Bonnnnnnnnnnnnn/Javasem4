@@ -385,6 +385,7 @@ public class ProductController {
 		ps.setProduct_id(productId);
 
 		reppro.addProPs(ps);
+		redirectAttributes.addFlashAttribute("newPsId", ps.getId());
 		redirectAttributes.addFlashAttribute("message", "✔ Product specifications added successfully !");
 		return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
 	}

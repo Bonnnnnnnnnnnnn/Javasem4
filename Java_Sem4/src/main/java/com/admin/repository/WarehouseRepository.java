@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -71,13 +70,19 @@ public class WarehouseRepository {
 	}
 
 	public int countRelatedData(int warehouseId) {
+	    int countReceipts = 0;
+	    int countEmployees = 0;
 	    try {
-	        String sql = "SELECT COUNT(*) FROM Warehouse_receipt WHERE Wh_Id = ?";
-	        return dbwh.queryForObject(sql, Integer.class, warehouseId);
+	        String sqlReceipts = "SELECT COUNT(*) FROM Warehouse_receipt WHERE Wh_Id = ?";
+	        countReceipts = dbwh.queryForObject(sqlReceipts, Integer.class, warehouseId);
+
+	        String sqlEmployees = "SELECT COUNT(*) FROM employee_warehouse WHERE Warehouse_Id = ?";
+	        countEmployees = dbwh.queryForObject(sqlEmployees, Integer.class, warehouseId);
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return 0;
 	    }
+
+	    return countReceipts + countEmployees;
 	}
 
 	public List<Warehouse_type> findAllType(){
@@ -89,13 +94,14 @@ public class WarehouseRepository {
 			return Collections.emptyList();
 		}
 	}
-	public boolean saveWh(Warehouse wh) {
+	public boolean saveWh(Warehouse wh, int employeeId) {
 	    try {
-	        String sql = "INSERT INTO Warehouse (Name, Address, Wh_type_Id, Ward_id, Province_id, District_Id) VALUES (?, ?, ?, ?, ?, ?)";
-	        
+	        String sqlWarehouse = "INSERT INTO Warehouse (Name, Address, Wh_type_Id, Ward_id, Province_id, District_Id) VALUES (?, ?, ?, ?, ?, ?)";
+
 	        KeyHolder keyHolder = new GeneratedKeyHolder();
+
 	        int row = dbwh.update(connection -> {
-	            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            PreparedStatement ps = connection.prepareStatement(sqlWarehouse, Statement.RETURN_GENERATED_KEYS);
 	            ps.setString(1, wh.getName());
 	            ps.setString(2, wh.getAddress());
 	            ps.setInt(3, wh.getWh_type_id());
@@ -104,9 +110,13 @@ public class WarehouseRepository {
 	            ps.setInt(6, wh.getDistrict_Id());
 	            return ps;
 	        }, keyHolder);
+
 	        if (row > 0) {
-	            wh.setId(keyHolder.getKey().intValue());
-	            return true;
+	            int warehouseId = keyHolder.getKey().intValue();
+	            wh.setId(warehouseId);
+	            String sqlEmployeeWarehouse = "INSERT INTO employee_warehouse (Employee_Id, Warehouse_Id) VALUES (?, ?)";
+	            int employeeWarehouseRow = dbwh.update(sqlEmployeeWarehouse, employeeId, warehouseId);
+	            return employeeWarehouseRow > 0;
 	        } else {
 	            return false;
 	        }

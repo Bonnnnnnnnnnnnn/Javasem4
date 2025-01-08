@@ -30,34 +30,63 @@ public class EmployeeRepository {
     }
 	public List<Employee> findAll(PageView itemPage) {
 	    try {
-	    	String str_query = String.format(
-	    		    "SELECT e.Id, e.First_name, e.Last_name, e.Phone, e.Role_Id, e.Password, r.Name AS role_name " +
-	    		    "FROM %s e " +
-	    		    "INNER JOIN %s r ON e.%s = r.%s " +
-	    		    "WHERE e.%s <> 'admin' " +
-	    		    "ORDER BY e.%s DESC",
-	    		    Views.TBL_EMPLOYEE, Views.TBL_ROLE,
-	    		    Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
-	    		    Views.COL_EMPLOYEE_PHONE,
-	    		    Views.COL_EMPLOYEE_ID
-	    		);
+	        String str_query = String.format(
+	            "SELECT e.Id, e.First_name, e.Last_name, e.Phone, e.Role_Id, e.Password, r.Name AS role_name " +
+	            "FROM %s e " +
+	            "INNER JOIN %s r ON e.%s = r.%s " +
+	            "WHERE e.%s <> ? " +
+	            "ORDER BY e.%s DESC",
+	            Views.TBL_EMPLOYEE, Views.TBL_ROLE,
+	            Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
+	            Views.COL_EMPLOYEE_PHONE,
+	            Views.COL_EMPLOYEE_ID
+	        );
+
+	        String phoneCondition = "admin";
+
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
-	            int count = empdb.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_EMPLOYEE, Integer.class);
+	            int count = empdb.queryForObject(
+	                "SELECT COUNT(*) FROM " + Views.TBL_EMPLOYEE + " WHERE " + Views.COL_EMPLOYEE_PHONE + " <> ?",
+	                Integer.class, phoneCondition
+	            );
 	            int total_page = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(total_page);
 
-	            return empdb.query(str_query + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
-	                    new Employee_mapper(),
-	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
-	                    itemPage.getPage_size());
+	            List<Employee> employees = empdb.query(
+	                str_query + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+	                new Employee_mapper(),
+	                phoneCondition,
+	                (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
+	                itemPage.getPage_size()
+	            );
+
+	            for (Employee employee : employees) {
+	                employee.setRelatedCount(countEmployeeWarehouse(employee.getId()));
+	            }
+	            return employees;
 	        } else {
-	            return empdb.query(str_query, new Employee_mapper());
+	            List<Employee> employees = empdb.query(str_query, new Employee_mapper(), phoneCondition);
+	            for (Employee employee : employees) {
+	                employee.setRelatedCount(countEmployeeWarehouse(employee.getId()));
+	            }
+	            return employees;
 	        }
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching employees: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
 	}
+
+	public int countEmployeeWarehouse(int employeeId) {
+	    try {
+	        String sql = "SELECT COUNT(*) FROM employee_warehouse WHERE Employee_Id = ?";
+	        return empdb.queryForObject(sql, Integer.class, employeeId);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
+	}
+	
     public List<Role> findAllRole() {
     	try {
     		String sql = "SELECT * FROM Role WHERE id != 1";
@@ -70,10 +99,14 @@ public class EmployeeRepository {
     }
     public Employee findId(int id) {
         try {
-            String sql = "SELECT e.*, r.Name AS role_name " +
+            String sql = "SELECT e.*, r.Name AS role_name, " +
+                         "ew.Warehouse_Id, w.Name AS Warehouse_name " +
                          "FROM Employee e " +
                          "LEFT JOIN Role r ON e.Role_Id = r.Id " +
+                         "LEFT JOIN employee_warehouse ew ON e.Id = ew.Employee_Id " +
+                         "LEFT JOIN warehouse w ON ew.Warehouse_Id = w.Id " +
                          "WHERE e.Id = ?";
+
             return empdb.queryForObject(sql, (rs, rowNum) -> {
                 Employee emp = new Employee();
                 emp.setId(rs.getInt(Views.COL_EMPLOYEE_ID));
@@ -83,6 +116,7 @@ public class EmployeeRepository {
                 emp.setPassword(rs.getString(Views.COL_EMPLOYEE_PASSWORD));
                 emp.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
                 emp.setRole_name(rs.getString("role_name"));
+                emp.setWarehouse_name(rs.getString("Warehouse_name"));
                 return emp;
             }, id);
         } catch (DataAccessException e) {
