@@ -27,8 +27,10 @@
 							<div id="toast-message" style="display: none;"
 								class="alert alert-success"></div>
 							<div>
-								<p th:if="${message}" th:text="${message}" class="custom-alert success"></p>
-								<p th:if="${error}" th:text="${error}" class="custom-alert error"></p>
+								<p th:if="${message}" th:text="${message}"
+									class="custom-alert success"></p>
+								<p th:if="${error}" th:text="${error}"
+									class="custom-alert error"></p>
 							</div>
 							<div class="card-header">
 								<h3 class="card-title">Product Table</h3>
@@ -57,7 +59,8 @@
 										<tr th:if="${#lists.isEmpty(products)}" class="text-center">
 											<td colspan="10">No positions found</td>
 										</tr>
-										<tr th:each="item ,iterStat: ${products}" class="text-center">
+										<tr th:each="item, iterStat: ${products}" class="text-center"
+											th:classappend="${item.id == newProductId} ? 'highlighted-row' : ''">
 											<td
 												th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"
 												style="cursor: pointer;"
@@ -74,21 +77,21 @@
 												th:onclick="'goToDetail(' + ${item.id} + ')'"><span
 												th:text="${#numbers.formatCurrency(item.price)}"></span></td>
 											<td style="cursor: pointer;"
-												th:onclick="'goToDetail(' + ${item.id} + ')'"><span
-												th:text="${item.status}"></span></td>
+												th:attr="data-id=${item.id}, data-status=${item.status}"
+												th:onclick="'updateProductStatus(this)'"><span
+												th:text="${item.status}" th:id="'status-' + ${item.id}"></span>
+											</td>
 
 											<td><a
 												th:href="@{/admin/product/showUpdateProduct(id=${item.id})}"
-												class="btn btn-warning">Update</a> 
-												 <a th:href="@{deleteProduct(id=${item.id}, fileName=${item.img}, cp=${pv.Page_current})}" 
-												   class="btn btn-danger" 
-												   th:classappend="${productReferences[item.id]} ? 'disabled' : ''" 
-												   th:attr="onclick=${productReferences[item.id]} ? null : 'return confirmDelete();'">
-												   Delete
-												</a>
-
-											</td>
+												class="btn btn-warning">Update</a> <a
+												th:href="@{deleteProduct(id=${item.id}, fileName=${item.img}, cp=${pv.Page_current})}"
+												class="btn btn-danger"
+												th:classappend="${productReferences[item.id]} ? 'disabled' : ''"
+												th:attr="onclick=${productReferences[item.id]} ? null : 'return confirmDelete();'">
+													Delete </a></td>
 										</tr>
+
 									</tbody>
 								</table>
 								<table style="margin-left: 42%">

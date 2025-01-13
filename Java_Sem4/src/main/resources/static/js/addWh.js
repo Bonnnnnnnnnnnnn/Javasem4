@@ -118,5 +118,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return str;
     }
 });
-
+document.addEventListener('DOMContentLoaded', function () {
+       const form = document.getElementById('warehouseForm');
+       const submitButton = document.getElementById('submitButton');
+       const checkFormValidity = () => {
+           submitButton.disabled = !form.checkValidity();
+       };
+       form.addEventListener('input', checkFormValidity);
+       form.addEventListener('change', checkFormValidity);
+       checkFormValidity();
+   });
 

@@ -175,6 +175,7 @@ public class ProductController {
 
 			reppro.saveProductWithDetails(prod, specifications, productImages, priceChangeDetail);
 
+			redirectAttributes.addFlashAttribute("newProductId", prod.getId());
 			redirectAttributes.addFlashAttribute("message", "✔ Product added successfully!");
 
 			return "redirect:/admin/product/showProduct";
@@ -216,6 +217,7 @@ public class ProductController {
 				model.addAttribute("error", "Product not found.");
 				return "redirect:showProduct";
 			}
+			System.out.println("Image: " + product.getImg());
 			model.addAttribute("product", product);
 			model.addAttribute("units", reppro.findAllUnit());
 			model.addAttribute("brands", reppro.findAllBrand());
@@ -229,10 +231,40 @@ public class ProductController {
 			return "redirect:showProduct";
 		}
 	}
+	
+	@PostMapping("/updateStatus")
+	@ResponseBody
+	public ResponseEntity<?> updateProductStatus(@RequestBody Map<String, Object> payload) {
+	    String idStr = (String) payload.get("id");
+	    String status = (String) payload.get("status");
+
+	    if (idStr == null || status == null) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product ID or Status is missing!");
+	    }
+
+	    try {
+	        int productId = Integer.parseInt(idStr);
+	        boolean updated = reppro.updateStatus(productId, status);
+	        
+	        if (updated) {
+	            return ResponseEntity.ok("Status updated successfully!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update status in the database!");
+	        }
+	    } catch (NumberFormatException e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid product ID format!");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating status: " + e.getMessage());
+	    }
+	}
+
+
+
 
 	@PostMapping("/updateProductAndPrice")
 	public String updateProductAndPrice(@RequestParam int id, @RequestParam String productName,
-			@RequestParam int categoryId, @RequestParam int brandId, @RequestParam int unitId,
+			@RequestParam("cate_id") int categoryId, @RequestParam("brand_id") int brandId, @RequestParam("unit_id") int unitId,
 			@RequestParam double price, @RequestParam String description, @RequestParam String status,
 			@RequestParam("warranty_period") int warrantyPeriod, @RequestParam int weight, @RequestParam int width,
 			@RequestParam int height, @RequestParam int length, @RequestParam("img") MultipartFile productImage,
@@ -391,6 +423,7 @@ public class ProductController {
 		ps.setProduct_id(productId);
 
 		reppro.addProPs(ps);
+		redirectAttributes.addFlashAttribute("newPsId", ps.getId());
 		redirectAttributes.addFlashAttribute("message", "✔ Product specifications added successfully !");
 		return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
 	}

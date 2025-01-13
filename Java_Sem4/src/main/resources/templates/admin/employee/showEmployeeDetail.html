@@ -28,11 +28,6 @@
 							<form th:object="${employee}">
 								<div class="card-body row">
 									<div class="form-group col-md-6">
-										<label for="title">Code Employee Id</label> <input type="text"
-											id="id" disabled readonly th:value="${employee.id}"
-											class="form-control">
-									</div>
-									<div class="form-group col-md-6">
 										<label for="title">First Name</label> <input type="text"
 											id="proName" disabled readonly
 											th:value="${employee.first_name}" class="form-control">
@@ -46,21 +41,34 @@
 										<label for="phone">Phone</label> <input type="text" disabled
 											readonly th:value="${employee.phone}" class="form-control">
 									</div>
-									<div class="form-group col-12 ">
+									<div class="form-group col-6">
 										<label for="exampleInputEmail1">Role</label> <input
 											class="form-control" disabled readonly
 											th:value="${employee.role_name}">
 									</div>
+									<!-- Cột Warehouse Name -->
+									<div class="form-group col-md-12"
+										th:if="${employee.role_name == 'warehouseManager'}">
+										<label for="warehouseName">Warehouse manager:</label>
+										<div class="d-flex align-items-center">
+											<input type="text" id="warehouseName" disabled readonly
+												th:value="${employee.warehouse_name != null ? employee.warehouse_name : 'This employee has not managed any warehouse yet.'}"
+												class="form-control me-2">
 
+											<a style="width: 100%; max-width: 150px;"
+												class="btn btn-primary"
+												th:href="@{/admin/warehouse/showWarehouse}"
+												th:if="${employee.warehouse_name == null}">Go add
+												warehouse </a>
+										</div>
+									</div>
 								</div>
 
 								<div class="card-footer">
 									<a th:href="@{/admin/employee/showEmp}" class="btn btn-danger">Back
-										to List</a> <a
+										to list employee</a> <a
 										th:href="@{/admin/employee/showUpdateEmployee(id=${employee.id})}"
-										class="btn btn-success">Update</a> <a
-										th:href="@{deleteEmployee(id=${employee.id})}"
-										class="btn btn-danger" onclick="return confirmDeleteEmp();">Delete</a>
+										class="btn btn-warning">Update employee</a>
 								</div>
 							</form>
 						</div>

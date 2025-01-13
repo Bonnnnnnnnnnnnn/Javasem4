@@ -480,7 +480,6 @@ public final class Views {
 
 	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
 	
-<<<<<<< HEAD
 	// Employee Warehouse
 	public static String EMPLOYEE_WAREHOUSE_MANAGER = "warehouseManager/employee/showEmployee";
 	public static String EMPLOYEE_BUSINESS_MANAGER = "businessManager/employee/showEmployee";
@@ -493,7 +492,7 @@ public final class Views {
 	public static String SHOW_ORDER_STATUS_WAITING = "warehouseManager/orderInfor/orderWaiting";
 
 
-=======
+
 	public static String PAGE_LISTCHAT_NOEM = "businessManager/chatsp/listchatnoem";
 	public static String PAGE_CHAT_EMPLOYEE= "businessManager/chatsp/chatsp";
 	public static String PAGE_LISTCHAT_EMID = "businessManager/chatsp/listchatbyemid";
@@ -514,5 +513,4 @@ public final class Views {
 	public static String COL_CHAT_MESSAGE_SENDER_TYPE = "Sender_Type";
 	public static String COL_CHAT_MESSAGE_IS_READ = "Is_Read";
 	
->>>>>>> thuan_dev
 }

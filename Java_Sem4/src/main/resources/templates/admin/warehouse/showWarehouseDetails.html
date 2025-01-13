@@ -83,7 +83,9 @@
 									</div>
 									<div class="card-footer">
 										<a th:href="@{/admin/warehouse/showWarehouse}"
-											class="btn btn-danger">Back to List</a>
+											class="btn btn-danger">Back to list warehouse</a> <a
+											th:href="@{showUpdateWarehouse(id=${warehouse.id})}"
+											class="btn btn-warning">Update Warehouse</a>
 									</div>
 
 								</div>

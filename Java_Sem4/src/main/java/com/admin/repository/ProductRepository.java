@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -161,10 +163,10 @@ public class ProductRepository {
 				pro.setCate_id(rs.getInt("Cate_id"));
 				pro.setUnit_id(rs.getInt("Unit_Id"));
 				pro.setProduct_name(rs.getString("Product_name"));
-				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION)); // Sử dụng hằng số
-				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG)); // Sử dụng hằng số
+				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));
+				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));
 				pro.setPrice(rs.getDouble("Price"));
-				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD)); // Sử dụng hằng số
+				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
 				pro.setBrandName(rs.getString("brand_name"));
 				pro.setCategoryName(rs.getString("category_name"));
 				pro.setStatus(rs.getString("Status"));
@@ -352,6 +354,17 @@ public class ProductRepository {
 			throw new RuntimeException("Update failed, transaction has been rolled back.");
 		}
 	}
+	public boolean updateStatus(int id, String status) {
+	    try {
+	        String sql = "UPDATE Product SET Status = ? WHERE Id = ?";
+	        int row = dbpro.update(sql, status, id);
+	        return row > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 
 	// product_specifications
 	// =========================================================
@@ -455,16 +468,28 @@ public class ProductRepository {
 
 	// thêm product_spe
 	public boolean addProPs(Product_specifications ps) {
-		try {
-			String sql = "INSERT INTO product_specifications (Product_id,Name_spe,Des_spe) VALUES (?, ?, ?)";
-			int rowsAffected = dbpro.update(sql, ps.getProduct_id(), ps.getName_spe(), ps.getDes_spe());
+	    try {
+	        String sql = "INSERT INTO product_specifications (Product_id, Name_spe, Des_spe) VALUES (?, ?, ?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-			return rowsAffected > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	        dbpro.update(connection -> {
+	            PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            pstmt.setInt(1, ps.getProduct_id());
+	            pstmt.setString(2, ps.getName_spe());
+	            pstmt.setString(3, ps.getDes_spe());
+	            return pstmt;
+	        }, keyHolder);
+	        if (keyHolder.getKey() != null) {
+	            ps.setId(keyHolder.getKey().intValue());
+	        }
+
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 
 	// Product_img
 	// ==========================================================================

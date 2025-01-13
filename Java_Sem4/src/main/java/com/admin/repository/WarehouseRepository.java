@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +11,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.models.Employee;
 import com.models.Employee_warehouse;
@@ -63,13 +67,19 @@ public class WarehouseRepository {
 	}
 
 	public int countRelatedData(int warehouseId) {
-		try {
-			String sql = "SELECT COUNT(*) FROM Warehouse_receipt WHERE Wh_Id = ?";
-			return dbwh.queryForObject(sql, Integer.class, warehouseId);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
+	    int countReceipts = 0;
+	    int countEmployees = 0;
+	    try {
+	        String sqlReceipts = "SELECT COUNT(*) FROM Warehouse_receipt WHERE Wh_Id = ?";
+	        countReceipts = dbwh.queryForObject(sqlReceipts, Integer.class, warehouseId);
+
+	        String sqlEmployees = "SELECT COUNT(*) FROM employee_warehouse WHERE Warehouse_Id = ?";
+	        countEmployees = dbwh.queryForObject(sqlEmployees, Integer.class, warehouseId);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return countReceipts + countEmployees;
 	}
 
 	public List<Warehouse_type> findAllType() {
@@ -81,24 +91,43 @@ public class WarehouseRepository {
 			return Collections.emptyList();
 		}
 	}
+	public boolean saveWh(Warehouse wh, int employeeId) {
+	    try {
+	        String sqlWarehouse = "INSERT INTO Warehouse (Name, Address, Wh_type_Id, Ward_id, Province_id, District_Id) VALUES (?, ?, ?, ?, ?, ?)";
 
-	public boolean saveWh(Warehouse wh) {
-		try {
-			String sql = "INSERT INTO Warehouse (Name,Address,Wh_type_Id,Ward_id,Province_id,District_Id) VALUES (?,?,?,?,?,?)";
-			int row = dbwh.update(sql, wh.getName(), wh.getAddress(), wh.getWh_type_id(), wh.getWard_Id(),
-					wh.getProvince_Id(), wh.getDistrict_Id());
-			return row > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+	        int row = dbwh.update(connection -> {
+	            PreparedStatement ps = connection.prepareStatement(sqlWarehouse, Statement.RETURN_GENERATED_KEYS);
+	            ps.setString(1, wh.getName());
+	            ps.setString(2, wh.getAddress());
+	            ps.setInt(3, wh.getWh_type_id());
+	            ps.setString(4, wh.getWard_Id());
+	            ps.setInt(5, wh.getProvince_Id());
+	            ps.setInt(6, wh.getDistrict_Id());
+	            return ps;
+	        }, keyHolder);
+
+	        if (row > 0) {
+	            int warehouseId = keyHolder.getKey().intValue();
+	            wh.setId(warehouseId);
+	            String sqlEmployeeWarehouse = "INSERT INTO employee_warehouse (Employee_Id, Warehouse_Id) VALUES (?, ?)";
+	            int employeeWarehouseRow = dbwh.update(sqlEmployeeWarehouse, employeeId, warehouseId);
+	            return employeeWarehouseRow > 0;
+	        } else {
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
+	
 	public boolean updatewh(Warehouse wh) {
 		try {
 			String sql = "UPDATE Warehouse SET Name = ?,Address = ?,Wh_type_Id = ?,Ward_id = ?,Province_id = ?,District_Id = ? WHERE Id = ?";
-			int row = dbwh.update(sql, wh.getName(), wh.getAddress(), wh.getWh_type_id(), wh.getWard_Id(),
-					wh.getProvince_Id(), wh.getDistrict_Id(), wh.getId());
+			int row = dbwh.update(sql,wh.getName(),wh.getAddress(),wh.getWh_type_id(),wh.getWard_Id(),wh.getProvince_Id(),wh.getDistrict_Id(),wh.getId());
 			return row > 0;
 		} catch (Exception e) {
 			e.printStackTrace();

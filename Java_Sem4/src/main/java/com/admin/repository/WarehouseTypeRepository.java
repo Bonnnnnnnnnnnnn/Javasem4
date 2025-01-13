@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.models.PageView;
 import com.models.Warehouse;
@@ -67,15 +71,27 @@ public class WarehouseTypeRepository {
 	}
 
 	public boolean saveWhType(Warehouse_type whtp) {
-		try {
-			String sql ="INSERT INTO Warehouse_type (Name) VALUES (?)";
-			int row = dbtype.update(sql, whtp.getName());
-			return row >0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    try {
+	        String sql = "INSERT INTO Warehouse_type (Name) VALUES (?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
+	        int row = dbtype.update(connection -> {
+	            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            ps.setString(1, whtp.getName());
+	            return ps;
+	        }, keyHolder);
+	        
+	        if (row > 0) {
+	            whtp.setId(keyHolder.getKey().intValue());
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
 	public boolean updateWt(Warehouse_type wt) {
 		try {
 			String sql = "UPDATE Warehouse_type SET Name = ? WHERE Id = ?";

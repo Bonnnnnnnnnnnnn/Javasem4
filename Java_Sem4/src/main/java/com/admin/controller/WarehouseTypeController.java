@@ -79,6 +79,7 @@ public class WarehouseTypeController {
 		Warehouse_type wt = new Warehouse_type();
 		wt.setName(name);
 		reptype.saveWhType(wt);
+		redirectAttributes.addFlashAttribute("newWtId", wt.getId());
 		redirectAttributes.addFlashAttribute("message", "✔ Warehouse type added successfully!");
 		return"redirect:showWhType";
 	}

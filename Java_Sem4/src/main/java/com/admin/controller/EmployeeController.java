@@ -86,6 +86,7 @@ public class EmployeeController {
         emp.setPhone(phone);
         emp.setRole_id(roleId);
         emprep.saveEmp(emp);
+        redirectAttributes.addFlashAttribute("newEmployeeId", emp.getId());
         redirectAttributes.addFlashAttribute("message", "✔ Employee added successfully !");
         return "redirect:/admin/employee/showEmp";
     }

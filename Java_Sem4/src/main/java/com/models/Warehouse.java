@@ -12,6 +12,7 @@ public class Warehouse {
 	private String ManagerLastName;
 	private List<Employee> managers;
 	private int relatedCount;
+	private int relatedCounte;
 	private int ewCuont;
 	private int Province_Id;
 	private int District_Id;
@@ -135,6 +136,12 @@ public class Warehouse {
 	}
 	public int getEwCuont() {
 		return ewCuont;
+	}
+	public int getRelatedCounte() {
+		return relatedCounte;
+	}
+	public void setRelatedCounte(int relatedCounte) {
+		this.relatedCounte = relatedCounte;
 	}
 	public void setEwCuont(int ewCuont) {
 		this.ewCuont = ewCuont;

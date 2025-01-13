@@ -1,180 +1,166 @@
 //randum tên cho hko
 $(document).ready(function() {
-       $.ajax({
-           url: '/warehouseManager/warehouseReceipt/generateReceiptName',
-           type: 'GET',
-           success: function(data) {
-               console.log("Received data:", data);
-               $('#name').val(data);
-           },
-           error: function() {
-               console.error("Failed to generate receipt name.");
-           }
-       });
-   });
-   //tìm kiếm product trong select
-   function filterProducts(inputElement) {
-       const filter = inputElement.value.toLowerCase();
-       const detailGroup = inputElement.closest('.detail-group');
-       const select = detailGroup.querySelector('.product_id');
-       
-       const options = select.options;
+	$.ajax({
+		url: '/warehouseManager/warehouseReceipt/generateReceiptName',
+		type: 'GET',
+		success: function(data) {
+			console.log("Received data:", data);
+			$('#name').val(data);
+		},
+		error: function() {
+			console.error("Failed to generate receipt name.");
+		}
+	});
+});
+//tìm kiếm product trong select
+function filterProducts(inputElement) {
+	const filter = inputElement.value.toLowerCase();
+	const detailGroup = inputElement.closest('.detail-group');
+	const select = detailGroup.querySelector('.product_id');
 
-       let found = false;
-       for (let i = 1; i < options.length; i++) { 
-           const option = options[i];
-           const txtValue = option.textContent || option.innerText;
-           if (txtValue.toLowerCase().includes(filter)) {
-               option.style.display = "";
-               found = true;
-           } else {
-               option.style.display = "none";
-           }
-       }
+	const options = select.options;
 
-       const noResultOption = select.querySelector('option[value="noresult"]');
-       if (!found && !noResultOption) {
-           const noResultOption = document.createElement('option');
-           noResultOption.value = "noresult";
-           noResultOption.textContent = 'No matching products';
-           noResultOption.disabled = true;
-           select.appendChild(noResultOption);
-       } else if (found && noResultOption) {
-           select.removeChild(noResultOption);
-       }
-   }
-	   // Giới hạn cho wh_price
-	   function formatPriceInput(inputElement) {
-	       inputElement.addEventListener('blur', function (e) {
-	           let input = e.target.value;
-	           input = input.replace(/[^0-9.]/g, '');
+	let found = false;
+	for (let i = 1; i < options.length; i++) {
+		const option = options[i];
+		const txtValue = option.textContent || option.innerText;
+		if (txtValue.toLowerCase().includes(filter)) {
+			option.style.display = "";
+			found = true;
+		} else {
+			option.style.display = "none";
+		}
+	}
 
-	           let value = parseFloat(input);
-	           if (!isNaN(value)) {
-	               if (value > 100000) {
-	                   value = 100000;
-	                   alert('Maximum value allowed is 100,000.');
-	               }
-	               e.target.value = value.toFixed(2);
-	           } else {
-	               e.target.value = '';
-	           }
-	       });
+	const noResultOption = select.querySelector('option[value="noresult"]');
+	if (!found && !noResultOption) {
+		const noResultOption = document.createElement('option');
+		noResultOption.value = "noresult";
+		noResultOption.textContent = 'No matching products';
+		noResultOption.disabled = true;
+		select.appendChild(noResultOption);
+	} else if (found && noResultOption) {
+		select.removeChild(noResultOption);
+	}
+}
+// Giới hạn cho wh_price
+function formatPriceInput(inputElement) {
+	inputElement.addEventListener('blur', function(e) {
+		let input = e.target.value;
+		input = input.replace(/[^0-9.]/g, '');
 
-	       inputElement.addEventListener('input', function (e) {
-	           e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+		let value = parseFloat(input);
+		if (!isNaN(value)) {
+			if (value > 100000) {
+				value = 100000;
+				alert('Maximum value allowed is 100,000.');
+			}
+			e.target.value = value.toFixed(2);
+		} else {
+			e.target.value = '';
+		}
+	});
 
-	           const value = parseFloat(e.target.value);
-	           if (value > 100000) {
-	               e.target.value = '100000';
-	               alert('Maximum value allowed is 100,000.');
-	           }
-	       });
-	   }
-	   document.addEventListener('DOMContentLoaded', function () {
-	       const whPriceInput = document.getElementById('wh_price');
-	       const shippingFeeInput = document.getElementById('shippingFee');
-	       const otherFeeInput = document.getElementById('otherFee');
+	inputElement.addEventListener('input', function(e) {
+		e.target.value = e.target.value.replace(/[^0-9.]/g, '');
 
-	       if (whPriceInput) {
-	           formatPriceInput(whPriceInput);
-	       }
-	       if (shippingFeeInput) {
-	           formatPriceInput(shippingFeeInput);
-	       }
-	       if (otherFeeInput) {
-	           formatPriceInput(otherFeeInput);
-	       }
-	   });
+		const value = parseFloat(e.target.value);
+		if (value > 100000) {
+			e.target.value = '100000';
+			alert('Maximum value allowed is 100,000.');
+		}
+	});
+}
+document.addEventListener('DOMContentLoaded', function() {
+	const whPriceInput = document.getElementById('wh_price');
+	const shippingFeeInput = document.getElementById('shippingFee');
+	const otherFeeInput = document.getElementById('otherFee');
 
-	   document.querySelector('form').addEventListener('submit', function(event) {
-	           var otherFee = document.getElementById('otherFee').value;
+	if (whPriceInput) {
+		formatPriceInput(whPriceInput);
+	}
+	if (shippingFeeInput) {
+		formatPriceInput(shippingFeeInput);
+	}
+	if (otherFeeInput) {
+		formatPriceInput(otherFeeInput);
+	}
+});
 
-	           // Nếu không nhập gì, gán giá trị mặc định là 0
-	           if (otherFee.trim() === '') {
-	               document.getElementById('otherFee').value = 0;
-	           }
-	       });
-		   // Thêm nhóm chi tiết mới và xử lý sự kiện chọn sản phẩm trong nhóm đó
-		   function addDetailGroup() {
-		       const detailsContainer = document.getElementById('detailsContainer');
+document.querySelector('form').addEventListener('submit', function(event) {
+	var otherFee = document.getElementById('otherFee').value;
 
-		       let receiptCounter = parseInt(detailsContainer.getAttribute('data-receipt-counter')) || 0;
-		       receiptCounter++;
+	// Nếu không nhập gì, gán giá trị mặc định là 0
+	if (otherFee.trim() === '') {
+		document.getElementById('otherFee').value = 0;
+	}
+});
+// Thêm nhóm chi tiết mới và xử lý sự kiện chọn sản phẩm trong nhóm đó
+function addDetailGroup() {
+    const detailsContainer = document.getElementById('detailsContainer');
 
-		       const originalReceiptGroup = detailsContainer.querySelector('.detail-group').cloneNode(true);
+    let receiptCounter = parseInt(detailsContainer.getAttribute('data-receipt-counter')) || 0;
+    receiptCounter++;
 
-		       const existingTitle = originalReceiptGroup.querySelector('.receipt-title');
-		       if (existingTitle) {
-		           existingTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
-		       } else {
-		           const newTitle = document.createElement('h3');
-		           newTitle.classList.add('receipt-title');
-		           newTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
-		           originalReceiptGroup.insertBefore(newTitle, originalReceiptGroup.firstChild);
-		       }
+    const originalReceiptGroup = detailsContainer.querySelector('.detail-group').cloneNode(true);
 
-		       const inputs = originalReceiptGroup.querySelectorAll('input, select');
-		       inputs.forEach(input => {
-		           input.value = '';
-		           if (input.tagName === 'SELECT') {
-		               input.selectedIndex = 0;
-		           }
-		       });
+    const existingTitle = originalReceiptGroup.querySelector('.receipt-title');
+    if (existingTitle) {
+        existingTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
+    } else {
+        const newTitle = document.createElement('h3');
+        newTitle.classList.add('receipt-title');
+        newTitle.innerText = `Warehouse Receipt ${receiptCounter}`;
+        originalReceiptGroup.insertBefore(newTitle, originalReceiptGroup.firstChild);
+    }
 
-		       // Gán sự kiện định dạng tiền cho trường "wh_price" trong nhóm mới
-		       const warehousePriceInput = originalReceiptGroup.querySelector('input[name="wh_price"]');
-		       if (warehousePriceInput) {
-		           addWarehousePriceEvents(warehousePriceInput);
-		       }
-		       
-		       // Gán sự kiện định dạng tiền cho trường "wh_price" trong nhóm gốc
-		       const originalWarehousePriceInput = detailsContainer.querySelector('input[name="wh_price"]');
-		       if (originalWarehousePriceInput) {
-		           addWarehousePriceEvents(originalWarehousePriceInput);
-		       }
+    const inputs = originalReceiptGroup.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.value = '';
+        if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0;
+        }
+        if (input.name === 'statusDetails') {
+            input.value = 'Active';
+        }
+    });
 
-		       // Thêm nhóm mới vào container
-		       const separator = document.createElement('hr');
-		       separator.classList.add('separator');
-		       detailsContainer.appendChild(separator);
-		       detailsContainer.appendChild(originalReceiptGroup);
-		       detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
-		   }
+    const warehousePriceInput = originalReceiptGroup.querySelector('input[name="wh_price"]');
+    if (warehousePriceInput) {
+        addWarehousePriceEvents(warehousePriceInput);
+    }
 
-		   // Hàm thêm sự kiện định dạng tiền
-		   function addWarehousePriceEvents(inputElement) {
-		       inputElement.addEventListener('blur', function (e) {
-		           let input = e.target.value;
-		           input = input.replace(/[^0-9.]/g, '');
-		           let value = parseFloat(input);
+    const originalWarehousePriceInput = detailsContainer.querySelector('input[name="wh_price"]');
+    if (originalWarehousePriceInput) {
+        addWarehousePriceEvents(originalWarehousePriceInput);
+    }
 
-		           if (!isNaN(value)) {
-		               if (value > 100000) {
-		                   value = 100000;
-		                   alert('Maximum warehouse price allowed is 100,000.');
-		               }
-		               e.target.value = value.toFixed(2);
-		           } else {
-		               e.target.value = '';
-		           }
-		       });
+    const separator = document.createElement('hr');
+    separator.classList.add('separator');
+    detailsContainer.appendChild(separator);
+    detailsContainer.appendChild(originalReceiptGroup);
+    detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
+}
 
-		       inputElement.addEventListener('input', function (e) {
-		           e.target.value = e.target.value.replace(/[^0-9.]/g, '');
-		           const value = parseFloat(e.target.value);
-		           if (value > 100000) {
-		               e.target.value = '100000';
-		               alert('Maximum warehouse price allowed is 100,000.');
-		           }
-		       });
-		   }
+// Hàm thêm sự kiện định dạng tiền
+function addWarehousePriceEvents(inputElement) {
+	inputElement.addEventListener('blur', function(e) {
+		let input = e.target.value;
+		input = input.replace(/[^0-9.]/g, '');
+		let value = parseFloat(input);
 
-		   document.addEventListener('DOMContentLoaded', function () {
-		       const warehousePriceInputs = document.querySelectorAll('input[name="wh_price"]');
-		       warehousePriceInputs.forEach(input => addWarehousePriceEvents(input));
-		   });
+		if (!isNaN(value)) {
+			if (value > 100000) {
+				value = 100000;
+				alert('Maximum warehouse price allowed is 100,000.');
+			}
+			e.target.value = value.toFixed(2);
+		} else {
+			e.target.value = '';
+		}
+	});
 
+<<<<<<< HEAD
 		   // Cập nhật fetchConversionId để chọn conversion tương ứng với product
 		   function fetchConversionId(selectElement) {
 		       var productId = selectElement.value;
@@ -201,6 +187,49 @@ $(document).ready(function() {
 		           conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
 		       }
 		   }
+=======
+	inputElement.addEventListener('input', function(e) {
+		e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+		const value = parseFloat(e.target.value);
+		if (value > 100000) {
+			e.target.value = '100000';
+			alert('Maximum warehouse price allowed is 100,000.');
+		}
+	});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+	const warehousePriceInputs = document.querySelectorAll('input[name="wh_price"]');
+	warehousePriceInputs.forEach(input => addWarehousePriceEvents(input));
+});
+
+// Cập nhật fetchConversionId để chọn conversion tương ứng với product
+function fetchConversionId(selectElement) {
+	var productId = selectElement.value;
+	if (productId) {
+		fetch('/warehouseManager/warehouseReceipt/getConversions?id=' + productId)
+			.then(response => response.json())
+			.then(data => {
+				console.log(data)
+				var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
+				conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>'; // Xóa các option cũ
+
+				data.forEach(conversion => {
+					var option = document.createElement('option');
+					option.value = conversion.id;
+					option.text = conversion.fromUnitName + '->' + conversion.toUnitName + '(' + conversion.conversion_rate + ')';
+					conversionSelect.appendChild(option);
+				});
+			})
+			.catch(error => {
+				console.error('Error fetching conversions:', error);
+			});
+	} else {
+		var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
+		conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
+	}
+}
+>>>>>>> trongdev
 
 
 

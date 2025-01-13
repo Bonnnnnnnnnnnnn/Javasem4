@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +9,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.models.Brand;
 import com.models.PageView;
+import com.models.Product;
 import com.utils.Views;
 import com.mapper.Brand_mapper;
 
@@ -42,6 +47,51 @@ public class BrandRepository {
 	        return Collections.emptyList();
 	    }
 	}
+	@SuppressWarnings("deprecation")
+	public List<Product> findByBrandId(int brandId, PageView itemPage) {
+	    try {
+	        String sql = String.format("SELECT p.id, p.Product_name, p.Price, p.Img, p.Brand_Id, b.Name AS Brand_name " +
+	                "FROM Product p " +
+	                "JOIN Brand b ON p.Brand_Id = b.Id " +
+	                "WHERE p.Brand_Id = ? " +
+	                "ORDER BY p.Product_name DESC");
+
+	        if (itemPage != null && itemPage.isPaginationEnabled()) {
+	            int count = dbbr.queryForObject("SELECT COUNT(*) FROM Product WHERE Brand_Id = ?", Integer.class, brandId);
+	            int totalPage = (int) Math.ceil((double) count / itemPage.getPage_size());
+	            itemPage.setTotal_page(totalPage);
+
+	            return dbbr.query(sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", new Object[]{brandId,
+	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(), itemPage.getPage_size()},
+	                    (rs, rowNum) -> {
+	                        Product product = new Product();
+	                        product.setId(rs.getInt("id"));  
+	                        product.setProduct_name(rs.getString("Product_name"));
+	                        product.setPrice(rs.getDouble("Price"));
+	                        product.setImg(rs.getString("Img"));
+	                        product.setBrand_id(rs.getInt("Brand_Id"));
+	                        product.setBrandName(rs.getString("Brand_name"));
+	                        return product;
+	                    });
+	        } else {
+	            return dbbr.query(sql, new Object[]{brandId}, (rs, rowNum) -> {
+	                Product product = new Product();
+	                product.setId(rs.getInt("Id"));
+	                product.setProduct_name(rs.getString("Product_name"));
+	                product.setPrice(rs.getDouble("Price"));
+	                product.setImg(rs.getString("Img"));
+	                product.setBrand_id(rs.getInt("Brand_Id"));
+	                product.setBrandName(rs.getString("Brand_name"));
+	                return product;
+	            });
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error fetching products by brand: " + e.getMessage());
+	        e.printStackTrace();
+	        return Collections.emptyList();
+	    }
+	}
+
 	public int countByBrandId(int brandId) {
 		try {
 			String sql = "SELECT COUNT(*) FROM Product WHERE brand_id = ?";
@@ -65,16 +115,19 @@ public class BrandRepository {
 			return null;
 		}
 	}
-	public boolean saveBr(Brand br) {
-		try {
-			String sql = "INSERT INTO Brand (Name) VALUES (?)";
-			int row = dbbr.update(sql,br.getName());
-			return row > 0 ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public Brand saveBr(Brand brand) {
+	    String sql = "INSERT INTO Brand (Name) VALUES (?)";
+	    KeyHolder keyHolder = new GeneratedKeyHolder();
+	    dbbr.update(connection -> {
+	        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        ps.setString(1, brand.getName());
+	        return ps;
+	    }, keyHolder);
+	    brand.setId(keyHolder.getKey().intValue());
+	    return brand;
 	}
+
+
 	public boolean deleteBr(int id) {
 		try {
 			String sql = "DELETE FROM Brand WHERE Id=?";
