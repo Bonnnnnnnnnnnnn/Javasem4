@@ -164,10 +164,10 @@ public class ProductRepository {
 				pro.setCate_id(rs.getInt("Cate_id"));
 				pro.setUnit_id(rs.getInt("Unit_Id"));
 				pro.setProduct_name(rs.getString("Product_name"));
-				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION)); // Sử dụng hằng số
-				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG)); // Sử dụng hằng số
+				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));
+				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));
 				pro.setPrice(rs.getDouble("Price"));
-				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD)); // Sử dụng hằng số
+				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
 				pro.setBrandName(rs.getString("brand_name"));
 				pro.setCategoryName(rs.getString("category_name"));
 				pro.setStatus(rs.getString("Status"));
@@ -355,6 +355,17 @@ public class ProductRepository {
 			throw new RuntimeException("Update failed, transaction has been rolled back.");
 		}
 	}
+	public boolean updateStatus(int id, String status) {
+	    try {
+	        String sql = "UPDATE Product SET Status = ? WHERE Id = ?";
+	        int row = dbpro.update(sql, status, id);
+	        return row > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 
 	// product_specifications
 	// =========================================================

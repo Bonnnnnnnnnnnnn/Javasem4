@@ -2,11 +2,6 @@
 function confirmDeleteBr() {
 	return confirm("Are you sure you want to delete this Brand ?");
 }
-$(document).ready(function() {
-    const newBrandRow = $(".highlighted-row");
-    if (newBrandRow.length) {
-        $('html, body').animate({
-            scrollTop: newBrandRow.offset().top - 100
-        }, 1000);
-    }
-});
+function goToDetail(id) {
+    window.location.href = '/admin/brand/showProductFromBrand?id=' + id;
+}

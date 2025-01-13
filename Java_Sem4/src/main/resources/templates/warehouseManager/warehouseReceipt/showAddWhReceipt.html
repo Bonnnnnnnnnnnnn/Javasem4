@@ -40,29 +40,21 @@
 												<input type="hidden" id="employeeId" name="employeeId"
 													th:value="${employeeId}"> <input type="hidden"
 													id="wh_id" name="wh_id" th:value="${whId}">
-												<div class="form-group col-md-6">
+												<div class="form-group col-md-4">
 													<label for="name">Name</label> <input type="text" id="name"
 														name="name" class="form-control" disabled>
 												</div>
+												<input type="hidden" name="status" value="Entered" required>
 
-												<div class="form-group col-md-6">
-													<label for="exampleInputEmail1">Status</label> <select
-														name="status" id="status" class="form-control" required>
-														<option value="Not completed yet">Not completed
-															yet</option>
-														<option value="Entered">Entered</option>
-													</select>
-												</div>
-
-												<div class="form-group col-md-6">
-													<label for="shippingFee">Shipping Fee</label> <input
+												<div class="form-group col-md-4">
+													<label for="shippingFee">Shipping Fee ($)</label> <input
 														type="text" id="shippingFee" name="shippingFee"
 														class="form-control" placeholder="Enter shipping fee"
 														required>
 												</div>
 
-												<div class="form-group col-md-6">
-													<label for="otherFee">Order Fee</label> <input type="text"
+												<div class="form-group col-md-4">
+													<label for="otherFee">Order Fee ($)</label> <input type="text"
 														id="otherFee" name="otherFee" class="form-control"
 														placeholder="Enter order fee">
 												</div>
@@ -83,7 +75,7 @@
 														</div>
 
 														<div class="form-group col-md-2">
-															<label for="wh_price">Import price (Roll,Box)</label> <input
+															<label for="wh_price">Price($)(Roll,Box)</label> <input
 																type="number" name="wh_price" class="form-control"
 																placeholder="Enter Warehouse Price" step="0.01" required>
 														</div>

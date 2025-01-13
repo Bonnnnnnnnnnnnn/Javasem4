@@ -66,8 +66,8 @@
 			            newTableHtml += `
 			                    </tbody>
 			                </table>
-			                <div class="text-center mt-3">
-			                    <a href="/admin/warehouseType/showWhType" class="btn btn-secondary">Back to List</a>
+			                <div style="margin-top: 20px; margin-left: 50px;">
+			                    <a href="/admin/warehouseType/showWhType" class="btn btn-danger">Back to List</a>
 			                </div>
 			            `;
 

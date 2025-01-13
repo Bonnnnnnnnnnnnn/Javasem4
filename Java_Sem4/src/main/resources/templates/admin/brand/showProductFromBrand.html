@@ -7,12 +7,12 @@
 			<div class="container-fluid">
 				<div class="row mb-2">
 					<div class="col-sm-6">
-						<h1>Product</h1>
+						<h1>Products in brand</h1>
 					</div>
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item"><a href="#">Home</a></li>
-							<li class="breadcrumb-item active">Product</li>
+							<li class="breadcrumb-item active">Products in brand</li>
 						</ol>
 					</div>
 				</div>
@@ -33,7 +33,7 @@
 									class="custom-alert error"></p>
 							</div>
 							<div class="card-header">
-								<h3 class="card-title">Product Table</h3>
+								<h3 class="card-title">Products Table</h3>
 								<div class="input-group input-group-sm"
 									style="width: 80%; margin-left: 15%;">
 									<input type="text" name="table_search" id="searchInput"
@@ -50,16 +50,16 @@
 											<th>Name</th>
 											<th>Images</th>
 											<th>Price</th>
-											<th>Status</th>
+											<th>Brand Name</th>
 											<th><a th:href="@{/admin/product/showAddProduct}"
 												class="btn btn-primary">Add Product</a></th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr th:if="${#lists.isEmpty(products)}" class="text-center">
-											<td colspan="10">No positions found</td>
+											<td colspan="10">No products found</td>
 										</tr>
-										<tr th:each="item, iterStat: ${products}" class="text-center"
+										<tr th:each="item, iterStat : ${products}" class="text-center"
 											th:classappend="${item.id == newProductId} ? 'highlighted-row' : ''">
 											<td
 												th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"
@@ -77,11 +77,8 @@
 												th:onclick="'goToDetail(' + ${item.id} + ')'"><span
 												th:text="${#numbers.formatCurrency(item.price)}"></span></td>
 											<td style="cursor: pointer;"
-												th:attr="data-id=${item.id}, data-status=${item.status}"
-												th:onclick="'updateProductStatus(this)'"><span
-												th:text="${item.status}" th:id="'status-' + ${item.id}"></span>
-											</td>
-
+												th:onclick="'goToDetail(' + ${item.id} + ')'"><span
+												th:text="${item.brandName}"></span></td>
 											<td><a
 												th:href="@{/admin/product/showUpdateProduct(id=${item.id})}"
 												class="btn btn-warning">Update</a> <a
@@ -91,34 +88,40 @@
 												th:attr="onclick=${productReferences[item.id]} ? null : 'return confirmDelete();'">
 													Delete </a></td>
 										</tr>
-
 									</tbody>
 								</table>
+								<div style="margin-top: 20px; margin-left: 50px;">
+									<a th:href="@{/admin/brand/showBrand}" class="btn btn-danger">Back
+										to list brands</a>
+								</div>
 								<table style="margin-left: 42%">
 									<tfoot id="paginationFooter">
 										<tr class="pagination">
-											<td><a th:href="@{/admin/product/showProduct(cp=1)}"
+											<td><a
+												th:href="@{/admin/brand/showProductFromBrand(id=${brandId}, cp=1)}"
 												title="First page">&laquo;</a></td>
 											<td th:if="${pv.Page_current > 1}"><a
-												th:href="@{/admin/product/showProduct(cp=${pv.Page_current - 1})}"
+												th:href="@{/admin/brand/showProductFromBrand(id=${brandId}, cp=${pv.Page_current - 1})}"
 												title="Previous page">&lt;</a></td>
 											<td th:each="i : ${#numbers.sequence(0, pv.Total_page - 1)}"
 												th:if="${i < 3 or (i >= (pv.Page_current - 2) and i <= (pv.Page_current + 2))}">
-												<a th:href="@{/admin/product/showProduct(cp=${i + 1})}"
+												<a
+												th:href="@{/admin/brand/showProductFromBrand(id=${brandId}, cp=${i + 1})}"
 												th:class="${i + 1 == pv.Page_current ? 'active' : ''}">
 													<span th:text="${i + 1}"></span>
 											</a>
 											</td>
 											<td th:if="${pv.Page_current < pv.Total_page}"><a
-												th:href="@{/admin/product/showProduct(cp=${pv.Page_current + 1})}"
+												th:href="@{/admin/brand/showProductFromBrand(id=${brandId}, cp=${pv.Page_current + 1})}"
 												title="Next page">&gt;</a></td>
 											<td><a
-												th:href="@{/admin/product/showProduct(cp=${pv.Total_page})}"
+												th:href="@{/admin/brand/showProductFromBrand(id=${brandId}, cp=${pv.Total_page})}"
 												title="Last page">&raquo;</a></td>
 										</tr>
 									</tfoot>
 								</table>
 							</div>
+
 						</div>
 					</div>
 				</div>

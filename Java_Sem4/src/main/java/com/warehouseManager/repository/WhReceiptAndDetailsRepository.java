@@ -361,48 +361,67 @@ public class WhReceiptAndDetailsRepository {
 	// Phần Warehouse_receipt_detail ====================================================
 	
 	//show list chi tiết phiếu nhập kho
-	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId) {
-	    List<Warehouse_receipt_detail> details = null;
+	public List<Warehouse_receipt_detail> findDetailsByReceiptId(int whReceiptId, PageView pageView) {
 	    try {
-	        String sql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS 
-	                    + ", wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + ", " +
-	                    "u2.Name AS to_unit_name, " +
-	                    "u1.Name AS from_unit_name, " +
-	                    "c." + Views.COL_CONVERSION_RATE + " AS conversion_rate " +
-	                    "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd " +
-	                    "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id " +
-	                    "JOIN Conversion c ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " = c.id " +
-	                    "JOIN Unit u2 ON c." + Views.COL_CONVERSION_TO_UNIT_ID + " = u2." + Views.COL_UNIT_ID + " " + // Join with Unit for 'to' unit name
-	                    "JOIN Unit u1 ON c." + Views.COL_CONVERSION_FROM_UNIT_ID + " = u1." + Views.COL_UNIT_ID + " " + // Join with Unit for 'from' unit name
-	                    "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
+	        String baseSql = "SELECT wrd.*, p.product_name, wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS
+	                + ", wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + ", " +
+	                "u2.Name AS to_unit_name, " +
+	                "u1.Name AS from_unit_name, " +
+	                "c." + Views.COL_CONVERSION_RATE + " AS conversion_rate " +
+	                "FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL + " wrd " +
+	                "JOIN Product p ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID + " = p.id " +
+	                "JOIN Conversion c ON wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION + " = c.id " +
+	                "JOIN Unit u2 ON c." + Views.COL_CONVERSION_TO_UNIT_ID + " = u2." + Views.COL_UNIT_ID + " " +
+	                "JOIN Unit u1 ON c." + Views.COL_CONVERSION_FROM_UNIT_ID + " = u1." + Views.COL_UNIT_ID + " " +
+	                "WHERE wrd." + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
 
-	        details = dbwhd.query(sql, (rs, rowNum) -> {
-	            Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
-	            wrd.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID));
-	            wrd.setWh_receipt_id(rs.getInt(Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID));
-	            int originalQuantity = rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY);
-	            int conversionRate = rs.getInt("conversion_rate");
-	            int convertedQuantity = originalQuantity * conversionRate;
-	            wrd.setQuantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
-	            wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
-	            wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
-	            wrd.setProduct_name(rs.getString("product_name"));
-	            wrd.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS));
-	            wrd.setConversion_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION));
-	            wrd.setToUnitName(rs.getString("to_unit_name"));
-	            wrd.setFromUnitName(rs.getString("from_unit_name"));
-	            wrd.setConversion_rate(convertedQuantity);
+	        if (pageView != null && pageView.isPaginationEnabled()) {
+	            String countSql = "SELECT COUNT(*) FROM " + Views.TBL_WAREHOUSE_RECEIPT_DETAIL +
+	                              " WHERE " + Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID + " = ?";
+	            int totalCount = dbwhd.queryForObject(countSql, Integer.class, whReceiptId);
 
-	            return wrd;
-	        }, whReceiptId);
+	            int totalPage = (int) Math.ceil((double) totalCount / pageView.getPage_size());
+	            pageView.setTotal_page(totalPage);
 
+	            baseSql += " ORDER BY wrd." + Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID + " DESC " +
+	                       "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+	            return dbwhd.query(baseSql, (rs, rowNum) -> {
+	                Warehouse_receipt_detail wrd = mapRowToWarehouseReceiptDetail(rs);
+	                return wrd;
+	            }, whReceiptId, (pageView.getPage_current() - 1) * pageView.getPage_size(), pageView.getPage_size());
+	        } else {
+	            return dbwhd.query(baseSql, (rs, rowNum) -> {
+	                Warehouse_receipt_detail wrd = mapRowToWarehouseReceiptDetail(rs);
+	                return wrd;
+	            }, whReceiptId);
+	        }
 	    } catch (Exception e) {
 	        System.err.println("Error while fetching details by receipt ID: " + e.getMessage());
 	        e.printStackTrace();
+	        return Collections.emptyList();
 	    }
-
-	    return details;
 	}
+
+	private Warehouse_receipt_detail mapRowToWarehouseReceiptDetail(ResultSet rs) throws SQLException {
+	    Warehouse_receipt_detail wrd = new Warehouse_receipt_detail();
+	    wrd.setId(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_ID));
+	    wrd.setWh_receipt_id(rs.getInt(Views.COL_DETAIL_WAREHOUSE_RECEIPT_ID));
+	    int originalQuantity = rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY);
+	    int conversionRate = rs.getInt("conversion_rate");
+	    int convertedQuantity = originalQuantity * conversionRate;
+	    wrd.setQuantity(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_QUANTITY));
+	    wrd.setWh_price(rs.getDouble(Views.COL_WAREHOUSE_RECEIPT_DETAIL_WH_PRICE));
+	    wrd.setProduct_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_PRODUCT_ID));
+	    wrd.setProduct_name(rs.getString("product_name"));
+	    wrd.setStatus(rs.getString(Views.COL_WAREHOUSE_RECEIPT_DETAILS_STATUS));
+	    wrd.setConversion_id(rs.getInt(Views.COL_WAREHOUSE_RECEIPT_DETAIL_CONVERSION));
+	    wrd.setToUnitName(rs.getString("to_unit_name"));
+	    wrd.setFromUnitName(rs.getString("from_unit_name"));
+	    wrd.setConversion_rate(convertedQuantity);
+	    return wrd;
+	}
+
 
 //	public Conversion findConversionByProductId(int productId) {
 //	    Conversion conversion = null;

@@ -66,7 +66,7 @@ public class CategoryRepository {
 	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(), itemPage.getPage_size()},
 	                    (rs, rowNum) -> {
 	                        Product product = new Product();
-	                        product.setId(rs.getInt("id"));  // Lấy id của sản phẩm
+	                        product.setId(rs.getInt("id"));
 	                        product.setProduct_name(rs.getString("Product_name"));
 	                        product.setPrice(rs.getDouble("Price"));
 	                        product.setImg(rs.getString("Img"));

@@ -1,6 +1,8 @@
 package com.admin.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.BrandRepository;
+import com.admin.repository.ProductRepository;
 import com.models.Brand;
 import com.models.PageView;
+import com.models.Product;
 import com.utils.Views;
 
 @Controller
@@ -21,7 +25,9 @@ import com.utils.Views;
 public class BrandController {
 	@Autowired
 	private BrandRepository repbr;
-
+	
+	@Autowired
+	private ProductRepository reppro;
 	// thêm thương hiẹu
 	@GetMapping("/showBrand")
 	public String showBrand(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
@@ -41,6 +47,28 @@ public class BrandController {
 			e.printStackTrace();
 			return "redirect:/error";
 		}
+	}
+	
+	
+	@GetMapping("/showProductFromBrand")
+	public String showProductFromBrand(@RequestParam("id") int brandId, Model model,
+	                                   @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(10);
+	    List<Product> products = repbr.findByBrandId(brandId, pv);
+	    Map<Integer, Boolean> productReferences = new HashMap<>();
+	    for (Product product : products) {
+	        boolean isReferenced = reppro.isProductReferenced(product.getId());
+	        productReferences.put(product.getId(), isReferenced);
+	    }
+
+	    model.addAttribute("products", products);
+	    model.addAttribute("productReferences", productReferences);
+	    model.addAttribute("pv", pv);
+	    model.addAttribute("brandId", brandId);
+
+	    return "/admin/brand/showProductFromBrand";
 	}
 
 	// thêm thương hiệu

@@ -50,21 +50,35 @@ public class WhReceiptAndDetailsController {
 
 		//show chi tiết phiếu nhập kho
 		@GetMapping("/showWhReceiptDetail")
-		public String showWhReceiptDetail(@RequestParam("id") String WhrId, @RequestParam("id") String WhrdId, Model model) {
+		public String showWhReceiptDetail(
+		        @RequestParam("id") String WhrId,
+		        @RequestParam("id") String WhrdId,
+		        @RequestParam(value = "page", defaultValue = "1") int page,
+		        @RequestParam(value = "size", defaultValue = "2") int size,
+		        Model model) {
 		    try {
 		        int idwhr = Integer.parseInt(WhrId);
 		        Warehouse_receipt whr = repwd.findId(idwhr);
+
+		        PageView pageView = new PageView();
+		        pageView.setPage_current(page);
+		        pageView.setPage_size(size);
+
 		        int idwhrs = Integer.parseInt(WhrdId);
-		        List<Warehouse_receipt_detail> details = repwd.findDetailsByReceiptId(idwhrs);
+		        List<Warehouse_receipt_detail> details = repwd.findDetailsByReceiptId(idwhrs, pageView);
+
 		        model.addAttribute("details", details);
 		        model.addAttribute("whr", whr);
 		        model.addAttribute("products", repwd.findAllPro());
+		        model.addAttribute("pageView", pageView);
+
 		        return Views.SHOW_WAREHOUSE_RECEIPT_DETAILS;
 		    } catch (Exception e) {
 		        e.printStackTrace();
 		        return "error";
 		    }
 		}
+
 
 		// thêm phiếu nhập kho và chi tiết
 		@GetMapping("showAddWhReceipt")

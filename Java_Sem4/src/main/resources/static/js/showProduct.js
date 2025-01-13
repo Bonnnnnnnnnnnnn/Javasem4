@@ -103,29 +103,54 @@ function toggleDeleteButton() {
 	// Kiểm tra nếu có ít nhất một checkbox được chọn
 	const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-	// Hiển thị hoặc ẩn nút xóa
-	if (isAnyChecked) {
-		deleteBtn.style.display = 'inline-block'; // Hiển thị nút xóa
-	} else {
-		deleteBtn.style.display = 'none'; // Ẩn nút xóa
-	}
+	// Bật hoặc tắt nút xóa
+	deleteBtn.disabled = !isAnyChecked; // true nếu không có checkbox nào được chọn
 }
+
 
 // Hàm kiểm tra và thay đổi trạng thái "Select all"
-function toggleSelectAll(selectAllCheckbox) {
-	const checkboxes = document.querySelectorAll('.productCheckbox');
-	checkboxes.forEach(checkbox => {
-		checkbox.checked = selectAllCheckbox.checked;
-	});
-	toggleDeleteButton(); // Cập nhật nút xóa khi "Select all" thay đổi
-}
-const priceChanges = /*[[${priceChanges}]]*/[];
+function updateProductStatus(element) {
+    const productId = element.getAttribute('data-id'); // Lấy ID sản phẩm
+    const currentStatus = element.getAttribute('data-status'); // Lấy trạng thái hiện tại
+    const statuses = ["Active", "InActive", "OutOfstock", "NewRelease"];
 
-$(document).ready(function() {
-    const newCategoryRow = $(".highlighted-row");
-    if (newCategoryRow.length) {
-        $('html, body').animate({
-            scrollTop: newCategoryRow.offset().top - 100
-        }, 1000);
+    // Xác định trạng thái tiếp theo
+    let currentIndex = statuses.indexOf(currentStatus);
+    let nextIndex = (currentIndex + 1) % statuses.length;
+    let newStatus = statuses[nextIndex];
+
+    // Cập nhật trạng thái trong giao diện
+    const statusElement = document.getElementById("status-" + productId);
+    if (statusElement) {
+        statusElement.innerText = newStatus;
+    } else {
+        console.error(`Status element with ID status-${productId} not found!`);
+        return;
     }
-});
+
+    fetch(`/admin/product/updateStatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: productId,
+            status: newStatus,
+        }),
+    })
+        .then(response => {
+            if (response.status === 200) {
+                element.setAttribute('data-status', newStatus);
+            } else {
+                console.error('Failed to update status:', response.status);
+                statusElement.innerText = currentStatus;
+            }
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            // Khôi phục trạng thái cũ nếu gặp lỗi
+            statusElement.innerText = currentStatus;
+        });
+}
+
+
