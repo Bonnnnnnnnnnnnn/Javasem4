@@ -30,6 +30,45 @@ public class Order {
 	private String Tracking_code;
 	private LocalDate expected_delivery_time;
 	private String shipping_status;
+
+	private List<Order_detail> orderDetails;
+    private ReturnOrder returnOrder;
+    private ChatRoom chatRoom;
+    private List<ChatMessage> chatMessages;
+
+	public List<Order_detail> getOrderDetails() {
+		return orderDetails;
+	}
+
+	public void setOrderDetails(List<Order_detail> orderDetails) {
+		this.orderDetails = orderDetails;
+	}
+
+	public ReturnOrder getReturnOrder() {
+		return returnOrder;
+	}
+
+	public void setReturnOrder(ReturnOrder returnOrder) {
+		this.returnOrder = returnOrder;
+	}
+
+	public ChatRoom getChatRoom() {
+		return chatRoom;
+	}
+
+	public void setChatRoom(ChatRoom chatRoom) {
+		this.chatRoom = chatRoom;
+	}
+
+	public List<ChatMessage> getChatMessages() {
+		return chatMessages;
+	}
+
+	public void setChatMessages(List<ChatMessage> chatMessages) {
+		this.chatMessages = chatMessages;
+	}
+
+
 	public Order(int id, int customer_id, String cus_Name, String phone, String status, String address,
 			String pay_status, int employee_id, int payment_id, LocalDate date, int coupon_id, Double discount,
 			Double totalAmount, Double shippingFee, String paymentMethod, String notes, String orderID,

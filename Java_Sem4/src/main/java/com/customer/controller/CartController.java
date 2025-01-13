@@ -141,15 +141,15 @@ public class CartController {
 
 	@GetMapping("/validatediscount")
 	public ResponseEntity<Coupon> validateCoupon(@RequestParam("code") String code) {
-		// Tìm coupon bằng mã code
+		
 		Coupon coupon = repcp.findCouponByCode(code);
 
-		// Nếu coupon không tìm thấy, trả về null
+		
 		if (coupon == null) {
-			return ResponseEntity.ok().body(null); // Trả về null
+			return ResponseEntity.ok().body(null);
 		}
 
-		// Nếu tìm thấy coupon, trả về đối tượng coupon
+		
 		return ResponseEntity.ok(coupon);
 	}
 

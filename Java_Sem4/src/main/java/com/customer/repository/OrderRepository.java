@@ -11,15 +11,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.mapper.Order_mapper;
+import com.models.ChatMessage;
+import com.models.ChatRoom;
 import com.models.Order;
+import com.models.Order_detail;
 import com.models.PageView;
+import com.models.ReturnOrder;
+import com.models.ReturnOrderDetail;
 import com.utils.Views;
 
 @Repository
 public class OrderRepository {
 	@Autowired
 	JdbcTemplate db;
-
+	
 	@SuppressWarnings("deprecation")
 	public List<Order> getOrdersByCustomerId(PageView pv, int customerId, String phone, LocalDate from, LocalDate to) {
 		StringBuilder queryBuilder = new StringBuilder(
@@ -114,5 +119,25 @@ public class OrderRepository {
 			return false;
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public List<Order> getOrdersByCustomerIdnogapging(int customerId) {
+		StringBuilder queryBuilder = new StringBuilder(
+				String.format("SELECT * FROM [%s] WHERE [%s] = ?", Views.TBL_ORDER, Views.COL_ORDER_CUSTOMER_ID));
 
+		List<Object> params = new ArrayList<>();
+		params.add(customerId);
+
+		
+		try {
+
+			return db.query(queryBuilder.toString(), params.toArray(), new Order_mapper());
+		} catch (DataAccessException e) {
+			System.err.println("Error fetching orders for customer ID " + customerId + ": " + e.getMessage());
+			return new ArrayList<>(); // Return an empty list in case of an error
+		}
+	}
+	
+	
+	
 }

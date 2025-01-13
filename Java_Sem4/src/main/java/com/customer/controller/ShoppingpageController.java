@@ -50,7 +50,7 @@ public class ShoppingpageController {
 
 		String[] statuses = { "NewRelease", "Active", "OutOfStock" };
 
-		model.addAttribute("pronewar", rep.findAllpaging(pv, stringsearch, idCategories, idBrands, statuses));
+		model.addAttribute("pronewar", rep.findAllpagingapi(pv, stringsearch, idCategories, idBrands, statuses));
 
 		model.addAttribute("pv", pv);
 		model.addAttribute("selectedBrands", idBrands);

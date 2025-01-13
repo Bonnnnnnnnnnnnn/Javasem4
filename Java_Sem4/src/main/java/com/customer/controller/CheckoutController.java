@@ -131,7 +131,7 @@ public class CheckoutController {
 
 		Order or = new Order();
 		or.setDiscount(Double.parseDouble(discount));
-		or.setShippingFee(Double.parseDouble(shippingFee)); // Set shipping fee
+		or.setShippingFee(Double.parseDouble(shippingFee));
 		or.setCustomer_id(cusinfo.getId());
 		or.setCus_Name(cusinfo.getFirst_name() + " " + cusinfo.getLast_name());
 		or.setStatus("Waiting for confirmation");
@@ -139,7 +139,7 @@ public class CheckoutController {
 		or.setProvince_Id(provinceId);
 		or.setDistrict_Id(districtId);
 		or.setWard_Id(wardId);
-		or.setWareHouse_Id(Integer.parseInt(warehouseId)); // Set warehouse ID
+		or.setWareHouse_Id(Integer.parseInt(warehouseId));
 		or.setAddress(fullAddress);
 		or.setEmployee_id(0);
 		or.setPayment_id(Integer.parseInt(payment));
@@ -275,11 +275,11 @@ public class CheckoutController {
 			List<Shopping_cart> listc = repcart
 					.findAllCartsByCustomerId((int) request.getSession().getAttribute("logined"));
 			if (nearestWarehouse != null) {
-				// Tính phí ship
+				
 				double shippingFee = ghnService.calculateShippingFee(nearestWarehouse.getDistrict_Id(), toDistrictId,
 						listc);
 
-				// Tạo object response
+				
 				Map<String, Object> response = new HashMap<>();
 				response.put("id", nearestWarehouse.getId());
 				response.put("name", nearestWarehouse.getName());

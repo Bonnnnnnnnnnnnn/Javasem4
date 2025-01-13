@@ -333,6 +333,8 @@ public final class Views {
 	//25.RETURN ORDER
 	
 	public static String RETURN_ORDERS_WAM = "warehouseManager/returnorders/showreorders";
+	public static String RETURN_ORDERS_WAMCOM = "warehouseManager/returnorders/showreorderscomplete";
+	
 		public static String TBL_RETURN_ORDER = "Return_Order";
 		public static String COL_RETURN_ORDER_ID = "Id";
 		public static String COL_RETURN_ORDER_ORDER_ID = "Order_Id";
@@ -478,6 +480,7 @@ public final class Views {
 
 	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
 	
+<<<<<<< HEAD
 	// Employee Warehouse
 	public static String EMPLOYEE_WAREHOUSE_MANAGER = "warehouseManager/employee/showEmployee";
 	public static String EMPLOYEE_BUSINESS_MANAGER = "businessManager/employee/showEmployee";
@@ -490,4 +493,26 @@ public final class Views {
 	public static String SHOW_ORDER_STATUS_WAITING = "warehouseManager/orderInfor/orderWaiting";
 
 
+=======
+	public static String PAGE_LISTCHAT_NOEM = "businessManager/chatsp/listchatnoem";
+	public static String PAGE_CHAT_EMPLOYEE= "businessManager/chatsp/chatsp";
+	public static String PAGE_LISTCHAT_EMID = "businessManager/chatsp/listchatbyemid";
+	public static String TBL_CHAT_ROOM = "Chat_Room";
+	public static String COL_CHAT_ROOM_ID = "Id";
+	public static String COL_CHAT_ROOM_ORDER_ID = "Order_Id";
+	public static String COL_CHAT_ROOM_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_CHAT_ROOM_STATUS = "Status";
+	public static String COL_CHAT_ROOM_LAST_ACTIVITY = "Last_Activity";
+
+	// ChatMessage table
+	public static String TBL_CHAT_MESSAGE = "Chat_Message";
+	public static String COL_CHAT_MESSAGE_ID = "Id";
+	public static String COL_CHAT_MESSAGE_CHATROOM_ID = "ChatRoom_Id";
+	public static String COL_CHAT_MESSAGE_EMPLOYEE_ID = "Employee_Id";
+	public static String COL_CHAT_MESSAGE_CONTENT = "Message";
+	public static String COL_CHAT_MESSAGE_TIMESTAMP = "Timestamp";
+	public static String COL_CHAT_MESSAGE_SENDER_TYPE = "Sender_Type";
+	public static String COL_CHAT_MESSAGE_IS_READ = "Is_Read";
+	
+>>>>>>> thuan_dev
 }

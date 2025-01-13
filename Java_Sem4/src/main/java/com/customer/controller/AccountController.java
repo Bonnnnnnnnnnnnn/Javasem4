@@ -39,7 +39,7 @@ public class AccountController {
 
 	@GetMapping("/signup")
 	public String showpagesignup(Model model) {
-		System.out.println(rep.isEmailRegistered("bonnguyen11917@gmail.com"));
+		
 		return Views.CUS_SIGNUPPAGE;
 	}
 
@@ -53,14 +53,14 @@ public class AccountController {
 		request.getSession().setAttribute("passwordregister", password);
 		request.getSession().setAttribute("tokenregister", token);
 		model.addAttribute("email", email);
-		// Generate a confirmation link with the token
+		
 		String confirmationLink = "http://localhost:8080/account/confirm?email=" + email + "&token=" + token;
 
-		// Send the confirmation email
+		
 		try {
 			emailService.sendConfirmationEmail(email, confirmationLink);
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return Views.CUS_COFIRMPAGE;
@@ -69,22 +69,20 @@ public class AccountController {
 	@GetMapping("/confirm")
 	public String confirmRegistration(@RequestParam("email") String email, @RequestParam("token") String token,
 			HttpServletRequest request, Model model) {
-		// Retrieve the token stored in the session
+		
 		String sessionToken = (String) request.getSession().getAttribute("tokenregister");
 		String sessionEmail = (String) request.getSession().getAttribute("emailregister");
 		String sessionPw = (String) request.getSession().getAttribute("passwordregister");
-		System.out.println(sessionEmail);
-		System.out.println(sessionToken);
-		// Check if the email and token match
+		
 		if (sessionEmail != null && sessionEmail.equals(email) && sessionToken != null && sessionToken.equals(token)) {
 			Customer newcus = new Customer();
 			newcus.setEmail(sessionEmail);
 			newcus.setPassword((String) request.getSession().getAttribute("passwordregister"));
 
 			rep.createAccount(newcus);
-			System.out.println("Account created successfully for email: " + email);
+			
 			Customer cus = rep.login(email, sessionPw);
-			// Clear session attributes
+			
 			request.getSession().removeAttribute("emailregister");
 			request.getSession().removeAttribute("passwordregister");
 			request.getSession().removeAttribute("tokenregister");
@@ -95,7 +93,7 @@ public class AccountController {
 
 			System.out.println("Invalid confirmation token or email for email: " + email);
 			model.addAttribute("error", "Invalid confirmation token or email.");
-			return "redirect:/account/signup"; // Change to your error page
+			return "redirect:/account/signup";
 		}
 	}
 
@@ -142,10 +140,10 @@ public class AccountController {
 	@GetMapping("/validateCurrentPassword")
 	@ResponseBody
 	public boolean checcurrentpw(@RequestParam("password") String password, HttpServletRequest request) {
-		// Retrieve the logged-in user's ID from the session
+
 		int customerId = (int) request.getSession().getAttribute("logined");
 
-		// Validate the current password using the rep
+
 		return rep.verifyPassword(customerId, password);
 	}
 

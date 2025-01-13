@@ -10,7 +10,7 @@ public class Feedback {
 	private String Comment;
 	private LocalDate Created_Date;
 	private String Status;
-	private String customerName; // Thêm trường này       
+	private String customerName;     
 	
 	public Feedback(int id, int product_Id, int orderDetail_Id, int rating, String comment, LocalDate created_Date,
 			String status, String customerName) {

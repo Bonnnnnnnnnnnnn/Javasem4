@@ -24,7 +24,43 @@ public class Product {
     private Integer totalFeedbacks;
     private List<Feedback> feedbacks;
 	private String formattedPrice;
+	private List<Product_img> listimg;
+	private List<Product_spe> listspe;
+	private List<Comment> listcomment;
 	
+	
+	public List<Comment> getListcomment() {
+		return listcomment;
+	}
+
+	public void setListcomment(List<Comment> listcomment) {
+		this.listcomment = listcomment;
+	}
+
+	public List<Product_spe> getListspe() {
+		return listspe;
+	}
+
+	public void setListspe(List<Product_spe> listspe) {
+		this.listspe = listspe;
+	}
+
+	public String getFormattedPrice() {
+		return formattedPrice;
+	}
+
+	public void setFormattedPrice(String formattedPrice) {
+		this.formattedPrice = formattedPrice;
+	}
+
+	public List<Product_img> getListimg() {
+		return listimg;
+	}
+
+	public void setListimg(List<Product_img> listimg) {
+		this.listimg = listimg;
+	}
+
 	public Product(int id, String product_name, int cate_id, String category_name, int brand_id, int unit_id,
 			String unit_name, String brand_name, double price, String img, String status, String description,
 			int warranty_period, int length, int height, int width, int weight, Double averageRating,

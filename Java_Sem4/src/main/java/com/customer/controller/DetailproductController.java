@@ -33,6 +33,7 @@ public class DetailproductController {
 	public String showpage(Model model, @RequestParam String id) {
 		Product pro = rep.findId(Integer.parseInt(id));
 		model.addAttribute("list_spe", rep.findprospeId(Integer.parseInt(id)));
+	    model.addAttribute("productImages", rep.findProductImagesByProductId(Integer.parseInt(id)));
 		model.addAttribute("product", pro);
 		String[] statuses = { "NewRelease", "Active", "OutOfStock" };
 		model.addAttribute("list_procate",
@@ -42,7 +43,7 @@ public class DetailproductController {
 		model.addAttribute("list_proother",
 				repsp.findAllnopaging(new PageView(), "", new int[] {}, new int[] {}, statuses));
 		List<Comment> comments = commentRepository.getCommentsByProductId(Integer.parseInt(id));
-
+		
 		model.addAttribute("comments", comments);
 		return Views.CUS_DETAILPROPAGE;
 	}
