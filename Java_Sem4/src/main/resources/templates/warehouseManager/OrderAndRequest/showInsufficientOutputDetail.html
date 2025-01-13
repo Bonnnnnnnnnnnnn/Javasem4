@@ -46,6 +46,10 @@
                                             <td th:text="${request.name}"></td>
                                         </tr>
                                         <tr>
+                                            <th>Name</th>
+                                            <td th:text="${#temporals.format(request.date, 'yyyy-MM-dd')}"></td>
+                                        </tr>
+                                        <tr>
                                             <th>Status</th>
                                             <td th:text="${request.statusRequest}"></td>
                                         </tr>

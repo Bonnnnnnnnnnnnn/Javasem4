@@ -1,74 +1,89 @@
 package com.warehouseManager.repository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.mapper.Employee_mapper;
 import com.models.Employee;
 import com.utils.Views;
 
-
 @Repository
 public class inforEmpWarehouse {
-	
-    @Autowired 
-    private JdbcTemplate jdbcTemplate;
-     
-    public List<Employee> showEmpWarehouse(int employeeId) {
-        try {
-            // Viết trực tiếp câu truy vấn SQL
-            String str_query = "SELECT e.First_name, e.Last_name, e.Phone, " +
-                               "w.Id AS WarehouseId, w.Name AS WarehouseName " +
-                               "FROM Employee e " +
-                               "JOIN employee_warehouse ew ON e.Id = ew.Employee_Id " +
-                               "JOIN Warehouse w ON ew.Warehouse_Id = w.Id " +
-                               "WHERE ew.Employee_Id = ?";
 
-            System.out.println("Generated Query: " + str_query);
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-            return jdbcTemplate.query(str_query, new Employee_mapper(), employeeId);
-        } catch (Exception e) {
-            System.err.println("Error fetching employee warehouse data: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-    
-    public Employee findId(int employeeId) {
-        try {
-            String sql = """
-            		SELECT e.First_name, e.Last_name, e.Phone
-							
+	public Employee findId(int employeeId) {
+		try {
+			String sql = """
+					SELECT e.Id AS Id, e.First_name AS first_name, e.Last_name AS last_name, e.Phone AS phone,
+							w.Name AS warehouseName, r.Name AS roleName, e.Password AS password
 					FROM Employee e
+					JOIN Role r ON e.Role_Id = r.Id
 					JOIN employee_warehouse ew ON e.Id = ew.Employee_Id
 					JOIN Warehouse w ON ew.Warehouse_Id = w.Id
 					WHERE ew.Employee_Id = ?;
-            		""";
+					       		""";
 
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                Employee emp = new Employee();
-                emp.setId(rs.getInt(Views.COL_EMPLOYEE_ID)); 
-                emp.setFirst_name(rs.getString(Views.COL_EMPLOYEE_FIRST_NAME));
-                emp.setLast_name(rs.getString(Views.COL_EMPLOYEE_LAST_NAME));
-                emp.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
-                System.out.println("setId" + emp.getId());
-                System.out.println("setFirst_name" + emp.getFirst_name());
-                System.out.println("setLast_name" + emp.getLast_name());
-                System.out.println("setPhone" + emp.getPhone());
-                return emp;
-            }, employeeId); 
-            
-        } catch (DataAccessException e) {
-            System.err.println("Error fetching employee with ID: " + employeeId + " - " + e.getMessage());
-            return null;
-        }
-    }
-    
+			return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+				Employee emp = new Employee();
+				emp.setId(rs.getInt("Id"));
+				emp.setFirst_name(rs.getString("first_name"));
+				emp.setLast_name(rs.getString("last_name"));
+				emp.setPhone(rs.getString("phone"));
+				emp.setRole_name(rs.getString("roleName"));
+				emp.setWarehouse_name(rs.getString("warehouseName"));
+				emp.setPassword(rs.getString("password"));
+				return emp;
+			}, employeeId);
 
+		} catch (DataAccessException e) {
+			System.err.println("Error fetching employee with ID: " + employeeId + " - " + e.getMessage());
+			return null;
+		}
+	}
+	public Employee findIdBuniss(int employeeId) {
+		try {
+			String sql = """
+					SELECT e.Id AS Id, e.First_name AS first_name, e.Last_name AS last_name, e.Phone AS phone,
+							 r.Name AS roleName, e.Password AS password
+					FROM Employee e
+					JOIN Role r ON e.Role_Id = r.Id										
+					WHERE e.Id = ?;
+					       		""";
+
+			return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+				Employee emp = new Employee();
+				emp.setId(rs.getInt("Id"));
+				emp.setFirst_name(rs.getString("first_name"));
+				emp.setLast_name(rs.getString("last_name"));
+				emp.setPhone(rs.getString("phone"));
+				emp.setRole_name(rs.getString("roleName"));
+				emp.setPassword(rs.getString("password"));
+				return emp;
+			}, employeeId);
+
+		} catch (DataAccessException e) {
+			System.err.println("Error fetching employee with ID: " + employeeId + " - " + e.getMessage());
+			return null;
+		}
+	}
+	public void updateEmployee(Employee emp) {
+	    String sql = "UPDATE Employee SET First_name = ?, Last_name = ? WHERE Id = ?";
+	    jdbcTemplate.update(sql, emp.getFirst_name(), emp.getLast_name(), emp.getId());
+	}
+	
+
+
+	public void updatePassword(Employee emp) {
+		try {
+			String sql = "UPDATE " + Views.TBL_EMPLOYEE + " SET " + Views.COL_EMPLOYEE_PASSWORD + " = ? " + "WHERE "
+					+ Views.COL_EMPLOYEE_ID + " = ?";
+			jdbcTemplate.update(sql, emp.getPassword(), emp.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

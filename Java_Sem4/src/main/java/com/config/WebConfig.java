@@ -2,6 +2,7 @@ package com.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,27 +25,21 @@ public class WebConfig implements WebMvcConfigurer {
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-		/*
-		 * registry.addInterceptor(new AuthInterceptor()) .addPathPatterns("/admin/**",
-		 * "/warehouseManager/**" ,"/businessManager/**", "/role/**")
-		 * .excludePathPatterns("login", "/access-denied");
-		 */
-        registry.addInterceptor(headerInterceptor)
-                .addPathPatterns("/", 
-                                 "/shoppingpage/**", 
-                                 "/detailproduct/**", 
-                                 "/account/**", 
-                                 "/cart/**",
-                                 "/order/**",
-                                 "/checkout/**",
-                                 "/contact/**"); 
-        registry.addInterceptor(cartInterceptor)
-        .addPathPatterns("/cart/**"); 
+		
+		
+		  registry.addInterceptor(new AuthInterceptor()) .addPathPatterns("/admin/**",
+		  "/warehouseManager/**" ,"/businessManager/**", "/role/**")
+		  .excludePathPatterns("login", "/access-denied");
+		  
+		  registry.addInterceptor(headerInterceptor) .addPathPatterns("/",
+		  "/shoppingpage/**", "/detailproduct/**", "/account/**", "/cart/**",
+		  "/order/**", "/checkout/**", "/contact/**");
+		  registry.addInterceptor(cartInterceptor) .addPathPatterns("/cart/**");
+		 
 
       
     }
-
-	
+    
 
 }
 

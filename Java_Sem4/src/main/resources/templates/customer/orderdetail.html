@@ -174,14 +174,14 @@
 						</div>
 						<div class="col-md-9 form-group"></div>
 						<div class="col-md-3 form-group">
-							<a th:if="${order.Status == 'Waiting for cofirmation'}"
+							<a th:if="${order.Status == 'Waiting for confirmation'}"
 								class="btn btn-primary" data-toggle="modal"
 								data-target="#confirmCancelModal"> Cancel Order </a>
 							<div th:if="${order.Status == 'Canceled'}"
 								style="border-color: #acacac; background-color: #dddddd;"
 								class="btn">Order Canceled</div>
 							<div
-								th:if="${order.Status != 'Waiting for cofirmation' && order.Status != 'Canceled'}"
+								th:if="${order.Status != 'Waiting for confirmation' && order.Status != 'Canceled'}"
 								style="border-color: #acacac; background-color: #dddddd;"
 								class="btn">Confirmed - No Cancellation</div>
 

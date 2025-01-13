@@ -7,9 +7,8 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12">
-            <div class="card">
+            <div class="card" style="margin-top: 10px">
               <div class="card-header">
-                <h3 class="card-title">Order Table</h3>
                 <div class="input-group input-group-sm" style="width: 80%; margin-left:15%;">
                     <input type="text" name="table_search" id="searchInput" class="form-control float-right" placeholder="Search">
                     <div class="input-group-append">
@@ -21,35 +20,44 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
-                <table class="table table-hover text-nowrap">
-                  <thead>
-                    <tr class="text-center">
-                    	<th></th>
-						<th>Customer Name</th>
-						<th>Date</th>
-						<th>Address</th>						
-						<th>Status</th>
+                <table class="table table-hover text-nowrap" id="orderTable" 
+       style="table-layout: fixed; width: 100%; border-collapse: collapse; text-align: center;">
+    <thead>
+        <tr style="background-color: #f4f4f4; font-weight: bold;">
+            <th style="width: 10%; border: 1px solid #ddd; padding: 10px;">Order Id</th>
+            <th style="width: 15%; border: 1px solid #ddd; padding: 10px;">Customer Name</th>
+            <th style="width: 15%; border: 1px solid #ddd; padding: 10px;">Date</th>
+            <th style="width: 20%; border: 1px solid #ddd; padding: 10px;">Address</th>
+            <th style="width: 15%; border: 1px solid #ddd; padding: 10px;">Status</th>
+        </tr>
+    </thead>
+    <tbody id="warehouseTable">
+        <tr th:each="item : ${orders}" class="text-center" 
+            style="border: 1px solid #ddd; text-align: center;">
+            <td th:onclick="'goToDetail(' + ${item.id} + ')'" 
+                style="border: 1px solid #ddd; padding: 10px; cursor: pointer;">
+                <span th:text="${item.orderID}"></span>
+            </td>
+            <td th:onclick="'goToDetail(' + ${item.id} + ')'" 
+                style="border: 1px solid #ddd; padding: 10px; cursor: pointer;">
+                <span th:text="${item.cus_Name}"></span>
+            </td>
+            <td th:onclick="'goToDetail(' + ${item.id} + ')'" 
+                style="border: 1px solid #ddd; padding: 10px; cursor: pointer;">
+                <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
+            </td>
+            <td th:onclick="'goToDetail(' + ${item.id} + ')'" 
+                style="border: 1px solid #ddd; padding: 10px; cursor: pointer;">
+                <span th:text="${item.address}"></span>
+            </td>
+            <td th:onclick="'goToDetail(' + ${item.id} + ')'" 
+                style="border: 1px solid #ddd; padding: 10px; cursor: pointer;">
+                <span th:text="${item.status}"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
-                    </tr>
-                  </thead>
-                  <tbody id="warehouseTable">
-							<tr th:each="item : ${orders}" class="text-center">
-							    <td></td>
-							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${item.cus_Name}"></span>
-							    </td>
-							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${#temporals.format(item.date, 'yyyy-MM-dd')}"></span>
-							    </td>	
-							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${item.address}"></span>
-							    </td>							    					    
-							    <td th:onclick="'goToDetail(' + ${item.id} + ')'">
-							        <span th:text="${item.status}"></span>
-							    </td>
-							</tr>
-				    </tbody>
-                </table>
                 <table style="margin-left:42%">
 				   <tfoot id="paginationFooter">
 				        <tr class="pagination">
@@ -85,4 +93,34 @@
   <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
 <script th:src="@{/js/showOrderDetail.js}"></script>
 <div th:replace="warehouseManager/layout/footer_admin"></div>
+<script>
+const searchInput = document.getElementById('searchInput');
+const orderTable = document.getElementById('orderTable');
+
+searchInput.addEventListener('keyup', function () {
+    const filter = searchInput.value.toLowerCase(); 
+    const rows = orderTable.getElementsByTagName('tr'); 
+
+    for (let i = 1; i < rows.length; i++) { 
+        const row = rows[i];
+        const orderId = row.cells[1].innerText.toLowerCase(); 
+        const customerName = row.cells[2].innerText.toLowerCase(); 
+        const date = row.cells[3].innerText.toLowerCase();
+        const address = row.cells[4].innerText.toLowerCase(); 
+
+
+        if (
+            orderId.includes(filter) ||
+            customerName.includes(filter) ||
+            date.includes(filter) ||
+            address.includes(filter)
+        ) {
+            row.style.display = ''; 
+        } else {
+            row.style.display = 'none'; 
+        }
+    }
+});
+
+</script>
 </html>

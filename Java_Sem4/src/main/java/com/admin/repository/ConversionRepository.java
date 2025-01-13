@@ -28,7 +28,7 @@ public class ConversionRepository {
                 "INNER JOIN %s u1 ON c.%s = u1.%s " +
                 "INNER JOIN %s u2 ON c.%s = u2.%s " +
                 "WHERE c.%s = ? " +
-                "ORDER BY c.%s DESC",
+                "ORDER BY c.%s ASC",
                 Views.COL_PRODUCT_NAME, 
                 Views.COL_UNIT_NAME,   
                 Views.COL_UNIT_NAME,
@@ -83,11 +83,17 @@ public class ConversionRepository {
             conversion.getConversion_rate()
         );
     }
-    
-    public int deleteConversion(int conversionId) {
-        String sql = "DELETE FROM Conversion WHERE id = ?";
-        return jdbcTemplate.update(sql, conversionId);
+    public String getUnitNameById(int unitId) {
+        String sql = "SELECT name AS unitName FROM Unit WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getString("unitName"), unitId);
     }
+
+
+    public int deleteConversion(int conversionId, int productId) {
+        String sql = "DELETE FROM Conversion WHERE id = ? AND Product_Id = ?";
+        return jdbcTemplate.update(sql, conversionId, productId);
+    }
+
 
     public int updateConversion(Conversion conversion) {
         String sql = "UPDATE Conversion SET from_unit_id = ?, to_unit_id = ?, conversion_rate = ? WHERE id = ?";

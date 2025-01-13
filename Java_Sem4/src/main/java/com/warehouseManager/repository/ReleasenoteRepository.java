@@ -1,5 +1,6 @@
 package com.warehouseManager.repository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mapper.Order_mapper;
 import com.mapper.Request_mapper;
-import com.mapper.Request_detail_mapper;
 import com.mapper.Warehouse_releasenote_mapper;
 import com.models.Order;
 import com.models.Order_detail;
@@ -32,7 +31,51 @@ public class ReleasenoteRepository {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	// status order Completed
+	public boolean completeDelivery(int orderId) {
+	    String sql = "UPDATE [Order] SET Status = 'Completed' WHERE Id = ?";
+	    try {
+	        int rowsAffected = jdbcTemplate.update(sql, orderId);
+	        return rowsAffected > 0; // 
+	    } catch (DataAccessException e) {
+	        e.printStackTrace(); // 
+	        return false;
+	    }
+	}
 
+	
+	//get list order take status
+	public List<Order> getOrderByStatus(int employeeId) {
+		String sql = """
+				SELECT 
+					o.Id AS id,
+					o.OrderID AS OrderId,
+					o.Cus_Name AS Name,
+					o.Phone As Phone,
+					o.Address As Address,
+					o.Status As Status
+				FROM [Order] o
+				WHERE
+				o.Employee_id = ? 
+				AND o.Status = 'waiting for shipping'
+				""";
+		try {
+		    return jdbcTemplate.query(sql, (rs, rowNum) -> {
+		        Order detail = new Order();
+		        detail.setId(rs.getInt("id"));
+		        detail.setOrderID(rs.getString("OrderId"));
+		        detail.setCus_Name(rs.getString("Name"));
+		        detail.setPhone(rs.getString("Phone"));
+		        detail.setAddress(rs.getString("Address"));
+		        detail.setStatus(rs.getString("Status"));
+		        return detail;
+		    }, employeeId);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    return new ArrayList<>();
+		}
+
+	}
 	//update employee_id bang request
 	public void updateEmployeeId(int requestId, int employeeId, int warehouseId) {
 	    String sql = "UPDATE Request SET Employee_Id = ?, Warehouse_Id = ? WHERE Id = ?";
@@ -210,8 +253,7 @@ public class ReleasenoteRepository {
 	        System.err.println("Error fetching requests: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
-		
-		
+				
 		
 	}
 	
@@ -251,7 +293,6 @@ public class ReleasenoteRepository {
 	                itemPage.getPage_size()
 	            );
 	        } else {
-	            // Truy vấn không phân trang
 	            return jdbcTemplate.query(sql, new Request_mapper());
 	        }
 	    } catch (DataAccessException e) {
@@ -382,7 +423,7 @@ public class ReleasenoteRepository {
 	    }, wgrnId);
 	}
 	
-	// hiển thị bảng Request_detail
+
 	public List<Request_detail> findDetailsByRequestId(int requesId) {
 	    String sql = "SELECT rd.*,rd.Id AS RqDetailId, p.Product_name AS Product_name, u.Name As Unit_name " +
 	                 "FROM Request_detail rd " +

@@ -7,9 +7,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +44,56 @@ public class ReleasenoteController {
 	@Autowired
 	private ReleasenoteRepository rele;
 	
+	@GetMapping("/orderByStatus")
+	public String showStock(HttpSession session) {
+
+	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+
+	    if (loggedInEmployee == null) {
+	        return "redirect:/employee/login";
+	    }
+
+	    return Views.SHOW_ORDER_STATUS_WAITING;
+	}
+
+	
+	@GetMapping("/OrderWaiting")
+	@ResponseBody
+	public List<Order> getOrdersByStatus(HttpSession session) {
+	    Employee loggedInEmployee = (Employee) session.getAttribute("loggedInEmployee");
+
+	    try {
+	        if (loggedInEmployee != null) {
+	            int employeeId = loggedInEmployee.getId();
+	            return rele.getOrderByStatus(employeeId);
+	        } else {
+	            return new ArrayList<>();
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
+	
+	@PostMapping("/completeDelivery/{orderId}")
+	@ResponseBody
+	public ResponseEntity<String> completeDelivery(@PathVariable int orderId) {
+	    try {
+	        boolean isUpdated = rele.completeDelivery(orderId);
+
+	        if (isUpdated) {
+	            return ResponseEntity.ok("Order status updated to 'Completed'");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found or update failed");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating order status");
+	    }
+	}
+
+
+	
 	//show warehouse note in warehouseManager
 	@GetMapping("/showWareReleasenote")
 	public String showWareReleasenote(Model model, HttpSession session,
@@ -63,6 +116,7 @@ public class ReleasenoteController {
 
 		return Views.SHOW_WAREHOUSE_RELEASENOTE;
 	}
+	
 	//show warehouse note detail in warehouseManager
 
 	  @GetMapping("/warehouseReleasenoteDetail") 
@@ -152,7 +206,7 @@ public class ReleasenoteController {
 			
 			rele.updateStatusToProcessing(requestId);
 		} else {
-			return "employee/login";
+			return "redirect:/employee/login";
 		}
 		return "redirect:/warehouseManager/ShowOrderRequest";
 	}
