@@ -46,112 +46,114 @@ function loadPage(pageNumber) {
 		}
 	});
 }
-document.addEventListener('DOMContentLoaded', function() {
-	const urlParams = new URLSearchParams(window.location.search);
-	const activeTab = urlParams.get('activeTab');
-
-	if (activeTab === 'productSpecifications') {
-		const tab = new bootstrap.Tab(document.querySelector('#productSpecifications-tab'));
-		tab.show();
-	}
-});
 // xóa nhieuf ảnh
 function toggleSelectAll(selectAllCheckbox) {
-	const checkboxes = document.querySelectorAll('.productCheckbox');
-	checkboxes.forEach(checkbox => {
-		checkbox.checked = selectAllCheckbox.checked;
-	});
+    const checkboxes = document.querySelectorAll('.productCheckbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    
+    toggleDeleteButton();
 }
+
+// Hàm xóa các sản phẩm đã chọn
 function deleteSelectedImg() {
-	const selectedProductIds = [];
-	document.querySelectorAll('.productCheckbox:checked').forEach(checkbox => {
-		selectedProductIds.push(parseInt(checkbox.value));
-	});
-	if (selectedProductIds.length > 0) {
-		if (confirm('Are you sure you want to delete the selected products?')) {
-			fetch('/admin/product/deleteSelected', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(selectedProductIds)
-			})
-				.then(response => {
-					if (response.ok) {
-						return response.text();
-					} else {
-						throw new Error('Failed to delete products.');
-					}
-				})
-				.then(data => {
-					console.log(data);
-					window.location.reload();
-				})
-				.catch(error => {
-					console.error('Error:', error);
-					alert('An error occurred while deleting products: ' + error.message);
-				});
-		}
-	} else {
-		alert('Please select at least one product to delete.');
-	}
+    const selectedProductIds = [];
+    document.querySelectorAll('.productCheckbox:checked').forEach(checkbox => {
+        selectedProductIds.push(parseInt(checkbox.value));
+    });
+    if (selectedProductIds.length > 0) {
+        if (confirm('Are you sure you want to delete the selected products?')) {
+            fetch('/admin/product/deleteSelected', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedProductIds)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Failed to delete products.');
+                    }
+                })
+                .then(data => {
+                    console.log(data);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting products: ' + error.message);
+                });
+        }
+    } else {
+        alert('Please select at least one product to delete.');
+    }
 }
+
+// Hàm kiểm tra trạng thái của các checkbox và bật/tắt nút xóa
 function toggleDeleteButton() {
-	const checkboxes = document.querySelectorAll('.productCheckbox');
-	const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const checkboxes = document.querySelectorAll('.productCheckbox');
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
 
-	// Kiểm tra nếu có ít nhất một checkbox được chọn
-	const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-	// Bật hoặc tắt nút xóa
-	deleteBtn.disabled = !isAnyChecked; // true nếu không có checkbox nào được chọn
+    deleteBtn.disabled = !isAnyChecked;
 }
-
 
 // Hàm kiểm tra và thay đổi trạng thái "Select all"
 function updateProductStatus(element) {
-    const productId = element.getAttribute('data-id'); // Lấy ID sản phẩm
-    const currentStatus = element.getAttribute('data-status'); // Lấy trạng thái hiện tại
+    const productId = element.getAttribute('data-id');
+    const currentStatus = element.getAttribute('data-status');
     const statuses = ["Active", "InActive", "OutOfstock", "NewRelease"];
 
-    // Xác định trạng thái tiếp theo
     let currentIndex = statuses.indexOf(currentStatus);
     let nextIndex = (currentIndex + 1) % statuses.length;
     let newStatus = statuses[nextIndex];
 
-    // Cập nhật trạng thái trong giao diện
-    const statusElement = document.getElementById("status-" + productId);
-    if (statusElement) {
-        statusElement.innerText = newStatus;
-    } else {
-        console.error(`Status element with ID status-${productId} not found!`);
-        return;
-    }
+    // Hiển thị hộp thoại xác nhận
+    const isConfirmed = confirm(`Are you sure you want to change the status to ${newStatus}?`);
 
-    fetch(`/admin/product/updateStatus`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            id: productId,
-            status: newStatus,
-        }),
-    })
-        .then(response => {
-            if (response.status === 200) {
-                element.setAttribute('data-status', newStatus);
-            } else {
-                console.error('Failed to update status:', response.status);
-                statusElement.innerText = currentStatus;
-            }
+    // Nếu người dùng xác nhận, thực hiện thay đổi trạng thái
+    if (isConfirmed) {
+        const statusElement = document.getElementById("status-" + productId);
+        if (statusElement) {
+            statusElement.innerText = newStatus;
+        } else {
+            console.error(`Status element with ID status-${productId} not found!`);
+            return;
+        }
+
+        fetch(`/admin/product/updateStatus`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: productId,
+                status: newStatus,
+            }),
         })
-        .catch(error => {
-            console.error('Error updating status:', error);
-            // Khôi phục trạng thái cũ nếu gặp lỗi
-            statusElement.innerText = currentStatus;
-        });
+            .then(response => {
+                if (response.status === 200) {
+                    element.setAttribute('data-status', newStatus);
+                } else {
+                    console.error('Failed to update status:', response.status);
+                    statusElement.innerText = currentStatus;
+                }
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+                statusElement.innerText = currentStatus;
+            });
+    } else {
+        // Nếu người dùng không xác nhận, không làm gì
+        console.log('Status update was cancelled');
+    }
 }
+
+
 
 
 

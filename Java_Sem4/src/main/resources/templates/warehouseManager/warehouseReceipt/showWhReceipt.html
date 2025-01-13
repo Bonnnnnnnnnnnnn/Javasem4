@@ -32,7 +32,8 @@
 									class="custom-alert error"></p>
 							</div>
 							<div>
-							    <span id="error-message" th:text="${error}" style="display:none;"></span>
+								<span id="error-message" th:text="${error}"
+									style="display: none;"></span>
 							</div>
 							<div class="card-header">
 								<div class="d-flex align-items-center">
@@ -106,6 +107,7 @@
 											<td><a
 												th:href="@{/warehouseManager/warehouseReceipt/showWhReceipt(cp=${pv.Total_page})}"
 												title="Last page">&raquo;</a></td>
+
 										</tr>
 									</tfoot>
 								</table>

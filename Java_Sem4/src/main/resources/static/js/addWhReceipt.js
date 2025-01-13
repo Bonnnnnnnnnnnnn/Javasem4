@@ -160,34 +160,7 @@ function addWarehousePriceEvents(inputElement) {
 		}
 	});
 
-<<<<<<< HEAD
-		   // Cập nhật fetchConversionId để chọn conversion tương ứng với product
-		   function fetchConversionId(selectElement) {
-		       var productId = selectElement.value;
-		       if (productId) {
-		           fetch('/warehouseManager/warehouseReceipt/getConversions?id=' + productId)
-		               .then(response => response.json())
-		               .then(data => {
-						console.log(data)
-		                   var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
-		                   conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>'; // Xóa các option cũ
-		                   
-		                   data.forEach(conversion => {
-		                       var option = document.createElement('option');
-		                       option.value = conversion.id;
-		                       option.text = conversion.fromUnitName + '->' + conversion.toUnitName + '(' + conversion.conversion_rate + ')';
-		                       conversionSelect.appendChild(option);
-		                   });
-		               })
-		               .catch(error => {
-		                   console.error('Error fetching conversions:', error);
-		               });
-		       } else {
-		           var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
-		           conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
-		       }
-		   }
-=======
+
 	inputElement.addEventListener('input', function(e) {
 		e.target.value = e.target.value.replace(/[^0-9.]/g, '');
 		const value = parseFloat(e.target.value);
@@ -229,7 +202,6 @@ function fetchConversionId(selectElement) {
 		conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
 	}
 }
->>>>>>> trongdev
 
 
 

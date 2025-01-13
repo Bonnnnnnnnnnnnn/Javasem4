@@ -80,9 +80,6 @@ public class ConversionController {
                     .body(Map.of("error", "Failed to add conversion", "details", e.getMessage()));
         }
     }
-
-
-
     
     @DeleteMapping("/conversion/delete")
     @ResponseBody

@@ -90,6 +90,13 @@
 												<p>No product images found.</p>
 											</div>
 										</div>
+
+										<!-- Giới hạn số lượng ảnh -->
+										<div th:if="${images.size() >= 10}" class="col-12 text-center">
+											<p>You can only add up to 10 images.</p>
+											<a class="btn btn-secondary disabled">Add Images Details</a>
+										</div>
+
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
@@ -173,9 +180,7 @@
 												<a th:href="@{/admin/product/showProduct}"
 													class="btn btn-danger">Back to list product</a> <a
 													th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
-													class="btn btn-success">Update</a> <a
-													th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}"
-													class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
+													class="btn btn-warning">Update Product</a>
 											</div>
 										</form>
 									</div>
@@ -299,7 +304,45 @@
 
 									<!-- Product Specifications Tab -->
 									<div class="tab-pane" id="productSpecifications-tab">
-										<table class="table table-hover text-nowrap">
+										<div class="infopro row gx-3 gy-3">
+											<!-- Khối Specification -->
+											<div class="col-12 col-md-12">
+												<div class="card">
+													<div class="card-header text-white"
+														style="background-color: #1E90FF;">Add Specification</div>
+													<form id="add-specification-form" method="post">
+														<div class="card-body row">
+															<input type="hidden" name="product_id" id="product_id"
+																th:value="${product.id}" />
+															<div class="mb-3 col-12">
+																<label for="name_spe">Name specifications</label> <input
+																	type="text" id="name_spe" name="name_spe"
+																	class="form-control"
+																	placeholder="Enter name specifications" required>
+															</div>
+															<div class="mb-3 col-12">
+																<label for="des_spe">Description specifications</label>
+																<textarea id="des_spe" name="des_spe"
+																	class="form-control"
+																	placeholder="Enter description specifications" required></textarea>
+															</div>
+															<button type="submit" class="btn btn-primary"
+																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 4px; transition: all 0.3s ease;"
+																onmouseover="this.style.backgroundColor='#0056b3';"
+																onmouseout="this.style.backgroundColor='#007bff';">
+																<i class="fas fa-plus"
+																	style="margin-right: 8px; font-size: 16px;"></i> Add
+																specification
+															</button>
+
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+
+										<table id="specificationTable"
+											class="table table-hover text-nowrap">
 											<thead>
 												<tr class="text-center">
 													<th>STT</th>
@@ -310,29 +353,15 @@
 														class="btn btn-primary">Add product specification</a></th>
 												</tr>
 											</thead>
-											<tbody>
-												<tr th:if="${#lists.isEmpty(ps)}" class="text-center">
-													<td colspan="4">No units found</td>
-												</tr>
-<<<<<<< HEAD
-												<tr th:each="item, iterStat : ${ps}" class="text-center">
-=======
+											<tbody id="specificationsTableBody" class="text-center">
 
-												<tr th:each="item, iterStat : ${ps}" class="text-center"
-													th:classappend="${item.id == newCategoryId} ? 'highlighted-row' : ''">
->>>>>>> trongdev
-													<td th:text="${iterStat.index + 1}"></td>
-													<td><span th:text="${item.name_spe}"></span></td>
-													<td><span th:text="${item.des_spe}"></span></td>
-													<td><a
-														th:href="@{/admin/product/showUpdatePs(id=${item.id})}"
-														class="btn btn-warning">Update</a> <a
-														th:href="@{deletePs(id=${item.id})}"
-														onclick="return confirmDeletePs();" class="btn btn-danger">Delete</a>
-													</td>
-												</tr>
 											</tbody>
 										</table>
+										<nav class="d-flex justify-content-center"
+											style="margin-top: 22px;">
+											<ul class="pagination" id="pagination1"></ul>
+										</nav>
+
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
@@ -350,29 +379,21 @@
 													<th>End Date</th>
 												</tr>
 											</thead>
-											<tbody>
-												<tr th:if="${#lists.isEmpty(priceChanges)}"
-													class="text-center">
-													<td colspan="4">No price changes found</td>
-												</tr>
-												<tr th:each="item, iterStat : ${priceChanges}"
-													class="text-center">
-													<td th:text="${iterStat.index + 1}"></td>
-													<td>$ <span th:text="${item.price}"></span></td>
-													<td><span
-														th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span></td>
-													<td><span th:if="${item.date_end != null}"
-														th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
-														<span th:if="${item.date_end == null}" th:text="'Present'"></span>
-													</td>
-												</tr>
+											<tbody id="priceChangesTableBody" class="text-center">
 											</tbody>
 										</table>
 										<div class="card-footer">
+											<nav class="d-flex justify-content-center">
+												<ul class="pagination" style="margin-top: 22px;"
+													id="Pagination2">
+												</ul>
+											</nav>
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
 										</div>
 									</div>
+
+
 								</div>
 							</div>
 						</div>
@@ -380,14 +401,16 @@
 				</div>
 			</div>
 		</section>
-		<div id="toast-message" style="display: none;"
-			class="alert alert-success"></div>
 	</div>
 	<div th:replace="admin/layout/footer_admin"></div>
+
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script th:src="@{/js/showProduct.js}"></script>
+	<script th:src="@{/js/phantrangspe.js}"></script>
 	<script th:src="@{/js/conversionbuid.js}"></script>
+	<script th:src="@{/js/phantrangPrice.js}"></script>
 	<script>
+	
 	document.getElementById("add-conversion-form").addEventListener("submit", function (e) {
 	    e.preventDefault(); // Ngăn form submit mặc định
 

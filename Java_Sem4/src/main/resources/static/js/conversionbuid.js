@@ -64,7 +64,6 @@ function renderStockTable1() {
 function renderPagination1() {
 	const totalPages = Math.ceil(allConversions.length / pageSize1); // Tổng số trang
 	let paginationHtml = '';
-	console.log("Total pages:", totalPages); // Kiểm tra số trang
 
 	// Nút "Previous"
 	paginationHtml += `

@@ -123,3 +123,21 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
 		}
 	});
 });
+function validateImageCount() {
+        const imageInput = document.getElementById('additionalImages');
+        const fileCount = imageInput.files.length;
+
+        if (fileCount > 10) {
+            document.getElementById('imageError').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            return false;
+        } else {
+            document.getElementById('imageError').style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+            return true; 
+        }
+    }
+
+    document.getElementById('additionalImages').addEventListener('change', function () {
+        validateImageCount();
+    });
