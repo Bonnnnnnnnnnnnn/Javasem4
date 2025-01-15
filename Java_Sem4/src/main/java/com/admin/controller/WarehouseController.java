@@ -126,6 +126,8 @@ public class WarehouseController {
 	        @RequestParam("wardId") String wardId,
 	        @RequestParam("provinceId") int provinceId,
 	        @RequestParam("districtId") int districtId,
+	        @RequestParam("Lat") double Lat,
+	        @RequestParam("Lng") double Lng,
 	        @RequestParam("employeeId") int employeeId,
 	        RedirectAttributes redirectAttributes) {
 	    try {
@@ -137,6 +139,8 @@ public class WarehouseController {
 	        wh.setWard_Id(wardId);
 	        wh.setProvince_Id(provinceId);
 	        wh.setDistrict_Id(districtId);
+	        wh.setLat(Lat);
+	        wh.setLng(Lng);
 
 	        boolean isSaved = repwh.saveWh(wh, employeeId);
 
@@ -203,6 +207,8 @@ public class WarehouseController {
 							@RequestParam("ward_Id") String ward_id,
 							@RequestParam("province_Id") int province_id,
 							@RequestParam("district_Id") int district_Id,
+					        @RequestParam("Lat") double Lat,
+					        @RequestParam("Lng") double Lng,
 							@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
 		Warehouse wh = new Warehouse();
 		wh.setName(name);
@@ -211,6 +217,8 @@ public class WarehouseController {
 		wh.setWard_Id(ward_id);
 		wh.setProvince_Id(province_id);
 		wh.setDistrict_Id(district_Id);
+		wh.setLat(Lat);
+		wh.setLng(Lng);
 		wh.setId(id);
 		repwh.updatewh(wh);
 		redirectAttributes.addFlashAttribute("message", "✔ Warehouse updated successfully!");
