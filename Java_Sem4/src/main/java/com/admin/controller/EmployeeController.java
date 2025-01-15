@@ -74,24 +74,30 @@ public class EmployeeController {
 	    }
 	}
 	@PostMapping("/registerEmp")
-    public String registerEmp(@RequestParam String finame,
-					    		@RequestParam String laname,
-					    		@RequestParam String pwd,
-					    		@RequestParam String phone,
-					    		@RequestParam int roleId, RedirectAttributes redirectAttributes) {
-        Employee emp = new Employee();
-        emp.setFirst_name(finame);
-        emp.setLast_name(laname);
-        emp.setPassword(pwd); 
-        emp.setPhone(phone);
-        emp.setRole_id(roleId);
-        emprep.saveEmp(emp);
-        redirectAttributes.addFlashAttribute("newEmployeeId", emp.getId());
-        redirectAttributes.addFlashAttribute("message", "✔ Employee added successfully !");
-        return "redirect:/admin/employee/showEmp";
-    }
-	
-	// sửa lại nhân viên cũng là đổi mật khẩu nhân viên luôn
+	public String registerEmp(@RequestParam String finame,
+	                          @RequestParam String laname,
+	                          @RequestParam String pwd,
+	                          @RequestParam String phone,
+	                          @RequestParam int roleId, RedirectAttributes redirectAttributes) {
+	    
+	    if (emprep.existsByPhone(phone)) {
+	        redirectAttributes.addFlashAttribute("errorMessage", "Phone number already exists!");
+	        return "redirect:/admin/employee/showRegister";
+	    }
+
+	    Employee emp = new Employee();
+	    emp.setFirst_name(finame);
+	    emp.setLast_name(laname);
+	    emp.setPassword(pwd);
+	    emp.setPhone(phone);
+	    emp.setRole_id(roleId);
+	    emprep.saveEmp(emp);
+
+	    redirectAttributes.addFlashAttribute("newEmployeeId", emp.getId());
+	    redirectAttributes.addFlashAttribute("message", "✔ Employee added successfully !");
+	    return "redirect:/admin/employee/showEmp";
+	}
+
 	@GetMapping("showUpdateEmployee")
 	public String showUpdateEmployee(Model model, @RequestParam String id) {
 	    try {
@@ -118,6 +124,15 @@ public class EmployeeController {
 	                        @RequestParam("password") String pwd,
 	                        @RequestParam("phone") String phone,
 	                        @RequestParam("role_id") int roleId, RedirectAttributes redirectAttributes) {
+
+	    // Kiểm tra nếu số điện thoại đã tồn tại và không phải của nhân viên hiện tại
+	    if (emprep.existsByPhoneAndIdNot(phone, id)) {
+	        // Nếu đã tồn tại, trả về trang cập nhật và hiển thị thông báo lỗi
+	        redirectAttributes.addFlashAttribute("errorMessage", "Phone number already exists");
+	        return "redirect:/admin/employee/showRegister"; // hoặc trang cập nhật của bạn
+	    }
+
+	    // Nếu số điện thoại không trùng, tiến hành cập nhật thông tin nhân viên
 	    Employee emp = new Employee();
 	    emp.setId(id);
 	    emp.setFirst_name(finame);
@@ -125,10 +140,15 @@ public class EmployeeController {
 	    emp.setPassword(pwd);
 	    emp.setPhone(phone);
 	    emp.setRole_id(roleId);
-	    emprep.updateEmp(emp);
+	    
+	    // Cập nhật thông tin nhân viên
+	    emprep.updateEmp(emp); // Giả sử bạn đã có phương thức updateEmp trong repository
+
+	    // Thêm thông báo thành công và chuyển hướng đến danh sách nhân viên
 	    redirectAttributes.addFlashAttribute("message", "✔ Employee updated successfully !");
 	    return "redirect:/admin/employee/showEmp";
 	}
+
 	
 	// xóa nhân viên 
 	@GetMapping("deleteEmployee")

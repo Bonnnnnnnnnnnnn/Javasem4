@@ -124,7 +124,22 @@ public class EmployeeRepository {
             return null;
         }
     }
-
+    public boolean existsByPhone(String phone) {
+    	try {
+    		String sql = "SELECT COUNT(*) FROM Employee WHERE Phone = ?";
+            Integer count = empdb.queryForObject(sql, Integer.class, phone);
+            return count != null && count > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+        
+    }
+    public boolean existsByPhoneAndIdNot(String phone, int id) {
+        String sql = "SELECT COUNT(*) FROM employee WHERE phone = ? AND id != ?";
+        Integer count = empdb.queryForObject(sql, Integer.class, phone, id);
+        return count != null && count > 0;
+    }
     public void saveEmp(Employee emp) {
         try {
             String encodedPassword = SecurityUtility.encryptBcrypt(emp.getPassword());

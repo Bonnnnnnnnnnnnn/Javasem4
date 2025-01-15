@@ -125,15 +125,20 @@ function addDetailGroup() {
         }
     });
 
-    const warehousePriceInput = originalReceiptGroup.querySelector('input[name="wh_price"]');
-    if (warehousePriceInput) {
-        addWarehousePriceEvents(warehousePriceInput);
-    }
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.classList.add('btn', 'btn-danger', 'delete-group-button');
+    deleteButton.innerText = 'Delete more detail';
+    deleteButton.onclick = function () {
+        detailsContainer.removeChild(originalReceiptGroup.previousElementSibling);
+        detailsContainer.removeChild(originalReceiptGroup);
+    };
 
-    const originalWarehousePriceInput = detailsContainer.querySelector('input[name="wh_price"]');
-    if (originalWarehousePriceInput) {
-        addWarehousePriceEvents(originalWarehousePriceInput);
-    }
+    const buttonContainer = document.createElement('div');
+    buttonContainer.classList.add('button-container');
+    buttonContainer.appendChild(deleteButton);
+
+    originalReceiptGroup.appendChild(buttonContainer);
 
     const separator = document.createElement('hr');
     separator.classList.add('separator');
@@ -141,6 +146,8 @@ function addDetailGroup() {
     detailsContainer.appendChild(originalReceiptGroup);
     detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
 }
+
+
 
 // Hàm thêm sự kiện định dạng tiền
 function addWarehousePriceEvents(inputElement) {
