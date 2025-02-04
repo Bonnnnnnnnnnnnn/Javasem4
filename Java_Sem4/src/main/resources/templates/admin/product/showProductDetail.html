@@ -106,83 +106,102 @@
 									<!-- Product Details Tab -->
 									<div class="tab-pane" id="productdetails-tab">
 										<form th:object="${product}">
-											<div class="card-body row">
-												<div class="form-group col-md-2">
-													<label for="exampleInputPassword1">Image</label> <img
-														th:if="${product.img != null}"
-														th:src="@{/uploads/{imageName}(imageName=${product.img})}"
-														style="width: 55%;">
+											<div class="card">
+												<div
+													class="card-header d-flex justify-content-center align-items-center">
+													<h3 class="mb-0" style="color:black;">Product Details</h3>
 												</div>
-												<div class="form-group col-md-4"></div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Status</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.status}">
+
+												<div class="card-body">
+													<div class="row">
+														<!-- Hình ảnh sản phẩm -->
+														<div class="col-md-3 text-center">
+															<label>Image</label>
+															<div class="product-image">
+																<img th:if="${product.img != null}"
+																	th:src="@{/uploads/{imageName}(imageName=${product.img})}"
+																	class="img-fluid rounded shadow">
+															</div>
+														</div>
+
+														<!-- Thông tin sản phẩm -->
+														<div class="col-md-9">
+															<div class="row">
+																<div class="col-md-6">
+																	<label>Product Name</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${product.product_name}">
+																</div>
+																<div class="col-md-6">
+																	<label>Status</label> <input class="form-control"
+																		disabled readonly th:value="${product.status}">
+																</div>
+																<div class="col-md-6">
+																	<label>Price</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${formattedPrice}">
+																</div>
+																<div class="col-md-6">
+																	<label>Warranty Period</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${product.warranty_period} + ' months'">
+																</div>
+																<div class="col-md-6">
+																	<label>Unit</label> <input class="form-control"
+																		disabled readonly th:value="${product.unit_name}">
+																</div>
+																<div class="col-md-6">
+																	<label>Brand</label> <input class="form-control"
+																		disabled readonly th:value="${product.brandName}">
+																</div>
+																<div class="col-md-6">
+																	<label>Category</label> <input class="form-control"
+																		disabled readonly th:value="${product.categoryName}">
+																</div>
+															</div>
+														</div>
+
+														<!-- Mô tả sản phẩm -->
+														<div class="col-md-12 mt-3">
+															<label>Description</label>
+															<textarea class="form-control" disabled readonly
+																th:field="*{description}"></textarea>
+														</div>
+
+														<!-- Kích thước sản phẩm -->
+														<div class="col-md-12 mt-3">
+															<div class="row">
+																<div class="col-md-3">
+																	<label>Length</label> <input class="form-control"
+																		disabled readonly th:value="${product.length} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Height</label> <input class="form-control"
+																		disabled readonly th:value="${product.height} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Width</label> <input class="form-control"
+																		disabled readonly th:value="${product.width} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Weight</label> <input class="form-control"
+																		disabled readonly th:value="${product.weight} + ' g'">
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
-												<div class="form-group col-md-6">
-													<label for="title">Price</label> <input type="text"
-														id="price" disabled readonly th:value="${formattedPrice}"
-														class="form-control">
+
+												<!-- Nút điều hướng -->
+												<div class="card-footer">
+													<a th:href="@{/admin/product/showProduct}"
+														class="btn btn-danger"> Back to Product List </a> <a
+														th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
+														class="btn btn-warning"> Update Product </a>
 												</div>
-												<div class="form-group col-md-6">
-													<label for="title">Product Name</label> <input type="text"
-														id="proName" disabled readonly
-														th:value="${product.product_name}" class="form-control">
-												</div>
-												<div class="form-group col-md-6">
-													<label for="phone">Warranty period</label> <input
-														type="text" disabled readonly
-														th:value="${product.warranty_period} + ' ' + months"
-														class="form-control">
-												</div>
-												<div class="form-group col-6">
-													<label for="conversion">Unit</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.unit_name}">
-												</div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Brand</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.brandName}">
-												</div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Category</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.categoryName}">
-												</div>
-												<div class="form-group col-md-12">
-													<label for="phone">Description</label>
-													<textarea id="description" disabled readonly
-														th:field="*{description}" class="form-control"></textarea>
-												</div>
-												<div class="form-group col-3">
-													<label for="conversion">Length</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.length} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Height</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.height} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Width</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.width} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Weight</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.weight} + ' ' + (g)">
-												</div>
-											</div>
-											<div class="card-footer">
-												<a th:href="@{/admin/product/showProduct}"
-													class="btn btn-danger">Back to list product</a> <a
-													th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
-													class="btn btn-warning">Update Product</a>
 											</div>
 										</form>
+
 									</div>
 
 									<!-- Conversion Tab -->
@@ -370,6 +389,14 @@
 
 									<!-- Change Price Tab -->
 									<div class="tab-pane" id="changeprice-tab">
+										<div class="d-flex justify-content-end mb-3">
+											<label for="sortPriceChanges" class="mr-2">Sort by:</label> <select
+												id="sortPriceChanges" class="form-control w-auto">
+												<option value="normal">Normal</option>
+												<option value="asc">Small to Large</option>
+												<option value="desc">Big to Small</option>
+											</select>
+										</div>
 										<table class="table table-hover text-nowrap">
 											<thead>
 												<tr class="text-center">

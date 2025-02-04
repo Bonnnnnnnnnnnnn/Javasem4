@@ -92,9 +92,7 @@ public class ProductController {
 	@ResponseBody
 	public List<Map<String, Object>> findPrice(@RequestParam("productId") int productId) {
 	    try {
-	        System.out.println("Product ID: " + productId); // Kiểm tra giá trị đầu vào.
 	        List<Map<String, Object>> priceChanges = reppro.findListProductPriceChanges(productId);
-	        System.out.println("Price Changes: " + priceChanges); // Kiểm tra dữ liệu trả về từ DB.
 	        return priceChanges;
 	    } catch (Exception e) {
 	        e.printStackTrace();

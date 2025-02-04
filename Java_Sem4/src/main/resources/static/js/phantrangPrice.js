@@ -161,3 +161,22 @@ function renderPriceChangesTable() {
 $(document).ready(function() {
 	loadAllPriceChanges();
 });
+// sort
+document.getElementById('sortPriceChanges').addEventListener('change', function () {
+    sortPriceChanges(this.value);
+});
+
+function sortPriceChanges(order) {
+    if (order === 'asc') {
+        allPriceChanges.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    } else if (order === 'desc') {
+        allPriceChanges.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    } else {
+        loadAllPriceChanges();
+        return;
+    }
+    
+    currentPagePrice = 0;
+    renderPriceChangesTable();
+    renderPricePagination();
+}

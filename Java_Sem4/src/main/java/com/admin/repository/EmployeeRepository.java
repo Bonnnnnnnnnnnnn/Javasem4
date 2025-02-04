@@ -136,6 +136,7 @@ public class EmployeeRepository {
         
     }
     public boolean existsByPhoneAndIdNot(String phone, int id) {
+    	
         String sql = "SELECT COUNT(*) FROM employee WHERE phone = ? AND id != ?";
         Integer count = empdb.queryForObject(sql, Integer.class, phone, id);
         return count != null && count > 0;

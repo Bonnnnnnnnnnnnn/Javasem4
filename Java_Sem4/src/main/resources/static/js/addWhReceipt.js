@@ -128,7 +128,7 @@ function addDetailGroup() {
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.classList.add('btn', 'btn-danger', 'delete-group-button');
-    deleteButton.innerText = 'Delete more detail';
+    deleteButton.innerText = 'Remove';
     deleteButton.onclick = function () {
         detailsContainer.removeChild(originalReceiptGroup.previousElementSibling);
         detailsContainer.removeChild(originalReceiptGroup);
