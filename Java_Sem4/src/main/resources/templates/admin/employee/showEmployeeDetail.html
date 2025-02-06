@@ -80,10 +80,9 @@
 			        <a th:href="@{/admin/employee/showUpdateEmployee(id=${employee.id})}" class="btn btn-success">Update</a>
  					<a th:href="@{deleteEmployee(id=${employee.id})}" class="btn btn-danger" onclick="return confirmDeleteEmp();">Delete</a>
 			    </div>
-				</form>
             </div>
+                    </section>
           </div>
-        </div>
         <div class="row">
     <div class="col-12">
         <div class="card">
@@ -119,9 +118,7 @@
         </div>
     </div>
 </div>
-        </div>
-        </section>
-        </div>
+
         <div th:replace="admin/layout/footer_admin"></div>
           <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
             <script th:src="@{/js/showEmployee.js}"></script>
