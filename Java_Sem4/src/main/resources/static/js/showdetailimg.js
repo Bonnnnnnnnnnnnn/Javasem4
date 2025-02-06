@@ -129,9 +129,6 @@ document.getElementById('addSpecBtn').addEventListener('click', function () {
 	container.appendChild(newCardBody);
 });
 
-
-
-
 // không được nhập số âm
 document.querySelectorAll('input[type="number"]').forEach(input => {
 	input.addEventListener('keydown', function(event) {
