@@ -5,7 +5,16 @@
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-
+td:nth-child(4) {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+	td:nth-child(1) {
+	        word-wrap: break-word;
+	        overflow-wrap: break-word;
+	        white-space: normal;
+	    }	
 .pagination a {
 	display: inline-block;
 	padding: 8px 16px;
