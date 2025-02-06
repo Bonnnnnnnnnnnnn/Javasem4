@@ -3,3 +3,11 @@
   border-color: #007bff !important; /* Đổi màu viền khi hover */
   color: #007bff !important; /* Đổi màu chữ khi hover */
 }
+.pagination {
+    display: block;
+    border: 1px solid rgb(128, 255, 255);
+}
+
+
+    
+

@@ -1,3 +1,4 @@
+//search San pham
 function filterProducts() {
        let input = document.getElementById('searchProduct');
        let filter = input.value.toLowerCase();

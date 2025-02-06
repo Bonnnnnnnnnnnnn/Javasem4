@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +34,6 @@ import com.admin.repository.ProductRepository;
 import com.models.Conversion;
 import com.models.PageView;
 import com.models.Product;
-import com.models.Unit;
 import com.models.Product_img;
 import com.models.Product_price_change;
 import com.models.Product_specifications;
@@ -74,6 +74,31 @@ public class ProductController {
 	        return "admin/product/errorPage";
 	    }
 	}
+	
+	//phân trang spe
+	@GetMapping("/findAllspe")
+	@ResponseBody
+	public List<Map<String, Object>> findAllspe(@RequestParam("productId") int productId) {
+	    try {
+	        List<Map<String, Object>> specifications = reppro.findListPss(productId);
+	        return specifications;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
+	
+	@GetMapping("/findPrice")
+	@ResponseBody
+	public List<Map<String, Object>> findPrice(@RequestParam("productId") int productId) {
+	    try {
+	        List<Map<String, Object>> priceChanges = reppro.findListProductPriceChanges(productId);
+	        return priceChanges;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ArrayList<>();
+	    }
+	}
 
 	// show deatils sản phẩm
 	@GetMapping("/showProductDetail")
@@ -81,18 +106,13 @@ public class ProductController {
 			Model model) {
 		try {
 			int idpro = Integer.parseInt(productId);
-			int idps = Integer.parseInt(psId);
 			Product pro = reppro.findId(idpro);
-			List<Product_specifications> ps = reppro.findListPs(idps);
 			List<Product_img> images = reppro.findListImages(idpro);
-			List<Product_price_change> priceChanges = reppro.findListProductPriceChanges(idpro);
 			NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
 			String formattedPrice = formatter.format(pro.getPrice());
 			model.addAttribute("product", pro);
 			model.addAttribute("formattedPrice", formattedPrice);
-			model.addAttribute("ps", ps);
 			model.addAttribute("images", images);
-			model.addAttribute("priceChanges", priceChanges);
 			model.addAttribute("units",con.findAllUnit());
 	        model.addAttribute("conversion", new Conversion());
 
@@ -259,9 +279,6 @@ public class ProductController {
 	    }
 	}
 
-
-
-
 	@PostMapping("/updateProductAndPrice")
 	public String updateProductAndPrice(@RequestParam int id, @RequestParam String productName,
 			@RequestParam("cate_id") int categoryId, @RequestParam("brand_id") int brandId, @RequestParam("unit_id") int unitId,
@@ -414,77 +431,55 @@ public class ProductController {
 		}
 	}
 
-	@PostMapping("addPs")
-	public String addPs(@RequestParam("name_spe") String nameSpe, @RequestParam("des_spe") String desSpe,
-			@RequestParam("product_id") int productId, RedirectAttributes redirectAttributes) {
-		Product_specifications ps = new Product_specifications();
-		ps.setName_spe(nameSpe);
-		ps.setDes_spe(desSpe);
-		ps.setProduct_id(productId);
+	@PostMapping("/addPs")
+	@ResponseBody
+	public ResponseEntity<?> addPs(@RequestParam("name_spe") String nameSpe,
+	                                @RequestParam("des_spe") String desSpe,
+	                                @RequestParam("product_id") int productId) {
+	    try {
+	        Product_specifications ps = new Product_specifications();
+	        ps.setName_spe(nameSpe);
+	        ps.setDes_spe(desSpe);
+	        ps.setProduct_id(productId);
 
-		reppro.addProPs(ps);
-		redirectAttributes.addFlashAttribute("newPsId", ps.getId());
-		redirectAttributes.addFlashAttribute("message", "✔ Product specifications added successfully !");
-		return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
-	}
+	        reppro.addProPs(ps);
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("name_spe", ps.getName_spe());
+	        response.put("des_spe", ps.getDes_spe());
+	        response.put("product_id", ps.getProduct_id());
 
-	// sửa thuộc tính
-	@GetMapping("showUpdatePs")
-	public String showUpdatePs(Model model, @RequestParam("id") String id) {
-		try {
-			int idup = Integer.parseInt(id);
-			Product_specifications ps = reppro.findPsById(idup);
-			if (ps != null) {
-				model.addAttribute("ps", ps);
-			} else {
-				model.addAttribute("errorMessage", "Product not found!");
-			}
-			return Views.PRODUCT_SPE_SHOWUPDATEPS;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errorMessage", "An error occurred while loading the product.");
-			return "redirect:/showProduct";
-		}
-	}
-
-	@PostMapping("updatePs")
-	public String updatePs(@RequestParam("name_spe") String nameSpe, @RequestParam("des_spe") String desSpe,
-			@RequestParam("product_id") int productId, @RequestParam("id") int id, RedirectAttributes redirectAttributes) {
-		Product_specifications ps = new Product_specifications();
-		ps.setName_spe(nameSpe);
-		ps.setDes_spe(desSpe);
-		ps.setProduct_id(productId);
-		ps.setId(id);
-
-		reppro.updatePs(ps);
-		redirectAttributes.addFlashAttribute("message", "✔ Product specifications updated successfully !");
-		return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
-	}
-
-	@GetMapping("/errorPage")
-	public String errorPage() {
-
-		return "admin/product/errorPage";
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(Map.of("error", "Failed to add specification", "details", e.getMessage()));
+	    }
 	}
 
 	// xóa thuộc tính
-	@GetMapping("deletePs")
-	public String deletePs(@RequestParam("id") String idps, RedirectAttributes redirectAttributes) {
-		try {
-			int idp = Integer.parseInt(idps);
-			Integer productId = reppro.getProductIdBySpecificationId(idp);
-			reppro.deletePs(idp);
-			redirectAttributes.addFlashAttribute("message", "✔ Product specifications deleted successfully !");
-			if (productId != null) {
-				return "redirect:/admin/product/showProductDetail?id=" + productId + "&activeTab=productSpecifications";
-			} else {
-				return "admin/product/errorPage";
-			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			return "admin/product/errorPage";
-		}
+	@DeleteMapping("/deletePs")
+	@ResponseBody
+	public ResponseEntity<String> deleteSpecification(@RequestBody Map<String, Object> requestData) {
+	    try {
+	        int specificationId = Integer.parseInt(requestData.get("id").toString());
+	        int productId = Integer.parseInt(requestData.get("product_id").toString());
+
+	        int rowsAffected = reppro.deletePs(specificationId, productId);
+	        if (rowsAffected == 0) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Specification not found or does not belong to the specified product.");
+	        }
+	        return ResponseEntity.ok("Specification deleted successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error deleting specification: " + e.getMessage());
+	    }
 	}
+
+
+
+
+
 
 }

@@ -208,7 +208,7 @@ public class ReleasenoteController {
 		} else {
 			return "redirect:/employee/login";
 		}
-		return "redirect:/warehouseManager/ShowOrderRequest";
+		return "redirect:/warehouseManager/requestInWarehouseDetail?id=" + requestId;
 	}
 	
 	//receive order by employee
@@ -225,7 +225,7 @@ public class ReleasenoteController {
 		} else {
 			return "employee/login";
 		}
-		return "redirect:/warehouseManager/ShowInforOrder";
+		return "redirect:/warehouseManager/orderInWarehouseDetail?id=" + OrderId;
 	}
 	
 	// show order in warehouse note
@@ -434,7 +434,7 @@ public class ReleasenoteController {
 		releasenote.setStatusWr(statusWr);
 		releasenote.setRequest_id(requestId);
 		releasenote.setEmployee_Id(employeeId);
-		
+
 		List<Warehouse_rn_detail> details = new ArrayList<>();
 		if (id_product != null && !id_product.isEmpty()) {
 			for (int i = 0; i < id_product.size(); i++) {					
@@ -444,7 +444,7 @@ public class ReleasenoteController {
 		            detail.setQuantity(quantity.get(i));
 		            detail.setStatus(status.get(i));		            
 		            details.add(detail);
-		            		            
+	            
 		        }
 			}
 		}
@@ -460,6 +460,10 @@ public class ReleasenoteController {
 
 		        int productId = id_product.get(i); 
 		        int quantityExported = quantity.get(i); 
+		        System.out.println("Idzzzz: " + Id);
+		        System.out.println("id_product: " + id_product);
+		        System.out.println("quantity: " + quantity);
+
 		        if (Id.size() > i) {
 		            int detailId = Id.get(i);
 		            detail.setId(detailId);                

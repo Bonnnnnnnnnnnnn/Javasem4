@@ -5,21 +5,17 @@ const priceChangesInput = document.getElementById('priceChanges');
 function formatCurrency(value) {
 	return isNaN(value) ? '0.00' : parseFloat(value).toFixed(2);
 }
-
-// Hàm parse và định dạng giá trị nhập vào
 function parseAndFormat(value) {
 	value = value.replace(/[^0-9.]/g, '');
 	const num = parseFloat(value);
 	return isNaN(num) ? '' : num.toFixed(2);
 }
 
-// Cập nhật giá trị vào ô "Price Changes"
+// Cập nhật giá trị vào ô
 function updatePriceChanges() {
 	const priceValue = parseFloat(priceInput.value.replace(/[^0-9.]/g, '')) || 0;
 	priceChangesInput.value = formatCurrency(priceValue);
 }
-
-// Xử lý khi người dùng rời khỏi ô nhập (blur)
 function handleBlur(event) {
 	let value = event.target.value;
 	value = parseAndFormat(value);
@@ -27,8 +23,6 @@ function handleBlur(event) {
 
 	updatePriceChanges();
 }
-
-// Xử lý khi người dùng nhập giá trị vào ô
 function handleInput(event) {
 	event.target.value = event.target.value.replace(/[^0-9.]/g, '');
 }
@@ -73,7 +67,7 @@ if (dateStartInput) {
 	dateStartInput.value = new Date().toISOString().split('T')[0];
 }
 
-// Khởi tạo CKEditor cho mô tả sản phẩm (nếu tồn tại)
+// Khởi tạo CKEditor 
 if (typeof CKEDITOR !== 'undefined') {
 	CKEDITOR.replace('description');
 }

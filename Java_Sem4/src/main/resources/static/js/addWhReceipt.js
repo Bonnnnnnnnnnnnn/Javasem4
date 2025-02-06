@@ -125,15 +125,20 @@ function addDetailGroup() {
         }
     });
 
-    const warehousePriceInput = originalReceiptGroup.querySelector('input[name="wh_price"]');
-    if (warehousePriceInput) {
-        addWarehousePriceEvents(warehousePriceInput);
-    }
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.classList.add('btn', 'btn-danger', 'delete-group-button');
+    deleteButton.innerText = 'Remove';
+    deleteButton.onclick = function () {
+        detailsContainer.removeChild(originalReceiptGroup.previousElementSibling);
+        detailsContainer.removeChild(originalReceiptGroup);
+    };
 
-    const originalWarehousePriceInput = detailsContainer.querySelector('input[name="wh_price"]');
-    if (originalWarehousePriceInput) {
-        addWarehousePriceEvents(originalWarehousePriceInput);
-    }
+    const buttonContainer = document.createElement('div');
+    buttonContainer.classList.add('button-container');
+    buttonContainer.appendChild(deleteButton);
+
+    originalReceiptGroup.appendChild(buttonContainer);
 
     const separator = document.createElement('hr');
     separator.classList.add('separator');
@@ -141,6 +146,8 @@ function addDetailGroup() {
     detailsContainer.appendChild(originalReceiptGroup);
     detailsContainer.setAttribute('data-receipt-counter', receiptCounter);
 }
+
+
 
 // Hàm thêm sự kiện định dạng tiền
 function addWarehousePriceEvents(inputElement) {
@@ -160,34 +167,7 @@ function addWarehousePriceEvents(inputElement) {
 		}
 	});
 
-<<<<<<< HEAD
-		   // Cập nhật fetchConversionId để chọn conversion tương ứng với product
-		   function fetchConversionId(selectElement) {
-		       var productId = selectElement.value;
-		       if (productId) {
-		           fetch('/warehouseManager/warehouseReceipt/getConversions?id=' + productId)
-		               .then(response => response.json())
-		               .then(data => {
-						console.log(data)
-		                   var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
-		                   conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>'; // Xóa các option cũ
-		                   
-		                   data.forEach(conversion => {
-		                       var option = document.createElement('option');
-		                       option.value = conversion.id;
-		                       option.text = conversion.fromUnitName + '->' + conversion.toUnitName + '(' + conversion.conversion_rate + ')';
-		                       conversionSelect.appendChild(option);
-		                   });
-		               })
-		               .catch(error => {
-		                   console.error('Error fetching conversions:', error);
-		               });
-		       } else {
-		           var conversionSelect = selectElement.closest('.detail-group').querySelector('.conversion_id');
-		           conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
-		       }
-		   }
-=======
+
 	inputElement.addEventListener('input', function(e) {
 		e.target.value = e.target.value.replace(/[^0-9.]/g, '');
 		const value = parseFloat(e.target.value);
@@ -229,7 +209,6 @@ function fetchConversionId(selectElement) {
 		conversionSelect.innerHTML = '<option value="" disabled selected>Select Conversion</option>';
 	}
 }
->>>>>>> trongdev
 
 
 

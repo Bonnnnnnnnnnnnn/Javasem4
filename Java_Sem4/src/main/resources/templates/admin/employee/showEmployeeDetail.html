@@ -53,9 +53,8 @@
 										<div class="d-flex align-items-center">
 											<input type="text" id="warehouseName" disabled readonly
 												th:value="${employee.warehouse_name != null ? employee.warehouse_name : 'This employee has not managed any warehouse yet.'}"
-												class="form-control me-2">
-
-											<a style="width: 100%; max-width: 150px;"
+												class="form-control me-2"> <a
+												style="width: 100%; max-width: 150px;"
 												class="btn btn-primary"
 												th:href="@{/admin/warehouse/showWarehouse}"
 												th:if="${employee.warehouse_name == null}">Go add

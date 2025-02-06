@@ -90,6 +90,13 @@
 												<p>No product images found.</p>
 											</div>
 										</div>
+
+										<!-- Giới hạn số lượng ảnh -->
+										<div th:if="${images.size() >= 10}" class="col-12 text-center">
+											<p>You can only add up to 10 images.</p>
+											<a class="btn btn-secondary disabled">Add Images Details</a>
+										</div>
+
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
@@ -99,85 +106,102 @@
 									<!-- Product Details Tab -->
 									<div class="tab-pane" id="productdetails-tab">
 										<form th:object="${product}">
-											<div class="card-body row">
-												<div class="form-group col-md-2">
-													<label for="exampleInputPassword1">Image</label> <img
-														th:if="${product.img != null}"
-														th:src="@{/uploads/{imageName}(imageName=${product.img})}"
-														style="width: 55%;">
+											<div class="card">
+												<div
+													class="card-header d-flex justify-content-center align-items-center">
+													<h3 class="mb-0" style="color:black;">Product Details</h3>
 												</div>
-												<div class="form-group col-md-4"></div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Status</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.status}">
+
+												<div class="card-body">
+													<div class="row">
+														<!-- Hình ảnh sản phẩm -->
+														<div class="col-md-3 text-center">
+															<label>Image</label>
+															<div class="product-image">
+																<img th:if="${product.img != null}"
+																	th:src="@{/uploads/{imageName}(imageName=${product.img})}"
+																	class="img-fluid rounded shadow">
+															</div>
+														</div>
+
+														<!-- Thông tin sản phẩm -->
+														<div class="col-md-9">
+															<div class="row">
+																<div class="col-md-6">
+																	<label>Product Name</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${product.product_name}">
+																</div>
+																<div class="col-md-6">
+																	<label>Status</label> <input class="form-control"
+																		disabled readonly th:value="${product.status}">
+																</div>
+																<div class="col-md-6">
+																	<label>Price</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${formattedPrice}">
+																</div>
+																<div class="col-md-6">
+																	<label>Warranty Period</label> <input type="text"
+																		class="form-control" disabled readonly
+																		th:value="${product.warranty_period} + ' months'">
+																</div>
+																<div class="col-md-6">
+																	<label>Unit</label> <input class="form-control"
+																		disabled readonly th:value="${product.unit_name}">
+																</div>
+																<div class="col-md-6">
+																	<label>Brand</label> <input class="form-control"
+																		disabled readonly th:value="${product.brandName}">
+																</div>
+																<div class="col-md-6">
+																	<label>Category</label> <input class="form-control"
+																		disabled readonly th:value="${product.categoryName}">
+																</div>
+															</div>
+														</div>
+
+														<!-- Mô tả sản phẩm -->
+														<div class="col-md-12 mt-3">
+															<label>Description</label>
+															<textarea class="form-control" disabled readonly
+																th:field="*{description}"></textarea>
+														</div>
+
+														<!-- Kích thước sản phẩm -->
+														<div class="col-md-12 mt-3">
+															<div class="row">
+																<div class="col-md-3">
+																	<label>Length</label> <input class="form-control"
+																		disabled readonly th:value="${product.length} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Height</label> <input class="form-control"
+																		disabled readonly th:value="${product.height} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Width</label> <input class="form-control"
+																		disabled readonly th:value="${product.width} + ' cm'">
+																</div>
+																<div class="col-md-3">
+																	<label>Weight</label> <input class="form-control"
+																		disabled readonly th:value="${product.weight} + ' g'">
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
-												<div class="form-group col-md-6">
-													<label for="title">Price</label> <input type="text"
-														id="price" disabled readonly th:value="${formattedPrice}"
-														class="form-control">
+
+												<!-- Nút điều hướng -->
+												<div class="card-footer">
+													<a th:href="@{/admin/product/showProduct}"
+														class="btn btn-danger"> Back to Product List </a> <a
+														th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
+														class="btn btn-warning"> Update Product </a>
 												</div>
-												<div class="form-group col-md-6">
-													<label for="title">Product Name</label> <input type="text"
-														id="proName" disabled readonly
-														th:value="${product.product_name}" class="form-control">
-												</div>
-												<div class="form-group col-md-6">
-													<label for="phone">Warranty period</label> <input
-														type="text" disabled readonly
-														th:value="${product.warranty_period} + ' ' + months"
-														class="form-control">
-												</div>
-												<div class="form-group col-6">
-													<label for="conversion">Unit</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.unit_name}">
-												</div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Brand</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.brandName}">
-												</div>
-												<div class="form-group col-6">
-													<label for="exampleInputEmail1">Category</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.categoryName}">
-												</div>
-												<div class="form-group col-md-12">
-													<label for="phone">Description</label>
-													<textarea id="description" disabled readonly
-														th:field="*{description}" class="form-control"></textarea>
-												</div>
-												<div class="form-group col-3">
-													<label for="conversion">Length</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.length} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Height</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.height} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Width</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.width} + ' ' + (cm)">
-												</div>
-												<div class="form-group col-3">
-													<label for="exampleInputEmail1">Weight</label> <input
-														class="form-control" disabled readonly
-														th:value="${product.weight} + ' ' + (g)">
-												</div>
-											</div>
-											<div class="card-footer">
-												<a th:href="@{/admin/product/showProduct}"
-													class="btn btn-danger">Back to list product</a> <a
-													th:href="@{/admin/product/showUpdateProduct(id=${product.id})}"
-													class="btn btn-success">Update</a> <a
-													th:href="@{deleteProduct(id=${product.id}, fileName=${product.img})}"
-													class="btn btn-danger" onclick="return confirmDelete();">Delete</a>
 											</div>
 										</form>
+
 									</div>
 
 									<!-- Conversion Tab -->
@@ -299,7 +323,45 @@
 
 									<!-- Product Specifications Tab -->
 									<div class="tab-pane" id="productSpecifications-tab">
-										<table class="table table-hover text-nowrap">
+										<div class="infopro row gx-3 gy-3">
+											<!-- Khối Specification -->
+											<div class="col-12 col-md-12">
+												<div class="card">
+													<div class="card-header text-white"
+														style="background-color: #1E90FF;">Add Specification</div>
+													<form id="add-specification-form" method="post">
+														<div class="card-body row">
+															<input type="hidden" name="product_id" id="product_id"
+																th:value="${product.id}" />
+															<div class="mb-3 col-12">
+																<label for="name_spe">Name specifications</label> <input
+																	type="text" id="name_spe" name="name_spe"
+																	class="form-control"
+																	placeholder="Enter name specifications" required>
+															</div>
+															<div class="mb-3 col-12">
+																<label for="des_spe">Description specifications</label>
+																<textarea id="des_spe" name="des_spe"
+																	class="form-control"
+																	placeholder="Enter description specifications" required></textarea>
+															</div>
+															<button type="submit" class="btn btn-primary"
+																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 4px; transition: all 0.3s ease;"
+																onmouseover="this.style.backgroundColor='#0056b3';"
+																onmouseout="this.style.backgroundColor='#007bff';">
+																<i class="fas fa-plus"
+																	style="margin-right: 8px; font-size: 16px;"></i> Add
+																specification
+															</button>
+
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+
+										<table id="specificationTable"
+											class="table table-hover text-nowrap">
 											<thead>
 												<tr class="text-center">
 													<th>STT</th>
@@ -310,29 +372,15 @@
 														class="btn btn-primary">Add product specification</a></th>
 												</tr>
 											</thead>
-											<tbody>
-												<tr th:if="${#lists.isEmpty(ps)}" class="text-center">
-													<td colspan="4">No units found</td>
-												</tr>
-<<<<<<< HEAD
-												<tr th:each="item, iterStat : ${ps}" class="text-center">
-=======
+											<tbody id="specificationsTableBody" class="text-center">
 
-												<tr th:each="item, iterStat : ${ps}" class="text-center"
-													th:classappend="${item.id == newCategoryId} ? 'highlighted-row' : ''">
->>>>>>> trongdev
-													<td th:text="${iterStat.index + 1}"></td>
-													<td><span th:text="${item.name_spe}"></span></td>
-													<td><span th:text="${item.des_spe}"></span></td>
-													<td><a
-														th:href="@{/admin/product/showUpdatePs(id=${item.id})}"
-														class="btn btn-warning">Update</a> <a
-														th:href="@{deletePs(id=${item.id})}"
-														onclick="return confirmDeletePs();" class="btn btn-danger">Delete</a>
-													</td>
-												</tr>
 											</tbody>
 										</table>
+										<nav class="d-flex justify-content-center"
+											style="margin-top: 22px;">
+											<ul class="pagination" id="pagination1"></ul>
+										</nav>
+
 										<div class="card-footer">
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
@@ -341,6 +389,14 @@
 
 									<!-- Change Price Tab -->
 									<div class="tab-pane" id="changeprice-tab">
+										<div class="d-flex justify-content-end mb-3">
+											<label for="sortPriceChanges" class="mr-2">Sort by:</label> <select
+												id="sortPriceChanges" class="form-control w-auto">
+												<option value="normal">Normal</option>
+												<option value="asc">Small to Large</option>
+												<option value="desc">Big to Small</option>
+											</select>
+										</div>
 										<table class="table table-hover text-nowrap">
 											<thead>
 												<tr class="text-center">
@@ -350,29 +406,21 @@
 													<th>End Date</th>
 												</tr>
 											</thead>
-											<tbody>
-												<tr th:if="${#lists.isEmpty(priceChanges)}"
-													class="text-center">
-													<td colspan="4">No price changes found</td>
-												</tr>
-												<tr th:each="item, iterStat : ${priceChanges}"
-													class="text-center">
-													<td th:text="${iterStat.index + 1}"></td>
-													<td>$ <span th:text="${item.price}"></span></td>
-													<td><span
-														th:text="${#temporals.format(item.date_start, 'HH:mm dd-MM-yyyy')}"></span></td>
-													<td><span th:if="${item.date_end != null}"
-														th:text="${#temporals.format(item.date_end, 'HH:mm dd-MM-yyyy')}"></span>
-														<span th:if="${item.date_end == null}" th:text="'Present'"></span>
-													</td>
-												</tr>
+											<tbody id="priceChangesTableBody" class="text-center">
 											</tbody>
 										</table>
 										<div class="card-footer">
+											<nav class="d-flex justify-content-center">
+												<ul class="pagination" style="margin-top: 22px;"
+													id="Pagination2">
+												</ul>
+											</nav>
 											<a th:href="@{/admin/product/showProduct}"
 												class="btn btn-danger">Back to list product</a>
 										</div>
 									</div>
+
+
 								</div>
 							</div>
 						</div>
@@ -380,87 +428,14 @@
 				</div>
 			</div>
 		</section>
-		<div id="toast-message" style="display: none;"
-			class="alert alert-success"></div>
 	</div>
 	<div th:replace="admin/layout/footer_admin"></div>
+
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script th:src="@{/js/showProduct.js}"></script>
+	<script th:src="@{/js/phantrangspe.js}"></script>
 	<script th:src="@{/js/conversionbuid.js}"></script>
-	<script>
-	document.getElementById("add-conversion-form").addEventListener("submit", function (e) {
-	    e.preventDefault(); // Ngăn form submit mặc định
-
-	    // Lấy dữ liệu từ form
-	    const product_id = document.getElementById("product_id").value;
-	    const to_unit_name = document.getElementById("to_unit_id").value;
-	    const from_unit_name = document.getElementById("from_unit_name").value;
-	    const conversion_rate = document.getElementById("conversion_rate").value;
-
-	    // Gửi AJAX request để thêm conversion
-	    fetch('/admin/addConversion', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/x-www-form-urlencoded'
-	        },
-	        body: new URLSearchParams({
-	            product_id: product_id,
-	            to_unit_name: to_unit_name,
-	            from_unit_name: from_unit_name,
-	            conversion_rate: conversion_rate
-	        })
-	    })
-	        .then(response => {
-	            if (!response.ok) {
-	                return response.text().then(error => {
-	                    throw new Error(error);
-	                });
-	            }
-	            return response.json(); // Parse JSON từ phản hồi
-	        })
-	        .then(data => {
-	            if (!data.from_unit_name || !data.to_unit_name || data.conversion_rate === undefined) {
-	                throw new Error("Invalid data format from server!");
-	            }
-	            addNewConversionToTable(data);
-	            // Thêm conversion mới vào mảng allConversions
-	            allConversions.push(data);
-
-	            // Cập nhật lại bảng và phân trang
-	            renderStockTable1();
-	            renderPagination1();
-
-	            alert("Conversion added successfully!");
-	        })
-	        .catch(error => {
-	            console.error('Error:', error);
-	            alert('Failed to add conversion! Details: ' + error.message);
-	        });
-
-	});
-
-
-	// Hàm thêm Conversion mới vào bảng
-	function addNewConversionToTable(conversion) {
-    if (!conversion) {
-        console.error("Conversion data is undefined or null!");
-        return;
-    }
-    
-    const tableBody = document.getElementById('conversionTable').querySelector('tbody');
-    const newRow = document.createElement('tr');
-    newRow.innerHTML = `
-        <td>${tableBody.children.length + 1}</td>
-        <td>${conversion.from_unit_name}</td>
-        <td>${conversion.to_unit_name}</td>
-        <td>${conversion.conversion_rate}</td>
-    `;
-    tableBody.appendChild(newRow);
-}
-
-
-
-
-	</script>
+	<script th:src="@{/js/phantrangPrice.js}"></script>
+	<script th:src="@{/js/conversionAdd.js}"></script>
 </body>
 </html>
