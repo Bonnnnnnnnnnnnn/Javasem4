@@ -47,9 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
 
       
     }
-<<<<<<< HEAD
-    
-=======
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -60,7 +58,7 @@ public class WebConfig implements WebMvcConfigurer {
             .allowCredentials(false)
             .maxAge(3600);
     }
->>>>>>> thuan_dev
+
 
 }
 
