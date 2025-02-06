@@ -109,6 +109,8 @@ public class WarehouseController {
 	        model.addAttribute("provinces", province);
 	        model.addAttribute("new_item", wh);
 	        model.addAttribute("types", repwh.findAllType());
+	        List<Employee> availableEmployees = repwh.showEmpAll();
+	        model.addAttribute("employees", availableEmployees);
 	        return Views.WAREHOUSE_SHOWADDWAREHOUSE;
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -117,25 +119,45 @@ public class WarehouseController {
 	    }
 	}
 	@PostMapping("addWh")
-	public String addWh(@RequestParam("name") String name,
-							@RequestParam("address") String address,
-							@RequestParam("wh_type_id") int wh_type_id,
-							@RequestParam("wardId") String wardId,
-							@RequestParam("provinceId") int provinceId,
-							@RequestParam("districtId") int districtId, RedirectAttributes redirectAttributes) {
-		Warehouse wh = new Warehouse();
-		wh.setName(name);
-		wh.setAddress(address);
-		wh.setWh_type_id(wh_type_id);
-		wh.setWard_Id(wardId);
-		wh.setProvince_Id(provinceId);
-		wh.setDistrict_Id(districtId);
-		
-		repwh.saveWh(wh);
-		redirectAttributes.addFlashAttribute("message", "✔ Warehouse added successfully!");
-		
-		return "redirect:showWarehouse";
+	public String addWh(
+	        @RequestParam("name") String name,
+	        @RequestParam("address") String address,
+	        @RequestParam("wh_type_id") int wh_type_id,
+	        @RequestParam("wardId") String wardId,
+	        @RequestParam("provinceId") int provinceId,
+	        @RequestParam("districtId") int districtId,
+	        @RequestParam("Lat") double Lat,
+	        @RequestParam("Lng") double Lng,
+	        @RequestParam("employeeId") int employeeId,
+	        RedirectAttributes redirectAttributes) {
+	    try {
+	        // Tạo đối tượng Warehouse
+	        Warehouse wh = new Warehouse();
+	        wh.setName(name);
+	        wh.setAddress(address);
+	        wh.setWh_type_id(wh_type_id);
+	        wh.setWard_Id(wardId);
+	        wh.setProvince_Id(provinceId);
+	        wh.setDistrict_Id(districtId);
+	        wh.setLat(Lat);
+	        wh.setLng(Lng);
+
+	        boolean isSaved = repwh.saveWh(wh, employeeId);
+
+	        if (isSaved) {
+	            redirectAttributes.addFlashAttribute("newWarehouseId", wh.getId());
+	            redirectAttributes.addFlashAttribute("message", "✔ Warehouse added successfully!");
+	        } else {
+	            redirectAttributes.addFlashAttribute("error", "❌ Failed to add warehouse. Please try again.");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("error", "❌ An error occurred while adding the warehouse.");
+	    }
+
+	    return "redirect:showWarehouse";
 	}
+
 	
 	
 	// xóa kho đó 
@@ -185,6 +207,8 @@ public class WarehouseController {
 							@RequestParam("ward_Id") String ward_id,
 							@RequestParam("province_Id") int province_id,
 							@RequestParam("district_Id") int district_Id,
+					        @RequestParam("Lat") double Lat,
+					        @RequestParam("Lng") double Lng,
 							@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
 		Warehouse wh = new Warehouse();
 		wh.setName(name);
@@ -193,6 +217,8 @@ public class WarehouseController {
 		wh.setWard_Id(ward_id);
 		wh.setProvince_Id(province_id);
 		wh.setDistrict_Id(district_Id);
+		wh.setLat(Lat);
+		wh.setLng(Lng);
 		wh.setId(id);
 		repwh.updatewh(wh);
 		redirectAttributes.addFlashAttribute("message", "✔ Warehouse updated successfully!");

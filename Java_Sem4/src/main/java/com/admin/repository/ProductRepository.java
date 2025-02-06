@@ -1,11 +1,14 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -161,10 +164,10 @@ public class ProductRepository {
 				pro.setCate_id(rs.getInt("Cate_id"));
 				pro.setUnit_id(rs.getInt("Unit_Id"));
 				pro.setProduct_name(rs.getString("Product_name"));
-				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION)); // Sử dụng hằng số
-				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG)); // Sử dụng hằng số
+				pro.setDescription(rs.getString(Views.COL_PRODUCT_DESCIPTION));
+				pro.setImg(rs.getString(Views.COL_PRODUCT_IMG));
 				pro.setPrice(rs.getDouble("Price"));
-				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD)); // Sử dụng hằng số
+				pro.setWarranty_period(rs.getInt(Views.COL_PRODUCT_WARRANTY_PERIOD));
 				pro.setBrandName(rs.getString("brand_name"));
 				pro.setCategoryName(rs.getString("category_name"));
 				pro.setStatus(rs.getString("Status"));
@@ -352,24 +355,39 @@ public class ProductRepository {
 			throw new RuntimeException("Update failed, transaction has been rolled back.");
 		}
 	}
+	public boolean updateStatus(int id, String status) {
+	    try {
+	        String sql = "UPDATE Product SET Status = ? WHERE Id = ?";
+	        int row = dbpro.update(sql, status, id);
+	        return row > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
 
 	// product_specifications
 	// =========================================================
 
 	// show list theo id
-	public List<Product_specifications> findListPs(int psId) {
-		try {
-			String sql = "SELECT ps.*, p.Product_name AS product_name " + "FROM product_specifications ps "
-					+ "LEFT JOIN Product p ON ps.Product_id = p.Id " + "WHERE ps.Product_id = ?";
 
-			return dbpro.query(sql, new Product_specifications_mapper(), psId);
+	public List<Map<String, Object>> findListPss(int psId) {
+	    try {
+	        String sql = "SELECT ps.*, p.Product_name AS product_name " + 
+	                     "FROM product_specifications ps " + 
+	                     "LEFT JOIN Product p ON ps.Product_id = p.Id " + 
+	                     "WHERE ps.Product_id = ?";
 
-		} catch (DataAccessException e) {
-			System.err.println("erro Product ID: " + psId);
-			e.printStackTrace();
-			return Collections.emptyList();
-		}
+	        return dbpro.queryForList(sql, psId);
+
+	    } catch (DataAccessException e) {
+	        System.err.println("Error Product ID: " + psId);
+	        e.printStackTrace();
+	        return Collections.emptyList();
+	    }
 	}
+
 
 //	public int countProductSpecifications(int productId) {
 //		String sql = "SELECT COUNT(*) FROM " + Views.TBL_PRODUCT_SPE + " WHERE " + Views.COL_PRODUCT_SPE_PRODUCTID + " = ?";
@@ -440,31 +458,45 @@ public class ProductRepository {
 	}
 
 	// xóa product_spe
-	public boolean deletePs(int idps) {
-		try {
-			String sql = "DELETE FROM product_specifications WHERE Id = ?";
-			Object[] params = { idps };
-			int[] types = { Types.INTEGER };
-			int rowsAffected = dbpro.update(sql, params, types);
-			return rowsAffected > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public int deletePs(int idps, int productId) {
+	    try {
+	        String sql = "DELETE FROM product_specifications WHERE Id = ? AND Product_Id = ?";
+	        Object[] params = { idps, productId };
+	        int[] types = { Types.INTEGER, Types.INTEGER };
+	        return dbpro.update(sql, params, types);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
 	}
+
 
 	// thêm product_spe
 	public boolean addProPs(Product_specifications ps) {
-		try {
-			String sql = "INSERT INTO product_specifications (Product_id,Name_spe,Des_spe) VALUES (?, ?, ?)";
-			int rowsAffected = dbpro.update(sql, ps.getProduct_id(), ps.getName_spe(), ps.getDes_spe());
+	    try {
+	        String sql = "INSERT INTO product_specifications (Product_id, Name_spe, Des_spe) VALUES (?, ?, ?)";
+	        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-			return rowsAffected > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	        dbpro.update(connection -> {
+	            PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            pstmt.setInt(1, ps.getProduct_id());
+	            pstmt.setString(2, ps.getName_spe());
+	            pstmt.setString(3, ps.getDes_spe());
+	            return pstmt;
+	        }, keyHolder);
+	        
+	        if (keyHolder.getKey() != null) {
+	            ps.setId(keyHolder.getKey().intValue());
+	        }
+
+	        return true;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
+
+
 
 	// Product_img
 	// ==========================================================================
@@ -562,17 +594,21 @@ public class ProductRepository {
 	// ===========================================================
 
 	// show Product_price_change theo id
-	public List<Product_price_change> findListProductPriceChanges(int productId) {
-		try {
-			String sql = "SELECT ppc.*, p.Product_name AS product_name " + "FROM Product_price_change ppc "
-					+ "LEFT JOIN Product p ON ppc.Product_id = p.Id " + "WHERE ppc.Product_id = ?";
-			return dbpro.query(sql, new Product_price_change_mapper(), productId);
-
-		} catch (DataAccessException e) {
-			System.err.println("Lỗi khi lấy dữ liệu thay đổi giá cho Product ID: " + productId);
-			e.printStackTrace();
-			return Collections.emptyList();
-		}
+	public List<Map<String, Object>> findListProductPriceChanges(int productId) {
+	    try {
+	        String sql = "SELECT ppc.Price AS price, ppc.Date_start AS date_start, " +
+	                     "ppc.Date_end AS date_end, p.Product_name AS product_name " +
+	                     "FROM Product_price_change ppc " +
+	                     "LEFT JOIN Product p ON ppc.Product_id = p.Id " +
+	                     "WHERE ppc.Product_id = ?";
+	        return dbpro.queryForList(sql, productId);
+	    } catch (DataAccessException e) {
+	        System.err.println("Error fetching price changes for Product ID: " + productId);
+	        e.printStackTrace();
+	        return Collections.emptyList();
+	    }
 	}
+
+
 
 }

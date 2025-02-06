@@ -152,20 +152,21 @@
 										<div class="form-group col-6">
 											<label for="specNames-0">Specification Name 1</label> <input
 												type="text" id="specNames-0" name="specNames[]"
-												class="form-control" required>
+												class="form-control" placeholder="Enter Specification " required>
 										</div>
 										<div class="form-group col-6">
 											<label for="specDescriptions-0">Specification
 												Description 1</label> <input type="text" id="specDescriptions-0"
-												name="specDescriptions[]" class="form-control" required>
+												name="specDescriptions[]" placeholder="Enter Specification description" class="form-control" required>
 										</div>
 									</div>
 								</div>
 
 								<div class="card-footer">
 									<a th:href="@{/admin/product/showProduct}"
-										class="btn btn-danger">Back to List</a>
-									<button type="submit" class="btn btn-primary">Submit</button>
+										class="btn btn-danger">Back to list product</a>
+									<button type="submit" class="btn btn-primary">Add
+										product</button>
 									<button type="button" id="addSpecBtn" class="btn btn-success">Add
 										Specification</button>
 								</div>

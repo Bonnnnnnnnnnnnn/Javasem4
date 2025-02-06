@@ -50,15 +50,28 @@ public class WhReceiptAndDetailsController {
 
 		//show chi tiết phiếu nhập kho
 		@GetMapping("/showWhReceiptDetail")
-		public String showWhReceiptDetail(@RequestParam("id") String WhrId, @RequestParam("id") String WhrdId, Model model) {
+		public String showWhReceiptDetail(
+		        @RequestParam("id") String WhrId,
+		        @RequestParam("id") String WhrdId,
+		        @RequestParam(value = "page", defaultValue = "1") int page,
+		        @RequestParam(value = "size", defaultValue = "2") int size,
+		        Model model) {
 		    try {
 		        int idwhr = Integer.parseInt(WhrId);
 		        Warehouse_receipt whr = repwd.findId(idwhr);
+
+		        PageView pageView = new PageView();
+		        pageView.setPage_current(page);
+		        pageView.setPage_size(size);
+
 		        int idwhrs = Integer.parseInt(WhrdId);
-		        List<Warehouse_receipt_detail> details = repwd.findDetailsByReceiptId(idwhrs);
+		        List<Warehouse_receipt_detail> details = repwd.findDetailsByReceiptId(idwhrs, pageView);
+
 		        model.addAttribute("details", details);
 		        model.addAttribute("whr", whr);
 		        model.addAttribute("products", repwd.findAllPro());
+		        model.addAttribute("pageView", pageView);
+
 		        return Views.SHOW_WAREHOUSE_RECEIPT_DETAILS;
 		    } catch (Exception e) {
 		        e.printStackTrace();
@@ -66,9 +79,10 @@ public class WhReceiptAndDetailsController {
 		    }
 		}
 
+
 		// thêm phiếu nhập kho và chi tiết
 		@GetMapping("showAddWhReceipt")
-		public String showAddWhReceipt(Model model, HttpSession session) {
+		public String showAddWhReceipt(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 		    try {
 		        int employeeId = repwd.getEmployeeIdFromSession(session);
 		        Integer warehouseId = (Integer) session.getAttribute("warehouseId"); 
@@ -77,8 +91,8 @@ public class WhReceiptAndDetailsController {
 		            if (warehouseId != null) {
 		                session.setAttribute("warehouseId", warehouseId);
 		            } else {
-		                model.addAttribute("error", "Employees have not been assigned to manage any warehouses.");
-		                return "error";
+		                redirectAttributes.addFlashAttribute("error", "You have not been assigned to manage any warehouse yet!");
+		                return "redirect:showWhReceipt";
 		            }
 		        }
 		       
@@ -93,13 +107,12 @@ public class WhReceiptAndDetailsController {
 		    }
 		}
 
-
 		@PostMapping("/addWhReceipt")
 		public String addWhReceipt(
 		        @RequestParam("wh_id") int wh_id,
 		        @RequestParam("status") String status,
 		        @RequestParam("shippingFee") double shippingFee,
-		        @RequestParam(value = "otherFee", defaultValue = "0") double otherFee, 
+		        @RequestParam(value = "otherFee", defaultValue = "0") double otherFee,
 		        @RequestParam("employeeId") int employeeId,
 		        @RequestParam List<Integer> quantity,
 		        @RequestParam List<Double> wh_price,
@@ -107,7 +120,7 @@ public class WhReceiptAndDetailsController {
 		        @RequestParam List<Integer> conversionId,
 		        @RequestParam List<String> statusDetails,
 		        Model model, RedirectAttributes redirectAttributes) {
-		    
+
 		    Warehouse_receipt receipt = new Warehouse_receipt();
 		    
 		    receipt.setName(repwd.generateReceiptName());
@@ -117,7 +130,7 @@ public class WhReceiptAndDetailsController {
 		    receipt.setOther_fee(otherFee);
 		    receipt.setEmployee_id(employeeId);
 		    receipt.setDate(LocalDateTime.now());
-	
+		    
 		    List<Warehouse_receipt_detail> details = new ArrayList<>();
 		    for (int i = 0; i < quantity.size(); i++) {
 		        Warehouse_receipt_detail detail = new Warehouse_receipt_detail();
@@ -128,16 +141,20 @@ public class WhReceiptAndDetailsController {
 		        detail.setStatus(statusDetails.get(i));
 		        details.add(detail);
 		    }
-		    boolean isAdded = repwd.addRequestOrderWithDetails(receipt, details);
-	
-		    if (isAdded) {
-		        model.addAttribute("message", "Input repository has been added successfully!");
+
+		    // Lấy ID của hóa đơn nhập kho
+		    int generatedReceiptId = repwd.addRequestOrderWithDetails(receipt, details);
+
+		    if (generatedReceiptId > 0) {
+		        redirectAttributes.addFlashAttribute("newReceiptId", generatedReceiptId);
+		        redirectAttributes.addFlashAttribute("message", "✔ Imported goods successfully!");
 		    } else {
 		        model.addAttribute("message", "Adding warehouse receipt failed.");
 		    }
-		    redirectAttributes.addFlashAttribute("message", "✔ Imported goods successfully!");
+		    
 		    return "redirect:showWhReceipt";
 		}
+
 		
 		//randum tên phiếu
 		 @GetMapping("/generateReceiptName")

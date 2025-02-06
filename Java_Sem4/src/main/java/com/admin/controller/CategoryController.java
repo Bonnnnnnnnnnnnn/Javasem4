@@ -1,6 +1,8 @@
 package com.admin.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.admin.repository.CategoryRepository;
+import com.admin.repository.ProductRepository;
 import com.models.Category_Product;
 import com.models.PageView;
+import com.models.Product;
 import com.utils.Views;
 
 @Controller
@@ -23,6 +27,8 @@ public class CategoryController {
 	@Autowired
 	private CategoryRepository repca;
 	
+	@Autowired
+	private ProductRepository reppro;
 	// show danh mục
 	@GetMapping("/showCategory")
 	public String showCategory(Model model, @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
@@ -42,6 +48,27 @@ public class CategoryController {
 	        return "redirect:/error";
 	    }
 	}
+	@GetMapping("/showProductFromCategory")
+	public String showProductFromCategory(@RequestParam("id") int categoryId, Model model,
+	                                       @RequestParam(name = "cp", required = false, defaultValue = "1") int cp) {
+	    PageView pv = new PageView();
+	    pv.setPage_current(cp);
+	    pv.setPage_size(10);
+	    List<Product> products = repca.findByCategoryId(categoryId, pv);
+	    Map<Integer, Boolean> productReferences = new HashMap<>();
+	    for (Product product : products) {
+	        boolean isReferenced = reppro.isProductReferenced(product.getId());
+	        productReferences.put(product.getId(), isReferenced);
+	    }
+
+	    model.addAttribute("products", products);
+	    model.addAttribute("productReferences", productReferences);
+	    model.addAttribute("pv", pv);
+	    model.addAttribute("categoryId", categoryId);
+
+	    return "/admin/category/showProductFromCategory";
+	}
+
 
 	// thêm danh mục 
 	@GetMapping("showAddCategory")
@@ -61,6 +88,7 @@ public class CategoryController {
 	        Category_Product category = new Category_Product();
 	        category.setName(name);
 	        repca.saveCate(category);
+	        redirectAttributes.addFlashAttribute("newCategoryId", category.getId());
 	        redirectAttributes.addFlashAttribute("message", "✔ Category added successfully!");
 	        return "redirect:/admin/category/showCategory";
 	    } catch (Exception e) {
@@ -78,7 +106,6 @@ public class CategoryController {
 	        repca.deleteCa(idb);
 	        PageView pv = new PageView();
 	        int totalCount = repca.countCategories();
-	        int totalPage = (int) Math.ceil((double) totalCount / pv.getPage_size());
 	        if ((cp - 1) * pv.getPage_size() >= totalCount) {
 	            cp = cp > 1 ? cp - 1 : 1;
 	        }

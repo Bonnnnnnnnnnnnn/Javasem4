@@ -96,5 +96,11 @@
 		        alert('Please select at least one product to delete.');
 		    }
 		}  
-  
+
+		document.addEventListener("DOMContentLoaded", function () {
+		        const errorMessage = document.getElementById("error-message");
+		        if (errorMessage && errorMessage.textContent.trim() !== "") {
+		            alert(errorMessage.textContent);
+		        }
+		    });
   

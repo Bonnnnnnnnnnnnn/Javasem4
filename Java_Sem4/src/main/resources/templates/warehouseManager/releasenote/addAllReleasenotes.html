@@ -48,6 +48,7 @@
 							    <tbody>
 							                <tr th:each="detail : ${details}">
 									            <td>
+													<input type="hidden" name="Id[]" th:value="${detail.id}">
 									                <input type="hidden" name="id_product[]" th:value="${detail.id_product}" />
 									                <input type="text" th:value="${detail.productName}" class="form-control" readonly />
 									            </td>

@@ -36,7 +36,7 @@
 							<div class="card-header">
 								<h3 class="card-title">Warehouse Type Table</h3>
 							</div>
-							
+
 							<div class="card-body table-responsive p-0">
 								<table class="table table-hover text-nowrap"
 									id="warehouseTypeTable">
@@ -52,7 +52,8 @@
 										<tr th:if="${#lists.isEmpty(whtypes)}" class="text-center">
 											<td colspan="5">No employees found</td>
 										</tr>
-										<tr th:each="item,iterStat : ${whtypes}" class="text-center">
+										<tr th:each="item,iterStat : ${whtypes}" class="text-center"
+											th:classappend="${item.id == newWtId} ? 'highlighted-row' : ''">
 											<td
 												th:text="${(pv.Page_current - 1) * pv.Page_size + iterStat.index + 1}"
 												th:onclick="'loadWarehouses(' + ${item.id} + ')'"

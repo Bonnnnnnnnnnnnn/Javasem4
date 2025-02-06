@@ -1,5 +1,7 @@
 package com.admin.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.logging.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.mapper.Employee_mapper;
 import com.mapper.Role_mapper;
@@ -26,34 +30,63 @@ public class EmployeeRepository {
     }
 	public List<Employee> findAll(PageView itemPage) {
 	    try {
-	    	String str_query = String.format(
-	    		    "SELECT e.Id, e.First_name, e.Last_name, e.Phone, e.Role_Id, e.Password, r.Name AS role_name " +
-	    		    "FROM %s e " +
-	    		    "INNER JOIN %s r ON e.%s = r.%s " +
-	    		    "WHERE e.%s <> 'admin' " +
-	    		    "ORDER BY e.%s DESC",
-	    		    Views.TBL_EMPLOYEE, Views.TBL_ROLE,
-	    		    Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
-	    		    Views.COL_EMPLOYEE_PHONE,
-	    		    Views.COL_EMPLOYEE_ID
-	    		);
+	        String str_query = String.format(
+	            "SELECT e.Id, e.First_name, e.Last_name, e.Phone, e.Role_Id, e.Password, r.Name AS role_name " +
+	            "FROM %s e " +
+	            "INNER JOIN %s r ON e.%s = r.%s " +
+	            "WHERE e.%s <> ? " +
+	            "ORDER BY e.%s DESC",
+	            Views.TBL_EMPLOYEE, Views.TBL_ROLE,
+	            Views.COL_EMPLOYEE_ROLE_ID, Views.COL_ROLE_ID,
+	            Views.COL_EMPLOYEE_PHONE,
+	            Views.COL_EMPLOYEE_ID
+	        );
+
+	        String phoneCondition = "admin";
+
 	        if (itemPage != null && itemPage.isPaginationEnabled()) {
-	            int count = empdb.queryForObject("SELECT COUNT(*) FROM " + Views.TBL_EMPLOYEE, Integer.class);
+	            int count = empdb.queryForObject(
+	                "SELECT COUNT(*) FROM " + Views.TBL_EMPLOYEE + " WHERE " + Views.COL_EMPLOYEE_PHONE + " <> ?",
+	                Integer.class, phoneCondition
+	            );
 	            int total_page = (int) Math.ceil((double) count / itemPage.getPage_size());
 	            itemPage.setTotal_page(total_page);
 
-	            return empdb.query(str_query + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
-	                    new Employee_mapper(),
-	                    (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
-	                    itemPage.getPage_size());
+	            List<Employee> employees = empdb.query(
+	                str_query + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+	                new Employee_mapper(),
+	                phoneCondition,
+	                (itemPage.getPage_current() - 1) * itemPage.getPage_size(),
+	                itemPage.getPage_size()
+	            );
+
+	            for (Employee employee : employees) {
+	                employee.setRelatedCount(countEmployeeWarehouse(employee.getId()));
+	            }
+	            return employees;
 	        } else {
-	            return empdb.query(str_query, new Employee_mapper());
+	            List<Employee> employees = empdb.query(str_query, new Employee_mapper(), phoneCondition);
+	            for (Employee employee : employees) {
+	                employee.setRelatedCount(countEmployeeWarehouse(employee.getId()));
+	            }
+	            return employees;
 	        }
 	    } catch (DataAccessException e) {
 	        System.err.println("Error fetching employees: " + e.getMessage());
 	        return Collections.emptyList();
 	    }
 	}
+
+	public int countEmployeeWarehouse(int employeeId) {
+	    try {
+	        String sql = "SELECT COUNT(*) FROM employee_warehouse WHERE Employee_Id = ?";
+	        return empdb.queryForObject(sql, Integer.class, employeeId);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
+	}
+	
     public List<Role> findAllRole() {
     	try {
     		String sql = "SELECT * FROM Role WHERE id != 1";
@@ -66,10 +99,14 @@ public class EmployeeRepository {
     }
     public Employee findId(int id) {
         try {
-            String sql = "SELECT e.*, r.Name AS role_name " +
+            String sql = "SELECT e.*, r.Name AS role_name, " +
+                         "ew.Warehouse_Id, w.Name AS Warehouse_name " +
                          "FROM Employee e " +
                          "LEFT JOIN Role r ON e.Role_Id = r.Id " +
+                         "LEFT JOIN employee_warehouse ew ON e.Id = ew.Employee_Id " +
+                         "LEFT JOIN warehouse w ON ew.Warehouse_Id = w.Id " +
                          "WHERE e.Id = ?";
+
             return empdb.queryForObject(sql, (rs, rowNum) -> {
                 Employee emp = new Employee();
                 emp.setId(rs.getInt(Views.COL_EMPLOYEE_ID));
@@ -79,6 +116,7 @@ public class EmployeeRepository {
                 emp.setPassword(rs.getString(Views.COL_EMPLOYEE_PASSWORD));
                 emp.setPhone(rs.getString(Views.COL_EMPLOYEE_PHONE));
                 emp.setRole_name(rs.getString("role_name"));
+                emp.setWarehouse_name(rs.getString("Warehouse_name"));
                 return emp;
             }, id);
         } catch (DataAccessException e) {
@@ -86,13 +124,44 @@ public class EmployeeRepository {
             return null;
         }
     }
-
+    public boolean existsByPhone(String phone) {
+    	try {
+    		String sql = "SELECT COUNT(*) FROM Employee WHERE Phone = ?";
+            Integer count = empdb.queryForObject(sql, Integer.class, phone);
+            return count != null && count > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+        
+    }
+    public boolean existsByPhoneAndIdNot(String phone, int id) {
+    	
+        String sql = "SELECT COUNT(*) FROM employee WHERE phone = ? AND id != ?";
+        Integer count = empdb.queryForObject(sql, Integer.class, phone, id);
+        return count != null && count > 0;
+    }
     public void saveEmp(Employee emp) {
         try {
             String encodedPassword = SecurityUtility.encryptBcrypt(emp.getPassword());
             String sql = "INSERT INTO Employee (First_name, Last_name, Phone, Role_Id, Password) VALUES (?, ?, ?, ?, ?)";
-            empdb.update(sql, emp.getFirst_name(), emp.getLast_name(), emp.getPhone(), emp.getRole_id(), encodedPassword);
-            Logger.getGlobal().info("employee saved successfully: " + emp.getPhone());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int row = empdb.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, emp.getFirst_name());
+                ps.setString(2, emp.getLast_name());
+                ps.setString(3, emp.getPhone());
+                ps.setInt(4, emp.getRole_id());
+                ps.setString(5, encodedPassword);
+                return ps;
+            }, keyHolder);
+            if (row > 0) {
+                emp.setId(keyHolder.getKey().intValue());
+                Logger.getGlobal().info("Employee saved successfully: " + emp.getPhone() + " with ID: " + emp.getId());
+            } else {
+                Logger.getGlobal().severe("Error saving employee: No rows affected.");
+                throw new RuntimeException("Failed to save employee.");
+            }
 
         } catch (DataAccessException e) {
             Logger.getGlobal().severe("Error saving employee: " + e.getMessage());
@@ -102,6 +171,7 @@ public class EmployeeRepository {
             throw new RuntimeException("Unexpected error occurred.", e);
         }
     }
+
     public Boolean deleteEmployee(int id) {
     	try {
 			String sql = "DELETE FROM Employee where Id=?";

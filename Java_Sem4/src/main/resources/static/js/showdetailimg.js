@@ -67,20 +67,21 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 //hàm nhân thêm Specification Product
-document.getElementById('addSpecBtn').addEventListener('click', function() {
+document.getElementById('addSpecBtn').addEventListener('click', function () {
 	const container = document.getElementById('specContainer');
-	const rowIndex = container.children.length + 1; // Bắt đầu từ 1
+	const rowIndex = container.children.length + 1;
 
-	// Tạo phần tử dòng mới với class card-body
 	const newCardBody = document.createElement('div');
-	newCardBody.className = 'card-body row';
+	newCardBody.className = 'card-body';
 
-	// Tạo input cho tên thông số
+	const inputRow = document.createElement('div');
+	inputRow.className = 'row';
+
 	const nameDiv = document.createElement('div');
 	nameDiv.className = 'form-group col-6';
 	const nameLabel = document.createElement('label');
 	nameLabel.setAttribute('for', `specNames-${rowIndex}`);
-	nameLabel.innerText = `Specification Name ${rowIndex}`; // Thêm số thứ tự
+	nameLabel.innerText = `Specification Name ${rowIndex}`;
 	const nameInput = document.createElement('input');
 	nameInput.type = 'text';
 	nameInput.id = `specNames-${rowIndex}`;
@@ -106,13 +107,30 @@ document.getElementById('addSpecBtn').addEventListener('click', function() {
 	descDiv.appendChild(descLabel);
 	descDiv.appendChild(descInput);
 
-	// Gắn các phần tử mới vào dòng mới
-	newCardBody.appendChild(nameDiv);
-	newCardBody.appendChild(descDiv);
+	inputRow.appendChild(nameDiv);
+	inputRow.appendChild(descDiv);
 
-	// Thêm card-body mới vào container
+	const buttonDiv = document.createElement('div');
+	buttonDiv.className = 'd-flex justify-content-end mt-2';
+	const removeButton = document.createElement('button');
+	removeButton.type = 'button';
+	removeButton.className = 'btn btn-danger removeSpecBtn';
+	removeButton.innerText = 'Remove';
+
+	removeButton.addEventListener('click', function () {
+		container.removeChild(newCardBody);
+	});
+
+	buttonDiv.appendChild(removeButton);
+
+	newCardBody.appendChild(inputRow);
+	newCardBody.appendChild(buttonDiv);
+
 	container.appendChild(newCardBody);
 });
+
+
+
 
 // không được nhập số âm
 document.querySelectorAll('input[type="number"]').forEach(input => {
@@ -123,3 +141,21 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
 		}
 	});
 });
+function validateImageCount() {
+        const imageInput = document.getElementById('additionalImages');
+        const fileCount = imageInput.files.length;
+
+        if (fileCount > 10) {
+            document.getElementById('imageError').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            return false;
+        } else {
+            document.getElementById('imageError').style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+            return true; 
+        }
+    }
+
+    document.getElementById('additionalImages').addEventListener('change', function () {
+        validateImageCount();
+    });

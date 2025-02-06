@@ -64,7 +64,6 @@ function renderStockTable1() {
 function renderPagination1() {
 	const totalPages = Math.ceil(allConversions.length / pageSize1); // Tổng số trang
 	let paginationHtml = '';
-	console.log("Total pages:", totalPages); // Kiểm tra số trang
 
 	// Nút "Previous"
 	paginationHtml += `
@@ -131,7 +130,7 @@ function deleteConversion(conversionId) {
 
     if (!productId || !conversionId) return;
 
-    if (!confirm("Bạn có chắc chắn muốn xóa dòng này?")) return;
+    if (!confirm("Do you want to delete this line ?")) return;
 
     // Gửi yêu cầu AJAX để xóa dữ liệu
 	$.ajax({

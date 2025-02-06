@@ -287,6 +287,7 @@ public class GHNService {
 
 		return 0;
 	}
+
 }
 
 class ShippingFeeResponse {

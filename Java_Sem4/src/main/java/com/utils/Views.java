@@ -481,6 +481,7 @@ public final class Views {
 	public static String ADMIN_STATISTICSPAGE = "admin/statistics/statistics";
 	
 
+
 	// Employee Warehouse
 	public static String EMPLOYEE_WAREHOUSE_MANAGER = "warehouseManager/employee/showEmployee";
 	public static String EMPLOYEE_BUSINESS_MANAGER = "businessManager/employee/showEmployee";
@@ -514,5 +515,6 @@ public final class Views {
 	public static String COL_CHAT_MESSAGE_SENDER_TYPE = "Sender_Type";
 	public static String COL_CHAT_MESSAGE_IS_READ = "Is_Read";
 	
+
 
 }
