@@ -209,5 +209,18 @@ function deleteSpecification(button, specificationId) {
         }
     });
 }
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('add-specification-form');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const checkFormValidity = () => {
+        submitButton.disabled = !form.checkValidity();
+    };
+
+    form.addEventListener('input', checkFormValidity);
+    form.addEventListener('change', checkFormValidity);
+
+    checkFormValidity();
+});
 
 

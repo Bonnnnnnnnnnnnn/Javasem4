@@ -109,7 +109,7 @@
 											<div class="card">
 												<div
 													class="card-header d-flex justify-content-center align-items-center">
-													<h3 class="mb-0" style="color:black;">Product Details</h3>
+													<h3 class="mb-0" style="color: black;">Product Details</h3>
 												</div>
 
 												<div class="card-body">
@@ -154,7 +154,7 @@
 																	<label>Brand</label> <input class="form-control"
 																		disabled readonly th:value="${product.brandName}">
 																</div>
-																<div class="col-md-6">
+																<div class="col-md-12">
 																	<label>Category</label> <input class="form-control"
 																		disabled readonly th:value="${product.categoryName}">
 																</div>
@@ -345,7 +345,8 @@
 																	class="form-control"
 																	placeholder="Enter description specifications" required></textarea>
 															</div>
-															<button type="submit" class="btn btn-primary"
+															<button type="submit" id="submitButton"
+																class="btn btn-primary"
 																style="display: inline-flex; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 4px; transition: all 0.3s ease;"
 																onmouseover="this.style.backgroundColor='#0056b3';"
 																onmouseout="this.style.backgroundColor='#007bff';">
