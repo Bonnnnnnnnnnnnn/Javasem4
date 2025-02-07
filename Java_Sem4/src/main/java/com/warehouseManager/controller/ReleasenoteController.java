@@ -454,29 +454,7 @@ public class ReleasenoteController {
 		}
 		
 		
-		List<Request_detail> rsdetail = new ArrayList<>();
-
-		if (id_product != null && !id_product.isEmpty()) { 
-
-
-		    for (int i = 0; i < id_product.size(); i++) { 
-		        Request_detail detail = new Request_detail();
-
-		        int productId = id_product.get(i); 
-		        int quantityExported = quantity.get(i); 
-
-		        if (Id.size() > i) {
-		            int detailId = Id.get(i);
-		            detail.setId(detailId);                
-		            detail.setQuantity_exported(quantityExported); 
-		            detail.setId_product(productId); 
-		            
-		            rsdetail.add(detail);
-
-		            rele.updateQuantityExportedz(detailId, productId, requestId, quantityExported);
-		        } 
-		    }
-		}
+		
 	 
 
 		boolean isSaved = rele.addWarehouseReleasenote(releasenote, details, warehouseId);
@@ -487,6 +465,30 @@ public class ReleasenoteController {
 	    }
 		
 	    if (isSaved) {
+	    	
+	    	List<Request_detail> rsdetail = new ArrayList<>();
+
+			if (id_product != null && !id_product.isEmpty()) { 
+
+
+			    for (int i = 0; i < id_product.size(); i++) { 
+			        Request_detail detail = new Request_detail();
+
+			        int productId = id_product.get(i); 
+			        int quantityExported = quantity.get(i); 
+
+			        if (Id.size() > i) {
+			            int detailId = Id.get(i);
+			            detail.setId(detailId);                
+			            detail.setQuantity_exported(quantityExported); 
+			            detail.setId_product(productId); 
+			            
+			            rsdetail.add(detail);
+
+			            rele.updateQuantityExportedz(detailId, productId, requestId, quantityExported);
+			        } 
+			    }
+			}
 			
 
 	        if (id_product != null && !id_product.isEmpty()) {
